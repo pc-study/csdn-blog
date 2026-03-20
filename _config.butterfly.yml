@@ -50,9 +50,9 @@ avatar:
   img: /img/avatar.jpg
   effect: true
 
-disable_top_img: true
-default_top_img:
-index_img:
+disable_top_img: false
+default_top_img: https://cdn.jsdelivr.net/gh/jerryc127/CDN@m2/img/default.png
+index_img: https://cdn.jsdelivr.net/gh/jerryc127/CDN@m2/img/default.png
 archive_img:
 tag_img:
 category_img:
