@@ -44,7 +44,7 @@ social:
 # Image Settings
 # --------------------------------------
 
-favicon: /img/favicon.png
+favicon: /img/favicon.svg
 
 avatar:
   img: /img/avatar.jpg
@@ -66,6 +66,12 @@ cover:
   aside_enable: true
   archives_enable: true
   default_cover:
+    - /img/covers/oracle.svg
+    - /img/covers/database.svg
+    - /img/covers/linux.svg
+    - /img/covers/tech.svg
+    - /img/covers/bigdata.svg
+    - /img/covers/default.svg
 
 error_img:
   flink: /img/friend_404.gif
