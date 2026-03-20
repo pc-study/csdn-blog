@@ -1,0 +1,656 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>TiDB 备份与恢复整理 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="目录 前言 备份方案 如何备份数据？ 如何管理备份数据？ 如何选择备份存储？ 如何恢复数据？ TiDB 快照备份 备份流程 恢复流程 备份文件 - 文件类型 备份文件目录结构 日志备份 PITR 日志备份文件 部署和使用 BR 通过命令行工具（推荐） 通过 SQL 语句 在 Kubernetes 环">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TiDB 备份与恢复整理">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/154742413/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="目录 前言 备份方案 如何备份数据？ 如何管理备份数据？ 如何选择备份存储？ 如何恢复数据？ TiDB 快照备份 备份流程 恢复流程 备份文件 - 文件类型 备份文件目录结构 日志备份 PITR 日志备份文件 部署和使用 BR 通过命令行工具（推荐） 通过 SQL 语句 在 Kubernetes 环">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/2bb46896f408fb2cfc9f840ddc5a80ee.webp">
+<meta property="article:published_time" content="2025-11-12T08:12:02.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.294Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="tidb">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/2bb46896f408fb2cfc9f840ddc5a80ee.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"TiDB 备份与恢复整理","url":"https://pc-study.github.io/csdn-blog/posts/154742413/","image":"https://pc-study.github.io/csdn-blog/images/2bb46896f408fb2cfc9f840ddc5a80ee.webp","datePublished":"2025-11-12T08:12:02.000Z","dateModified":"2026-03-20T12:25:39.294Z","description":"目录 前言 备份方案 如何备份数据？ 如何管理备份数据？ 如何选择备份存储？ 如何恢复数据？ TiDB 快照备份 备份流程 恢复流程 备份文件 - 文件类型 备份文件目录结构 日志备份 PITR 日志备份文件 部署和使用 BR 通过命令行工具（推荐） 通过 SQL 语句 在 Kubernetes 环","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/154742413/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/154742413/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'TiDB 备份与恢复整理',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/2bb46896f408fb2cfc9f840ddc5a80ee.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">TiDB 备份与恢复整理</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">TiDB 备份与恢复整理<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-11-12-154742413.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-12T08:12:02.000Z" title="发表于 2025-11-12 16:12:02">2025-11-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.294Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">8.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>29分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_2">前言</a></li>
+<li><a href="#_13">备份方案</a></li>
+<li><ul>
+<li><a href="#_14">如何备份数据？</a></li>
+<li><a href="#_19">如何管理备份数据？</a></li>
+<li><a href="#_26">如何选择备份存储？</a></li>
+<li><a href="#_42">如何恢复数据？</a></li>
+</ul>
+</li>
+<li><a href="#TiDB__45">TiDB 快照备份</a></li>
+<li><ul>
+<li><a href="#_52">备份流程</a></li>
+<li><a href="#_81">恢复流程</a></li>
+<li><a href="#_112">备份文件</a></li>
+<li><ul>
+<li><a href="#_113">文件类型</a></li>
+<li><a href="#_119">备份文件目录结构</a></li>
+</ul>
+</li>
+<li><a href="#_147">日志备份</a></li>
+<li><a href="#PITR_184">PITR</a></li>
+<li><a href="#_216">日志备份文件</a></li>
+</ul>
+</li>
+<li><a href="#_BR_273">部署和使用 BR</a></li>
+<li><ul>
+<li><a href="#_282">通过命令行工具（推荐）</a></li>
+<li><a href="#_SQL__291">通过 SQL 语句</a></li>
+<li><a href="#_Kubernetes__TiDB_Operator_297">在 Kubernetes 环境下通过 TiDB Operator</a></li>
+</ul>
+</li>
+<li><a href="#_300">快照备份使用</a></li>
+<li><ul>
+<li><a href="#_301">对集群进行快照备份</a></li>
+<li><a href="#_331">恢复快照备份数据</a></li>
+<li><a href="#_346">恢复备份数据中指定库表的数据</a></li>
+<li><ul>
+<li><a href="#_349">恢复单个数据库的数据</a></li>
+<li><a href="#_358">恢复单张表的数据</a></li>
+<li><a href="#_368">使用表库过滤功能恢复部分数据</a></li>
+</ul>
+</li>
+<li><a href="#_mysql__375">恢复 mysql 数据库下的表</a></li>
+</ul>
+</li>
+<li><a href="#_423">性能与影响</a></li>
+<li><ul>
+<li><a href="#_424">快照备份的性能与影响</a></li>
+<li><a href="#_439">快照恢复的性能与影响</a></li>
+</ul>
+</li>
+<li><a href="#_444">日志备份使用</a></li>
+<li><ul>
+<li><a href="#_445">开启日志备份</a></li>
+<li><a href="#_468">定期执行全量备份</a></li>
+<li><a href="#_PITR_475">进行 PITR</a></li>
+<li><a href="#_492">清理过期的日志备份数据</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>基于 Raft 协议和合理的部署拓扑规划，TiDB 实现了集群的高可用，当集群中少数节点挂掉时，集群依然能对外提供服务。在此基础上，为了更进一步保证用户数据的安全，TiDB 还提供了集群的备份与恢复 (Backup &amp; Restore, BR) 功能，作为数据安全的最后一道防线，使得集群能够免于严重的自然灾害，提供业务误操作“复原”的能力。</p>
+<p>TiDB 备份恢复功能可以用于满足以下业务的需求：</p>
+<ul>
+<li>备份集群数据到灾备系统，并保证 Recovery Point Objective (RPO) 低至 5 分钟，减少灾难场景下数据的丢失。</li>
+<li>处理业务数据写错的案例，提供业务操作的“复原”能力。</li>
+<li>审计业务的历史数据，满足司法审查的需求。</li>
+<li>复制 (Clone) 生产环境，方便问题诊断、性能调优验证、仿真测试等。</li>
+</ul>
+<p>TiDB 备份恢复功能包含了多种不同类型的集群数据对象的备份与恢复实现。这些功能都以 Backup &amp; Restore (BR) 和 TiDB Operator 为使用入口，创建相应的任务从 TiKV 节点上备份数据，或者恢复数据到 TiKV 节点。</p>
+<h2 id="备份方案"><a href="#备份方案" class="headerlink" title="备份方案"></a>备份方案</h2><h3 id="如何备份数据？"><a href="#如何备份数据？" class="headerlink" title="如何备份数据？"></a>如何备份数据？</h3><p><strong>TiDB 支持两种类型的备份，应该使用哪种备份？</strong> 全量备份包含集群某个时间点的全量数据，日志备份包含业务写入在 TiDB 产生的数据变更记录。推荐这两种备份方式一起使用：</p>
+<ul>
+<li>开启日志备份：运行 <code>br log start</code> 命令来启动日志备份任务，任务会在每个 TiKV 节点上持续运行，以小批量的形式定期将 TiDB 变更数据备份到指定存储中。</li>
+<li>定期执行快照（全量）备份：运行 <code>br backup full</code> 命令来备份集群快照到备份存储，例如在每天零点进行集群快照备份。</li>
+</ul>
+<h3 id="如何管理备份数据？"><a href="#如何管理备份数据？" class="headerlink" title="如何管理备份数据？"></a>如何管理备份数据？</h3><p>BR 只提供备份和恢复的基础功能，尚不支持备份管理的功能，因此你需要自行规划备份数据的管理事项，可能包含以下的问题：</p>
+<ul>
+<li>选择哪种备份存储系统？</li>
+<li>数据备份的时候，备份数据应该放在什么目录下？</li>
+<li>全量备份和日志备份的数据目录如何组织？</li>
+<li>如何处理存储系统中历史备份数据？</li>
+</ul>
+<h3 id="如何选择备份存储？"><a href="#如何选择备份存储？" class="headerlink" title="如何选择备份存储？"></a>如何选择备份存储？</h3><p>Amazon S3、Google Cloud Storage (GCS)、Azure Blob Storage 是推荐的存储系统选择，使用这些系统，你无需担心备份容量、备份带宽规划等。</p>
+<p>如果 TiDB 集群部署在自建机房中，则推荐以下方式：</p>
+<ul>
+<li>搭建 MinIO 作为备份存储系统，使用 S3 协议将数据备份到 MinIO 中。</li>
+<li>挂载 NFS（如 NAS）盘到 br 工具和所有的 TiKV 实例，使用 <code>POSIX file system</code> 接口将备份数据写入对应的 NFS 目录中。</li>
+</ul>
+<p><strong>组织备份数据目录</strong>：</p>
+<ul>
+<li>全量备份和日志备份保存在相同的目录下，方便统一管理，例如 backup-${cluster-id}。</li>
+<li>每个全量备份保存到命名带有备份日期的目录下，例如 backup-${cluster-id}&#x2F;fullbackup-202209081330。</li>
+<li>日志备份数据保存在一个固定目录下，例如 backup-${cluster-id}&#x2F;logbackup。日志备份程序会在 logbackup 目录中每天切分出来一个新的子目录来区分每天的日志备份数据。</li>
+</ul>
+<p><strong>处理历史备份数据</strong>：假设你设置了<strong>备份保留期</strong>，即保存固定时间的备份数据，比如 7 天。请注意备份保留期的概念。</p>
+<ul>
+<li>进行 PITR 不仅需要恢复时间点之前的全量备份，还需要全量备份和恢复时间点之间的日志备份，因此，对于超过备份保留期的日志备份，应执行 <code>br log truncate</code> 命令删除指定时间点之前的备份。<strong>建议只清理全量快照之前的日志备份</strong>。</li>
+<li>对于超过备份保留期的全量备份，建议直接删除或者归档全量备份的目录。</li>
+</ul>
+<h3 id="如何恢复数据？"><a href="#如何恢复数据？" class="headerlink" title="如何恢复数据？"></a>如何恢复数据？</h3><p>如果你只有全量备份数据，或者想恢复某个确定的全量备份，那么可以使用 <code>br restore</code> 恢复指定的全量备份。如果你按照以上推荐的的方式进行备份，那么你可以使用 <code>br restore point</code> 恢复到备份保留期内任意时间点。</p>
+<h2 id="TiDB-快照备份"><a href="#TiDB-快照备份" class="headerlink" title="TiDB 快照备份"></a>TiDB 快照备份</h2><p>快照备份是集群全量备份的一种实现。它基于 TiDB 的多版本并发控制 (MVCC) 实现，将指定快照包含的所有数据备份到目标存储中。备份下来的数据大小约等于集群（压缩后的）单副本数据大小。备份完成之后，你可以在一个空集群或不存在数据冲突（相同 schema 或 table）的集群执行快照备份恢复，将集群恢复到快照备份时的数据状态，同时恢复功能会依据集群副本设置恢复出多副本。</p>
+<p>快照数据备份和恢复的架构如下：</p>
+<p><img src="/csdn-blog/images/2bb46896f408fb2cfc9f840ddc5a80ee.webp" alt="TiDB 备份与恢复整理" loading='lazy'></p>
+<h3 id="备份流程"><a href="#备份流程" class="headerlink" title="备份流程"></a>备份流程</h3><p>集群快照数据备份的流程如下：</p>
+<p><img src="/csdn-blog/images/57c7023d1e041c8458e9d9291ff6dcb4.webp" alt="TiDB 备份与恢复整理 - 图2" loading='lazy'></p>
+<p>完整的备份交互流程描述如下：</p>
+<ol>
+<li><p>BR 接收备份命令 <code>br backup full</code>。</p>
+<ul>
+<li>获得备份快照点 (backup ts) 和备份存储地址。</li>
+</ul>
+</li>
+<li><p>BR 调度备份数据。</p>
+<ul>
+<li><strong>Pause GC</strong>：配置 TiDB GC，防止要备份的数据被 TiDB GC 机制回收。</li>
+<li><strong>Fetch TiKV and Region info</strong>：访问 PD，获取所有 TiKV 节点访问地址以及数据的 Region 分布信息。</li>
+<li><strong>Request TiKV to back up data</strong>：创建备份请求，发送给 TiKV 节点，备份请求包含 backup ts、需要备份的 region、备份存储地址。</li>
+</ul>
+</li>
+<li><p>TiKV 接受备份请求，初始化 backup worker。</p>
+</li>
+<li><p>TiKV 备份数据。</p>
+<ul>
+<li><strong>Scan KVs</strong>：backup worker 从 Region (only leader) 读取 backup ts 对应的数据。</li>
+<li><strong>Generate SST</strong>：backup worker 将读取到的数据保存到 SST 文件，存储在内存中。</li>
+<li><strong>Upload SST</strong>：backup worker 上传 SST 文件到备份存储中。</li>
+</ul>
+</li>
+<li><p>BR 从各个 TiKV 获取备份结果。</p>
+<ul>
+<li>如果局部数据因为 Region 变动而备份失败，比如 TiKV 节点故障，BR 将重试这些数据的备份。</li>
+<li>如果任意数据被判断为不可重试的备份失败，则备份任务失败。</li>
+<li>部数据备份成功后，则在最后完成元信息备份。</li>
+</ul>
+</li>
+<li><p>BR 备份元信息。</p>
+<ul>
+<li><strong>Back up schemas</strong>：备份 table schema，同时计算 table data checksum。</li>
+<li><strong>Upload metadata</strong>：生成 backup metadata，并上传到备份存储。backup metadata 包含 backup ts、表和对应的备份文件、data checksum 和 file checksum 等信息。</li>
+</ul>
+</li>
+</ol>
+<h3 id="恢复流程"><a href="#恢复流程" class="headerlink" title="恢复流程"></a>恢复流程</h3><p>恢复集群快照备份数据的流程如下：</p>
+<p><img src="/csdn-blog/images/8246f36bc80483c5bce2052ae215abde.webp" alt="TiDB 备份与恢复整理 - 图3" loading='lazy'></p>
+<p>完整的恢复交互流程描述如下：</p>
+<ol>
+<li><p>BR 接收恢复命令 <code>br restore</code>。</p>
+<ul>
+<li>获得快照备份数据存储地址、要恢复的 database 或 table。</li>
+<li>检查要恢复的 table 是否存在及是否符合要求。</li>
+</ul>
+</li>
+<li><p>BR 调度恢复数据。</p>
+<ul>
+<li><strong>Pause Region schedule</strong>：请求 PD 在恢复期间关闭自动 Region schedule。</li>
+<li><strong>Restore schema</strong>：读取备份数据的 schema、恢复的 database 和 table（注意新建表的 table ID 与备份数据可能不一样）。</li>
+<li><strong>Split &amp; scatter Region</strong>：BR 基于备份数据信息，请求 PD 分配 Region (split Region)，并调度 Region 均匀分布到存储节点上 (scatter Region)。每个 Region 都有明确的数据范围 [start key, end key)。</li>
+<li><strong>Request TiKV to restore data</strong>：根据 PD 分配的 Region 结果，发送恢复请求到对应的 TiKV 节点，恢复请求包含要恢复的备份数据及 rewrite 规则。</li>
+</ul>
+</li>
+<li><p>TiKV 接受恢复请求，初始化 restore worker。</p>
+<ul>
+<li>restore worker 计算恢复数据需要读取的备份数据。</li>
+</ul>
+</li>
+<li><p>TiKV 恢复数据。</p>
+<ul>
+<li><strong>Download SST</strong>：restore worker 从备份存储中下载相应的备份数据到本地。</li>
+<li><strong>Rewrite KVs</strong>：restore worker 根据新建表 table ID，对备份数据 kv 进行重写，即将原有的 kv 编码中的 table ID 替换为新创建的 table ID。对 index ID，restore worker 也进行相同处理。</li>
+<li><strong>Ingest SST</strong>：restore worker 将处理好的 SST 文件 ingest 到 RocksDB 中。</li>
+<li><strong>Report restore result</strong>：restore worker 返回恢复结果给 BR。</li>
+</ul>
+</li>
+<li><p>BR 从各个 TiKV 获取恢复结果。</p>
+<ul>
+<li>如果局部数据恢复因为 <code>RegionNotFound</code> 或 <code>EpochNotMatch</code> 等原因失败，比如 TiKV 节点故障，BR 重试恢复这些数据。</li>
+<li>如果存在备份数据不可重试的恢复失败，则恢复任务失败。</li>
+<li>全部备份都恢复成功后，则整个恢复任务成功。</li>
+</ul>
+</li>
+</ol>
+<h3 id="备份文件"><a href="#备份文件" class="headerlink" title="备份文件"></a>备份文件</h3><h4 id="文件类型"><a href="#文件类型" class="headerlink" title="文件类型"></a>文件类型</h4><p>快照备份会产生如下类型文件：</p>
+<ul>
+<li><strong>SST 文件</strong>：存储 TiKV 备份下来的数据信息。单个 SST 文件大小等于 TiKV Region 的大小。</li>
+<li><strong>backupmeta 文件</strong>：存储本次备份的元信息，包括备份文件数、备份文件的 Key 区间、备份文件大小和备份文件 Hash (sha256) 值。</li>
+<li><strong>backup.lock 文件</strong>：用于防止多次备份到同一目录。</li>
+</ul>
+<h4 id="备份文件目录结构"><a href="#备份文件目录结构" class="headerlink" title="备份文件目录结构"></a>备份文件目录结构</h4><p>将数据备份到 Google Cloud Storage 或 Azure Blob Storage 上时，SST 文件、backupmeta 文件和 backup.lock 文件在同一目录下。目录结构如下：</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml">.</span><br><span class="language-xml">└── 20220621</span><br><span class="language-xml">    ├── backupmeta</span><br><span class="language-xml">    |—— backup.lock</span><br><span class="language-xml">    ├── </span><span class="hljs-template-variable">&#123;storeID&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;regionID&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;regionEpoch&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;keyHash&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;timestamp&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;cf&#125;</span><span class="language-xml">.sst</span><br><span class="language-xml">    ├── </span><span class="hljs-template-variable">&#123;storeID&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;regionID&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;regionEpoch&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;keyHash&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;timestamp&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;cf&#125;</span><span class="language-xml">.sst</span><br><span class="language-xml">    └── </span><span class="hljs-template-variable">&#123;storeID&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;regionID&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;regionEpoch&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;keyHash&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;timestamp&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;cf&#125;</span><span class="language-xml">.sst</span><br></code></pre></td></tr></table></figure>
+
+<p>将数据备份到 Amazon S3 或网络盘上时，SST 文件会根据 storeID 划分子目录。目录结构如下：</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml">.</span><br><span class="language-xml">└── 20220621</span><br><span class="language-xml">    ├── backupmeta</span><br><span class="language-xml">    |—— backup.lock</span><br><span class="language-xml">    ├── store1</span><br><span class="language-xml">    │   └── </span><span class="hljs-template-variable">&#123;regionID&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;regionEpoch&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;keyHash&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;timestamp&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;cf&#125;</span><span class="language-xml">.sst</span><br><span class="language-xml">    ├── store100</span><br><span class="language-xml">    │   └── </span><span class="hljs-template-variable">&#123;regionID&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;regionEpoch&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;keyHash&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;timestamp&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;cf&#125;</span><span class="language-xml">.sst</span><br><span class="language-xml">    ├── store2</span><br><span class="language-xml">    │   └── </span><span class="hljs-template-variable">&#123;regionID&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;regionEpoch&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;keyHash&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;timestamp&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;cf&#125;</span><span class="language-xml">.sst</span><br><span class="language-xml">    ├── store3</span><br><span class="language-xml">    ├── store4</span><br><span class="language-xml">    └── store5</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="日志备份"><a href="#日志备份" class="headerlink" title="日志备份"></a>日志备份</h3><p>日志备份和 PITR 的架构如下：</p>
+<p><img src="/csdn-blog/images/344ee7cceff59bde4980d9dd41b5cb08.webp" alt="TiDB 备份与恢复整理 - 图4" loading='lazy'></p>
+<p>日志备份的流程如下：</p>
+<p><img src="/csdn-blog/images/8130ef602c4c49304f69b8113326cd64.webp" alt="TiDB 备份与恢复整理 - 图5" loading='lazy'></p>
+<p>系统组件和关键概念：</p>
+<ul>
+<li>local metadata：表示单 TiKV 节点备份下来的数据元信息，主要包括：local checkpoint ts、global checkpoint ts、备份文件信息。</li>
+<li>local checkpoint ts (in local metadata)：表示这个 TiKV 中所有小于 local checkpoint ts 的日志数据已经备份到目标存储。</li>
+<li>global checkpoint ts：表示所有 TiKV 中小于 global checkpoint ts 的日志数据已经备份到目标存储。它由运行在 TiDB 中的 Coordinator 模块收集所有 TiKV 的 local checkpoint ts 计算所得，然后上报给 PD。</li>
+<li>TiDB Coordinator 组件：TiDB 集群的某个节点会被选举为 Coordinator，负责收集和计算整个日志备份任务的进度 (global checkpoint ts)。该组件设计上无状态，在其故障后可以从存活的 TiDB 节点中重新选出一个节点作为 Coordinator。</li>
+<li>TiKV log observer 组件：运行在 TiDB 集群的每个 TiKV 节点，负责从 TiKV 读取和备份日志数据。TiKV 节点故障的话，该节点负责备份数据范围，在 Region 重新选举后，会被其他 TiKV 节点负责，这些节点会从 global checkpoint ts 重新备份故障范围的数据。</li>
+</ul>
+<p>完整的备份交互流程描述如下：</p>
+<ol>
+<li><p>BR 接收备份命令 <code>br log start</code>。</p>
+<ul>
+<li>解析获取日志备份任务的 checkpoint ts（日志备份起始位置）、备份存储地址。</li>
+<li><strong>Register log backup task</strong>：在 PD 注册日志备份任务 (log backup task)。</li>
+</ul>
+</li>
+<li><p>TiKV 监控日志备份任务的创建与更新。</p>
+<ul>
+<li><strong>Fetch log backup task</strong>：每个 TiKV 节点的 log backup observer 监听 PD 中日志备份任务的创建与更新，然后备份该节点上在备份范围内的数据。</li>
+</ul>
+</li>
+<li><p>TiKV log backup observer 持续地备份 KV 变更日志。</p>
+<ul>
+<li><strong>Read kv change data</strong>：读取 kv 数据变更，然后保存到自定义格式的备份文件中。</li>
+<li><strong>Fetch global checkpoint ts</strong>：定期从 PD 查询 global checkpoint ts。</li>
+<li><strong>Generate local metadata</strong>：定期生成 local metadata（包含 local checkpoint ts、global checkpoint ts、备份文件信息）。</li>
+<li><strong>Upload log data &amp; metadata</strong>：定期将日志备份数据和 local metadata 上传到备份存储中。</li>
+<li><strong>Configure GC</strong>：请求 PD 阻止未备份的数据（大于 local checkpoint ts）被 TiDB GC 机制回收掉。</li>
+</ul>
+</li>
+<li><p>TiDB Coordinator 监控日志备份进度。</p>
+<ul>
+<li><strong>Watch backup progress</strong>：轮询所有 TiKV 节点，获取各个 Region 的备份进度 (Region checkpoint ts)。</li>
+<li><strong>Report global checkpoint ts</strong>：根据各个 Region checkpoint ts，计算整个日志备份任务的进度 (global checkpoint ts)，然后上报给 PD。</li>
+</ul>
+</li>
+<li><p>PD 持久化日志备份任务状态。可以通过 <code>br log status</code> 查询。</p>
+</li>
+</ol>
+<h3 id="PITR"><a href="#PITR" class="headerlink" title="PITR"></a>PITR</h3><p>PITR 的流程如下：</p>
+<p><img src="/csdn-blog/images/a399955c7472707ea0e18a95b9c9f6bc.webp" alt="TiDB 备份与恢复整理 - 图6" loading='lazy'></p>
+<p>完整的 PITR 交互流程描述如下：</p>
+<ol>
+<li><p>BR 接收恢复命令 <code>br restore point</code>。</p>
+<ul>
+<li>解析获取全量备份数据地址、日志备份数据地址、恢复到的时间点。</li>
+<li>查询备份数据中恢复数据对象（database 或 table），并检查要恢复的表是否存在并符合要求。</li>
+</ul>
+</li>
+<li><p>BR 恢复全量备份。</p>
+<ul>
+<li>进行快照备份数据恢复，恢复流程参考恢复快照备份数据。</li>
+</ul>
+</li>
+<li><p>BR 恢复日志备份。</p>
+<ul>
+<li><strong>Read backup data</strong>：读取日志备份数据，计算需要恢复的日志备份数据。</li>
+<li><strong>Fetch Region info</strong>：访问 PD，获取所有 Region 和 KV range 的对应关系。</li>
+<li><strong>Request TiKV to restore data</strong>：创建日志恢复请求，发送到对应的 TiKV，日志恢复请求包含要恢复的日志备份数据信息。</li>
+</ul>
+</li>
+<li><p>TiKV 接受 BR 的恢复请求，初始化 log restore worker。</p>
+<ul>
+<li>log restore worker 获取需要恢复的日志备份数据。</li>
+</ul>
+</li>
+<li><p>TiKV 恢复日志备份数据。</p>
+<ul>
+<li><strong>Download KVs</strong>：log restore worker 根据日志恢复请求中要恢复的备份数据，从备份存储中下载相应的备份数据到本地。</li>
+<li><strong>Rewrite KVs</strong>：log restore worker 根据恢复集群表的 table ID 对备份数据的 kv 进行重写 —— 将原有的 kv 编码中的 table ID 替换为新创建的 table ID。对 index ID，log restore worker 也进行相同的处理。</li>
+<li><strong>Apply KVs</strong>：log restore worker 将处理好的 kv 通过 raft 接口写入 store (RocksDB) 中。</li>
+<li><strong>Report restore result</strong>：log restore worker 返回恢复结果给 BR。</li>
+</ul>
+</li>
+<li><p>BR 从各个 TiKV 获取恢复结果。</p>
+<ul>
+<li>如果局部数据恢复因为 <code>RegionNotFound</code> 或 <code>EpochNotMatch</code> 等原因失败，比如 TiKV 节点故障，BR 重试恢复这些数据。</li>
+<li>如果存在备份数据不可重试的恢复失败，则恢复任务失败。</li>
+<li>全部备份数据都恢复成功后，则恢复任务成功。</li>
+</ul>
+</li>
+</ol>
+<h3 id="日志备份文件"><a href="#日志备份文件" class="headerlink" title="日志备份文件"></a>日志备份文件</h3><p>日志备份会产生如下类型文件：</p>
+<ul>
+<li><code>{resolved_ts}-{uuid}.meta</code> 文件：每个 TiKV 节点每次上传日志备份数据时会生成一个该文件，保存本次上传的所有日志备份数据文件。其中 <code>{resolved_ts}</code> 是本节点的日志备份的 Resolved Timestamp，所有 TiKV 节点最小的 Resolved Timestamp 就是日志备份任务最新的 <code>resolved_ts</code>；<code>{uuid}</code> 是在生成该文件时随机生成的。</li>
+<li><code>{store_id}.ts</code> 文件：每个 TiKV 节点每次上传日志备份数据时会使用 global checkpoint ts 更新该文件。其中 <code>{store_id}</code> 是 TiKV 的 store ID。</li>
+<li><code>{min_ts}-{uuid}.log</code> 文件：存储备份下来的 kv 数据变更记录。其中 <code>{min_ts}</code> 是该文件中所有 kv 数据变更记录数对应的最小 ts；<code>{uuid}</code> 是在生成该文件时随机生成的。</li>
+<li><code>v1_stream_truncate_safepoint.txt</code> 文件：保存最近一次通过 <code>br log truncate</code> 删除日志备份数据后，存储中最早的日志备份数据对应的 ts。</li>
+</ul>
+<p>备份文件目录结构：</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml">.</span><br><span class="language-xml">├── v1</span><br><span class="language-xml">│   ├── backupmeta</span><br><span class="language-xml">│   │   ├── ...</span><br><span class="language-xml">│   │   └── </span><span class="hljs-template-variable">&#123;resolved_ts&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;uuid&#125;</span><span class="language-xml">.meta</span><br><span class="language-xml">│   ├── global_checkpoint</span><br><span class="language-xml">│   │   └── </span><span class="hljs-template-variable">&#123;store_id&#125;</span><span class="language-xml">.ts</span><br><span class="language-xml">│   └── </span><span class="hljs-template-variable">&#123;date&#125;</span><span class="language-xml"></span><br><span class="language-xml">│       └── </span><span class="hljs-template-variable">&#123;hour&#125;</span><span class="language-xml"></span><br><span class="language-xml">│           └── </span><span class="hljs-template-variable">&#123;store_id&#125;</span><span class="language-xml"></span><br><span class="language-xml">│               ├── ...</span><br><span class="language-xml">│               └── </span><span class="hljs-template-variable">&#123;min_ts&#125;</span><span class="language-xml">-</span><span class="hljs-template-variable">&#123;uuid&#125;</span><span class="language-xml">.log</span><br><span class="language-xml">└── v1_stream_truncate_safepoint.txt</span><br></code></pre></td></tr></table></figure>
+
+<p>备份文件目录结构的说明如下：</p>
+<ul>
+<li><code>backupmeta</code>：备份的元数据。文件名中的 <code>resolved_ts</code> 指备份的进度，表示该 <strong>TSO</strong> 之前的数据已被完整备份。但是需注意，该 TSO 仅反映部分分片的进度。</li>
+<li><code>global_checkpoint</code>：备份的全局进度。它记录了可以被 <code>br restore point</code> 恢复到的最晚时间点。</li>
+<li><code>{date}/{hour}</code>：对应日期和小时的备份数据。注意在清理存储的时候，需使用 <code>br log truncate</code>，不能手动删除数据。这是因为 metadata 会指向这里的数据，手动删除它们会导致恢复失败或恢复后数据不一致等问题。</li>
+</ul>
+<p>具体示例如下：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs subunit">├── v1<br>│   ├── backupmeta<br>│   │   ├── ...<br>│   │   ├── 435213818858112001-e2569bda-a75a<span class="hljs-string">-4411</span><span class="hljs-string">-88</span>de-f469b49d6256.meta<br>│   │   ├── 435214043785779202<span class="hljs-string">-1780</span>f291<span class="hljs-string">-3</span>b8a<span class="hljs-string">-455</span>e-a31d<span class="hljs-string">-8</span>a1302c43ead.meta<br>│   │   └── 435214443785779202<span class="hljs-string">-224</span>f1408-fff5<span class="hljs-string">-445</span>f<span class="hljs-string">-8</span>e41-ca4fcfbd2a67.meta<br>│   ├── global_checkpoint<br>│   │   ├── 1.ts<br>│   │   ├── 2.ts<br>│   │   └── 3.ts<br>│   └── 20220811<br>│       └── 03<br>│           ├── 1<br>│           │   ├── ...<br>│           │   ├── 435213866703257604<span class="hljs-string">-60</span>fcbdb6<span class="hljs-string">-8</span>f55<span class="hljs-string">-4098</span>-b3e7<span class="hljs-string">-2</span>ce604dafe54.log<br>│           │   └── 435214023989657606<span class="hljs-string">-72</span>ce65ff<span class="hljs-string">-1</span>fa8<span class="hljs-string">-4705</span><span class="hljs-string">-9</span>fd9-cb4a1e803a56.log<br>│           ├── 2<br>│           │   ├── ...<br>│           │   ├── 435214102632857605<span class="hljs-string">-11</span>deba64-beff<span class="hljs-string">-4414</span>-bc9c<span class="hljs-string">-7</span>a161b6fb22c.log<br>│           │   └── 435214417205657604-e6980303-cbaa<span class="hljs-string">-4629</span>-a863<span class="hljs-string">-1</span>e745d7b8aed.log<br>│           └── 3<br>│               ├── ...<br>│               ├── 435214495848857605<span class="hljs-string">-7</span>bf65e92<span class="hljs-string">-8</span>c43<span class="hljs-string">-427</span>e-b81e-f0050bd40be0.log<br>│               └── 435214574492057604<span class="hljs-string">-80</span>d3b15e<span class="hljs-string">-3</span>d9f<span class="hljs-string">-4</span>b0c-b133<span class="hljs-string">-87</span>ed3f6b2697.log<br>└── v1_stream_truncate_safepoint.txt<br></code></pre></td></tr></table></figure>
+
+<h2 id="部署和使用-BR"><a href="#部署和使用-BR" class="headerlink" title="部署和使用 BR"></a>部署和使用 BR</h2><p>使用备份恢复功能的部署要求如下：</p>
+<ul>
+<li>BR、TiKV 节点和备份存储系统需要提供大于备份速度的的网络带宽。当集群特别大的时候，备份和恢复速度上限受限于备份网络的带宽。</li>
+<li>备份存储系统还需要提供足够的写入&#x2F;读取性能 (IOPS)，否则它有可能成为备份恢复时的性能瓶颈。</li>
+<li>TiKV 节点需要为备份准备至少额外的两个 CPU core 和高性能的磁盘，否则备份将对集群上运行的业务产生影响。</li>
+<li>推荐 br 工具运行在 8 核+&#x2F;16 GB+ 的节点上。</li>
+</ul>
+<p>目前支持以下几种方式来使用 BR。</p>
+<h3 id="通过命令行工具（推荐）"><a href="#通过命令行工具（推荐）" class="headerlink" title="通过命令行工具（推荐）"></a>通过命令行工具（推荐）</h3><p>TiDB 支持使用 br 工具进行备份恢复。</p>
+<ul>
+<li>安装方法可以<a target="_blank" rel="noopener" href="https://docs.pingcap.com/zh/tidb/v7.5/migration-tools/#%E4%BD%BF%E7%94%A8-tiup-%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85">使用 TiUP 在线安装</a>：<code>tiup install br</code>。</li>
+</ul>
+<p>了解如何使用 br 命令行工具进行备份与恢复，请参阅：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.pingcap.com/zh/tidb/v7.5/br-snapshot-guide/">TiDB 快照备份与恢复功能使用</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.pingcap.com/zh/tidb/v7.5/br-pitr-guide/">TiDB 日志备份与 PITR 功能使用</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.pingcap.com/zh/tidb/v7.5/backup-and-restore-use-cases/">TiDB 集群备份与恢复实践示例</a></li>
+</ul>
+<h3 id="通过-SQL-语句"><a href="#通过-SQL-语句" class="headerlink" title="通过 SQL 语句"></a>通过 SQL 语句</h3><p>TiDB 支持使用 SQL 语句进行全量快照备份和恢复：</p>
+<ul>
+<li><code>BACKUP</code> 进行全量快照数据备份。</li>
+<li><code>RESTORE</code> 进行快照备份恢复。</li>
+<li><code>SHOW BACKUPS|RESTORES</code> 查看备份恢复的进度。</li>
+</ul>
+<h3 id="在-Kubernetes-环境下通过-TiDB-Operator"><a href="#在-Kubernetes-环境下通过-TiDB-Operator" class="headerlink" title="在 Kubernetes 环境下通过 TiDB Operator"></a>在 Kubernetes 环境下通过 TiDB Operator</h3><p>在 Kubernetes 环境下，支持通过 TiDB Operator 支持以 S3、GCS、Azure blob storage 作为备份存储，并从这些存储系统中恢复备份数据。使用文档请参阅<a target="_blank" rel="noopener" href="https://docs.pingcap.com/zh/tidb-in-kubernetes/stable/backup-restore-overview">使用 TiDB Operator 进行备份恢复</a>。</p>
+<h2 id="快照备份使用"><a href="#快照备份使用" class="headerlink" title="快照备份使用"></a>快照备份使用</h2><h3 id="对集群进行快照备份"><a href="#对集群进行快照备份" class="headerlink" title="对集群进行快照备份"></a>对集群进行快照备份</h3><p>使用 <code>br backup full</code> 可以进行一次快照备份：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-comment">## 该命令的详细使用帮助可以通过执行 `br backup full --help` 查看</span><br><span class="hljs-comment">## 采用 Amazon S3 Access key 和 Secret key 授权方式来进行模拟</span><br><span class="hljs-attribute">tiup</span> br backup full --pd <span class="hljs-string">&quot;$&#123;PD_IP&#125;:2379&quot;</span> <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    --backupts &#x27;<span class="hljs-number">2022</span>-<span class="hljs-number">09</span>-<span class="hljs-number">08</span> <span class="hljs-number">13</span>:<span class="hljs-number">30</span>:<span class="hljs-number">00</span> +<span class="hljs-number">08</span>:<span class="hljs-number">00</span>&#x27; <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    --storage <span class="hljs-string">&quot;s3://backup-101/snapshot-202209081330?access-key=$&#123;access-key&#125;&amp;secret-access-key=$&#123;secret-access-key&#125;&quot;</span> <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    --ratelimit <span class="hljs-number">128</span> \<br></code></pre></td></tr></table></figure>
+
+<p>以上命令中：</p>
+<ul>
+<li><code>--backupts</code>：快照对应的物理时间点，格式可以是 TSO 或者时间戳，例如 400036290571534337 或者 2018-05-11 01:42:23 +08:00。如果该快照的数据被垃圾回收 (GC) 了，那么 <code>tiup br backup</code> 命令会报错并退出。使用日期方式备份时，建议同时指定时区，否则 br 默认使用本地时间构造时间戳，可能导致备份时间点错误。如果你没有指定该参数，那么 br 会选取备份开始的时间点所对应的快照。</li>
+<li><code>--storage</code>：数据备份到的存储地址。快照备份支持以 Amazon S3、Google Cloud Storage、Azure Blob Storage 为备份存储，以上命令以 Amazon S3 为示例。详细存储地址格式请参考外部存储服务的 URI 格式。</li>
+<li><code>--ratelimit</code>：<strong>每个 TiKV</strong> 备份数据的速度上限，单位为 MiB&#x2F;s。</li>
+</ul>
+<p>在快照备份过程中，终端会显示备份进度条。在备份完成后，会输出备份耗时、速度、备份数据大小等信息：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros">Full Backup &lt;-------------------------------------------------------------------------------&gt; 100.00%<br>Checksum &lt;----------------------------------------------------------------------------------&gt; 100.00%<br>*** [<span class="hljs-string">&quot;Full Backup success summary&quot;</span>] *** [<span class="hljs-attribute">backup-checksum</span>=3.597416ms] [<span class="hljs-attribute">backup-fast-checksum</span>=2.36975ms] *** [<span class="hljs-attribute">total-take</span>=4.715509333s] [<span class="hljs-attribute">BackupTS</span>=435844546560000000] [<span class="hljs-attribute">total-kv</span>=1131] [<span class="hljs-attribute">total-kv-size</span>=250kB] [<span class="hljs-attribute">average-speed</span>=53.02kB/s] [backup-data-size(after-compressed)=71.33kB] [<span class="hljs-attribute">Size</span>=71330]<br></code></pre></td></tr></table></figure>
+
+<p>出于管理备份数的需要，如果你需要查看某个快照备份对应的快照物理时间点，可以执行下面的命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">tiup br validate decode --field=<span class="hljs-string">&quot;end-version&quot;</span> \<br>--storage <span class="hljs-string">&quot;s3://backup-101/snapshot-202209081330?access-key=<span class="hljs-variable">$&#123;access-key&#125;</span>&amp;secret-access-key=<span class="hljs-variable">$&#123;secret-access-key&#125;</span>&quot;</span> | <span class="hljs-built_in">tail</span> -n1<br><br><span class="hljs-comment">## 结果输出如下，对应物理时间 2022-09-08 13:30:00 +0800 CST</span><br>435844546560000000<br></code></pre></td></tr></table></figure>
+
+<h3 id="恢复快照备份数据"><a href="#恢复快照备份数据" class="headerlink" title="恢复快照备份数据"></a>恢复快照备份数据</h3><p>如果你需要恢复备份的快照数据，则可以使用 <code>br restore full</code>。</p>
+<p>将上文备份的快照数据恢复到目标集群：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stata">## 该命令的详细使用帮助可以通过执行 <span class="hljs-keyword">br</span> <span class="hljs-keyword">restore</span> full --<span class="hljs-keyword">help</span> 查看<br>tiup <span class="hljs-keyword">br</span> <span class="hljs-keyword">restore</span> full --pd <span class="hljs-string">&quot;$&#123;PD_IP&#125;:2379&quot;</span> \<br>--storage <span class="hljs-string">&quot;s3://backup-101/snapshot-202209081330?access-key=$&#123;access-key&#125;&amp;secret-access-key=$&#123;secret-access-key&#125;&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>在恢复快照备份数据过程中，终端会显示恢复进度条。在完成恢复后，会输出恢复耗时、速度、恢复数据大小等信息：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros">Full Restore &lt;------------------------------------------------------------------------------&gt; 100.00%<br>*** [<span class="hljs-string">&quot;Full Restore success summary&quot;</span>] *** [<span class="hljs-attribute">total-take</span>=4.344617542s] [<span class="hljs-attribute">total-kv</span>=5] [<span class="hljs-attribute">total-kv-size</span>=327B] [<span class="hljs-attribute">average-speed</span>=75.27B/s] [restore-data-size(after-compressed)=4.813kB] [<span class="hljs-attribute">Size</span>=4813] [<span class="hljs-attribute">BackupTS</span>=435844901803917314]<br></code></pre></td></tr></table></figure>
+
+<h3 id="恢复备份数据中指定库表的数据"><a href="#恢复备份数据中指定库表的数据" class="headerlink" title="恢复备份数据中指定库表的数据"></a>恢复备份数据中指定库表的数据</h3><p>br 命令行工具支持只恢复备份数据中指定库、表的部分数据，该功能用于在恢复过程中过滤不需要的数据。</p>
+<h4 id="恢复单个数据库的数据"><a href="#恢复单个数据库的数据" class="headerlink" title="恢复单个数据库的数据"></a>恢复单个数据库的数据</h4><p>要将备份数据中的某个数据库恢复到集群中，可以使用 br restore db 命令。以下示例只恢复 <code>test</code> 库的数据：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stata">tiup <span class="hljs-keyword">br</span> <span class="hljs-keyword">restore</span> <span class="hljs-keyword">db</span> --pd <span class="hljs-string">&quot;$&#123;PD_IP&#125;:2379&quot;</span> \<br>--<span class="hljs-keyword">db</span> <span class="hljs-string">&quot;test&quot;</span> \<br>--storage <span class="hljs-string">&quot;s3://backup-101/snapshot-202209081330?access-key=$&#123;access-key&#125;&amp;secret-access-key=$&#123;secret-access-key&#125;&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>以上命令中 –db 选项指定了需要恢复的数据库名。</p>
+<h4 id="恢复单张表的数据"><a href="#恢复单张表的数据" class="headerlink" title="恢复单张表的数据"></a>恢复单张表的数据</h4><p>要将备份数据中的某张数据表恢复到集群中，可以使用 <code>br restore table</code> 命令。以下示例只恢复 <code>test.usertable</code> 表的数据：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs stata">tiup <span class="hljs-keyword">br</span> <span class="hljs-keyword">restore</span> <span class="hljs-keyword">table</span> --pd <span class="hljs-string">&quot;$&#123;PD_IP&#125;:2379&quot;</span> \<br>--<span class="hljs-keyword">db</span> <span class="hljs-string">&quot;test&quot;</span> \<br>--<span class="hljs-keyword">table</span> <span class="hljs-string">&quot;usertable&quot;</span> \<br>--storage <span class="hljs-string">&quot;s3://backup-101/snapshot-202209081330?access-key=$&#123;access-key&#125;&amp;secret-access-key=$&#123;secret-access-key&#125;&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>以上命令中 <code>--db</code> 选项指定了需要恢复的数据库名，<code>--table</code> 选项指定了需要恢复的表名。</p>
+<h4 id="使用表库过滤功能恢复部分数据"><a href="#使用表库过滤功能恢复部分数据" class="headerlink" title="使用表库过滤功能恢复部分数据"></a>使用表库过滤功能恢复部分数据</h4><p>要通过复杂的过滤条件恢复多个表，可以使用 <code>br restore full</code> 命令，并用 <code>--filter</code> 或 <code>-f</code> 指定表库过滤的条件。以下示例恢复符合 <code>db*.tbl*</code> 条件的表的数据：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">tiup br restore full --pd <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;PD_IP&#125;</span>:2379&quot;</span> \<br>--filter <span class="hljs-string">&#x27;db*.tbl*&#x27;</span> \<br>--storage <span class="hljs-string">&quot;s3://backup-101/snapshot-202209081330?access-key=<span class="hljs-variable">$&#123;access-key&#125;</span>&amp;secret-access-key=<span class="hljs-variable">$&#123;secret-access-key&#125;</span>&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="恢复-mysql-数据库下的表"><a href="#恢复-mysql-数据库下的表" class="headerlink" title="恢复 mysql 数据库下的表"></a>恢复 mysql 数据库下的表</h3><p>自 <code>br v5.1.0</code> 开始，快照备份会备份 <strong>mysql schema 下的系统表数据</strong>，而不会默认恢复这些数据。自 br v6.2.0 开始，在设置 <code>--with-sys-table</code> 下，恢复数据时将同时恢复<strong>部分系统表相关数据</strong>。</p>
+<p><strong>可恢复的部分系统表</strong>：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">+----------------------------------+<br>|<span class="hljs-string"> mysql.columns_priv               </span>|<br>|<span class="hljs-string"> mysql.db                         </span>|<br>|<span class="hljs-string"> mysql.default_roles              </span>|<br>|<span class="hljs-string"> mysql.global_grants              </span>|<br>|<span class="hljs-string"> mysql.global_priv                </span>|<br>|<span class="hljs-string"> mysql.role_edges                 </span>|<br>|<span class="hljs-string"> mysql.tables_priv                </span>|<br>|<span class="hljs-string"> mysql.user                       </span>|<br>|<span class="hljs-string"> mysql.bind_info                  </span>|<br>+----------------------------------+<br></code></pre></td></tr></table></figure>
+
+<p><strong>不能恢复以下系统表</strong>：</p>
+<ul>
+<li>统计信息表 (<code>mysql.stat_*</code>) (但可以恢复统计信息，详细参考备份统计信息)</li>
+<li>系统变量表 (<code>mysql.tidb、mysql.global_variables</code>)</li>
+<li>其他系统表</li>
+</ul>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">+-----------------------------------------------------+<br>|<span class="hljs-string"> capture_plan_baselines_blacklist                    </span>|<br>|<span class="hljs-string"> column_stats_usage                                  </span>|<br>|<span class="hljs-string"> gc_delete_range                                     </span>|<br>|<span class="hljs-string"> gc_delete_range_done                                </span>|<br>|<span class="hljs-string"> global_variables                                    </span>|<br>|<span class="hljs-string"> schema_index_usage                                  </span>|<br>|<span class="hljs-string"> stats_buckets                                       </span>|<br>|<span class="hljs-string"> stats_extended                                      </span>|<br>|<span class="hljs-string"> stats_feedback                                      </span>|<br>|<span class="hljs-string"> stats_fm_sketch                                     </span>|<br>|<span class="hljs-string"> stats_histograms                                    </span>|<br>|<span class="hljs-string"> stats_history                                       </span>|<br>|<span class="hljs-string"> stats_meta                                          </span>|<br>|<span class="hljs-string"> stats_meta_history                                  </span>|<br>|<span class="hljs-string"> stats_table_locked                                  </span>|<br>|<span class="hljs-string"> stats_top_n                                         </span>|<br>|<span class="hljs-string"> tidb                                                </span>|<br>+-----------------------------------------------------+<br></code></pre></td></tr></table></figure>
+
+<p>当恢复系统权限相关数据的时候，请注意：在恢复数据前 BR 会检查目标集群的系统表是否跟备份数据中的系统表兼容。这里的兼容是指满足以下所有条件：</p>
+<ul>
+<li>目标集群需要存在备份中的系统权限表。</li>
+<li>目标集群系统权限表<strong>列数</strong>需要与备份数据中一致，列的顺序可以有差异。</li>
+<li>目标集群系统权限表的列需要与备份数据兼容。如果为带长度类型（包括整型、字符串等类型），前者长度需大于或等于后者，如果为 ENUM 类型，则应该为后者超集。</li>
+</ul>
+<h2 id="性能与影响"><a href="#性能与影响" class="headerlink" title="性能与影响"></a>性能与影响</h2><h3 id="快照备份的性能与影响"><a href="#快照备份的性能与影响" class="headerlink" title="快照备份的性能与影响"></a>快照备份的性能与影响</h3><p>TiDB 备份功能对集群性能（事务延迟和 QPS）有一定的影响，但是可以通过调整备份的线程数 <code>backup.num-threads</code>，以及增加集群配置，来降低备份对集群性能的影响。</p>
+<p>为了更加具体说明备份对集群的影响，下面列举了多次快照备份测试结论来说明影响的范围：</p>
+<ul>
+<li>（使用 5.3 及之前版本）在默认配置下，单 TiKV 存储节点上备份线程数量是节点 CPU 总数量的 75% 时，QPS 会下降到备份之前的 35% 左右。</li>
+<li>（使用 5.4 及以后版本）单 TiKV 存储节点上备份的线程数量不大于 8、集群总 CPU 利用率不超过 80% 时，备份任务对集群（无论读写负载）影响最大在 20% 左右。</li>
+<li>（使用 5.4 及以后版本）单 TiKV 存储节点上备份的线程数量不大于 8、集群总 CPU 利用率不超过 75% 时，备份任务对集群（无论读写负载）影响最大在 10% 左右。</li>
+<li>（使用 5.4 及以后版本）单 TiKV 存储节点上备份的线程数量不大于 8、集群总 CPU 利用率不超过 60% 时，备份任务对集群（无论读写负载）几乎没有影响。</li>
+</ul>
+<p>你可以通过如下方案手动控制备份对集群性能带来的影响。但是，这两种方案在减少备份对集群的影响的同时，也会降低备份任务的速度。</p>
+<ul>
+<li>使用 <code>--ratelimit</code> 参数对备份任务进行限速。请注意，这个参数限制的是<strong>把备份文件存储到外部存储</strong>的速度。计算备份文件的大小时，请以备份日志中的 <code>backup data size(after compressed)</code> 为准。设置 <code>--ratelimit</code> 后，为了避免任务数过多导致限速失效，br 的 <code>concurrency</code> 参数会自动调整为 1。</li>
+<li>调节 TiKV 配置项 <code>backup.num-threads</code>，限制备份任务使用的工作线程数量。内部测试数据表明，当备份的线程数量不大于 8、集群总 CPU 利用率不超过 60% 时，备份任务对集群（无论读写负载）几乎没有影响。</li>
+</ul>
+<p>通过限制备份的线程数量可以降低备份对集群性能的影响，但是这会影响到备份的性能，以上的多次备份测试结果显示，单 TiKV 存储节点上备份速度和备份线程数量呈正比。在线程数量较少的时候，备份速度约为 20 MiB&#x2F;线程数。例如，单 TiKV 节点 5 个备份线程可达到 100 MiB&#x2F;s 的备份速度。</p>
+<h3 id="快照恢复的性能与影响"><a href="#快照恢复的性能与影响" class="headerlink" title="快照恢复的性能与影响"></a>快照恢复的性能与影响</h3><p>TiDB 恢复的时候会尽可能打满 TiKV CPU、磁盘 IO、网络带宽等资源，所以推荐在空的集群上执行备份数据的恢复，避免对正在运行的业务产生影响。</p>
+<p>备份数据的恢复速度与集群配置、部署、运行的业务都有比较大的关系。在内部多场景仿真测试中，单 TiKV 存储节点上备份数据恢复速度能够达到 100 MiB&#x2F;s。在不同用户场景下，快照恢复的性能和影响应以实际测试结论为准。</p>
+<h2 id="日志备份使用"><a href="#日志备份使用" class="headerlink" title="日志备份使用"></a>日志备份使用</h2><h3 id="开启日志备份"><a href="#开启日志备份" class="headerlink" title="开启日志备份"></a>开启日志备份</h3><p>执行 <code>br log start</code> 命令启动日志备份任务，一个集群只能启动一个日志备份任务：</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs maxima">tiup br <span class="hljs-built_in">log</span> start --task-name=pitr --pd <span class="hljs-string">&quot;$&#123;PD_IP&#125;:2379&quot;</span> \<br>--storage &#x27;s3://backup-<span class="hljs-number">101</span>/logbackup?access-<span class="hljs-built_in">key</span>=$&#123;access-<span class="hljs-built_in">key</span>&#125;&amp;secret-access-<span class="hljs-built_in">key</span>=$&#123;secret-access-<span class="hljs-built_in">key</span>&#125;&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>日志备份任务启动后，会在 TiDB 集群后台持续地运行，直到你手动将其暂停。在这过程中，TiDB 变更数据将以小批量的形式定期备份到指定存储中。如果你需要查询日志备份任务当前状态，执行如下命令：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">tiup br log status <span class="hljs-attribute">--task-name</span>=pitr --pd <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;PD_IP&#125;</span>:2379&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>日志备份任务状态输出如下：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">● Total <span class="hljs-number">1</span> Tasks.<br>&gt; #<span class="hljs-number">1</span> &lt;<br>    <span class="hljs-type">name</span>: pitr<br>    status: ● NORMAL<br>    <span class="hljs-keyword">start</span>: <span class="hljs-number">2022</span><span class="hljs-number">-05</span><span class="hljs-number">-13</span> <span class="hljs-number">11</span>:<span class="hljs-number">09</span>:<span class="hljs-number">40.7</span> +<span class="hljs-number">0800</span><br>      <span class="hljs-keyword">end</span>: <span class="hljs-number">2035</span><span class="hljs-number">-01</span><span class="hljs-number">-01</span> <span class="hljs-number">00</span>:<span class="hljs-number">00</span>:<span class="hljs-number">00</span> +<span class="hljs-number">0800</span><br>    <span class="hljs-keyword">storage</span>: s3://backup<span class="hljs-number">-101</span>/<span class="hljs-keyword">log</span>-backup<br>    speed(est.): <span class="hljs-number">0.00</span> ops/s<br><span class="hljs-keyword">checkpoint</span>[<span class="hljs-keyword">global</span>]: <span class="hljs-number">2022</span><span class="hljs-number">-05</span><span class="hljs-number">-13</span> <span class="hljs-number">11</span>:<span class="hljs-number">31</span>:<span class="hljs-number">47.2</span> +<span class="hljs-number">0800</span>; gap=<span class="hljs-number">4</span>m53s<br></code></pre></td></tr></table></figure>
+
+<h3 id="定期执行全量备份"><a href="#定期执行全量备份" class="headerlink" title="定期执行全量备份"></a>定期执行全量备份</h3><p>快照备份功能可作为全量备份的方法，运行 <code>br backup full</code> 命令可以按照固定的周期（比如 2 天）进行全量备份。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">tiup</span> br backup full --pd <span class="hljs-string">&quot;$&#123;PD_IP&#125;:2379&quot;</span> <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>--storage &#x27;s3://backup-<span class="hljs-number">101</span>/snapshot-<span class="hljs-variable">$&#123;date&#125;</span>?access-key=<span class="hljs-variable">$&#123;access-key&#125;</span>&amp;secret-access-key=<span class="hljs-variable">$&#123;secret-access-key&#125;</span>&#x27;<br></code></pre></td></tr></table></figure>
+
+<h3 id="进行-PITR"><a href="#进行-PITR" class="headerlink" title="进行 PITR"></a>进行 PITR</h3><p>如果你想恢复到备份保留期内的任意时间点，可以使用 <code>br restore point</code> 命令。执行该命令时，你需要指定要恢复的时间点、恢复时间点之前最近的快照备份以及日志备份数据。br 命令行工具会自动判断和读取恢复需要的数据，然后将这些数据依次恢复到指定的集群。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">br</span> restore point --pd <span class="hljs-string">&quot;$&#123;PD_IP&#125;:2379&quot;</span> <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>--storage=&#x27;s3://backup-<span class="hljs-number">101</span>/logbackup?access-key=<span class="hljs-variable">$&#123;access-key&#125;</span>&amp;secret-access-key=<span class="hljs-variable">$&#123;secret-access-key&#125;</span>&#x27; <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>--full-backup-storage=&#x27;s3://backup-<span class="hljs-number">101</span>/snapshot-<span class="hljs-variable">$&#123;date&#125;</span>?access-key=<span class="hljs-variable">$&#123;access-key&#125;</span>&amp;secret-access-key=<span class="hljs-variable">$&#123;secret-access-key&#125;</span>&#x27; <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>--restored-ts &#x27;<span class="hljs-number">2022</span>-<span class="hljs-number">05</span>-<span class="hljs-number">15</span> <span class="hljs-number">18</span>:<span class="hljs-number">00</span>:<span class="hljs-number">00</span>+<span class="hljs-number">0800</span>&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>恢复期间，可通过终端中的进度条查看进度，如下。恢复分为两个阶段：全量恢复 (Full Restore) 和日志恢复（Restore Meta Files 和 Restore KV Files）。每个阶段完成恢复后，br 命令行工具都会输出恢复耗时和恢复数据大小等信息。</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs prolog"><span class="hljs-symbol">Full</span> <span class="hljs-symbol">Restore</span> &lt;--------------------------------------------------------------------------------------------------------------------------------------------------------&gt; <span class="hljs-number">100.00</span><span class="hljs-comment">%</span><br>*** [<span class="hljs-string">&quot;Full Restore success summary&quot;</span>] ****** [total-take=xxx.xxxs] [restore-data-size(after-compressed)=xxx.xxx] [<span class="hljs-symbol">Size</span>=xxxx] [<span class="hljs-symbol">BackupTS</span>=&#123;<span class="hljs-symbol">TS</span>&#125;] [total-kv=xxx] [total-kv-size=xxx] [average-speed=xxx]<br><span class="hljs-symbol">Restore</span> <span class="hljs-symbol">Meta</span> <span class="hljs-symbol">Files</span> &lt;--------------------------------------------------------------------------------------------------------------------------------------------------&gt; <span class="hljs-number">100.00</span><span class="hljs-comment">%</span><br><span class="hljs-symbol">Restore</span> <span class="hljs-symbol">KV</span> <span class="hljs-symbol">Files</span> &lt;----------------------------------------------------------------------------------------------------------------------------------------------------&gt; <span class="hljs-number">100.00</span><span class="hljs-comment">%</span><br>*** [<span class="hljs-string">&quot;restore log success summary&quot;</span>] [total-take=xxx.xx] [restore-from=&#123;<span class="hljs-symbol">TS</span>&#125;] [restore-to=&#123;<span class="hljs-symbol">TS</span>&#125;] [total-kv-count=xxx] [total-size=xxx]<br></code></pre></td></tr></table></figure>
+
+<h3 id="清理过期的日志备份数据"><a href="#清理过期的日志备份数据" class="headerlink" title="清理过期的日志备份数据"></a>清理过期的日志备份数据</h3><p>进行 PITR 不仅需要恢复时间点之前的全量备份，还需要全量备份和恢复时间点之间的日志备份，因此，对于超过备份保留期的日志备份，应执行 <code>br log truncate</code> 命令删除指定时间点之前的备份。建议只清理全量快照之前的日志备份。</p>
+<p>你可以按照以下步骤清理超过备份保留期的备份数据：</p>
+<ol>
+<li><p>查找备份保留期之外的最近一次全量备份。</p>
+</li>
+<li><p>使用 validate 指令获取该备份对应的时间点。假如需要清理 2022&#x2F;09&#x2F;01 之前的备份数据，则应查找该日期之前的最近一次全量备份，且保证它不会被清理。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-attribute">FULL_BACKUP_TS</span>=`tiup br validate decode <span class="hljs-attribute">--field</span>=<span class="hljs-string">&quot;end-version&quot;</span> --storage <span class="hljs-string">&quot;s3://backup-101/snapshot-<span class="hljs-variable">$&#123;date&#125;</span>?access-key=<span class="hljs-variable">$&#123;access-key&#125;</span>&amp;secret-access-key=<span class="hljs-variable">$&#123;secret-access-key&#125;</span>&quot;</span>| tail -n1`<br></code></pre></td></tr></table></figure></li>
+<li><p>清理该快照备份 <code>FULL_BACKUP_TS</code> 之前的日志备份数据。</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs maxima">tiup br <span class="hljs-built_in">log</span> <span class="hljs-built_in">truncate</span> --until=$&#123;FULL_BACKUP_TS&#125; --storage=&#x27;s3://backup-<span class="hljs-number">101</span>/logbackup?access-<span class="hljs-built_in">key</span>=$&#123;access-<span class="hljs-built_in">key</span>&#125;&amp;secret-access-<span class="hljs-built_in">key</span>=$&#123;secret-access-<span class="hljs-built_in">key</span>&#125;&#x27;<br></code></pre></td></tr></table></figure></li>
+<li><p>清理该快照备份 <code>FULL_BACKUP_TS</code> 之前的快照备份数据。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">rm</span> -rf s3://backup-101/snapshot-<span class="hljs-variable">$&#123;date&#125;</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<p>br 备份命令手册：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.pingcap.com/zh/tidb/v7.5/br-snapshot-manual/">TiDB 快照备份与恢复命令行手册</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.pingcap.com/zh/tidb/v7.5/br-pitr-manual/">TiDB 日志备份与 PITR 命令行手册</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/154742413/">https://pc-study.github.io/csdn-blog/posts/154742413/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/tidb/">tidb</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/154742448/" title="EMCC 13.5 安装中断，如何清理 OMS 库？"><img class="cover" src="/csdn-blog/images/906c9e9e996746d92d2a284c33fbf3ac.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">EMCC 13.5 安装中断，如何清理 OMS 库？</div></div><div class="info-2"><div class="info-item-1">前言 昨天安装一套 EMCC13.5，安装过程中 VNC 卡死导致安装失败，清理目录后重新执行安装，结果安装过程中报错了： 应该是 OMS 数据库在前一次安装过程中已经创建了用户以及一些对象，导致 OMS 数据库不干净了，一般建议重建 OMS 数据库，但是时间比较久，今天介绍一下另一种解决这个问题的</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/154742402/" title="使用 BR 备份 TiDB 到 AWS S3 存储"><img class="cover" src="/csdn-blog/images/183733a36b20d5647e661181d13ede9d.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">使用 BR 备份 TiDB 到 AWS S3 存储</div></div><div class="info-2"><div class="info-item-1">目录 前言 BR 工具 如何备份数据？ - 快照备份 日志备份 如何选择备份存储？ BR 安装配置 BR 备份部署 日志备份脚本 快照备份脚本 问题总结 网络限制 S3 权限 日志备份重复运行 快照备份中断 写在最后 前言 手里有几套 TiDB 集群数据库没有备份，一直在裸奔，几个备份厂商（爱数，N</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-22</div><div class="info-item-2">Oracle 直连 TiDB 可行吗？</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习数据库路上的知识和经验。 目录 前言 环境信息 Oracle 端配置 透明网关检查 安装 unixODBC 安装 MySQL ODBC 驱动 配置 ODBC 数据源 验证 ODBC 连通性 配置 Oracle TNS 配置透明网关参数 配置监听 验证</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148073832/" title="深入解析分布式数据库TiDB：原理、优化与架构实践"><img class="cover" src="/csdn-blog/images/166270ad3c26940545adb4abe6d5e8a6.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-19</div><div class="info-item-2">深入解析分布式数据库TiDB：原理、优化与架构实践</div></div><div class="info-2"><div class="info-item-1">前言 在云计算与大数据时代，传统单机数据库面临三大挑战：海量数据存储、高并发访问和实时分析需求。MySQL 分库分表方案复杂、NoSQL 缺乏 ACID 支持、MPP 数仓难以处理 OLTP… 在这样的背景下，TiDB 应运而生。作为一款开源的分布式 NewSQL 数据库，TiDB 完美融合了关系型</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/154742402/" title="使用 BR 备份 TiDB 到 AWS S3 存储"><img class="cover" src="/csdn-blog/images/183733a36b20d5647e661181d13ede9d.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-12</div><div class="info-item-2">使用 BR 备份 TiDB 到 AWS S3 存储</div></div><div class="info-2"><div class="info-item-1">目录 前言 BR 工具 如何备份数据？ - 快照备份 日志备份 如何选择备份存储？ BR 安装配置 BR 备份部署 日志备份脚本 快照备份脚本 问题总结 网络限制 S3 权限 日志备份重复运行 快照备份中断 写在最后 前言 手里有几套 TiDB 集群数据库没有备份，一直在裸奔，几个备份厂商（爱数，N</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139177202/" title="Oracle Linux 7.9 一键安装 Oracle 12CR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">Oracle Linux 7.9 一键安装 Oracle 12CR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 7.9 一键安装 Oracle 12CR2 单机（240116）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/138720075/" title="Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-11</div><div class="info-item-2">Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 IS</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145164664/" title="实战篇：enq: TM - contention 等待事件分析"><img class="cover" src="/csdn-blog/images/e78bc09350efffd4fe654b78a1b26e4e.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-15</div><div class="info-item-2">实战篇：enq: TM - contention 等待事件分析</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 问题分析 enq: TM - contention 问题排查 外键索引缺失检查 并行 DML 检查 付费群咨询 写在最后 前言 今天收到应用反馈：在 发生了一起卡顿，持续 15 秒，到 结束，需要帮忙排查下原因。 先介</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%87%E4%BB%BD%E6%96%B9%E6%A1%88"><span class="toc-number">3.</span> <span class="toc-text">备份方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%A4%87%E4%BB%BD%E6%95%B0%E6%8D%AE%EF%BC%9F"><span class="toc-number">3.1.</span> <span class="toc-text">如何备份数据？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E7%AE%A1%E7%90%86%E5%A4%87%E4%BB%BD%E6%95%B0%E6%8D%AE%EF%BC%9F"><span class="toc-number">3.2.</span> <span class="toc-text">如何管理备份数据？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%A4%87%E4%BB%BD%E5%AD%98%E5%82%A8%EF%BC%9F"><span class="toc-number">3.3.</span> <span class="toc-text">如何选择备份存储？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%81%A2%E5%A4%8D%E6%95%B0%E6%8D%AE%EF%BC%9F"><span class="toc-number">3.4.</span> <span class="toc-text">如何恢复数据？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TiDB-%E5%BF%AB%E7%85%A7%E5%A4%87%E4%BB%BD"><span class="toc-number">4.</span> <span class="toc-text">TiDB 快照备份</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%87%E4%BB%BD%E6%B5%81%E7%A8%8B"><span class="toc-number">4.1.</span> <span class="toc-text">备份流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E6%B5%81%E7%A8%8B"><span class="toc-number">4.2.</span> <span class="toc-text">恢复流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%87%E4%BB%BD%E6%96%87%E4%BB%B6"><span class="toc-number">4.3.</span> <span class="toc-text">备份文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B"><span class="toc-number">4.3.1.</span> <span class="toc-text">文件类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%87%E4%BB%BD%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-number">4.3.2.</span> <span class="toc-text">备份文件目录结构</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E5%A4%87%E4%BB%BD"><span class="toc-number">4.4.</span> <span class="toc-text">日志备份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PITR"><span class="toc-number">4.5.</span> <span class="toc-text">PITR</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E5%A4%87%E4%BB%BD%E6%96%87%E4%BB%B6"><span class="toc-number">4.6.</span> <span class="toc-text">日志备份文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2%E5%92%8C%E4%BD%BF%E7%94%A8-BR"><span class="toc-number">5.</span> <span class="toc-text">部署和使用 BR</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="toc-number">5.1.</span> <span class="toc-text">通过命令行工具（推荐）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87-SQL-%E8%AF%AD%E5%8F%A5"><span class="toc-number">5.2.</span> <span class="toc-text">通过 SQL 语句</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8-Kubernetes-%E7%8E%AF%E5%A2%83%E4%B8%8B%E9%80%9A%E8%BF%87-TiDB-Operator"><span class="toc-number">5.3.</span> <span class="toc-text">在 Kubernetes 环境下通过 TiDB Operator</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BF%AB%E7%85%A7%E5%A4%87%E4%BB%BD%E4%BD%BF%E7%94%A8"><span class="toc-number">6.</span> <span class="toc-text">快照备份使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E9%9B%86%E7%BE%A4%E8%BF%9B%E8%A1%8C%E5%BF%AB%E7%85%A7%E5%A4%87%E4%BB%BD"><span class="toc-number">6.1.</span> <span class="toc-text">对集群进行快照备份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E5%BF%AB%E7%85%A7%E5%A4%87%E4%BB%BD%E6%95%B0%E6%8D%AE"><span class="toc-number">6.2.</span> <span class="toc-text">恢复快照备份数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E5%A4%87%E4%BB%BD%E6%95%B0%E6%8D%AE%E4%B8%AD%E6%8C%87%E5%AE%9A%E5%BA%93%E8%A1%A8%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="toc-number">6.3.</span> <span class="toc-text">恢复备份数据中指定库表的数据</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E5%8D%95%E4%B8%AA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="toc-number">6.3.1.</span> <span class="toc-text">恢复单个数据库的数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E5%8D%95%E5%BC%A0%E8%A1%A8%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="toc-number">6.3.2.</span> <span class="toc-text">恢复单张表的数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E8%A1%A8%E5%BA%93%E8%BF%87%E6%BB%A4%E5%8A%9F%E8%83%BD%E6%81%A2%E5%A4%8D%E9%83%A8%E5%88%86%E6%95%B0%E6%8D%AE"><span class="toc-number">6.3.3.</span> <span class="toc-text">使用表库过滤功能恢复部分数据</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D-mysql-%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8B%E7%9A%84%E8%A1%A8"><span class="toc-number">6.4.</span> <span class="toc-text">恢复 mysql 数据库下的表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E4%B8%8E%E5%BD%B1%E5%93%8D"><span class="toc-number">7.</span> <span class="toc-text">性能与影响</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E7%85%A7%E5%A4%87%E4%BB%BD%E7%9A%84%E6%80%A7%E8%83%BD%E4%B8%8E%E5%BD%B1%E5%93%8D"><span class="toc-number">7.1.</span> <span class="toc-text">快照备份的性能与影响</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E7%85%A7%E6%81%A2%E5%A4%8D%E7%9A%84%E6%80%A7%E8%83%BD%E4%B8%8E%E5%BD%B1%E5%93%8D"><span class="toc-number">7.2.</span> <span class="toc-text">快照恢复的性能与影响</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E5%A4%87%E4%BB%BD%E4%BD%BF%E7%94%A8"><span class="toc-number">8.</span> <span class="toc-text">日志备份使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%90%AF%E6%97%A5%E5%BF%97%E5%A4%87%E4%BB%BD"><span class="toc-number">8.1.</span> <span class="toc-text">开启日志备份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E6%9C%9F%E6%89%A7%E8%A1%8C%E5%85%A8%E9%87%8F%E5%A4%87%E4%BB%BD"><span class="toc-number">8.2.</span> <span class="toc-text">定期执行全量备份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E8%A1%8C-PITR"><span class="toc-number">8.3.</span> <span class="toc-text">进行 PITR</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%85%E7%90%86%E8%BF%87%E6%9C%9F%E7%9A%84%E6%97%A5%E5%BF%97%E5%A4%87%E4%BB%BD%E6%95%B0%E6%8D%AE"><span class="toc-number">8.4.</span> <span class="toc-text">清理过期的日志备份数据</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

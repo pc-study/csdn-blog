@@ -1,0 +1,284 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>5200000 个文件，rm -rf 报错，如何快速清理？ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 前言 某客户生产环境 Oracle 19c RAC 集群突发磁盘空间告警，经排查发现 Grid 审计日志占用了 30GB 磁盘空间，目录下堆积了520 万个审计文件： 审计配置保留了默认设置，导致sys用户的每项操作都生成审计记录，在长期">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5200000 个文件，rm -rf 报错，如何快速清理？">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/151115781/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 前言 某客户生产环境 Oracle 19c RAC 集群突发磁盘空间告警，经排查发现 Grid 审计日志占用了 30GB 磁盘空间，目录下堆积了520 万个审计文件： 审计配置保留了默认设置，导致sys用户的每项操作都生成审计记录，在长期">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg">
+<meta property="article:published_time" content="2025-09-02T08:10:19.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:13:19.934Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"5200000 个文件，rm -rf 报错，如何快速清理？","url":"https://pc-study.github.io/csdn-blog/posts/151115781/","image":"https://pc-study.github.io/csdn-blog/img/covers/database.svg","datePublished":"2025-09-02T08:10:19.000Z","dateModified":"2026-03-20T12:13:19.934Z","description":"大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 前言 某客户生产环境 Oracle 19c RAC 集群突发磁盘空间告警，经排查发现 Grid 审计日志占用了 30GB 磁盘空间，目录下堆积了520 万个审计文件： 审计配置保留了默认设置，导致sys用户的每项操作都生成审计记录，在长期","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/151115781/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/151115781/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '5200000 个文件，rm -rf 报错，如何快速清理？',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/database.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">5200000 个文件，rm -rf 报错，如何快速清理？</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">5200000 个文件，rm -rf 报错，如何快速清理？<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-09-02-151115781.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-09-02T08:10:19.000Z" title="发表于 2025-09-02 16:10:19">2025-09-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:13:19.934Z" title="更新于 2026-03-20 20:13:19">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">927</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:13:19&quot;}" hidden></div><blockquote>
+<p>大家好，这里是 <strong>DBA 学习之路</strong>，专注于提升数据库运维效率。</p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>某客户生产环境 Oracle 19c RAC 集群突发磁盘空间告警，经排查发现 Grid 审计日志占用了 30GB 磁盘空间，目录下堆积了<strong>520 万个审计文件</strong>：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs gams">SQL&gt; show <span class="hljs-keyword">parameter</span> audit<br>NAME                <span class="hljs-comment">TYPE        VALUE</span><br>------------------- ----------- ----------------------------<br>audit_file_dest     <span class="hljs-comment">string</span>      /u01/<span class="hljs-comment">app</span>/<span class="hljs-number">12.2</span><span class="hljs-number">.0</span>/<span class="hljs-comment">grid</span>/rdbms/<span class="hljs-comment">audit</span><br>audit_sys_operations <span class="hljs-comment">boolean    TRUE</span><br></code></pre></td></tr></table></figure>
+
+<p>审计配置保留了默认设置，导致<strong>sys</strong>用户的每项操作都生成审计记录，在长期运行后产生了惊人的文件数量。</p>
+<h2 id="紧急处理过程"><a href="#紧急处理过程" class="headerlink" title="紧急处理过程"></a>紧急处理过程</h2><h3 id="首次尝试：直接删除失败"><a href="#首次尝试：直接删除失败" class="headerlink" title="首次尝试：直接删除失败"></a>首次尝试：直接删除失败</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">rm</span> -rf *.aud<br>-bash: /bin/rm: Argument list too long<br></code></pre></td></tr></table></figure>
+
+<p>Linux 系统限制单次命令参数长度约 2MB，当文件数量超过数万时，<code>rm</code> 命令直接失败。</p>
+<h3 id="应急方案：find-exec-删除"><a href="#应急方案：find-exec-删除" class="headerlink" title="应急方案：find -exec 删除"></a>应急方案：<code>find -exec</code> 删除</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find /u01/app/12.2.0/grid/rdbms/audit -name <span class="hljs-string">&quot;*.aud&quot;</span> -<span class="hljs-built_in">exec</span> <span class="hljs-built_in">rm</span> -f &#123;&#125; \;<br></code></pre></td></tr></table></figure>
+
+<p>此方案每删除一个文件就执行一次<code>rm</code>命令，520 万文件耗时<strong>超过 30 分钟</strong>，在争分夺秒的生产维护中效率不足。</p>
+<h2 id="性能优化探索"><a href="#性能优化探索" class="headerlink" title="性能优化探索"></a>性能优化探索</h2><h3 id="测试环境模拟"><a href="#测试环境模拟" class="headerlink" title="测试环境模拟"></a>测试环境模拟</h3><p>创建 500 万审计文件模拟生产环境：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">## python 创建更快</span><br><span class="hljs-keyword">import</span> os<br><br>dir_path = <span class="hljs-string">&quot;/u01/app/12.2.0/grid/rdbms/audit/&quot;</span><br>os.makedirs(dir_path, exist_ok=<span class="hljs-literal">True</span>)<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">5_000_000</span>):<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(os.path.join(dir_path, <span class="hljs-string">f&quot;file_<span class="hljs-subst">&#123;i:07d&#125;</span>.aud&quot;</span>), <span class="hljs-string">&#x27;w&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        <span class="hljs-keyword">pass</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="多种删除方案性能对比"><a href="#多种删除方案性能对比" class="headerlink" title="多种删除方案性能对比"></a>多种删除方案性能对比</h3><h3 id="性能王者：rsync-方案"><a href="#性能王者：rsync-方案" class="headerlink" title="性能王者：rsync 方案"></a>性能王者：rsync 方案</h3><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs perl"><span class="hljs-keyword">mkdir</span> empty_dir<br><span class="hljs-keyword">time</span> rsync -a --<span class="hljs-keyword">delete</span> empty_dir/ <span class="hljs-regexp">/u01/app</span><span class="hljs-regexp">/12.2.0/grid</span><span class="hljs-regexp">/rdbms/audi</span>t/<br></code></pre></td></tr></table></figure>
+
+<p><strong>2 分 10 秒</strong>完成 500 万文件删除，比<code>find -delete</code>快 60%！原理是利用 rsync 的增量同步算法，直接操作文件系统结构。</p>
+<h2 id="生产环境推荐"><a href="#生产环境推荐" class="headerlink" title="生产环境推荐"></a>生产环境推荐</h2><h3 id="1-紧急清理（最快）"><a href="#1-紧急清理（最快）" class="headerlink" title="1. 紧急清理（最快）"></a>1. 紧急清理（最快）</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">mkdir <span class="hljs-regexp">/tmp/</span>empty_dir<br>rsync -a --<span class="hljs-keyword">delete</span> --progress <span class="hljs-regexp">/tmp/</span>empty_dir<span class="hljs-regexp">/ /u</span>01<span class="hljs-regexp">/app/</span><span class="hljs-number">12.2</span>.<span class="hljs-number">0</span><span class="hljs-regexp">/grid/</span>rdbms<span class="hljs-regexp">/audit/</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2-安全清理（保留目录结构）"><a href="#2-安全清理（保留目录结构）" class="headerlink" title="2. 安全清理（保留目录结构）"></a>2. 安全清理（保留目录结构）</h3><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gradle"><span class="hljs-keyword">find</span> <span class="hljs-regexp">/u01/</span>app<span class="hljs-regexp">/12.2.0/g</span>rid<span class="hljs-regexp">/rdbms/</span>audit -type f -name <span class="hljs-string">&quot;*.aud&quot;</span> -<span class="hljs-keyword">delete</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3-按时间清理（保留近期文件）"><a href="#3-按时间清理（保留近期文件）" class="headerlink" title="3. 按时间清理（保留近期文件）"></a>3. 按时间清理（保留近期文件）</h3><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gradle"><span class="hljs-keyword">find</span> <span class="hljs-regexp">/u01/</span>app<span class="hljs-regexp">/12.2.0/g</span>rid<span class="hljs-regexp">/rdbms/</span>audit -name <span class="hljs-string">&quot;*.aud&quot;</span> -mtime +<span class="hljs-number">30</span> -<span class="hljs-keyword">delete</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="长效预防机制"><a href="#长效预防机制" class="headerlink" title="长效预防机制"></a>长效预防机制</h2><h3 id="1-审计策略优化"><a href="#1-审计策略优化" class="headerlink" title="1. 审计策略优化"></a>1. 审计策略优化</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros">ALTER<span class="hljs-built_in"> SYSTEM </span><span class="hljs-built_in">SET</span> <span class="hljs-attribute">audit_sys_operations</span>=<span class="hljs-literal">FALSE</span> <span class="hljs-attribute">SCOPE</span>=spfile;  -- 关闭sys审计<br>ALTER<span class="hljs-built_in"> SYSTEM </span><span class="hljs-built_in">SET</span> <span class="hljs-attribute">audit_trail</span>=NONE <span class="hljs-attribute">SCOPE</span>=spfile;          -- 关闭数据库审计<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-定期清理脚本"><a href="#2-定期清理脚本" class="headerlink" title="2. 定期清理脚本"></a>2. 定期清理脚本</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-comment"># 保留7天审计日志</span><br>find /u01/app/*/grid/rdbms/audit -name <span class="hljs-string">&quot;*.aud&quot;</span> -mtime +7 -delete<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-文件系统隔离"><a href="#3-文件系统隔离" class="headerlink" title="3. 文件系统隔离"></a>3. 文件系统隔离</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 为审计日志创建独立文件系统</span><br>lvcreate -n audit_lv -L 50G vg_data<br>mkfs.xfs /dev/vg_data/audit_lv<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;/dev/vg_data/audit_lv /grid_audit xfs defaults 0 0&quot;</span> &gt;&gt; /etc/fstab<br>mount -a<br><span class="hljs-built_in">chown</span> grid:oinstall /grid_audit<br></code></pre></td></tr></table></figure>
+
+<h2 id="技术原理解析"><a href="#技术原理解析" class="headerlink" title="技术原理解析"></a>技术原理解析</h2><h3 id="为什么-find-delete-更快？"><a href="#为什么-find-delete-更快？" class="headerlink" title="为什么 find -delete 更快？"></a>为什么 <code>find -delete</code> 更快？</h3><ul>
+<li><strong>系统调用优化</strong>：直接使用<code>unlinkat()</code>系统调用，避免进程创建开销；</li>
+<li><strong>批量处理</strong>：内部缓存文件列表，减少上下文切换；</li>
+<li><strong>目录遍历优化</strong>：深度优先遍历减少磁盘寻道时间；</li>
+</ul>
+<h3 id="文件删除性能影响因素："><a href="#文件删除性能影响因素：" class="headerlink" title="文件删除性能影响因素："></a>文件删除性能影响因素：</h3><ol>
+<li><strong>文件系统类型</strong>：XFS &gt; EXT4 &gt; BtrFS（海量小文件场景）；</li>
+<li><strong>磁盘类型</strong>：NVMe SSD &gt; SAS HDD（7200 转硬盘 500 万文件删除需 1 小时+）；</li>
+<li><strong>inode 缓存</strong>：<code>vfs_cache_pressure</code>参数优化可提升 20%性能；</li>
+<li><strong>目录结构</strong>：扁平目录比深层目录快 3-5 倍；</li>
+</ol>
+<h2 id="经验总结"><a href="#经验总结" class="headerlink" title="经验总结"></a>经验总结</h2><ol>
+<li><strong>预防优于治疗</strong>：审计配置应纳入数据库部署检查清单；</li>
+<li><strong>空间隔离</strong>：关键组件（如 Grid）使用独立文件系统；</li>
+<li><strong>性能认知</strong>：海量小文件操作需特殊方法，常规命令可能适得其反；</li>
+<li><strong>工具选择</strong>：</li>
+</ol>
+<ul>
+<li>万级文件：<code>find -delete</code></li>
+<li>十万级：<code>xargs</code>批量处理</li>
+<li>百万级：<code>rsync</code>或专用工具</li>
+</ul>
+<blockquote>
+<p>经此一役，该客户 Grid 审计目录已配置独立文件系统和自动清理策略。运维的本质不是救火，而是通过架构设计和自动化，将危机消灭在萌芽状态。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/151115781/">https://pc-study.github.io/csdn-blog/posts/151115781/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/151115817/" title="Oracle 数据库与操作系统兼容性指南"><img class="cover" src="/csdn-blog/images/f6704fe8d884945d500f0a4c5666f78d.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Oracle 数据库与操作系统兼容性指南</div></div><div class="info-2"><div class="info-item-1">前言 作为一个在 Oracle 坑里摸爬滚打多年的老 DBA，最怕听到的就是"这个版本能不能装在这个系统上？"这种问题。昨天又有朋友来问我 Oracle 数据库和操作系统的兼容性，索性把这些年积累的官方兼容性列表整理出来，省得大家每次都要翻 MOS 文档。 温馨提示： 虽然官方说兼容，但实际生产环境</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/151115756/" title="教你 Centos 如何离线安装 rlwrap 插件（内网环境）"><img class="cover" src="/csdn-blog/images/f2ba5b734cccd1c99de5e27158da2914.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">教你 Centos 如何离线安装 rlwrap 插件（内网环境）</div></div><div class="info-2"><div class="info-item-1">目录 前言 下载 rpm 包 downloadonly 在线镜像源下载 安装 rlwrap 插件 写在最后 前言 今天在一台数据库主机上想安装 rlwrap 插件（上下文切换，退格优化），方便运维操作，但是 rlwrap 需要前置安装 ，因为是内网环境，也不方便挂载镜像 ISO、没有 YUM 源的情</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/119878261/" title="《零基础安装 Oracle 数据库》RAC集群系列 ❷ 简单两步快速安装 Oracle 12CR2 RAC 数据库"><img class="cover" src="/csdn-blog/images/f0b76787497ac9c46eaf5e8b261b97e8.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-23</div><div class="info-item-2">《零基础安装 Oracle 数据库》RAC集群系列 ❷ 简单两步快速安装 Oracle 12CR2 RAC 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持 RAC 集群版本一键安装了！❗️ 依然不支持 Linux 6 系统</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139180039/" title="Oracle Linux 8.9 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">Oracle Linux 8.9 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 8.9 一键安装 Oracle 19C 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139179984/" title="Oracle Linux 8.9 一键安装 Oracle 12CR2 单机 ASM"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">Oracle Linux 8.9 一键安装 Oracle 12CR2 单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 8.9 一键安装 Oracle 12CR2 单机 ASM （231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/138720075/" title="Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-11</div><div class="info-item-2">Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 IS</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139776325/" title="RedHat 8.9 一键安装 Oracle 12CR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-18</div><div class="info-item-2">RedHat 8.9 一键安装 Oracle 12CR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 RedHat 8.9 一键安装 Oracle 12CR2 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安装包（</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/144090175/" title="开源免费！SQLE：简单易用的 SQL 质量治理平台"><img class="cover" src="/csdn-blog/images/ad7fcb46accc1f29618f6af0488671bb.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-11-27</div><div class="info-item-2">开源免费！SQLE：简单易用的 SQL 质量治理平台</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 社群交流 前言 介绍 产品特性 使用场景 下载方式 在线试用 本地安装 写在最后 往期精彩文章 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B4%A7%E6%80%A5%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">紧急处理过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%96%E6%AC%A1%E5%B0%9D%E8%AF%95%EF%BC%9A%E7%9B%B4%E6%8E%A5%E5%88%A0%E9%99%A4%E5%A4%B1%E8%B4%A5"><span class="toc-number">2.1.</span> <span class="toc-text">首次尝试：直接删除失败</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%94%E6%80%A5%E6%96%B9%E6%A1%88%EF%BC%9Afind-exec-%E5%88%A0%E9%99%A4"><span class="toc-number">2.2.</span> <span class="toc-text">应急方案：find -exec 删除</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8E%A2%E7%B4%A2"><span class="toc-number">3.</span> <span class="toc-text">性能优化探索</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%A8%A1%E6%8B%9F"><span class="toc-number">3.1.</span> <span class="toc-text">测试环境模拟</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E7%A7%8D%E5%88%A0%E9%99%A4%E6%96%B9%E6%A1%88%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94"><span class="toc-number">3.2.</span> <span class="toc-text">多种删除方案性能对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E7%8E%8B%E8%80%85%EF%BC%9Arsync-%E6%96%B9%E6%A1%88"><span class="toc-number">3.3.</span> <span class="toc-text">性能王者：rsync 方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E6%8E%A8%E8%8D%90"><span class="toc-number">4.</span> <span class="toc-text">生产环境推荐</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%B4%A7%E6%80%A5%E6%B8%85%E7%90%86%EF%BC%88%E6%9C%80%E5%BF%AB%EF%BC%89"><span class="toc-number">4.1.</span> <span class="toc-text">1. 紧急清理（最快）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%AE%89%E5%85%A8%E6%B8%85%E7%90%86%EF%BC%88%E4%BF%9D%E7%95%99%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%EF%BC%89"><span class="toc-number">4.2.</span> <span class="toc-text">2. 安全清理（保留目录结构）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%8C%89%E6%97%B6%E9%97%B4%E6%B8%85%E7%90%86%EF%BC%88%E4%BF%9D%E7%95%99%E8%BF%91%E6%9C%9F%E6%96%87%E4%BB%B6%EF%BC%89"><span class="toc-number">4.3.</span> <span class="toc-text">3. 按时间清理（保留近期文件）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%95%BF%E6%95%88%E9%A2%84%E9%98%B2%E6%9C%BA%E5%88%B6"><span class="toc-number">5.</span> <span class="toc-text">长效预防机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%A1%E8%AE%A1%E7%AD%96%E7%95%A5%E4%BC%98%E5%8C%96"><span class="toc-number">5.1.</span> <span class="toc-text">1. 审计策略优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%AE%9A%E6%9C%9F%E6%B8%85%E7%90%86%E8%84%9A%E6%9C%AC"><span class="toc-number">5.2.</span> <span class="toc-text">2. 定期清理脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%9A%94%E7%A6%BB"><span class="toc-number">5.3.</span> <span class="toc-text">3. 文件系统隔离</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90"><span class="toc-number">6.</span> <span class="toc-text">技术原理解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-find-delete-%E6%9B%B4%E5%BF%AB%EF%BC%9F"><span class="toc-number">6.1.</span> <span class="toc-text">为什么 find -delete 更快？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%88%A0%E9%99%A4%E6%80%A7%E8%83%BD%E5%BD%B1%E5%93%8D%E5%9B%A0%E7%B4%A0%EF%BC%9A"><span class="toc-number">6.2.</span> <span class="toc-text">文件删除性能影响因素：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">经验总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

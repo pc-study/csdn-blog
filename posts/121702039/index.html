@@ -1,0 +1,372 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>实战篇：Oracle 数据坏块的 N 种修复方式 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="前言 Oracle 数据库的运行不可避免的会遇到各种各样的错误，就比如数据表出现坏块，此时，你这张表的数据就无法访问了，有什么好的办法可以恢复呢？ 什么，你没有遇到过？😱 😏 那就祝你不久的将来遇到，哈哈开个玩笑~ 玩归玩，闹归闹，经验必须要老到！👍🏻 一、介绍 今天就给大家讲讲怎么处理数据表的坏块">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实战篇：Oracle 数据坏块的 N 种修复方式">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/121702039/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="前言 Oracle 数据库的运行不可避免的会遇到各种各样的错误，就比如数据表出现坏块，此时，你这张表的数据就无法访问了，有什么好的办法可以恢复呢？ 什么，你没有遇到过？😱 😏 那就祝你不久的将来遇到，哈哈开个玩笑~ 玩归玩，闹归闹，经验必须要老到！👍🏻 一、介绍 今天就给大家讲讲怎么处理数据表的坏块">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/e1c060db7bc0c2d0bae598526c375c60.webp">
+<meta property="article:published_time" content="2021-12-03T15:25:53.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.318Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/e1c060db7bc0c2d0bae598526c375c60.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"实战篇：Oracle 数据坏块的 N 种修复方式","url":"https://pc-study.github.io/csdn-blog/posts/121702039/","image":"https://pc-study.github.io/csdn-blog/images/e1c060db7bc0c2d0bae598526c375c60.webp","datePublished":"2021-12-03T15:25:53.000Z","dateModified":"2026-03-20T12:25:38.318Z","description":"前言 Oracle 数据库的运行不可避免的会遇到各种各样的错误，就比如数据表出现坏块，此时，你这张表的数据就无法访问了，有什么好的办法可以恢复呢？ 什么，你没有遇到过？😱 😏 那就祝你不久的将来遇到，哈哈开个玩笑~ 玩归玩，闹归闹，经验必须要老到！👍🏻 一、介绍 今天就给大家讲讲怎么处理数据表的坏块","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/121702039/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/121702039/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '实战篇：Oracle 数据坏块的 N 种修复方式',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/e1c060db7bc0c2d0bae598526c375c60.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">实战篇：Oracle 数据坏块的 N 种修复方式</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">实战篇：Oracle 数据坏块的 N 种修复方式<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-12-03-121702039.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-12-03T15:25:53.000Z" title="发表于 2021-12-03 23:25:53">2021-12-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.318Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/">Oracle 数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Oracle 数据库的运行不可避免的会遇到各种各样的错误，就比如数据表出现坏块，此时，你这张表的数据就无法访问了，有什么好的办法可以恢复呢？</p>
+<p><strong>什么，你没有遇到过？😱</strong></p>
+<p>😏 那就祝你不久的将来遇到，哈哈开个玩笑~ <strong>玩归玩，闹归闹，经验必须要老到！👍🏻</strong></p>
+<h2 id="一、介绍"><a href="#一、介绍" class="headerlink" title="一、介绍"></a>一、介绍</h2><p>今天就给大家讲讲怎么处理数据表的坏块情况！</p>
+<p>对于 Oracle <strong>数据块物理损坏</strong>的情形，通常可以分为两种情况：</p>
+<ul>
+<li>有备份，通过 RMAN 恢复</li>
+<li>无备份，通过 DBMS_REPAIR 修复</li>
+</ul>
+<h3 id="1、-RMAN"><a href="#1、-RMAN" class="headerlink" title="1、 RMAN"></a>1、 RMAN</h3><p>有备份的情况下，这是很理想的情形，我们可以直接通过 <code>RMAN</code> 块介质恢复（BLOCK MEDIA RECOVERY）功能来完成受损块的恢复。</p>
+<p>这里我是不建议恢复整个数据库或者数据库文件来修复这些少量受损的数据块，有点浪费时间。</p>
+<blockquote>
+<p><strong>可参考官方文档：<a target="_blank" rel="noopener" href="https://docs.oracle.com/cd/B19306_01/backup.102/b14191/rcmconc2.htm#BRADV118">Block Media Recovery with RMAN</a></strong></p>
+</blockquote>
+<h3 id="2、DBMS-REPAIR"><a href="#2、DBMS-REPAIR" class="headerlink" title="2、DBMS_REPAIR"></a>2、DBMS_REPAIR</h3><p><strong>那如果没有任何备份怎么办？</strong> （PS：备份大于一切！）</p>
+<p>我们可以使用 Oracle 自带的 <code>DBMS_REPAIR</code> 包来实现修复。</p>
+<p><strong>📢 注意：</strong> 使用 <code>DBMS_REPAIR</code> 包来修复，并非完全恢复，而是标记坏块，然后不对起进行访问，这部分被标记的数据也就丢失了，这是无法避免的。</p>
+<blockquote>
+<p><strong>可参考MOS文档：<a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=556733.1">DBMS_REPAIR SCRIPT (Doc ID 556733.1)</a></strong></p>
+</blockquote>
+<h2 id="二、实战环境准备"><a href="#二、实战环境准备" class="headerlink" title="二、实战环境准备"></a>二、实战环境准备</h2><h3 id="1、环境安装"><a href="#1、环境安装" class="headerlink" title="1、环境安装"></a>1、环境安装</h3><p><strong>可参考我的一键安装脚本：<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_50546016/article/details/119843551">Oracle 数据库一键安装，从未如此简单</a></strong></p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">cd</span> /Volumes/DBA/voracle/github/single_db<br>vagrant up<br>vagrant ssh<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2、测试数据准备"><a href="#2、测试数据准备" class="headerlink" title="2、测试数据准备"></a>2、测试数据准备</h3><p>创建表空间：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">tablespace</span> eason datafile <span class="hljs-string">&#x27;/oradata/orcl/eason.dbf&#x27;</span> size <span class="hljs-number">1</span>g autoextend <span class="hljs-keyword">on</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>创建用户：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">user</span> eason identified <span class="hljs-keyword">by</span> eason <span class="hljs-keyword">default</span> <span class="hljs-keyword">tablespace</span> eason;<br><span class="hljs-keyword">grant</span> dba <span class="hljs-keyword">to</span> eason;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p>创建测试表：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> hyj <span class="hljs-keyword">as</span> <span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> dba_objects;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/e1c060db7bc0c2d0bae598526c375c60.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式" loading='lazy'></p>
+<p>创建表索引：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">index</span> i_hyj <span class="hljs-keyword">on</span> hyj(object_id);<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/00313c9f6cb858baa76595380b6b0233.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图2" loading='lazy'></p>
+<h3 id="3、查看表相关-信息"><a href="#3、查看表相关-信息" class="headerlink" title="3、查看表相关 信息"></a>3、查看表相关 信息</h3><p>查看表段上的相关信息：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> segment_name , header_file , header_block,blocks <span class="hljs-keyword">from</span> dba_segments <span class="hljs-keyword">where</span> segment_name <span class="hljs-operator">=</span><span class="hljs-string">&#x27;HYJ&#x27;</span>; <br><br>AI写代码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/fa673dcfb79cea6156b596a3d25215b4.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图3" loading='lazy'></p>
+<p>查出包含行记录的数据块：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">select distinct dbms_rowid.rowid_block_number(rowid) from eason.hyj order by 1;<br><br><span class="hljs-section">DBMS_ROWID.ROWID_BLOCK_NUMBER(ROWID)</span><br><span class="hljs-section">------------------------------------</span><br><span class="hljs-code">                                1411</span><br><span class="hljs-code">                                1412</span><br><span class="hljs-code">                                1413</span><br><span class="hljs-code">                ...</span><br><span class="hljs-code">                ...</span><br><span class="hljs-code">                ...	</span><br><span class="hljs-code">                                2665</span><br><span class="hljs-code">                                2666</span><br><span class="hljs-code">                                2667</span><br><br>1232 rows selected.<br><br>AI写代码sql<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br><span class="hljs-bullet">* </span>3<br><span class="hljs-bullet">* </span>4<br><span class="hljs-bullet">* </span>5<br><span class="hljs-bullet">* </span>6<br><span class="hljs-bullet">* </span>7<br><span class="hljs-bullet">* </span>8<br><span class="hljs-bullet">* </span>9<br><span class="hljs-bullet">* </span>10<br><span class="hljs-bullet">* </span>11<br><span class="hljs-bullet">* </span>12<br><span class="hljs-bullet">* </span>13<br><span class="hljs-bullet">* </span>14<br><span class="hljs-bullet">* </span>15<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/903557be9156f746c2f93d2472a55176.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图5" loading='lazy'></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> dba_extents <span class="hljs-keyword">where</span> segment_name<span class="hljs-operator">=</span><span class="hljs-string">&#x27;HYJ&#x27;</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/46b666b94fae836b22682d99e9f4cba4.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图6" loading='lazy'><br> <strong>📢 注意：</strong> 这里看到 <code>HEADER_BLOCK</code> 和 <code>BLOCK_ID</code> 不一致，其实一个 segment 的第一个区的第一个块是 FIRST LEVEL BITMAP BLOCK，第二个块是 SECOND LEVEL BITMAP BLOCK，这两个块是用来管理 free block 的，第三个块是 PAGETABLE SEGMENT HEADER，这个块才是 segment 里的 HEADER_BLOCK。</p>
+<h3 id="4、RMAN-备份"><a href="#4、RMAN-备份" class="headerlink" title="4、RMAN 备份"></a>4、RMAN 备份</h3><p>首先，我们先做一个全备份，用来演示 RMAN 修复坏块！</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">run</span> &#123;<br>allocate channel c1 device <span class="hljs-keyword">type</span> disk;<br>allocate channel c2 device <span class="hljs-keyword">type</span> disk;<br>crosscheck backup;<br>crosscheck archivelog all;<br>sql<span class="hljs-string">&quot;alter system switch logfile&quot;</span>;<br>delete noprompt expired backup;<br>delete noprompt obsolete device <span class="hljs-keyword">type</span> disk;<br>backup database <span class="hljs-keyword">include</span> current controlfile <span class="hljs-keyword">format</span> &#x27;/backup/backlv_%d_%T_%t_%s_%p&#x27;;<br>backup archivelog all DELETE <span class="hljs-keyword">INPUT</span>;<br>release channel c1;<br>release channel c2;<br>&#125;<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br><span class="hljs-comment">* 13</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="5、模拟坏块"><a href="#5、模拟坏块" class="headerlink" title="5、模拟坏块"></a>5、模拟坏块</h3><p>破坏 <code>1468</code>、<code>1688</code>、<code>2468</code> 数据块的内容：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs routeros">dd <span class="hljs-attribute">if</span>=/dev/zero <span class="hljs-attribute">of</span>=/oradata/orcl/eason.dbf <span class="hljs-attribute">bs</span>=8192 <span class="hljs-attribute">conv</span>=notrunc <span class="hljs-attribute">seek</span>=1468 <span class="hljs-attribute">count</span>=1<br>dd <span class="hljs-attribute">if</span>=/dev/zero <span class="hljs-attribute">of</span>=/oradata/orcl/eason.dbf <span class="hljs-attribute">bs</span>=8192 <span class="hljs-attribute">conv</span>=notrunc <span class="hljs-attribute">seek</span>=1688 <span class="hljs-attribute">count</span>=1<br>dd <span class="hljs-attribute">if</span>=/dev/zero <span class="hljs-attribute">of</span>=/oradata/orcl/eason.dbf <span class="hljs-attribute">bs</span>=8192 <span class="hljs-attribute">conv</span>=notrunc <span class="hljs-attribute">seek</span>=2468 <span class="hljs-attribute">count</span>=1<br><br>AI写代码bash<br><br>* 1<br>* 2<br>* 3<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/d57a9305dd73bb0491024888cc273ebf.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图8" loading='lazy'></p>
+<p>清除 <code>buffer cache</code> 的内容：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">system</span> flush buffer_cache;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/41c89f19bade022255338cf6e7efd3b0.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图9" loading='lazy'></p>
+<p>再次查询表 hyj，此时查询已经报错，发现有坏块：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> eason.hyj;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/e0f30310d97fef2a383e2c61739b32d8.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图10" loading='lazy'></p>
+<p>当然，也可以使用 <code>bbed</code> 进行坏块模拟！</p>
+<h3 id="6、坏块检查"><a href="#6、坏块检查" class="headerlink" title="6、坏块检查"></a>6、坏块检查</h3><p><strong>下面在介绍几种发现坏块的方式：</strong></p>
+<p>1、使用 <code>DBV</code> 检查当前文件的坏块：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros">dbv <span class="hljs-attribute">file</span>=/oradata/orcl/eason.dbf <span class="hljs-attribute">blocksize</span>=8192;<br><br>AI写代码bash<br><br>* 1<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/b1003382a05fc4e3597ee3a5ba8727b0.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图11" loading='lazy'></p>
+<p>使用 <code>DBV</code>检查，同样发现了坏块！</p>
+<p>2、使用 rman 检查数据库坏块：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs smali"><span class="hljs-comment">## 检查对应的数据文件</span><br>backup<span class="hljs-built_in"> check </span>logical validate datafile 5;<br><span class="hljs-comment">## 检查当前数据库</span><br>backup validate<span class="hljs-built_in"> check </span>logical database;<br><br>AI写代码bash<br><br>* 1<br>* 2<br>* 3<br>* 4<br></code></pre></td></tr></table></figure>
+
+<p>结合 <code>V$DATABASE_BLOCK_CORRUPTION</code> 视图查看，更加方便：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> V$DATABASE_BLOCK_CORRUPTION;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>使用 <code>RMAN</code> 检查后，同样发现了坏块！</p>
+<p>3、通过数据库的告警日志也可以发现报错：</p>
+<p>4、通过报错信息快照查找对应的坏表，依次填写<br>数据文件<br> ID <code>5</code> 和 坏块 ID <code>1468</code>：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">SELECT tablespace_name, segment_type, owner, segment_name<br>FROM dba_extents<br>        WHERE file_id = &amp;fileid<br><span class="hljs-keyword">and </span>&amp;<span class="hljs-keyword">blockid </span><span class="hljs-keyword">between </span><span class="hljs-keyword">block_id </span><span class="hljs-keyword">AND </span><span class="hljs-keyword">block_id </span>+ <span class="hljs-keyword">blocks </span>- <span class="hljs-number">1</span>;<br><br>AI写代码sql<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实验环境准备完毕，下面开始实战！</strong></p>
+<h2 id="三、实战演示"><a href="#三、实战演示" class="headerlink" title="三、实战演示"></a>三、实战演示</h2><p>今天，我打算使用上述介绍的 2 种方式来演示！</p>
+<h3 id="1、RMAN-修复"><a href="#1、RMAN-修复" class="headerlink" title="1、RMAN 修复"></a>1、RMAN 修复</h3><p>由于我们之前已经备份了，因此直接使用备份来恢复坏块：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-keyword">blockrecover </span>datafile <span class="hljs-number">5</span> <span class="hljs-keyword">block </span><span class="hljs-number">1468</span>;<br><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/516f9212b9751befe224e2cc5e67a964.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图12" loading='lazy'></p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-keyword">blockrecover </span>datafile <span class="hljs-number">5</span> <span class="hljs-keyword">block </span><span class="hljs-number">1688</span>,<span class="hljs-number">2468</span>;<br><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>使用同样的方式，依次修复坏块 <code>1688</code>，<code>2468</code>，修复成功后，查询已恢复正常！</p>
+<p>再次检查坏块情况：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs smali">backup validate<span class="hljs-built_in"> check </span>logical database;<br>select * from V$DATABASE_B<span class="hljs-class">LOCK_CORRUPTION;</span><br><br>AI写代码bash<br><br>* 1<br>* 2<br></code></pre></td></tr></table></figure>
+
+<p>坏块已经都被恢复，并且数据没有丢失！</p>
+<h3 id="2、DBMS-REPAIR-修复"><a href="#2、DBMS-REPAIR-修复" class="headerlink" title="2、DBMS_REPAIR 修复"></a>2、DBMS_REPAIR 修复</h3><p>首先，依然使用 dd 先模拟坏块：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs routeros">dd <span class="hljs-attribute">if</span>=/dev/zero <span class="hljs-attribute">of</span>=/oradata/orcl/eason.dbf <span class="hljs-attribute">bs</span>=8192 <span class="hljs-attribute">conv</span>=notrunc <span class="hljs-attribute">seek</span>=3333 <span class="hljs-attribute">count</span>=1<br>dd <span class="hljs-attribute">if</span>=/dev/zero <span class="hljs-attribute">of</span>=/oradata/orcl/eason.dbf <span class="hljs-attribute">bs</span>=8192 <span class="hljs-attribute">conv</span>=notrunc <span class="hljs-attribute">seek</span>=3368 <span class="hljs-attribute">count</span>=1<br>dd <span class="hljs-attribute">if</span>=/dev/zero <span class="hljs-attribute">of</span>=/oradata/orcl/eason.dbf <span class="hljs-attribute">bs</span>=8192 <span class="hljs-attribute">conv</span>=notrunc <span class="hljs-attribute">seek</span>=4000 <span class="hljs-attribute">count</span>=1<br><br>AI写代码bash<br><br>* 1<br>* 2<br>* 3<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/91ce9a7e15ca670a458e35fc72765644.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图13" loading='lazy'></p>
+<p>在没有备份的前提下，我们就无法做到无损修复坏块了，需要损失对应坏块的数据。</p>
+<p>1、创建 <code>repair</code> 表，用于记录需要被修复的表：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs gams">begin<br>dbms_repair.admin_tables (<br>     table_name =&gt; <span class="hljs-string">&#x27;REPAIR_TABLE&#x27;</span>,<br>     table_type =&gt; dbms_repair.repair_table,<br>     action =&gt; dbms_repair.create_action,<br>     tablespace =&gt; <span class="hljs-string">&#x27;USERS&#x27;</span>);<br>end;<br>/<br><br>AI写代码sql<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br></code></pre></td></tr></table></figure>
+
+<p>2、创建 <code>Orphan Key</code> 表，用于记录在表块损坏后那些孤立索引，也就是指向坏块的那些索引 ：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs gams">begin<br>dbms_repair.admin_tables (<br>     table_name =&gt; <span class="hljs-string">&#x27;ORPHAN_KEY_TABLE&#x27;</span>,<br>     table_type =&gt; dbms_repair.orphan_table,<br>     action =&gt; dbms_repair.create_action,<br>     tablespace =&gt; <span class="hljs-string">&#x27;USERS&#x27;</span>);<br>end;<br>/<br><br>AI写代码sql<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br></code></pre></td></tr></table></figure>
+
+<p>3、检查坏块，检测对象上受损的情形，并返回受损块数为 <code>3</code>：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs gams">declare<br>  num_corrupt int;<br>begin<br>  num_corrupt := <span class="hljs-number">0</span>;<br>DBMS_REPAIR.CHECK_OBJECT (<br>  schema_name =&gt;<span class="hljs-string">&#x27;EASON&#x27;</span>,<br>  object_name =&gt;<span class="hljs-string">&#x27;HYJ&#x27;</span>,<br>  repair_table_name =&gt;<span class="hljs-string">&#x27;REPAIR_TABLE&#x27;</span>,<br>  corrupt_count =&gt;num_corrupt);<br>  dbms_output.put_line(<span class="hljs-string">&#x27;number corrupt:&#x27;</span> || to_char(num_corrupt));<br>end;<br>/<br><br>AI写代码sql<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br></code></pre></td></tr></table></figure>
+
+<p>4、查看受损的块信息：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> object_name, block_id, corrupt_type, marked_corrupt, repair_description <span class="hljs-keyword">from</span> repair_table;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>📢 注意：</strong> 这里 <code>marked_corrupt</code> 被标记为 <code>TRUE</code>，应该是系统在执行 CHECK_OBJECT 过程中自动完成了FIX_CORRUPT_BLOCKS。如果被标记为 FALSE，需要再运行 <code>FIX_CORRUPT_BLOCKS</code> 来完成坏块的标记工作。</p>
+<p>5、修复被损坏的数据块，这些被损坏的数据块是在执行了 check_object 之后生成的：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs gams">declare<br>  cc number;<br>begin<br>  dbms_repair.fix_corrupt_blocks(schema_name =&gt; <span class="hljs-string">&#x27;EASON&#x27;</span>,<br>  object_name =&gt; <span class="hljs-string">&#x27;HYJ&#x27;</span>,<br>  fix_count =&gt; cc);<br>  dbms_output.put_line(<span class="hljs-string">&#x27;Number of blocks fixed: &#x27;</span> || to_char(cc));<br>end;<br>/<br><br>AI写代码sql<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br></code></pre></td></tr></table></figure>
+
+<p>标记了 <code>0</code> 个坏块，说明 CHECK_OBJECT 完成了标记工作。</p>
+<p>6、使用 <code>DUMP_ORPHAN_KEYS</code> 过程将那些指向坏块的索引键值填充到 ORPHAN_KEY_TABLE：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs gams">declare<br>   cc number;<br>begin<br>  dbms_repair.dump_orphan_keys<br>  (<br>     schema_name =&gt; <span class="hljs-string">&#x27;EASON&#x27;</span>,<br>     object_name =&gt; <span class="hljs-string">&#x27;I_HYJ&#x27;</span>, <br>     object_type =&gt; dbms_repair.index_object,<br>     repair_table_name =&gt; <span class="hljs-string">&#x27;REPAIR_TABLE&#x27;</span>,<br>     orphan_table_name=&gt; <span class="hljs-string">&#x27;ORPHAN_KEY_TABLE&#x27;</span>,<br>     key_count =&gt; cc<br>  );<br>  dbms_output.put_line(<span class="hljs-string">&#x27;Number of orphan keys: &#x27;</span> || to_char(cc));<br>end;<br>/<br><br>AI写代码sql<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br><span class="hljs-comment">* 13</span><br><span class="hljs-comment">* 14</span><br><span class="hljs-comment">* 15</span><br></code></pre></td></tr></table></figure>
+
+<p>表明 <code>202</code> 条记录被损坏丢失！</p>
+<p><strong>📢 注意：</strong> 此处一定要注意 object_name 是<strong>索引名</strong>，而不是 table_name，这里 dump 的是损坏的索引信息.如果表有多个索引，需要为每个索引执行 DUMP_ORPHAN_KEYS 操作。</p>
+<p>7、验证对象是否可以查询，下面的结果显示依旧无法查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">from</span> eason.hyj;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/a78fa88ca41372507eb598f1951f8e9e.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图16" loading='lazy'></p>
+<p>8、跳过坏块：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs gams">BEGIN<br>  DBMS_REPAIR.SKIP_CORRUPT_BLOCKS (<br>     SCHEMA_NAME =&gt; <span class="hljs-string">&#x27;EASON&#x27;</span>,<br>     OBJECT_NAME =&gt; <span class="hljs-string">&#x27;HYJ&#x27;</span>,<br>     OBJECT_TYPE =&gt; dbms_repair.table_object,<br>     FLAGS =&gt; dbms_repair.skip_flag);<br>END;<br>/<br><br>AI写代码sql<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>📢 注意：</strong> 丢失 <code>202</code> 条记录，丢失记录的 rowid 可以在 ORPHAN_KEY_TABLE 表中找到。</p>
+<p>9、重建索引：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">index</span> eason.I_HYJ rebuild;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/1280c5dd0c71255d3a8f4e43c0db6ecd.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图17" loading='lazy'></p>
+<p>10、验证结果</p>
+<p><strong>至此，表中数据可以顺利被访问！</strong></p>
+<p>由于坏块并没有消失，而是被标记跳过，因此还是可以查看坏块：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> V$DATABASE_BLOCK_CORRUPTION;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/98e304081aeda1c7255bae38b944a431.webp" alt="实战篇：Oracle 数据坏块的 N 种修复方式 - 图18" loading='lazy'></p>
+<p>用这种方法可以找回部分数据，也可以找回建了索引的值，但是使用dbv再检查表空间的数据文件时，仍然会显示有损坏的数据块。</p>
+<p>这时需要把表的数据全部导出，再重建表或者表空间，然后再把找回的数据导入数据库，推荐用 <code>expdp/impdp</code> 命令做，可以彻底消除 <code>dbv</code> 检查到的坏块。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>备份大于一切，也是最后的防线，所以请大家一定要做好备份！886</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/121702039/">https://pc-study.github.io/csdn-blog/posts/121702039/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/database/">database</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/118862443/" title="Alert 日志报错：ORA-2730x OS Failure Message: No Buffer Space Available"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Alert 日志报错：ORA-2730x OS Failure Message: No Buffer Space Available</div></div><div class="info-2"><div class="info-item-1">前言 今天巡检遇到数据库报错 ORA-2730x 错误，数据库版本为Oracle 11204 (x86\64)，错误日志如下： ORA-00603: ORACLE server session terminated by fatal error ORA-27504: IPC error creati</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/117474325/" title="实战篇：生产库升级，容灾库 Oracle DataGuard 如何升级？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">实战篇：生产库升级，容灾库 Oracle DataGuard 如何升级？</div></div><div class="info-2"><div class="info-item-1">前言 随着 Oracle 数据库的普遍应用，DataGuard 这个成员基本成为了数据库容灾环境的标配！ 一、介绍 当需要升级 Oracle 数据库的同时，也需要考虑同时升级 DataGuard 数据库版本，那么如何快捷安全的升级？ 推荐方案： 升级至NON-CDB模式： 首先关闭 ADG 同步，升</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/122839501/" title="[译] Oracle Database 21c 中的空间管理增强功能"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-09</div><div class="info-item-2">[译] Oracle Database 21c 中的空间管理增强功能</div></div><div class="info-2"><div class="info-item-1">原文地址： 原文作者：Tim Hall 本文介绍 Oracle 数据库 21c 中的空间管理增强功能。 目录 SecureFiles 收缩 临时表空间自动收缩 撤消表空间自动收缩 SecureFiles 收缩 在以前的版本中，我们只能通过移动 lob 来释放 lob 的空间，这对于大型 lob 段可</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121767360/" title="[译] DBMS_CLOUD 包"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-07</div><div class="info-item-2">[译] DBMS_CLOUD 包</div></div><div class="info-2"><div class="info-item-1">本文介绍了 包的基本用法。 自治数据库中引入了 DBMS\CLOUD 包，以提供一种与数据库中的对象存储进行交互的简单方法。它可用于版本 19c 和 21c 的本地安装。 它同样适用于 AWS S3 存储 buckets 或 Oracle Cloud Object Storage 存储 bucket</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122590588/" title="[译] Oracle Database 18c 中的只读 Oracle 主目录"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-19</div><div class="info-item-2">[译] Oracle Database 18c 中的只读 Oracle 主目录</div></div><div class="info-2"><div class="info-item-1">原文地址： 原文作者：Tim Hall Oracle 18C 引入了只读 Oracle 主目录的概念，其中所有配置和日志文件都可以与 Oracle 二进制文件分开保存。 目录 为什么要这么做？ 先决条件 启用只读 Oracle 主目录 创建数据库 检查文件系统 路径和导航 为什么要这么做？ 对于其他</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121734525/" title="[译] DBMS_CLOUD：安装在 19c 和 21c 本地数据库上"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-05</div><div class="info-item-2">[译] DBMS_CLOUD：安装在 19c 和 21c 本地数据库上</div></div><div class="info-2"><div class="info-item-1">本文介绍如何在本地 和 数据库中安装 DBMS\CLOUD 包。 该软件包已安装在 Oracle 云上的数据库中。 目录 一、参考 二、安装 DBMS\CLOUD 三、创建钱包 四、创建访问控制条目 (ACE) 五、验证安装 六、列出 Bucket 内容 相关文章： DBMS\CLOUD Packa</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122011588/" title="Oracle 从入门到精通系列 - 交流社区"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-18</div><div class="info-item-2">Oracle 从入门到精通系列 - 交流社区</div></div><div class="info-2"><div class="info-item-1">交流专区 ->返回总目录返回总目录<-</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121982028/" title="Oracle 从入门到精通系列讲解 - 总目录"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-18</div><div class="info-item-2">Oracle 从入门到精通系列讲解 - 总目录</div></div><div class="info-2"><div class="info-item-1">总目录 欢迎大家来到 的《Oracle 从入门到精通系列》，开始前博主先列出 学习的大纲，同时这也可以作为大家学习 的参考。下面 蓝字 都是传送门，点击进入即可： 学前必读 Oracle 从入门到精通系列 - 总目录 Oracle 从入门到精通系列 - 前言 Oracle 从入门到精通系列 - 资料</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.</span> <span class="toc-text">一、介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81-RMAN"><span class="toc-number">2.1.</span> <span class="toc-text">1、 RMAN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81DBMS-REPAIR"><span class="toc-number">2.2.</span> <span class="toc-text">2、DBMS_REPAIR</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%AE%9E%E6%88%98%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">3.</span> <span class="toc-text">二、实战环境准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85"><span class="toc-number">3.1.</span> <span class="toc-text">1、环境安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87"><span class="toc-number">3.2.</span> <span class="toc-text">2、测试数据准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E6%9F%A5%E7%9C%8B%E8%A1%A8%E7%9B%B8%E5%85%B3-%E4%BF%A1%E6%81%AF"><span class="toc-number">3.3.</span> <span class="toc-text">3、查看表相关 信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81RMAN-%E5%A4%87%E4%BB%BD"><span class="toc-number">3.4.</span> <span class="toc-text">4、RMAN 备份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5%E3%80%81%E6%A8%A1%E6%8B%9F%E5%9D%8F%E5%9D%97"><span class="toc-number">3.5.</span> <span class="toc-text">5、模拟坏块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6%E3%80%81%E5%9D%8F%E5%9D%97%E6%A3%80%E6%9F%A5"><span class="toc-number">3.6.</span> <span class="toc-text">6、坏块检查</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%AE%9E%E6%88%98%E6%BC%94%E7%A4%BA"><span class="toc-number">4.</span> <span class="toc-text">三、实战演示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81RMAN-%E4%BF%AE%E5%A4%8D"><span class="toc-number">4.1.</span> <span class="toc-text">1、RMAN 修复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81DBMS-REPAIR-%E4%BF%AE%E5%A4%8D"><span class="toc-number">4.2.</span> <span class="toc-text">2、DBMS_REPAIR 修复</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">5.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

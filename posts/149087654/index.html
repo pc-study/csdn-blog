@@ -1,0 +1,357 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>SQLark V3.5 重磅升级！你的 AI 小百灵来了~ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 SQLark V3.5 新版亮点 AI 小百灵测评 代码解释 代码生成 优化 SQL 达梦知识检索 写在最后 前言 在数据库工具这个领域，SQLark 的迭代速度真的让我十分佩服，从 2023 年 5 月正式发布以来，几乎每">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQLark V3.5 重磅升级！你的 AI 小百灵来了~">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/149087654/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 SQLark V3.5 新版亮点 AI 小百灵测评 代码解释 代码生成 优化 SQL 达梦知识检索 写在最后 前言 在数据库工具这个领域，SQLark 的迭代速度真的让我十分佩服，从 2023 年 5 月正式发布以来，几乎每">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/170a5dc0f63ec10eb1506d3166abaa54.webp">
+<meta property="article:published_time" content="2025-07-03T01:47:25.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.246Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="ffmpeg">
+<meta property="article:tag" content="人工智能">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/170a5dc0f63ec10eb1506d3166abaa54.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"SQLark V3.5 重磅升级！你的 AI 小百灵来了~","url":"https://pc-study.github.io/csdn-blog/posts/149087654/","image":"https://pc-study.github.io/csdn-blog/images/170a5dc0f63ec10eb1506d3166abaa54.webp","datePublished":"2025-07-03T01:47:25.000Z","dateModified":"2026-03-20T12:25:39.246Z","description":"大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 SQLark V3.5 新版亮点 AI 小百灵测评 代码解释 代码生成 优化 SQL 达梦知识检索 写在最后 前言 在数据库工具这个领域，SQLark 的迭代速度真的让我十分佩服，从 2023 年 5 月正式发布以来，几乎每","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/149087654/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/149087654/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SQLark V3.5 重磅升级！你的 AI 小百灵来了~',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/170a5dc0f63ec10eb1506d3166abaa54.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">SQLark V3.5 重磅升级！你的 AI 小百灵来了~</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">SQLark V3.5 重磅升级！你的 AI 小百灵来了~<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-07-03-149087654.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-03T01:47:25.000Z" title="发表于 2025-07-03 09:47:25">2025-07-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.246Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/">大数据 &amp; AI</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><blockquote>
+<p>大家好，这里是 <strong>DBA 学习之路</strong>，专注于提升数据库运维效率。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#SQLark_V35__18">SQLark V3.5 新版亮点</a></li>
+<li><a href="#AI__39">AI 小百灵测评</a></li>
+<li><ul>
+<li><a href="#_44">代码解释</a></li>
+<li><a href="#_116">代码生成</a></li>
+<li><a href="#_SQL_234">优化 SQL</a></li>
+<li><a href="#_248">达梦知识检索</a></li>
+</ul>
+</li>
+<li><a href="#_323">写在最后</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在数据库工具这个领域，SQLark 的迭代速度真的让我十分佩服，从 2023 年 5 月正式发布以来，几乎每 1-2 个月就会有新版本推出，伴随着用户群体的壮大，功能版图也在持续扩展，如今已然成为一款相当成熟的产品。</p>
+<p>作为一名从发布就开始接触 SQLark 的用户，我见证了它从最初，一路演进到如今搭载 AI 小百灵的全功能平台。这个过程中最让我感触的是，每当在社区提出一些使用建议：</p>
+<p><img src="/csdn-blog/images/170a5dc0f63ec10eb1506d3166abaa54.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/020e90a713fef9eeba3c2cb6f2e8fdcd.webp" alt="数据生成功能" loading='lazy'></p>
+<p><img src="/csdn-blog/images/6f411a57f4d29f1e27ee401f3f0313ea.webp" alt="寻求 AI 功能" loading='lazy'></p>
+<p>往往在后续版本中就能看到相应的改进 – <strong>这种用户声音被认真倾听和采纳的体验，在当下并不多见</strong>。</p>
+<h2 id="SQLark-V3-5-新版亮点"><a href="#SQLark-V3-5-新版亮点" class="headerlink" title="SQLark V3.5 新版亮点"></a>SQLark V3.5 新版亮点</h2><p>这次 6 月份推出的 V3.5 版本，最引人关注的当属 AI 小百灵助手的正式上线。通过集成 Qwen3 与 DeepSeek 两大模型，实现了从代码生成、报错分析到 SQL 优化，再到达梦专家知识检索的全链路智能化覆盖。</p>
+<blockquote>
+<p>👉 体验 SQLark V3.5 版本最新功能，欢迎在官网 <strong><a target="_blank" rel="noopener" href="http://www.sqlark.com/">www.sqlark.com</a></strong> 下载全功能免费版。</p>
+</blockquote>
+<p><img src="/csdn-blog/images/998dda0eca26b82aa8b48799c306a264.webp" alt="SQLark V3.5 重磅升级！你的 AI 小百灵来了~" loading='lazy'></p>
+<p>在数据库支持方面，PostgreSQL 的功能完善度有了显著提升，新增的数据导入、数据生成、ER 图等功能让整个工作流更加完整。值得一提的是，Linux ARM 架构版本的推出，也体现了对不同硬件平台用户需求的考量。</p>
+<p>从细节上看，SQL 编辑器、表设计器、数据处理等核心模块的优化多达 90 项，这种对用户体验的精雕细琢，往往比大功能的添加更能体现产品的用心程度。</p>
+<p>当前 V3.5 版本的数据库兼容性覆盖：</p>
+<ul>
+<li>达梦 DM 7.0 及以上版本</li>
+<li>Oracle 11g 及以上版本</li>
+<li>MySQL 5.7、8.0</li>
+<li>PostgreSQL 12、13、14、15、16</li>
+</ul>
+<p>多的不说了，大家可以移步 <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/sOpM1a4yfC3azL8QvsRydA">百灵 x 通义Qwen3，AI 助手正式上线！</a> 官方发布文章细看！</p>
+<h2 id="AI-小百灵测评"><a href="#AI-小百灵测评" class="headerlink" title="AI 小百灵测评"></a>AI 小百灵测评</h2><p>更新到最新版之后，赶忙试了下新的 AI 小百灵功能：</p>
+<p><img src="/csdn-blog/images/c897a69151c3332aedfab7a28e753115.webp" alt="image.png" loading='lazy'></p>
+<h3 id="代码解释"><a href="#代码解释" class="headerlink" title="代码解释"></a>代码解释</h3><p>我理解的代码解释应该是帮助我来快速读懂一段复杂的 SQL，我用 DeepSeek 生成了一段包含多表连接、子查询、窗口函数、条件聚合等复杂逻辑的 SQL 示例，看看小百灵的反馈如何：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">WITH</span> ranked_products <span class="hljs-keyword">AS</span> (<br>  <span class="hljs-keyword">SELECT</span><br>    c.country,<br>    cat.category_name,<br>    p.product_name,<br>    SUM(od.quantity * od.unit_price) <span class="hljs-keyword">AS</span> total_sales,<br>    ROUND(<br>      <span class="hljs-number">100.0</span> * SUM(od.quantity * od.unit_price) <br>      / SUM(SUM(od.quantity * od.unit_price)) <span class="hljs-keyword">OVER</span> (<span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">BY</span> c.country, cat.category_id),<br>      <span class="hljs-number">2</span><br>    ) <span class="hljs-keyword">AS</span> sales_percentage,<br>    RANK() <span class="hljs-keyword">OVER</span> (<br>      <span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">BY</span> c.country, cat.category_id<br>      <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> SUM(od.quantity * od.unit_price) <span class="hljs-keyword">DESC</span><br>    ) <span class="hljs-keyword">AS</span> sales_rank<br>  <span class="hljs-keyword">FROM</span> orders o<br>  <span class="hljs-keyword">JOIN</span> order_details od <span class="hljs-keyword">ON</span> o.order_id = od.order_id<br>  <span class="hljs-keyword">JOIN</span> products p <span class="hljs-keyword">ON</span> od.product_id = p.product_id<br>  <span class="hljs-keyword">JOIN</span> categories cat <span class="hljs-keyword">ON</span> p.category_id = cat.category_id<br>  <span class="hljs-keyword">JOIN</span> customers c <span class="hljs-keyword">ON</span> o.customer_id = c.customer_id<br>  <span class="hljs-keyword">WHERE</span> o.order_date <span class="hljs-keyword">BETWEEN</span> <span class="hljs-string">&#x27;2023-01-01&#x27;</span> <span class="hljs-keyword">AND</span> <span class="hljs-string">&#x27;2023-12-31&#x27;</span><br>    <span class="hljs-keyword">AND</span> c.country <span class="hljs-keyword">IN</span> (<span class="hljs-string">&#x27;USA&#x27;</span>, <span class="hljs-string">&#x27;UK&#x27;</span>, <span class="hljs-string">&#x27;Germany&#x27;</span>)<br>  <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> c.country, cat.category_id, cat.category_name, p.product_name<br>),<br>category_stats <span class="hljs-keyword">AS</span> (<br>  <span class="hljs-keyword">SELECT</span><br>    country,<br>    category_name,<br>    SUM(total_sales) <span class="hljs-keyword">AS</span> category_total,<br>    COUNT(<span class="hljs-keyword">DISTINCT</span> <span class="hljs-keyword">CASE</span> <span class="hljs-keyword">WHEN</span> sales_rank &lt;= <span class="hljs-number">3</span> <span class="hljs-keyword">THEN</span> product_name <span class="hljs-keyword">END</span>) <span class="hljs-keyword">AS</span> top_products_count<br>  <span class="hljs-keyword">FROM</span> ranked_products<br>  <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> country, category_name<br>  <span class="hljs-keyword">HAVING</span> SUM(total_sales) &gt; <span class="hljs-number">50000</span><br>)<br><span class="hljs-keyword">SELECT</span> <br>  rp.country,<br>  rp.category_name,<br>  rp.product_name,<br>  rp.total_sales,<br>  rp.sales_percentage,<br>  cs.category_total,<br>  <span class="hljs-keyword">CASE</span> <br>    <span class="hljs-keyword">WHEN</span> rp.sales_rank &lt;= <span class="hljs-number">3</span> <span class="hljs-keyword">THEN</span> <span class="hljs-string">&#x27;Top 3&#x27;</span><br>    <span class="hljs-keyword">ELSE</span> <span class="hljs-string">&#x27;Other&#x27;</span><br>  <span class="hljs-keyword">END</span> <span class="hljs-keyword">AS</span> performance_flag,<br>  LAG(rp.total_sales, <span class="hljs-number">1</span>) <span class="hljs-keyword">OVER</span> (<br>    <span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">BY</span> rp.country, rp.category_name <br>    <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> rp.sales_rank<br>  ) <span class="hljs-keyword">AS</span> prev_product_sales<br><span class="hljs-keyword">FROM</span> ranked_products rp<br><span class="hljs-keyword">JOIN</span> category_stats cs<br>  <span class="hljs-keyword">ON</span> rp.country = cs.country <br>  <span class="hljs-keyword">AND</span> rp.category_name = cs.category_name<br><span class="hljs-keyword">WHERE</span> rp.sales_rank &lt;= <span class="hljs-number">5</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> <br>  rp.country, <br>  cs.category_total <span class="hljs-keyword">DESC</span>, <br>  rp.sales_rank;<br></code></pre></td></tr></table></figure>
+
+<p>解释一下这段 SQL 代码：</p>
+<p><img src="/csdn-blog/images/31e7fb17e0a7cfc483439dc4257e4302.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/40e67d688d184ab126c305c8d23b103e.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/820d54a43ec5c8ae73413538a84a52cd.webp" alt="image.png" loading='lazy'></p>
+<p>结果有点让我眼前一亮，还与 SQLark 有一定的联动，接着我打算让小百灵帮我根据这个 SQL 生成对应的表结构，然后用 SQLark 的数据生成功能填充数据，验证一下这个 SQL 是否可以正常执行。</p>
+<h3 id="代码生成"><a href="#代码生成" class="headerlink" title="代码生成"></a>代码生成</h3><p>根据 SQL 生成必须的表结构并且能够支持 SQL 运行：</p>
+<p><img src="/csdn-blog/images/58fa88181e5f813cbe46f6fbdced1ef1.webp" alt="image.png" loading='lazy'></p>
+<p>让我来看看结果如何：</p>
+<p><img src="/csdn-blog/images/167b7f93e13dca78f7030ecdb99649d6.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/a8d1b489290f9800649a363e19d2d6c3.webp" alt="image.png" loading='lazy'></p>
+<p>没想到小百灵不仅提供了表结构，还创建了几个索引进行优化。</p>
+<p>连接我的达梦测试库测试一下：</p>
+<p><img src="/csdn-blog/images/d82bce6aef995484f2f07623bccfd82c.webp" alt="image.png" loading='lazy'></p>
+<p>首先创建一下表空间和用户：</p>
+<p><img src="/csdn-blog/images/82b04bec34b9c9b04bbc08f07f9909bd.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/39bd35d25691597a748cb9e42435c81e.webp" alt="image.png" loading='lazy'></p>
+<p>连接新建用户 lucifer，测试是否能建表：</p>
+<p><img src="/csdn-blog/images/3319b26687344b7bf3f9d8239c9d1507.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/9decf99ccb816917586d2f6a6b7c9e92.webp" alt="image.png" loading='lazy'></p>
+<p>根据小百灵提示授予 <code>RESOURCE</code> 权限即可：</p>
+<p><img src="/csdn-blog/images/d82baab1da88767a9058d6c0467b3b59.webp" alt="image.png" loading='lazy'></p>
+<p>再次测试建表：</p>
+<p><img src="/csdn-blog/images/98c232ee639a43837f296e46891ee2c5.webp" alt="image.png" loading='lazy'></p>
+<p>创建成功，继续创建测试表的表结构：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-comment">-- 创建 customers 表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> customers (<br>    customer_id <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY KEY</span>,<br>    country <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>)<br>);<br><br><span class="hljs-comment">-- 创建 orders 表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> orders (<br>    order_id <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY KEY</span>,<br>    customer_id <span class="hljs-type">INT</span>,<br>    order_date <span class="hljs-type">DATE</span>,<br>    <span class="hljs-keyword">FOREIGN KEY</span> (customer_id) <span class="hljs-keyword">REFERENCES</span> customers(customer_id)<br>);<br><br><span class="hljs-comment">-- 创建 order_details 表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> order_details (<br>    order_detail_id <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY KEY</span>,<br>    order_id <span class="hljs-type">INT</span>,<br>    product_id <span class="hljs-type">INT</span>,<br>    quantity <span class="hljs-type">INT</span>,<br>    unit_price <span class="hljs-type">DECIMAL</span>(<span class="hljs-number">10</span>, <span class="hljs-number">2</span>),<br>    <span class="hljs-keyword">FOREIGN KEY</span> (order_id) <span class="hljs-keyword">REFERENCES</span> orders(order_id)<br>);<br><br><span class="hljs-comment">-- 创建 products 表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> products (<br>    product_id <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY KEY</span>,<br>    product_name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">255</span>),<br>    category_id <span class="hljs-type">INT</span><br>);<br><br><span class="hljs-comment">-- 创建 categories 表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> categories (<br>    category_id <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY KEY</span>,<br>    category_name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">255</span>)<br>);<br><br><span class="hljs-comment">-- 添加索引以提高查询性能（可选）</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">INDEX</span> idx_orders_customer_id <span class="hljs-keyword">ON</span> orders(customer_id);<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">INDEX</span> idx_order_details_order_id <span class="hljs-keyword">ON</span> order_details(order_id);<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">INDEX</span> idx_order_details_product_id <span class="hljs-keyword">ON</span> order_details(product_id);<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">INDEX</span> idx_products_category_id <span class="hljs-keyword">ON</span> products(category_id);<br></code></pre></td></tr></table></figure>
+
+<p>创建成功：</p>
+<p><img src="/csdn-blog/images/f7329ab28f32840c973c8eee5440a989.webp" alt="image.png" loading='lazy'></p>
+<p>使用数据生成功能填充表数据：</p>
+<p><img src="/csdn-blog/images/00c821050fbd6221bf746d9cc3a182c5.webp" alt="image.png" loading='lazy'></p>
+<p>经过之前版本迭代，目前数据生成功能十分好用：</p>
+<blockquote>
+<p>1、这里需要注意检查一下测试 SQL 的查询条件，有没有一些特殊的值，比如日期范围，字符要求，根据实际情况生成数据，才能查到数据库。<br> 2、如果有外键关系的表，要根据外键关系后生成数据，否则容易外键列为空。</p>
+</blockquote>
+<p><img src="/csdn-blog/images/c7bb9e118b6c6999944d51787b677d42.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/c054354317a1857df4f1ccb30f60f229.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/5a73426e5e7fb9ce883e9a7291cac19d.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/11181788ac0f3c35c6ad769af78cb938.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/da7a09d1f2a8cafb1e457e4141db3d27.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/8a6eb1a09c897618db46b12433bb0dd1.webp" alt="image.png" loading='lazy'></p>
+<p>分分钟就生成测试数据了，点赞！</p>
+<p>接着，自然就是测试一下 SQL 能否正常运行了：</p>
+<p><img src="/csdn-blog/images/b5129dcb204bf26076cf10e2ff5eb7db.webp" alt="image.png" loading='lazy'></p>
+<p>SQL 可以正常执行并且返回结果，执行时间为：<code>33.037(毫秒)</code></p>
+<p><img src="/csdn-blog/images/0a1ea3147a619fe408d732534cf45c17.webp" alt="image.png" loading='lazy'></p>
+<p>接着看看小百灵的优化能力如何，让小百灵优化一下这条 SQL。</p>
+<h3 id="优化-SQL"><a href="#优化-SQL" class="headerlink" title="优化 SQL"></a>优化 SQL</h3><p>只需要在 SQLark 中选择需要优化的 SQL，右键问 AI 即可：</p>
+<p><img src="/csdn-blog/images/b214089db75cda439501dfd3468703e7.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/379e3fe21e65a4ef303d4361fc05e2ac.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/300fbcee9c23dba3bafd554ad7278a4b.webp" alt="image.png" loading='lazy'></p>
+<p>使用优化后的 SQL 执行：<br> <img src="/csdn-blog/images/817a6afe6852f8292e77ed0f50b1371c.webp" alt="image.png" loading='lazy'></p>
+<p>时间减少到  <code>25.903(毫秒)</code>。</p>
+<h3 id="达梦知识检索"><a href="#达梦知识检索" class="headerlink" title="达梦知识检索"></a>达梦知识检索</h3><p>最后再测一下达梦知识检索功能，我尝试问了一个比较简单常用的问题：</p>
+<blockquote>
+<p>帮我写一个一键开启达梦归档的脚本命令。</p>
+</blockquote>
+<p>看看小百灵的回答如何：</p>
+<p><img src="/csdn-blog/images/863a862b6c6c6ec75ffc94e2ba87a170.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/212738f2f89558bf89d19e416cf3bb1f.webp" alt="image.png" loading='lazy'></p>
+<p>生成的脚本如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><br><span class="hljs-comment"># 数据库配置文件路径</span><br>DM_INI=<span class="hljs-string">&quot;/dmdata/DAMENG/dm.ini&quot;</span><br><span class="hljs-comment"># 归档配置文件路径</span><br>DM_ARCH_INI=<span class="hljs-string">&quot;/dmdata/DAMENG/dmarch.ini&quot;</span><br><br><span class="hljs-comment"># 修改dm.ini文件，开启归档</span><br>sed -i <span class="hljs-string">&quot;s/ARCH_INI = 0/ARCH_INI = 1/g&quot;</span> <span class="hljs-variable">$DM_INI</span><br><br><span class="hljs-comment"># 如果dmarch.ini文件不存在，则创建并配置归档参数</span><br><span class="hljs-keyword">if</span> [ ! -f <span class="hljs-variable">$DM_ARCH_INI</span> ]; <span class="hljs-keyword">then</span><br>    <span class="hljs-built_in">cat</span> &lt;&lt;<span class="hljs-string">EOF &gt; $DM_ARCH_INI</span><br><span class="hljs-string">[ARCHIVE_LOCAL1]</span><br><span class="hljs-string">ARCH_TYPE = LOCAL</span><br><span class="hljs-string">ARCH_DEST = /dmarch</span><br><span class="hljs-string">ARCH_FILE_SIZE = 2048</span><br><span class="hljs-string">ARCH_SPACE_LIMIT = 102400</span><br><span class="hljs-string">EOF</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-comment"># 重启数据库以应用配置</span><br>systemctl restart DmServiceDMSERVER<br></code></pre></td></tr></table></figure>
+
+<p>测试一下这个脚本，找一套没有开启归档的达梦数据库：</p>
+<p><img src="/csdn-blog/images/d2876a10cca8b777228da6d6e862d134.webp" alt="image.png" loading='lazy'></p>
+<p>根据实际的环境修改一下脚本中的相关信息，比如文件路径，数据库服务名称等：</p>
+<blockquote>
+<p>这里还有个问题，脚本需要在 dmdba 中运行，所以重启数据库服务需要用 <code>DmServiceDAMENG restart</code> 命令，需要优化一下。</p>
+</blockquote>
+<p><img src="/csdn-blog/images/a2d3167053ceadc0c40ac82dda99e660.webp" alt="image.png" loading='lazy'></p>
+<p>执行一键配置脚本：</p>
+<p><img src="/csdn-blog/images/e1dd8601c95da5e174d39472908060c9.png" alt="image.png" loading='lazy'></p>
+<p>查看归档是否开启：</p>
+<p><img src="/csdn-blog/images/c1d284b04a0602635a755e7b788112e8.webp" alt="image.png" loading='lazy'></p>
+<p>没有生效，经过检查发现是 sed 命令没有替换成功，没有处理 <code>=</code> 号前面的空格问题导致：</p>
+<p><img src="/csdn-blog/images/5fd8477824cbcc1caa3df0381176a03f.webp" alt="image.png" loading='lazy'></p>
+<p>优化 sed 命令：</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs inform7">sed -i &#x27;s/\(\&lt;ARCH_INI\&gt;<span class="hljs-comment">[<span class="hljs-comment">[:space:]</span>]</span>*=<span class="hljs-comment">[<span class="hljs-comment">[:space:]</span>]</span>*\)0/\11/g&#x27; <span class="hljs-string">&quot;$DM_INI&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/c7b347a6739b218ef242deb783beae60.webp" alt="image.png" loading='lazy'></p>
+<p>优化后重新执行：</p>
+<p><img src="/csdn-blog/images/2142fba3de9aa64e3ff61611485d004f.webp" alt="image.png" loading='lazy'></p>
+<p>再次检查归档启用情况：</p>
+<p><img src="/csdn-blog/images/f2106a5f1c2d895b782076abf6db2de7.webp" alt="image.png" loading='lazy'></p>
+<p>可以看到归档已经一键开启成功。总的来说，生成的内容正确率能达到 90% 以上，细节还需要打磨，听说这个月还会上满血版，不知道在细节方面会不会进一步优化。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>经过一系列全面而深入的测试，我基本对 AI 小百灵的各项功能都体验了一把，总体来说还是很不错的，AI 小百灵已经可以满足大多数日常使用需求。虽然在某些方面还存在改进空间，但已经达到了一个令人满意的水平。</p>
+<p>相信在未来，AI 小百灵还会推出更多令人惊喜的功能和更加智能的交互体验。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/149087654/">https://pc-study.github.io/csdn-blog/posts/149087654/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">人工智能</a><a class="post-meta__tags" href="/csdn-blog/tags/ffmpeg/">ffmpeg</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/149113273/" title="Oracle 表空间不足？用 Shell 脚本实现自动扩容！"><img class="cover" src="/csdn-blog/images/3e0eaa46e3f81a3bf5a28bfbbb804ebe.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Oracle 表空间不足？用 Shell 脚本实现自动扩容！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 脚本演示 测试环境准备 部署并执行自动扩展脚本 配置定时任务 (crontab) 写在最后 前言 最近有客户反馈了一个困扰已久的问题：频繁收到表空间使用率超过 90% 的告警邮件，每次都需要手动添加数据文件来解决。客户询问：O</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149087635/" title="Oracle EMCC 13.5 集群安装部署指南"><img class="cover" src="/csdn-blog/images/af667c343224140f7afb9b6e02bc478b.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Oracle EMCC 13.5 集群安装部署指南</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 第一阶段：OMR 集群部署 - 1.1 Oracle RAC 环境准备 1.2 数据库版本验证 1.3 EMCC 专用数据库优化 第二阶段：ACFS 集群文件系统构建 - 2.1 存储层配置 配置 multipath 多路径</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/148619922/" title="夸克AI高效学习法，打造你的个性化学习引擎"><img class="cover" src="/csdn-blog/images/df6797d90a44cc2b3635063d251d0297.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-12</div><div class="info-item-2">夸克AI高效学习法，打造你的个性化学习引擎</div></div><div class="info-2"><div class="info-item-1">高考落幕，千万考生卸下重担，却立刻面临人生第一次重大抉择——志愿填报。无数院校、海量专业、庞杂信息如同迷雾，让考生与家长深陷焦虑漩涡。一个选择，或许就决定着未来四年乃至一生的方向。面对这场无声的战役，《夸克 AI 高效学习法》如同一盏明灯，其核心武器“夸克AI志愿填报系统”，正为学子们开辟出一条通往</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148158495/" title="飞书知识问答深度测评：企业AI应用落地的“范本级”产品"><img class="cover" src="/csdn-blog/images/b01316fabed78ecd8cd3b37d0d582d48.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-23</div><div class="info-item-2">飞书知识问答深度测评：企业AI应用落地的“范本级”产品</div></div><div class="info-2"><div class="info-item-1">前言 当 AI 逐渐从技术前沿走向日常办公，我们最常听到的一个词是“效率提升”。但真正能做到降本增效、让企业员工切实受益的 AI 产品，仍属少数。尤其是在组织内部知识管理这一块，大多数企业仍停留在“搜索靠关键词、记录靠记忆、协作靠问人”的阶段，信息重复、碎片化、沉没的现象普遍存在。 飞书推出的“知识</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142649912/" title="达梦如何开启免密登录"><img class="cover" src="/csdn-blog/img/covers/media.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-30</div><div class="info-item-2">达梦如何开启免密登录</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 前言 相信很多用管了 Oracle 数据库的 DBA，很喜欢用 快速连接到数据库的方式。但是，刚安装好的达梦数据库执行 却会报错： 初看好像不支持，但是达梦其实也是支持通过操作系统认证使用免密的方式登录数据库，不过需要人</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149572905/" title="90% 的运维都不知道：top 命令还能这样用！"><img class="cover" src="/csdn-blog/img/covers/linux.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-23</div><div class="info-item-2">90% 的运维都不知道：top 命令还能这样用！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 概述 是 Linux 系统中最常用的实时系统监控命令之一，能够动态显示系统中正在运行的进程信息，包括 CPU 使用率、内存占用、系统负载等关键性能指标。 基本语法 界面说明 系统信息区域（前 5 行） 第一行：系统时间和负载 ：当前时间</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148232762/" title="红帽 RHEL 10 正式发布，这些亮点你必须知道！"><img class="cover" src="/csdn-blog/images/ba2d2f0d07734d4373d2383cd68fc168.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-26</div><div class="info-item-2">红帽 RHEL 10 正式发布，这些亮点你必须知道！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 颠覆性革新 1、安装程序全面重构 2、镜像构建器升级 3、重要功能调整 4、软件生态调整 5、生成式 AI Oracle 全系支持：一键部署实战 写在最后 前言 2025 年 5 月 13 日，Red Hat Enterpris</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148027519/" title="亲测有效！OGG 创建抽取进程报错 OGG-08241，如何解决？"><img class="cover" src="/csdn-blog/images/cf19c46d9176ab85213de6f56c4cdc41.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-17</div><div class="info-item-2">亲测有效！OGG 创建抽取进程报错 OGG-08241，如何解决？</div></div><div class="info-2"><div class="info-item-1">前言 今天在测试 OGG 一个功能的时候，需要重新初始化 oggca，所以重装了一下 OGG。重建完之后重新添加抽取进程报错，一直无法添加成功： 经过一翻分析，找到了解决方案，本文记录一下解决过程。 问题描述 OGG 重装之前，没有清理原先抽取进程，重装后，抽取进程重建失败！ 原因是因为添加抽取进程</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQLark-V3-5-%E6%96%B0%E7%89%88%E4%BA%AE%E7%82%B9"><span class="toc-number">3.</span> <span class="toc-text">SQLark V3.5 新版亮点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-%E5%B0%8F%E7%99%BE%E7%81%B5%E6%B5%8B%E8%AF%84"><span class="toc-number">4.</span> <span class="toc-text">AI 小百灵测评</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E8%A7%A3%E9%87%8A"><span class="toc-number">4.1.</span> <span class="toc-text">代码解释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="toc-number">4.2.</span> <span class="toc-text">代码生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96-SQL"><span class="toc-number">4.3.</span> <span class="toc-text">优化 SQL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%BE%E6%A2%A6%E7%9F%A5%E8%AF%86%E6%A3%80%E7%B4%A2"><span class="toc-number">4.4.</span> <span class="toc-text">达梦知识检索</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">5.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

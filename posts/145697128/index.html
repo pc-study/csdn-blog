@@ -1,0 +1,350 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>一文掌握 Oracle OPatch 实用技巧 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 OPatch 更新 OPatch 下载 OPatch 备份 OPatch 更新 OPatch OPatch 常用命令 OPatch 常见问题 写在最后 前言 OPatch 是什么？ 对于 Oracle DBA">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一文掌握 Oracle OPatch 实用技巧">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/145697128/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 OPatch 更新 OPatch 下载 OPatch 备份 OPatch 更新 OPatch OPatch 常用命令 OPatch 常见问题 写在最后 前言 OPatch 是什么？ 对于 Oracle DBA">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/0e5055ff7722d7e6e2a06ce17656caec.webp">
+<meta property="article:published_time" content="2025-02-18T01:12:14.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.202Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/0e5055ff7722d7e6e2a06ce17656caec.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"一文掌握 Oracle OPatch 实用技巧","url":"https://pc-study.github.io/csdn-blog/posts/145697128/","image":"https://pc-study.github.io/csdn-blog/images/0e5055ff7722d7e6e2a06ce17656caec.webp","datePublished":"2025-02-18T01:12:14.000Z","dateModified":"2026-03-20T12:25:39.202Z","description":"大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 OPatch 更新 OPatch 下载 OPatch 备份 OPatch 更新 OPatch OPatch 常用命令 OPatch 常见问题 写在最后 前言 OPatch 是什么？ 对于 Oracle DBA","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/145697128/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/145697128/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '一文掌握 Oracle OPatch 实用技巧',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/0e5055ff7722d7e6e2a06ce17656caec.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">一文掌握 Oracle OPatch 实用技巧</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">一文掌握 Oracle OPatch 实用技巧<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-02-18-145697128.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-02-18T01:12:14.000Z" title="发表于 2025-02-18 09:12:14">2025-02-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.202Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/">Oracle 数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，分享一些学习国产数据库路上的知识和经验。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#OPatch_9">OPatch</a></li>
+<li><a href="#_OPatch_40">更新 OPatch</a></li>
+<li><ul>
+<li><a href="#_OPatch_43">下载 OPatch</a></li>
+<li><a href="#_OPatch_56">备份 OPatch</a></li>
+<li><a href="#_OPatch_63">更新 OPatch</a></li>
+</ul>
+</li>
+<li><a href="#OPatch__75">OPatch 常用命令</a></li>
+<li><a href="#OPatch__144">OPatch 常见问题</a></li>
+<li><a href="#_199">写在最后</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><strong>OPatch 是什么？</strong> 对于 Oracle DBAers 来说，这是常识（<strong>囧</strong>），但许多不太熟悉 Oracle 数据库的人会经常问我，为什么安装补丁时要上传一个以 <strong>p6880880</strong> 开头的 zip 文件？它到底有什么作用呢？</p>
+<p>为此，我打算写一篇关于 OPatch 的文章科普一下，以后直接发就行！</p>
+<h2 id="OPatch"><a href="#OPatch" class="headerlink" title="OPatch"></a>OPatch</h2><p>OPatch 是 Oracle 提供的一个命令行工具，用于管理和应用补丁（Patch）到 Oracle 数据库、中间件（如 WebLogic）等 Oracle 产品。它是 Oracle 补丁管理流程的核心工具，帮助用户维护系统的稳定性、安全性和功能更新。</p>
+<p>Oracle 数据库初始安装后，在 <code>$ORACLE_HOME</code> 目录下会包含一个 OPatch 文件夹，这个就是 OPatch 管理工具。</p>
+<p><strong>OPatch 的主要功能</strong>：</p>
+<ol>
+<li>安装补丁</li>
+<li>回滚补丁</li>
+<li>冲突检测</li>
+<li>显示已安装的组件和补丁信息</li>
+</ol>
+<p>通常我们会将 OPatch 目录添加到 PATH 环境变量中，这样就不需要每次进入 <code>$ORACLE_HOME/OPatch</code> 目录来执行命令：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment">## Windows</span><br><span class="hljs-built_in">set</span> <span class="hljs-attribute">PATH</span>=%ORACLE_HOME%/OPatch:%PATH%<br><span class="hljs-comment">## Unix</span><br><span class="hljs-built_in">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$ORACLE_HOME</span>/OPatch:$PATH<br></code></pre></td></tr></table></figure>
+
+<p>配置完成后，直接运行命令即可：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs elixir">[oraprod<span class="hljs-variable">@rac01</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>opatch version<br><span class="hljs-title class_">OPatch</span> <span class="hljs-symbol">Version:</span> <span class="hljs-number">12.2</span>.<span class="hljs-number">0.1</span>.<span class="hljs-number">3</span><br><br><span class="hljs-title class_">OPatch</span> succeeded.<br></code></pre></td></tr></table></figure>
+
+<p>但是，当我们要安装某些补丁时，常会发现默认的 OPatch 版本并不能满足补丁 README 中对 OPatch 版本的要求：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">If</span> you do not have  OPatch <span class="hljs-number">12</span>c Release <span class="hljs-number">12.2.0.1</span>.<span class="hljs-number">43</span> or the latest version available for <span class="hljs-number">12</span>c Release <span class="hljs-number">12.2.0.1</span>.<span class="hljs-number">0</span>,then download it from patch# <span class="hljs-number">6880880</span> for <span class="hljs-number">12.2.0.1</span>.<span class="hljs-number">0</span> release.<br></code></pre></td></tr></table></figure>
+
+<p>这时我们就需要更新 OPatch 工具。</p>
+<h2 id="更新-OPatch"><a href="#更新-OPatch" class="headerlink" title="更新 OPatch"></a>更新 OPatch</h2><p>OPatch 工具通常放在 <code>$ORACLE_HOME/OPatch</code> 目录下。</p>
+<h3 id="下载-OPatch"><a href="#下载-OPatch" class="headerlink" title="下载 OPatch"></a>下载 OPatch</h3><p>从 Oracle 支持网站（MOS）下载 OPatch：<a target="_blank" rel="noopener" href="https://updates.oracle.com/download/6880880.html">https://updates.oracle.com/download/6880880.html</a></p>
+<p><img src="/csdn-blog/images/bec1150b1b9037fd56db4e1d635530b8.webp" alt="一文掌握 Oracle OPatch 实用技巧" loading='lazy'></p>
+<p>根据数据库版本和操作系统平台选择合适的 OPatch 安装包，下载后的文件名通常为：<code>p6880880_&lt;version&gt;_&lt;platform&gt;.zip</code>，这就是我们文章开头所说的 <strong>p6880880</strong> 文件，这个文件实际上就是 OPatch 工具！</p>
+<p>这里我整理了 <strong>2025.02</strong> 最新的 OPatch 包（适用于 Linux 和 Windows）分享给大家：</p>
+<p><img src="/csdn-blog/images/0e5055ff7722d7e6e2a06ce17656caec.webp" alt="一文掌握 Oracle OPatch 实用技巧 - 图2" loading='lazy'></p>
+<blockquote>
+<p>关注<strong>微信公众号</strong>：<strong>DBA学习之路</strong>，回复关键词：<strong><code>OPatch</code></strong> 即可获取！</p>
+</blockquote>
+<h3 id="备份-OPatch"><a href="#备份-OPatch" class="headerlink" title="备份 OPatch"></a>备份 OPatch</h3><p>在更新 OPatch 之前，建议先备份 <code>$ORACLE_HOME</code> 目录下旧版本的 OPatch：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs elixir">[oraprod<span class="hljs-variable">@rac01</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>cd <span class="hljs-variable">$ORACLE_HOME</span><br>[oraprod<span class="hljs-variable">@rac01</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>mv <span class="hljs-title class_">OPatch</span> <span class="hljs-title class_">OPatch</span>.bkp<br></code></pre></td></tr></table></figure>
+
+<h3 id="更新-OPatch-1"><a href="#更新-OPatch-1" class="headerlink" title="更新 OPatch"></a>更新 OPatch</h3><p>每个补丁的 README 文件中都有具体的安装说明。我们将下载的 <strong>p6880880</strong> 安装包解压到 <code>$ORACLE_HOME</code> 目录下：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">unzip <span class="hljs-string">/soft/p6880880_</span>&lt;<span class="hljs-keyword">version</span>&gt;_&lt;platform&gt;<span class="hljs-string">.zip</span><br>opatch <span class="hljs-keyword">version</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>那么，如何知道需要安装哪个版本的 OPatch？</strong></p>
+<p>其实很简单：根据你当前的数据库版本安装最新的 OPatch 就行！例如，如果你现在使用的是 19C 版本，且需要安装 19.25 的 RU 补丁，README 中提示需要更新 OPatch，那就直接下载最新版本的 OPatch 进行更新。</p>
+<p>OPatch 发布的周期和 PSU&#x2F;RU 补丁发布的周期基本一致。</p>
+<h2 id="OPatch-常用命令"><a href="#OPatch-常用命令" class="headerlink" title="OPatch 常用命令"></a>OPatch 常用命令</h2><p>我们可以通过 <code>opatch -help</code> 命令查看 OPatch 命令的所有可用选项：</p>
+<figure class="highlight sml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs sml">[oraprod@rac01:~]$ opatch -help<br><span class="hljs-type">Oracle</span> <span class="hljs-type">Interim</span> <span class="hljs-type">Patch</span> <span class="hljs-type">Installer</span> version <span class="hljs-number">12.2</span>.<span class="hljs-number">0.1</span>.<span class="hljs-number">45</span><br><span class="hljs-type">Copyright</span> (c) <span class="hljs-number">2025</span>, <span class="hljs-type">Oracle</span> <span class="hljs-type">Corporation</span>.  <span class="hljs-type">All</span> rights reserved.<br><br><br> <span class="hljs-type">Usage</span>: opatch [ -help ] [ -report ] [ command ]<br><br>            command := apply<br>                       compare<br>                       lsinventory<br>                       lspatches<br>                       napply<br>                       nrollback<br>                       rollback<br>                       query<br>                       version <br>                       prereq<br>                       util<br> <br> &lt;global_arguments&gt; := -help       <span class="hljs-type">Displays</span> the help message for the command.<br>                       -report     <span class="hljs-type">Print</span> the actions without executing.<br><br> example:<br>   <span class="hljs-symbol">&#x27;opatch</span> -help&#x27;<br>   <span class="hljs-symbol">&#x27;opatch</span> -help -fmw&#x27;<br>   <span class="hljs-symbol">&#x27;opatch</span> apply -help&#x27;<br>   <span class="hljs-symbol">&#x27;opatch</span> compare -help&#x27;<br>   <span class="hljs-symbol">&#x27;opatch</span> lsinventory -help&#x27;<br>   <span class="hljs-symbol">&#x27;opatch</span> lspatches -help&#x27;<br>   <span class="hljs-symbol">&#x27;opatch</span> napply -help&#x27;<br>   <span class="hljs-symbol">&#x27;opatch</span> nrollback -help&#x27;<br>   <span class="hljs-symbol">&#x27;opatch</span> rollback -help&#x27;<br>   <span class="hljs-symbol">&#x27;opatch</span> prereq -help&#x27;<br>   <span class="hljs-symbol">&#x27;opatch</span> util -help&#x27;<br><br><br><span class="hljs-type">OPatch</span> succeeded.<br></code></pre></td></tr></table></figure>
+
+<p>这里我列举一些日常使用中比较常用的命令：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs clean">## 查看 opatch 版本<br>opatch version<br><br>## 查看已安装补丁<br>opatch lspatches<br><br>## 查看已安装补丁明细<br>opatch lsinventory<br>opatch lsinventory -all<br><br>## 当前的补丁历史会自动包含在 Oracle Central Inventory 中，可以通过命令 <span class="hljs-string">&quot;opatch lsinventory -detail&quot;</span> 来查看<br>opatch lsinventory -detail -oh $ORACLE_HOME<br><br>## 安装补丁前检查<br>opatch prereq CheckConflictAgainstOHWithDetail -ph ./<br>opatch prereq CheckConflictAgainstOHWithDetail -phBaseDir &lt;补丁解压目录&gt;<br><br>## 安装补丁<br>opatch apply<br>## 静默安装补丁，使用 OPatch 参数 -silent 以非交互模式运行，不需要输入 Y/N<br>opatch apply -silent<br><br>## 回退补丁<br>opatch rollback -id &lt;补丁编号&gt;<br></code></pre></td></tr></table></figure>
+
+<h2 id="OPatch-常见问题"><a href="#OPatch-常见问题" class="headerlink" title="OPatch 常见问题"></a>OPatch 常见问题</h2><p><strong>1、运行 OPatch 工具的前提条件是什么？</strong></p>
+<ul>
+<li>OPatch 在安装补丁过程中会执行 relink 操作，因此必须确保链接命令，如 <code>ld</code>、<code>make</code>、<code>ar</code> 等能够正常工作。</li>
+<li>检查 JDK&#x2F;JRE 是否在 ORACLE_HOME 中正确安装，OPatch 使用 JDK 中的 jar 工具来执行其 jar、war 和 ear 操作。OPatch 将在指定的 Oracle Home 中查找 JDK。如果默认的 Oracle Home 中的 JDK 损坏，用户必须使用 OPatch 中的 -jre 选项提供备用位置。</li>
+<li>检查 &#x2F;tmp 目录和 $ORACLE_HOME 是否有足够的可用空间。当 OPatch 处理补丁安装脚本时，它会同时生成回滚脚本，并保存每个在补丁过程中编辑或删除的文件副本。OPatch 还会备份 inventory 信息。因此，Oracle 建议您有足够的系统空间来容纳补丁和备份信息。</li>
+<li>检查 Oracle Universal Installer 和 OPatch 版本的兼容性。例如：OPatch 10.2 需要 Oracle Universal Installer 10.2 或更高版本才能正常工作。如果 Oracle Universal Installer 版本低于 OPatch 所需版本，则 OPatch 会报错。</li>
+</ul>
+<p><strong>2、如何确认补丁是否已正确安装？</strong></p>
+<ul>
+<li>每个补丁附带的 README 文件包含了具体补丁的安装说明。通常，这些说明要求以 Oracle 账户身份，从解压缩后的补丁子目录中运行 “opatch apply” 命令。opatch 工具将补丁安装到指定并设置为 $ORACLE_HOME 的 Oracle Home。</li>
+<li>要验证补丁是否已成功安装，可以使用命令 <code>opatch inventory</code> 检查 ，确认补丁是否已成功注册。如果补丁已在 inventory 中注册，命令结果将列出补丁号码。检查 OPatch 日志文件，查看是否有错误。如果没有发现问题，则说明补丁已成功安装。</li>
+</ul>
+<p><strong>3、如何在不关闭数据库实例的情况下在线安装补丁？什么是在线补丁？</strong></p>
+<ul>
+<li>常规的 RDBMS 补丁由一个或多个对象文件（.o 文件）、库文件（.a 文件）组成。安装常规补丁需要关闭 RDBMS 实例、重新链接 Oracle 二进制文件并重新启动实例；卸载常规补丁也需要执行相同的步骤。</li>
+<li>在线补丁是一种特殊类型的补丁，可以安装在正在运行的 RDBMS 实例。在线补丁包含一个单独的共享库；安装在线补丁不需要关闭实例或重新链接 Oracle 二进制文件。可以使用 OPatch 安装&#x2F;卸载在线补丁（OPatch 使用 oradebug 命令来安装&#x2F;卸载补丁）。目前，在线补丁仅支持 RDBMS，即 Oracle 二进制文件。</li>
+</ul>
+<p><strong>4、如何在静默模式下运行 OPatch？</strong></p>
+<p>我们可以使用 OPatch 参数 <code>-silent</code> 以非交互模式运行 <code>opatch apply、napply、rollback 和 nrollback</code> 命令。</p>
+<p><code>opatch &lt;option&gt; -silent</code> 执行以下操作：</p>
+<ul>
+<li>不会有任何用户交互，即不会显示任何 OPatch 提示以要求用户输入的内容。</li>
+<li>自动通过采用默认选项作为输入回答所有 OPatch 提示并继续执行。</li>
+</ul>
+<p><strong>5、<code>$ORACLE_HOME/.patch_storage</code> 目录的作用是什么？如果不小心被删除了怎么办？</strong></p>
+<ul>
+<li>当向 Oracle Home 安装临时补丁时，OPatch 会将补丁信息存储在 <code>$ORACLE_HOME/.patch_storage</code> 目录中。</li>
+<li>在此目录内，会为每个安装到 Oracle Home 的补丁创建单独的子目录。在安装过程中，可能会遇到补丁冲突，并希望移除冲突的补丁，这个过程被称为补丁回滚。</li>
+<li>在安装补丁期间，OPatch 会在加载新版本之前，将所有被新补丁替换的文件的副本保存下来，并存储在 <code>$ORACLE_HOME/.patch_storage/patch ID/</code> 目录中。这些保存的文件称为回滚文件，它们是实现补丁回滚的关键。</li>
+<li>每次安装补丁时，都会对 inventory 进行更改。有时，这些更改可能会导致 inventory 损坏。</li>
+<li>从 Oracle RDBMS 10.2.0.X.X 开始，当安装补丁时，OPatch 会创建 inventory 的快照，并将其存储在 $ORACLE_HOME&#x2F;.patch_storage&#x2F;&lt;patch-id_timestamp&gt; 中。</li>
+<li><code>$ORACLE_HOME/.patch_storage/&lt;patch-id_timestamp&gt;/restore.sh</code> 脚本随 OPatch 一起提供，用于移除安装补丁后对 inventory 所做的任何更改。</li>
+</ul>
+<p>因此，如果 <code>$ORACLE_HOME/.patch_storage</code> 被不小心删除，您需要从备份中恢复它，或者重新安装 Oracle Home。</p>
+<p><strong>6、如果 OPatch 在安装补丁过程中中断了，接下来会怎么处理？</strong></p>
+<ul>
+<li>Opatch 的编写方式使得命令具有幂等性，运行一次与运行多次效果相同。所以，当补丁安装发生中断时，可以重新执行。</li>
+<li>目前无法删除部分安装的临时补丁，补丁过程必须完成。补丁过程完成后，可以使用回滚删除补丁。</li>
+<li>如果由于某个问题（例如找不到库文件且未应用到其中一个目标文件）而中止此过程，则可以在库文件可用后重新启动补丁安装程序，但只会安装最后剩余的目标文件。</li>
+<li>其他导致补丁安装中止的异常情况包括由于补丁损坏导致的 <code>make</code> 失败，或在使用 <code>ld</code> 创建新可执行文件时设备空间不足等问题。</li>
+</ul>
+<p>所有这些情况都可以重新执行。</p>
+<p><strong>7、运行 OPatch 时遇到错误，提示 fuser 不可用，应该怎么办？</strong></p>
+<ul>
+<li>运行 OPatch 时，它会检查是否有 Oracle 进程正在运行。如果有，它会在补丁安装开始之前警告用户。这个检查是通过 <code>fuser</code> 命令完成的，在大多数操作系统中，fuser 命令位于 <code>/sbin</code> 或 <code>/usr/sbin</code> 目录下，通常这些目录没有包含在用户的 PATH 变量中。</li>
+</ul>
+<p>解决方法是将 <code>/sbin:/usr/sbin</code> 添加到 <strong>PATH</strong> 变量中。</p>
+<p><strong>8、当在RAC（Real Application Clusters）中安装补丁时，是否可以以Rolling方式安装？如果可以，应该如安装？</strong></p>
+<p>对于 RAC（Real Application Clusters），补丁安装有两种方式：</p>
+<ul>
+<li>第一种方式是，如果补丁被标记为可滚动（Rolling）升级，即在 <code>&lt;patch&gt;/etc/config/inventory</code> 的 &lt;online_rac_installable&gt;false&lt;&#x2F;online_rac_installable&gt; 中标记为 true。<ul>
+<li>此类补丁可以以级联方式安装于各节点，允许不同实例运行不同版本的代码（补丁会引入代码差异）。这种情况适用于不会影响 SGA 结构和堆的特定补丁。</li>
+<li>这种方式的一个优势是可以先在某个节点上测试补丁，在确认没有引发应用程序意外行为后再推广到其他节点。</li>
+<li>如果补丁在测试节点上导致了问题，还可以从该节点回滚。目前只有一部分补丁会被标记为可滚动升级。</li>
+</ul>
+</li>
+<li>第二种方式是使用 minimize_downtime 选项来安装补丁。</li>
+</ul>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>关于 OPatch 管理工具就先介绍这么多了，够用！</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/145697128/">https://pc-study.github.io/csdn-blog/posts/145697128/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/145697149/" title="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题"><img class="cover" src="/csdn-blog/images/945748028c92a6fb4c33c9f427e00203.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题描述 环境准备 问题复现 写在最后 前言 今天有个朋友说他们有套 Oracle 19C 数据库，数据库字符集为 ，应用系统查询数据时，有个特殊字符 ™ 有时候正常显示，有时候又会显示乱码，非常诡异，开发硬</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145697112/" title="金仓 KES RWC（读写分离集群）静默安装部署指南"><img class="cover" src="/csdn-blog/images/f6a10dd381de1c9f2531f5b4233a3025.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">金仓 KES RWC（读写分离集群）静默安装部署指南</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 KingbaseRWC 介绍 环境准备 安装前配置 检查操作系统版本（所有节点） 配置 /etc/hosts（所有节点） 关闭防火墙（所有节点） 禁用 selinux（所有节点） 创建主机用户（所有节点） 创</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/139469889/" title="华为欧拉 EulerOS V2.0 SP9 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-05</div><div class="info-item-2">华为欧拉 EulerOS V2.0 SP9 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示华为欧拉 EulerOS V2.0 SP9 一键安装 Oracle 19C 单机版过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139778169/" title="中科方德 NFSChina 4.0一键安装 Oracle 11GR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-18</div><div class="info-item-2">中科方德 NFSChina 4.0一键安装 Oracle 11GR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示中科方德 NFSChina 4.0一键安装 Oracle 11GR2 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120198896/" title="Oracle spfile 参数文件"><img class="cover" src="/csdn-blog/images/713a48fff1e82c2ef441c968a7b74bb4.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-09</div><div class="info-item-2">Oracle spfile 参数文件</div></div><div class="info-2"><div class="info-item-1">目录 📚 前言 ☀️ spfile 介绍 ⭐️ spfile 参数文件位置 🌛 启动优先级 ❄️ 实例讲解 ① 从 pfile 切换为 spfile 启动数据库 ② 使用 spfile 启动数据库后修改参数错误，导致数据库无法启动 - 问题重现 解决步骤 📚 前言 上篇讲了 Oracle pfile</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139179123/" title="华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 21C RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 21C RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 openEuler 22.03 LTS SP3 一键安装 Oracle 21C RAC 过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139777365/" title="统信 UOS V20 1070(a) 一键安装 Oracle 19C 单机 ASM"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-18</div><div class="info-item-2">统信 UOS V20 1070(a) 一键安装 Oracle 19C 单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 统信 UOS V20 1070(a) 一键安装 Oracle 19C 单机 ASM（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122879837/" title="Oracle 11GR2 实战指南之手工创建数据库"><img class="cover" src="/csdn-blog/images/dfa9579e7fbcd0d04b552e344eb778dc.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-27</div><div class="info-item-2">Oracle 11GR2 实战指南之手工创建数据库</div></div><div class="info-2"><div class="info-item-1">目录 前言 一、环境准备 二、创建数据库 1、初始化实例 ID 2、创建密码文件 3、编写初始化参数文件 4、创建目录 5、创建 spfile 文件 6、启动实例至 nomount 状态 7、编写建库脚本 8、执行建库脚本 9、运行脚本创建数据字典 三、知识拓展 前言 如何不使用 ，手动一步步快速创</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OPatch"><span class="toc-number">3.</span> <span class="toc-text">OPatch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0-OPatch"><span class="toc-number">4.</span> <span class="toc-text">更新 OPatch</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD-OPatch"><span class="toc-number">4.1.</span> <span class="toc-text">下载 OPatch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%87%E4%BB%BD-OPatch"><span class="toc-number">4.2.</span> <span class="toc-text">备份 OPatch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0-OPatch-1"><span class="toc-number">4.3.</span> <span class="toc-text">更新 OPatch</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OPatch-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">5.</span> <span class="toc-text">OPatch 常用命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OPatch-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-number">6.</span> <span class="toc-text">OPatch 常见问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">7.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

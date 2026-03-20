@@ -1,0 +1,320 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>推荐 21 款博主常用 MacOS 软件 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="目录 📚 前言 ☀️ 软件介绍 🎥 IINA – 全格式视频播放神器 💾 Motrix – 万能下载软件 📹 Downie 4 – 视频下载神器 📀 Tuxera Disk Manager – NTFS磁盘管理 🔍 Alfred 4 – 全自动效率神器 🎑 iShot &amp;&amp; Snipaste – 全">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐 21 款博主常用 MacOS 软件">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/120097664/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="目录 📚 前言 ☀️ 软件介绍 🎥 IINA – 全格式视频播放神器 💾 Motrix – 万能下载软件 📹 Downie 4 – 视频下载神器 📀 Tuxera Disk Manager – NTFS磁盘管理 🔍 Alfred 4 – 全自动效率神器 🎑 iShot &amp;&amp; Snipaste – 全">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/adcb79c21973f1a8e0d937a0b3246aee.webp">
+<meta property="article:published_time" content="2021-09-04T05:45:09.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.242Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="macos">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/adcb79c21973f1a8e0d937a0b3246aee.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"推荐 21 款博主常用 MacOS 软件","url":"https://pc-study.github.io/csdn-blog/posts/120097664/","image":"https://pc-study.github.io/csdn-blog/images/adcb79c21973f1a8e0d937a0b3246aee.webp","datePublished":"2021-09-04T05:45:09.000Z","dateModified":"2026-03-20T12:25:38.242Z","description":"目录 📚 前言 ☀️ 软件介绍 🎥 IINA – 全格式视频播放神器 💾 Motrix – 万能下载软件 📹 Downie 4 – 视频下载神器 📀 Tuxera Disk Manager – NTFS磁盘管理 🔍 Alfred 4 – 全自动效率神器 🎑 iShot && Snipaste – 全","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/120097664/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/120097664/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '推荐 21 款博主常用 MacOS 软件',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/adcb79c21973f1a8e0d937a0b3246aee.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">推荐 21 款博主常用 MacOS 软件</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">推荐 21 款博主常用 MacOS 软件<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-09-04-120097664.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-09-04T05:45:09.000Z" title="发表于 2021-09-04 13:45:09">2021-09-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.242Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#__1">📚 前言</a></li>
+<li><a href="#__8">☀️ 软件介绍</a></li>
+<li><ul>
+<li><a href="#_IINA___9">🎥 IINA – 全格式视频播放神器</a></li>
+<li><a href="#_Motrix___18">💾 Motrix – 万能下载软件</a></li>
+<li><a href="#_Downie_4___22">📹 Downie 4 – 视频下载神器</a></li>
+<li><a href="#_Tuxera_Disk_Manager__NTFS_29">📀 Tuxera Disk Manager – NTFS磁盘管理</a></li>
+<li><a href="#_Alfred_4___38">🔍 Alfred 4 – 全自动效率神器</a></li>
+<li><a href="#_iShot__Snipaste___52">🎑 iShot &amp;&amp; Snipaste – 全能截图工具</a></li>
+<li><a href="#_Parallels_Desktop___60">💡 Parallels Desktop – 虚拟机神器</a></li>
+<li><a href="#_Mircosoft_Remote_Desktop__Windows_73">🎏 Mircosoft Remote Desktop – Windows远程连接工具</a></li>
+<li><a href="#__Lite___77">🔏 超级右键 Lite – 右键功能加强</a></li>
+<li><a href="#_KeKa___82">📥 KeKa – 解压缩软件</a></li>
+<li><a href="#_CheatSheet___96">📎 CheatSheet – 快捷键查看神器</a></li>
+<li><a href="#_Permute_3___100">📇 Permute 3 – 格式转换神器</a></li>
+<li><a href="#_Dropover___103">📂 Dropover – 拖拽操作神器</a></li>
+<li><a href="#_CleanMyMac_X___107">📟 CleanMyMac X – 高逼格清理工具</a></li>
+<li><a href="#__Lemon____112">🍋 腾讯 Lemon 清理 - 定制化清理</a></li>
+<li><a href="#_iWall___116">📺 iWall – 桌面动态引擎</a></li>
+<li><a href="#_CopyLess_2___126">✂️ CopyLess 2 – 剪贴板增强工具</a></li>
+<li><a href="#_Rectangle__Mangnet___130">📌 Rectangle &amp;&amp; Mangnet – 窗口分屏工具</a></li>
+<li><a href="#_Deepl___135">🌎 Deepl – 翻译神器</a></li>
+<li><a href="#_Loopback___140">🔇 Loopback – 音频处理神器</a></li>
+</ul>
+</li>
+<li><a href="#__144">🎉 软件获取方式</a></li>
+</ul>
+<h2 id="📚-前言"><a href="#📚-前言" class="headerlink" title="📚 前言"></a>📚 前言</h2><p>继上篇推荐的 <strong><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/117903774">21款Windows软件</a></strong> 受到大家的喜欢，有部分 macOS 用户希望我再写一篇博客来介绍一下 macOS 上使用舒适度满分的软件：<br> <strong>🔥 排名不分先后，提升macOS电脑使用舒适度100倍的21款软件🔥：</strong></p>
+<p><strong>📢 注意：以上软件均支持 <code>macOS Big Sur 11.4</code> 版本，❤️ 软件合集下载方式请 <a href="#jump_100">点我跳转</a>！🪐</strong></p>
+<h2 id="☀️-软件介绍"><a href="#☀️-软件介绍" class="headerlink" title="☀️ 软件介绍"></a>☀️ 软件介绍</h2><h3 id="🎥-IINA-–-全格式视频播放神器"><a href="#🎥-IINA-–-全格式视频播放神器" class="headerlink" title="🎥 IINA – 全格式视频播放神器"></a>🎥 IINA – 全格式视频播放神器</h3><p><code>IINA</code> 堪比Windows系统的 PotPlayer，天生就是一个现代的 macOS 应用程序，从它的框架到用户界面。</p>
+<p>IINA 为 macOS Mojave 暗模式提供了精心设计的用户界面，其中包括经过调整的颜色、图标和纹理，提供时尚和统一的外观。</p>
+<p>紧跟 Force Touch、Touch Bar 和画中画等新技术的步伐。<br> <img src="/csdn-blog/images/adcb79c21973f1a8e0d937a0b3246aee.webp" alt="IINA" loading='lazy'><br> ❤️ 开源免费，一个字：绝！！！<strong>GitHub地址：<a target="_blank" rel="noopener" href="https://github.com/iina/iina">IINA</a>。</strong></p>
+<h3 id="💾-Motrix-–-万能下载软件"><a href="#💾-Motrix-–-万能下载软件" class="headerlink" title="💾 Motrix – 万能下载软件"></a>💾 Motrix – 万能下载软件</h3><p><code>Motrix</code> 是一款功能齐全的下载管理器，支持下载 HTTP、FTP、BitTorrent、Magnet 等，界面干净整洁，操作简单，是堪比Windows系统的 IDM 的下载神器。<br> <img src="/csdn-blog/images/2530de7a3644b4dd6bfa21e8eef6cf19.webp" alt="推荐 21 款博主常用 MacOS 软件" loading='lazy'><br> ❤️ 不限速，完全开源免费，<strong>GitHub地址：<a target="_blank" rel="noopener" href="https://github.com/agalwood/Motrix">Motrix</a>！</strong></p>
+<h3 id="📹-Downie-4-–-视频下载神器"><a href="#📹-Downie-4-–-视频下载神器" class="headerlink" title="📹 Downie 4 – 视频下载神器"></a>📹 Downie 4 – 视频下载神器</h3><p>曾经您是否希望直接从互联网下载视频？现在，Downie 4可以帮您实现。使用Downie轻松下载数千个不同网站的影片。拖拽链接到软件直接完成下载，就是这么快！<br> <img src="/csdn-blog/images/37cb5a4d1c0602b098e67d72822d6ac1.webp" alt="推荐 21 款博主常用 MacOS 软件 - 图2" loading='lazy'><br> <img src="/csdn-blog/images/5002a99e094b1c57c196cf018a3e541a.webp" alt="推荐 21 款博主常用 MacOS 软件 - 图3" loading='lazy'><br> ⭐️ 当然，仅限于免费视频资源！付费资源无法下载的，别想啦！😄</p>
+<h3 id="📀-Tuxera-Disk-Manager-–-NTFS磁盘管理"><a href="#📀-Tuxera-Disk-Manager-–-NTFS磁盘管理" class="headerlink" title="📀 Tuxera Disk Manager – NTFS磁盘管理"></a>📀 Tuxera Disk Manager – NTFS磁盘管理</h3><p>Tuxera NTFS for Mac 是一款Mac完全读写软件，具备丰富的磁盘管理功能：</p>
+<ul>
+<li>NTFS for Mac提供完全读写NTFS磁盘功能，并兼容跨越Mac和Windows平台</li>
+<li>提供了快速的NTFS文件传输速度，同时保护您的数据是新的智能缓存</li>
+<li>支持所有从OS X 10.4 Tiger开始的Mac平台，包括 macOS Big Sur 和macOS 10.15（Catalina）</li>
+<li>同时兼容流行的虚拟化和加密解决方案，包括Parallels Desktop®和VMware Fusion®</li>
+</ul>
+<p>❤️ 实现苹果Mac OS X系统读写Microsoft Windows NTFS文件系统，在硬盘、U盘等外接设备中进行全面访问、删除、修改等相关操作。</p>
+<h3 id="🔍-Alfred-4-–-全自动效率神器"><a href="#🔍-Alfred-4-–-全自动效率神器" class="headerlink" title="🔍 Alfred 4 – 全自动效率神器"></a>🔍 Alfred 4 – 全自动效率神器</h3><p>Alfred是一个让你可以丢掉鼠标的神器。</p>
+<p>作为 Mac 上最强大的效率工具，Alfred 在 Spotlight（MacOS X 自带的搜索和快速启动引擎）的基础上优化了快速启动与搜索的功能，还引入了 Workflows 等强大的扩展功能，使之成为了一个拥有无限自动化潜力的「工具平台」软件，可以用它来实现近乎一切有关自动化的想法。<br> <img src="/csdn-blog/images/b45d18dbcbc162e7c225215a6f40fdac.webp" alt="推荐 21 款博主常用 MacOS 软件 - 图4" loading='lazy'><br> <img src="/csdn-blog/images/f716bf2b7bbbfbb6e59e6108420aa90f.webp" alt="推荐 21 款博主常用 MacOS 软件 - 图5" loading='lazy'><br> ❤️ Alfred 同时还支持快速锁屏幕、关机、清空回收站、休眠等快捷命令。我比较常用的推荐如下：</p>
+<ul>
+<li>lock 1s 锁屏，走，吃饭去 ~</li>
+<li>empty 清空回收站，瞬间强迫症患者清爽了。</li>
+<li>eject 命令可以弹出磁盘、存储卡或者虚拟磁盘镜像，如 .dmg 挂载后的磁盘。</li>
+</ul>
+<p>对于临时的 shell 命令，Alfred 可以在唤醒的输入框中输入 &gt; 字符来启动 Terminal 以执行 &gt; 之后的命令字符串。</p>
+<p><strong>可从官网直接下载：<a target="_blank" rel="noopener" href="https://www.alfredapp.com/">Alfred 4</a>！</strong></p>
+<h3 id="🎑-iShot-Snipaste-–-全能截图工具"><a href="#🎑-iShot-Snipaste-–-全能截图工具" class="headerlink" title="🎑 iShot &amp;&amp; Snipaste – 全能截图工具"></a>🎑 iShot &amp;&amp; Snipaste – 全能截图工具</h3><p><code>iShot</code> 提供了三种截图区域选择和定位，分别是：</p>
+<ul>
+<li>选择截图区域</li>
+<li>截图光标下的窗口</li>
+<li>截图前一个区域</li>
+</ul>
+<p>软件还考虑到了文案创作者的需要，提供了为截图自动添加阴影、圆角效果的开关，让截图一步到位。并且，阴影大小和颜色都可自定义，<strong>iShot 还支持录屏</strong>。  </p>
+<h3 id="💡-Parallels-Desktop-–-虚拟机神器"><a href="#💡-Parallels-Desktop-–-虚拟机神器" class="headerlink" title="💡 Parallels Desktop – 虚拟机神器"></a>💡 Parallels Desktop – 虚拟机神器</h3><p>❤️ 如果你使用 macOS 又经常需要使用虚拟机，那么 <code>Parallel Desktop</code> 是你的不二之选yyds，谁用谁知道，建议黑五直接购买正版。</p>
+<ul>
+<li><strong>无缝运行</strong><br> 在 MacBook、MacBook Pro、iMac、iMac Pro、Mac mini 或 Mac Pro 上同时 使用 Windows 与 macOS（无需重启）。在 Mac 与 Windows 应用程序之间共享文件和文件夹、复制粘贴图像和文本，以及拖放文件。</li>
+<li><strong>轻松安装</strong><br> Parallels Desktop 会自动检测您需要的内容，让您在几分钟内就可以开始启动并运行！如果您需要 Windows，系统将提示您下载并安装 Windows 10，或使用 Boot Camp 安装。您也可以迁移 Windows PC* 或使用 Linux，比如 Ubuntu。</li>
+<li><strong>快如闪电</strong><br> 图像和资源密集型 Windows 应用程序可以毫不费力地运行，不会减慢 Mac 的运行速度。运行要求严苛的应用程序，如 Microsoft Visual Studio、SQL Server、Microsoft PowerBI 或 MetaTrader。</li>
+<li><strong>任选视图</strong><br> 选择视图不显示 Windows 但仍在 Coherence™ 模式下使用其应用程序，或者，如果您是初次使用 Mac，则可以将 Windows 设置为占据整个屏幕，就像是在使用 Windows PC 一样。</li>
+</ul>
+<p><img src="/csdn-blog/images/2e8adc07dade3d4b7be22363fdf8ab11.webp" alt="推荐 21 款博主常用 MacOS 软件 - 图6" loading='lazy'><br> 💰 盗版不好用，建议直接购买正版！有永久版和订阅版！</p>
+<h3 id="🎏-Mircosoft-Remote-Desktop-–-Windows远程连接工具"><a href="#🎏-Mircosoft-Remote-Desktop-–-Windows远程连接工具" class="headerlink" title="🎏 Mircosoft Remote Desktop – Windows远程连接工具"></a>🎏 Mircosoft Remote Desktop – Windows远程连接工具</h3><p>Mac 上有没有好用的远程连接工具？<code>Mircosoft Remote Desktop</code> 是一款适用于 Mac 操作系统的远程连接软件，可以帮助您快速连接到基于Windows的计算机，以便使用其程序和文件，访问数据等，类似于Windows上自带的mstsc功能。<br> 💻 可以把它理解为是 Windows 的 <code>mstsc</code> 功能！</p>
+<h3 id="🔏-超级右键-Lite-–-右键功能加强"><a href="#🔏-超级右键-Lite-–-右键功能加强" class="headerlink" title="🔏 超级右键 Lite – 右键功能加强"></a>🔏 超级右键 Lite – 右键功能加强</h3><p>使用过 macOS 的朋友应该都知道，右键的功能非常贫乏；然而，这款超级右键软件却弥补了右键功能的缺失，增加大量可自定义操作，可扩展性很强，堪比 Windows 系统右键。<br> <strong>📢 注意： Lite 版免费</strong>，专业版收费但是更好用强大，可以在App Store直接搜索下载。</p>
+<h3 id="📥-KeKa-–-解压缩软件"><a href="#📥-KeKa-–-解压缩软件" class="headerlink" title="📥 KeKa – 解压缩软件"></a>📥 KeKa – 解压缩软件</h3><p>📃 使用Keka Mac版可以快速、高效的压缩、解压缩！</p>
+<p><strong>Keka 所支持的文件压缩格式：</strong></p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs stata">7z, <span class="hljs-keyword">Zip</span>, Tar, Gzip, Bzip2, DMG, ISO<br><br><br>AI写代码<br><br><br><br><span class="hljs-comment">* 1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>所支持的文件解压格式：</strong></p>
+<figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs nsis">RAR, <span class="hljs-number">7</span>z, <span class="hljs-literal">Lzma</span>, Zip, Tar, Gzip, <span class="hljs-literal">Bzip2</span>, ISO, EXE, CAB, PAX, ACE (PPC)<br><br><br>AI写代码<br><br><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>同时，还可以使用Keka来快速创建DMG镜像文件，强就完事了。<br> ❤️ 同样也是免费开源软件，<strong>GitHub地址：<a target="_blank" rel="noopener" href="https://github.com/aonez/Keka">KeKa</a>！</strong></p>
+<h3 id="📎-CheatSheet-–-快捷键查看神器"><a href="#📎-CheatSheet-–-快捷键查看神器" class="headerlink" title="📎 CheatSheet – 快捷键查看神器"></a>📎 CheatSheet – 快捷键查看神器</h3><p><code>CheatSheet</code> 快捷键唤出神器，每款软件的快捷键设置不同，你肯定无法记得所有的。<br> 通过CheatSheet可以一键唤出当前软件的所有快捷键，只需长按-command键即可呼出当前可用快捷键，所谓当前可用的意思就是，你在不同的软件下会有不同的快捷键组合显示。</p>
+<h3 id="📇-Permute-3-–-格式转换神器"><a href="#📇-Permute-3-–-格式转换神器" class="headerlink" title="📇 Permute 3 – 格式转换神器"></a>📇 Permute 3 – 格式转换神器</h3><p><code>Permute 3</code> 是MacOS系统上一款易用的媒体格式转换工具，支持视频音乐和图像的格式转换，通过拖拽支持批量格式转换，支持常见的视频。<br> 音乐和图像格式，如图片支持PNG、JPEG、TIFF，音乐支持AAC、MP3、WAV、M4A等，转换速度也很快，界面简单易用，非常的好用！</p>
+<h3 id="📂-Dropover-–-拖拽操作神器"><a href="#📂-Dropover-–-拖拽操作神器" class="headerlink" title="📂 Dropover – 拖拽操作神器"></a>📂 Dropover – 拖拽操作神器</h3><p><code>Dropover</code> 是一款给 macOS 增加文件篮子的小工具，你只需要将文件、网页图片、文字拖拽至篮子里临时保存，然后再去目的地进行移动、复制操作，对于需要从多处文件夹移动文件到某一个文件夹的需求来说，极大的简化了操作。<br> <img src="/csdn-blog/images/6217c4109ecde1dd1ea66bfccfe11a06.gif" alt="推荐 21 款博主常用 MacOS 软件 - 图7" loading='lazy'><br> <code>Dropover</code> 也支持从网页批量下载图片。</p>
+<h3 id="📟-CleanMyMac-X-–-高逼格清理工具"><a href="#📟-CleanMyMac-X-–-高逼格清理工具" class="headerlink" title="📟 CleanMyMac X – 高逼格清理工具"></a>📟 CleanMyMac X – 高逼格清理工具</h3><p>CleanMyMac X是一款强大的Mac系统垃圾清理工具,可以清除Mac系统多余的语言包、系统缓存、应用程序、PowerPc软件运行库等,是硬盘瘦身的好工具。<br> <img src="/csdn-blog/images/909c8e77fe7473e7b28afc03f9b7b65c.webp" alt="系统监控" loading='lazy'><br> 广泛的使用者对它是褒贬不一，也有推荐 <code>柠檬清理</code>的，就我自己来说，觉得还是很酷炫的，至少界面使用都很舒适。</p>
+<h3 id="🍋-腾讯-Lemon-清理-定制化清理"><a href="#🍋-腾讯-Lemon-清理-定制化清理" class="headerlink" title="🍋 腾讯 Lemon 清理 - 定制化清理"></a>🍋 腾讯 Lemon 清理 - 定制化清理</h3><p>腾讯柠檬清理（Lemon清理）已经发布一年啦，大家使用起来还顺手吗？作为Mac系统维护工具的“新起之秀”，最大的争议就是和老牌 CleanMyMac X 的对比。<br> <img src="/csdn-blog/images/e49afd33123be8d91a5363388516fc23.webp" alt="推荐 21 款博主常用 MacOS 软件 - 图8" loading='lazy'><br> 孰好孰坏，不做过多评判！<strong>下载方式：<a target="_blank" rel="noopener" href="https://lemon.qq.com/">Lemon官网</a>！</strong></p>
+<h3 id="📺-iWall-–-桌面动态引擎"><a href="#📺-iWall-–-桌面动态引擎" class="headerlink" title="📺 iWall – 桌面动态引擎"></a>📺 iWall – 桌面动态引擎</h3><p><code>iWall</code> 是一款可以使用任何格式的漂亮视频（无须转换）：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mathematica">图片，动画，<span class="hljs-variable">Flash</span>，<span class="hljs-variable">gif</span>，<span class="hljs-variable">swf</span>，<span class="hljs-number">2</span><span class="hljs-built_in">D</span>，<span class="hljs-number">3</span><span class="hljs-built_in">D</span>，程序，网页，<span class="hljs-variable">App</span>，网站<br><br><br><span class="hljs-variable">AI</span>写代码<br><br><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>❤️ 作为您的动态壁纸，动态桌面的Mac软件！<br> <strong>⭐️ 如何使用可参考：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av24297542?from=search&seid=5708471250343914048">iWall使用帮助视频</a></strong></p>
+<p><strong>⭐️ 资源下载可参考：<a target="_blank" rel="noopener" href="http://www.puke365.com/ziyuan.html">iWall动态壁纸资源下载</a></strong></p>
+<h3 id="✂️-CopyLess-2-–-剪贴板增强工具"><a href="#✂️-CopyLess-2-–-剪贴板增强工具" class="headerlink" title="✂️ CopyLess 2 – 剪贴板增强工具"></a>✂️ CopyLess 2 – 剪贴板增强工具</h3><p><code>CopyLess 2</code> 是Mac平台上的一款专业剪贴板管理器，可以扩展剪贴板，记录剪贴过得所有内容，免费版最多支持100条记录。<br> <img src="/csdn-blog/images/d6bdad132104593cf9035546e705bb46.webp" alt="推荐 21 款博主常用 MacOS 软件 - 图9" loading='lazy'><br> ❤️ 全面升级，完全重新设计，重新以Swift代码执行，只为更好的性能、稳定性、舒适性。</p>
+<h3 id="📌-Rectangle-Mangnet-–-窗口分屏工具"><a href="#📌-Rectangle-Mangnet-–-窗口分屏工具" class="headerlink" title="📌 Rectangle &amp;&amp; Mangnet – 窗口分屏工具"></a>📌 Rectangle &amp;&amp; Mangnet – 窗口分屏工具</h3><p><code>Rectangle</code> 是 Mac 平台上的一款窗口管理应用。可以使用键盘快捷键移动和调整macOS 中的窗口大小，分屏神器。<br> <img src="/csdn-blog/images/d6e9054729a3b587d13897482ed49078.webp" alt="推荐 21 款博主常用 MacOS 软件 - 图10" loading='lazy'><br> ❤️ 开源免费，<strong>GitHub地址：<a target="_blank" rel="noopener" href="https://github.com/rxhanson/Rectangle">Rectangle</a>！</strong></p>
+<h3 id="🌎-Deepl-–-翻译神器"><a href="#🌎-Deepl-–-翻译神器" class="headerlink" title="🌎 Deepl – 翻译神器"></a>🌎 Deepl – 翻译神器</h3><p>科技巨头谷歌（Google）、微软（Microsoft）和脸书（Facebook）都将机器学习应用到翻译领域，但一家名为 <code>DeepL</code> 的小公司却超越了他们，并且提高了该领域的标准。<br> 其翻译速度可与规模庞大的竞争者相媲美，但比我们使用过的任何一个翻译工具都要准确和细致，同时支持文档翻译。</p>
+<h3 id="🔇-Loopback-–-音频处理神器"><a href="#🔇-Loopback-–-音频处理神器" class="headerlink" title="🔇 Loopback – 音频处理神器"></a>🔇 Loopback – 音频处理神器</h3><p>Loopback是一款Mac平台上的可以创建虚拟音频设备的工具，从应用程序和音频的输入的设备创建虚拟音频设备的声音，然后将其发送给音频处理应用程序。<br> Loopback 会给了你一个高端录音工作室。如果你经常直播，相信你对它应该不会陌生。</p>
+<h2 id="🎉-软件获取方式"><a href="#🎉-软件获取方式" class="headerlink" title="🎉 软件获取方式"></a>🎉 软件获取方式</h2><p>关注公众号之后，菜单栏自取，或者后台回复<code>暗号</code>：<strong>macOS</strong>。<br> <strong>❤️ 可以扫码关注下方👇公众号，菜单栏自取！❤️</strong></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/120097664/">https://pc-study.github.io/csdn-blog/posts/120097664/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/macos/">macos</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/119977285/" title="达梦 DM8 数据库安装详细手册（Windows+Linux+Docker）"><img class="cover" src="/csdn-blog/images/e9401aff6af7455f73ff7c72105b3640.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">达梦 DM8 数据库安装详细手册（Windows+Linux+Docker）</div></div><div class="info-2"><div class="info-item-1">目录 🌲 前言 💬 介绍 💦 安装介质下载 🔥 达梦8安装包 💥 Centos7 box 🏆 Linux 下 DM 的安装 🍭 Centos7 环境安装 - vagrant 启动 centos7 上传安装介质 初始化配置 🍰 安装前准备 - 检查Linux(Unix)系统信息 创建安装用户 创建安装</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119984255/" title="基础篇：Linux 常用命令总结"><img class="cover" src="/csdn-blog/img/covers/linux.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">基础篇：Linux 常用命令总结</div></div><div class="info-2"><div class="info-item-1">目录 🌲 前言 🏆 命令汇总 🍇 文件管理 - 1️⃣ ls 命令 – 显示指定工作目录下的内容及属性信息 2️⃣ cp 命令 – 复制文件或目录 3️⃣ mkdir 命令 – 创建目录 4️⃣ mv 命令 – 移动或改名文件 5️⃣ pwd 命令 – 显示当前路径 🍉 文档编辑 - 1️⃣ cat</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/121942762/" title="教你美化苹果电脑，终端不会用，Homebrew 没安装？"><img class="cover" src="/csdn-blog/images/fa06640e2402f836a9917bf87a2d0d52.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-14</div><div class="info-item-2">教你美化苹果电脑，终端不会用，Homebrew 没安装？</div></div><div class="info-2"><div class="info-item-1">前言 不会吧？不会还有人用mac没有安装Homebrew吧？ iTerm2 都不会用，还敢自称老司机？ 都说玩溜了Linux的大佬，MacOS也不在话下。作为常年使用Linux的我，刚入手mbp的时候，打开终端的我真是一言难尽，因此我开始折腾它，也算是小有心得。 因此，打算分享一波，关于如何打造Ma</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9A-%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">📚 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%98%80%EF%B8%8F-%E8%BD%AF%E4%BB%B6%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">☀️ 软件介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%A5-IINA-%E2%80%93-%E5%85%A8%E6%A0%BC%E5%BC%8F%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E7%A5%9E%E5%99%A8"><span class="toc-number">3.1.</span> <span class="toc-text">🎥 IINA – 全格式视频播放神器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%92%BE-Motrix-%E2%80%93-%E4%B8%87%E8%83%BD%E4%B8%8B%E8%BD%BD%E8%BD%AF%E4%BB%B6"><span class="toc-number">3.2.</span> <span class="toc-text">💾 Motrix – 万能下载软件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%B9-Downie-4-%E2%80%93-%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD%E7%A5%9E%E5%99%A8"><span class="toc-number">3.3.</span> <span class="toc-text">📹 Downie 4 – 视频下载神器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%80-Tuxera-Disk-Manager-%E2%80%93-NTFS%E7%A3%81%E7%9B%98%E7%AE%A1%E7%90%86"><span class="toc-number">3.4.</span> <span class="toc-text">📀 Tuxera Disk Manager – NTFS磁盘管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%8D-Alfred-4-%E2%80%93-%E5%85%A8%E8%87%AA%E5%8A%A8%E6%95%88%E7%8E%87%E7%A5%9E%E5%99%A8"><span class="toc-number">3.5.</span> <span class="toc-text">🔍 Alfred 4 – 全自动效率神器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%91-iShot-Snipaste-%E2%80%93-%E5%85%A8%E8%83%BD%E6%88%AA%E5%9B%BE%E5%B7%A5%E5%85%B7"><span class="toc-number">3.6.</span> <span class="toc-text">🎑 iShot &amp;&amp; Snipaste – 全能截图工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%92%A1-Parallels-Desktop-%E2%80%93-%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%A5%9E%E5%99%A8"><span class="toc-number">3.7.</span> <span class="toc-text">💡 Parallels Desktop – 虚拟机神器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%8F-Mircosoft-Remote-Desktop-%E2%80%93-Windows%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5%E5%B7%A5%E5%85%B7"><span class="toc-number">3.8.</span> <span class="toc-text">🎏 Mircosoft Remote Desktop – Windows远程连接工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%8F-%E8%B6%85%E7%BA%A7%E5%8F%B3%E9%94%AE-Lite-%E2%80%93-%E5%8F%B3%E9%94%AE%E5%8A%9F%E8%83%BD%E5%8A%A0%E5%BC%BA"><span class="toc-number">3.9.</span> <span class="toc-text">🔏 超级右键 Lite – 右键功能加强</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%A5-KeKa-%E2%80%93-%E8%A7%A3%E5%8E%8B%E7%BC%A9%E8%BD%AF%E4%BB%B6"><span class="toc-number">3.10.</span> <span class="toc-text">📥 KeKa – 解压缩软件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%8E-CheatSheet-%E2%80%93-%E5%BF%AB%E6%8D%B7%E9%94%AE%E6%9F%A5%E7%9C%8B%E7%A5%9E%E5%99%A8"><span class="toc-number">3.11.</span> <span class="toc-text">📎 CheatSheet – 快捷键查看神器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%87-Permute-3-%E2%80%93-%E6%A0%BC%E5%BC%8F%E8%BD%AC%E6%8D%A2%E7%A5%9E%E5%99%A8"><span class="toc-number">3.12.</span> <span class="toc-text">📇 Permute 3 – 格式转换神器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%82-Dropover-%E2%80%93-%E6%8B%96%E6%8B%BD%E6%93%8D%E4%BD%9C%E7%A5%9E%E5%99%A8"><span class="toc-number">3.13.</span> <span class="toc-text">📂 Dropover – 拖拽操作神器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%9F-CleanMyMac-X-%E2%80%93-%E9%AB%98%E9%80%BC%E6%A0%BC%E6%B8%85%E7%90%86%E5%B7%A5%E5%85%B7"><span class="toc-number">3.14.</span> <span class="toc-text">📟 CleanMyMac X – 高逼格清理工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%8B-%E8%85%BE%E8%AE%AF-Lemon-%E6%B8%85%E7%90%86-%E5%AE%9A%E5%88%B6%E5%8C%96%E6%B8%85%E7%90%86"><span class="toc-number">3.15.</span> <span class="toc-text">🍋 腾讯 Lemon 清理 - 定制化清理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%BA-iWall-%E2%80%93-%E6%A1%8C%E9%9D%A2%E5%8A%A8%E6%80%81%E5%BC%95%E6%93%8E"><span class="toc-number">3.16.</span> <span class="toc-text">📺 iWall – 桌面动态引擎</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%82%EF%B8%8F-CopyLess-2-%E2%80%93-%E5%89%AA%E8%B4%B4%E6%9D%BF%E5%A2%9E%E5%BC%BA%E5%B7%A5%E5%85%B7"><span class="toc-number">3.17.</span> <span class="toc-text">✂️ CopyLess 2 – 剪贴板增强工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%8C-Rectangle-Mangnet-%E2%80%93-%E7%AA%97%E5%8F%A3%E5%88%86%E5%B1%8F%E5%B7%A5%E5%85%B7"><span class="toc-number">3.18.</span> <span class="toc-text">📌 Rectangle &amp;&amp; Mangnet – 窗口分屏工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8C%8E-Deepl-%E2%80%93-%E7%BF%BB%E8%AF%91%E7%A5%9E%E5%99%A8"><span class="toc-number">3.19.</span> <span class="toc-text">🌎 Deepl – 翻译神器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%87-Loopback-%E2%80%93-%E9%9F%B3%E9%A2%91%E5%A4%84%E7%90%86%E7%A5%9E%E5%99%A8"><span class="toc-number">3.20.</span> <span class="toc-text">🔇 Loopback – 音频处理神器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8E%89-%E8%BD%AF%E4%BB%B6%E8%8E%B7%E5%8F%96%E6%96%B9%E5%BC%8F"><span class="toc-number">4.</span> <span class="toc-text">🎉 软件获取方式</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

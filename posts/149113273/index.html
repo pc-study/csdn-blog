@@ -1,0 +1,275 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Oracle 表空间不足？用 Shell 脚本实现自动扩容！ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 脚本演示 测试环境准备 部署并执行自动扩展脚本 配置定时任务 (crontab) 写在最后 前言 最近有客户反馈了一个困扰已久的问题：频繁收到表空间使用率超过 90% 的告警邮件，每次都需要手动添加数据文件来解决。客户询问：O">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Oracle 表空间不足？用 Shell 脚本实现自动扩容！">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/149113273/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 脚本演示 测试环境准备 部署并执行自动扩展脚本 配置定时任务 (crontab) 写在最后 前言 最近有客户反馈了一个困扰已久的问题：频繁收到表空间使用率超过 90% 的告警邮件，每次都需要手动添加数据文件来解决。客户询问：O">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/3e0eaa46e3f81a3bf5a28bfbbb804ebe.webp">
+<meta property="article:published_time" content="2025-07-04T03:15:00.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.246Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/3e0eaa46e3f81a3bf5a28bfbbb804ebe.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Oracle 表空间不足？用 Shell 脚本实现自动扩容！","url":"https://pc-study.github.io/csdn-blog/posts/149113273/","image":"https://pc-study.github.io/csdn-blog/images/3e0eaa46e3f81a3bf5a28bfbbb804ebe.webp","datePublished":"2025-07-04T03:15:00.000Z","dateModified":"2026-03-20T12:25:39.246Z","description":"大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 脚本演示 测试环境准备 部署并执行自动扩展脚本 配置定时任务 (crontab) 写在最后 前言 最近有客户反馈了一个困扰已久的问题：频繁收到表空间使用率超过 90% 的告警邮件，每次都需要手动添加数据文件来解决。客户询问：O","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/149113273/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/149113273/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Oracle 表空间不足？用 Shell 脚本实现自动扩容！',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/3e0eaa46e3f81a3bf5a28bfbbb804ebe.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">Oracle 表空间不足？用 Shell 脚本实现自动扩容！</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Oracle 表空间不足？用 Shell 脚本实现自动扩容！<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-07-04-149113273.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-04T03:15:00.000Z" title="发表于 2025-07-04 11:15:00">2025-07-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.246Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/">Oracle 数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">750</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>2分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><blockquote>
+<p>大家好，这里是 <strong>DBA 学习之路</strong>，专注于提升数据库运维效率。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#_13">脚本演示</a></li>
+<li><ul>
+<li><a href="#_15">测试环境准备</a></li>
+<li><a href="#_58">部署并执行自动扩展脚本</a></li>
+<li><a href="#_crontab_75">配置定时任务 (crontab)</a></li>
+</ul>
+</li>
+<li><a href="#_86">写在最后</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近有客户反馈了一个困扰已久的问题：频繁收到表空间使用率超过 90% 的告警邮件，每次都需要手动添加数据文件来解决。客户询问：Oracle 数据库难道不能自动增加数据文件吗？</p>
+<p>很遗憾，Oracle 数据库原生确实不支持自动添加数据文件功能。想要实现自动化扩容，需要 DBA 自行编写 Shell 脚本。</p>
+<p>今天就来分享一个我在实际工作中常用的 Oracle 表空间自动扩展脚本。</p>
+<blockquote>
+<p>关注公众号：<strong>DBA学习之路</strong>，聊天框回复：<code>tbs_autoext</code> 下载脚本。</p>
+</blockquote>
+<h2 id="脚本演示"><a href="#脚本演示" class="headerlink" title="脚本演示"></a>脚本演示</h2><p>我在测试环境演示一下这个脚本如何使用。</p>
+<h3 id="测试环境准备"><a href="#测试环境准备" class="headerlink" title="测试环境准备"></a>测试环境准备</h3><p>首先，在测试环境创建一个 90% 以上使用率的表空间：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-comment">-- 创建测试表空间（注意：会删除已存在的同名表空间）</span><br><span class="hljs-keyword">DROP</span> <span class="hljs-keyword">TABLESPACE</span> test_auto_ts INCLUDING CONTENTS <span class="hljs-keyword">AND</span> DATAFILES;<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLESPACE</span> test_auto_ts<br>DATAFILE <span class="hljs-string">&#x27;/oradata/orcl/test_auto_ts01.dbf&#x27;</span><br>SIZE <span class="hljs-number">1</span>M<br>AUTOEXTEND <span class="hljs-keyword">ON</span><br>NEXT <span class="hljs-number">1</span>M<br>MAXSIZE <span class="hljs-number">10</span>M; <span class="hljs-comment">-- 设置较小的MAXSIZE，便于快速达到测试效果</span><br><br><span class="hljs-comment">-- 创建测试用户并分配权限</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">USER</span> test_auto_user IDENTIFIED <span class="hljs-keyword">BY</span> &quot;Password123&quot;<br><span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">TABLESPACE</span> test_auto_ts<br>QUOTA UNLIMITED <span class="hljs-keyword">ON</span> test_auto_ts;<br><br><span class="hljs-comment">-- 创建测试表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> test_auto_user.test_data (<br>    id NUMBER,<br>    data VARCHAR2(<span class="hljs-number">4000</span>)<br>) <span class="hljs-keyword">TABLESPACE</span> test_auto_ts;<br><br><span class="hljs-comment">-- 批量插入数据快速填充表空间</span><br><span class="hljs-keyword">BEGIN</span><br>    <span class="hljs-keyword">FOR</span> i <span class="hljs-keyword">IN</span> <span class="hljs-number">1.</span><span class="hljs-number">.2000</span> <span class="hljs-keyword">LOOP</span><br>        <span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> test_auto_user.test_data<br>        <span class="hljs-keyword">VALUES</span> (i, RPAD(<span class="hljs-string">&#x27;X&#x27;</span>, <span class="hljs-number">4000</span>, <span class="hljs-string">&#x27;X&#x27;</span>)); <span class="hljs-comment">-- 每条记录约4K</span><br>    <span class="hljs-keyword">END</span> <span class="hljs-keyword">LOOP</span>;<br>    <span class="hljs-keyword">COMMIT</span>;<br><span class="hljs-keyword">END</span>;<br>/<br><br><span class="hljs-comment">-- 检查表空间当前使用率</span><br><span class="hljs-keyword">SELECT</span> tablespace_name, ROUND(used_percent, <span class="hljs-number">2</span>) <span class="hljs-keyword">AS</span> usage_pct<br><span class="hljs-keyword">FROM</span> dba_tablespace_usage_metrics<br><span class="hljs-keyword">WHERE</span> tablespace_name = <span class="hljs-string">&#x27;TEST_AUTO_TS&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p><strong>执行结果示意</strong>：</p>
+<p><img src="/csdn-blog/images/3e0eaa46e3f81a3bf5a28bfbbb804ebe.webp" alt="表空间使用率接近100%" loading='lazy'></p>
+<h3 id="部署并执行自动扩展脚本"><a href="#部署并执行自动扩展脚本" class="headerlink" title="部署并执行自动扩展脚本"></a>部署并执行自动扩展脚本</h3><p>1、<strong>上传脚本</strong>：将 <code>tbs_autoext.sh</code> 脚本上传到服务器指定目录（例如 <code>/home/oracle/tbs_check/</code>）</p>
+<p><img src="/csdn-blog/images/a7044d4fcafa50b96b9ad6cd7a9d02d7.webp" alt="脚本上传示意" loading='lazy'></p>
+<p>2、<strong>执行脚本</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">./tbs_autoext.sh -t 80 -v<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/7c5d313ab291cd3af0f959a0ca256176.webp" alt="脚本执行输出示意" loading='lazy'></p>
+<p>3、<strong>查看执行日志</strong>：脚本运行完成后，可通过日志文件查看详细的操作记录</p>
+<p><img src="/csdn-blog/images/2e5dbbf4c39e6b28c505525b27f67255.webp" alt="日志文件内容示意" loading='lazy'></p>
+<h3 id="配置定时任务-crontab"><a href="#配置定时任务-crontab" class="headerlink" title="配置定时任务 (crontab)"></a>配置定时任务 (crontab)</h3><p>为了实现完全自动化运维，可以将脚本加入系统定时任务：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros">crontab -e<br><span class="hljs-comment"># 添加以下配置，设置每天凌晨2点自动执行检查</span><br>0 2 * * * <span class="hljs-built_in">export</span> <span class="hljs-attribute">ORACLE_SID</span>=orcl; /home/oracle/tbs_check/tbs_autoext.sh -m luciferliu@163.com<br></code></pre></td></tr></table></figure>
+
+<p>每天 2 点自动运行脚本并且将日志内容发送到邮箱。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>通过这个自动化脚本，我们可以彻底解决 Oracle 表空间手动扩容的烦恼，大幅减少告警干扰，显著提升 DBA 的工作效率。</p>
+<p><strong>生产环境部署建议</strong>：</p>
+<ul>
+<li>务必在测试环境充分验证后再上线</li>
+<li>根据实际业务需求调整触发扩容的使用率阈值</li>
+<li>合理设置新增数据文件的大小，避免频繁扩容或单次扩容过大</li>
+</ul>
+<p>希望这个脚本能为大家的日常运维工作带来便利！</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/149113273/">https://pc-study.github.io/csdn-blog/posts/149113273/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/149216973/" title="智能对话与大模型入门指南"><img class="cover" src="/csdn-blog/images/c107c9200bbf4f108470bff15f422d16.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">智能对话与大模型入门指南</div></div><div class="info-2"><div class="info-item-1">前言 人工智能浪潮席卷全球，深刻改变着人类的生产生活方式。其中，智能对话系统作为人机交互的核心纽带，已广泛应用于智能客服、虚拟助手、智能搜索等领域，极大提升了服务效率和用户体验。同时，大语言模型（LLM） 的爆发式发展，更是为人工智能赋予了前所未有的理解和生成能力，开启了通用人工智能（AGI）探索的</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149087654/" title="SQLark V3.5 重磅升级！你的 AI 小百灵来了~"><img class="cover" src="/csdn-blog/images/170a5dc0f63ec10eb1506d3166abaa54.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">SQLark V3.5 重磅升级！你的 AI 小百灵来了~</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 SQLark V3.5 新版亮点 AI 小百灵测评 代码解释 代码生成 优化 SQL 达梦知识检索 写在最后 前言 在数据库工具这个领域，SQLark 的迭代速度真的让我十分佩服，从 2023 年 5 月正式发布以来，几乎每</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/139777702/" title="统信 UOS V20 1070(e) 一键安装 Oracle 12CR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-18</div><div class="info-item-2">统信 UOS V20 1070(e) 一键安装 Oracle 12CR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 统信 UOS V20 1070(e) 一键安装 Oracle 12CR2 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139176999/" title="SUSE 12 SP5 一键安装 Oracle 11GR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">SUSE 12 SP5 一键安装 Oracle 11GR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 SUSE 12 SP5 一键安装 Oracle 11GR2 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安装包（安</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/116522953/" title="20分钟！一键部署Oracle 18C单机CDB+PDB"><img class="cover" src="/csdn-blog/images/c30841ed018c7e215bef55b34999a2a2.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-05-08</div><div class="info-item-2">20分钟！一键部署Oracle 18C单机CDB+PDB</div></div><div class="info-2"><div class="info-item-1">无人值守安装Oracle 18C单机CDB+PDB，只需要20分钟？没错，通过脚本静默安装，真的只需要20分钟，包括安装补丁，建库。</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139179123/" title="华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 21C RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 21C RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 openEuler 22.03 LTS SP3 一键安装 Oracle 21C RAC 过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139777675/" title="统信 UOS V20 1070(e) 一键安装 Oracle 11GR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-18</div><div class="info-item-2">统信 UOS V20 1070(e) 一键安装 Oracle 11GR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 统信 UOS V20 1070(e) 一键安装 Oracle 11GR2 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139271586/" title="openEuler 23.09（华为欧拉）一键安装 Oracle 21C 单机版"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-28</div><div class="info-item-2">openEuler 23.09（华为欧拉）一键安装 Oracle 21C 单机版</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 openEuler 23.09 一键安装 Oracle 21C 单机过程（全程无需人工干预）。（脚本包括 ORALCE PSU/OJVM 等补丁自动安装） ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 脚本第三代支持 N 节点一键安装，不限制节点数</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%84%9A%E6%9C%AC%E6%BC%94%E7%A4%BA"><span class="toc-number">3.</span> <span class="toc-text">脚本演示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">3.1.</span> <span class="toc-text">测试环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2%E5%B9%B6%E6%89%A7%E8%A1%8C%E8%87%AA%E5%8A%A8%E6%89%A9%E5%B1%95%E8%84%9A%E6%9C%AC"><span class="toc-number">3.2.</span> <span class="toc-text">部署并执行自动扩展脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1-crontab"><span class="toc-number">3.3.</span> <span class="toc-text">配置定时任务 (crontab)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ChatGPT 4o 优化 SQL 可靠吗？ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="目录 前言 ChatGPT 问答 提问 ChatGPT 4o 回复 可行性分析 免费体验 ChatGPT 4o Plus 前言 前天写的一篇 听说 ChatGPT 4o 可以取代初级 DBA？ 在群里引起了广泛讨论，很多朋友觉得在基础运维方面，ChatGPT 4o &gt; 初级 DBA，但是在 SQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ChatGPT 4o 优化 SQL 可靠吗？">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/143294214/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="目录 前言 ChatGPT 问答 提问 ChatGPT 4o 回复 可行性分析 免费体验 ChatGPT 4o Plus 前言 前天写的一篇 听说 ChatGPT 4o 可以取代初级 DBA？ 在群里引起了广泛讨论，很多朋友觉得在基础运维方面，ChatGPT 4o &gt; 初级 DBA，但是在 SQL">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg">
+<meta property="article:published_time" content="2024-10-28T04:06:02.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:13:19.890Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="sql">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"ChatGPT 4o 优化 SQL 可靠吗？","url":"https://pc-study.github.io/csdn-blog/posts/143294214/","image":"https://pc-study.github.io/csdn-blog/img/covers/database.svg","datePublished":"2024-10-28T04:06:02.000Z","dateModified":"2026-03-20T12:13:19.890Z","description":"目录 前言 ChatGPT 问答 提问 ChatGPT 4o 回复 可行性分析 免费体验 ChatGPT 4o Plus 前言 前天写的一篇 听说 ChatGPT 4o 可以取代初级 DBA？ 在群里引起了广泛讨论，很多朋友觉得在基础运维方面，ChatGPT 4o > 初级 DBA，但是在 SQL","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/143294214/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/143294214/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ChatGPT 4o 优化 SQL 可靠吗？',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/database.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">ChatGPT 4o 优化 SQL 可靠吗？</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">ChatGPT 4o 优化 SQL 可靠吗？<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-10-28-143294214.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-10-28T04:06:02.000Z" title="发表于 2024-10-28 12:06:02">2024-10-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:13:19.890Z" title="更新于 2026-03-20 20:13:19">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:13:19&quot;}" hidden></div><h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_2">前言</a></li>
+<li><a href="#ChatGPT__7">ChatGPT 问答</a></li>
+<li><ul>
+<li><a href="#_8">提问</a></li>
+<li><a href="#ChatGPT_4o__11">ChatGPT 4o 回复</a></li>
+<li><a href="#_57">可行性分析</a></li>
+</ul>
+</li>
+<li><a href="#_ChatGPT_4o_Plus_103">免费体验 ChatGPT 4o Plus</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前天写的一篇 <strong><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1848725539416268800">听说 ChatGPT 4o 可以取代初级 DBA？</a></strong> 在群里引起了广泛讨论，很多朋友觉得在基础运维方面，<strong>ChatGPT 4o &gt; 初级 DBA</strong>，但是在 SQL 优化领域，<strong>ChatGPT 4o &lt; 初级 DBA</strong>，事实真是如此吗？</p>
+<p>于是，我提问 ChatGPT 4o 测试了一下！</p>
+<h2 id="ChatGPT-问答"><a href="#ChatGPT-问答" class="headerlink" title="ChatGPT 问答"></a>ChatGPT 问答</h2><h3 id="提问"><a href="#提问" class="headerlink" title="提问"></a>提问</h3><p><strong>针对一个慢查询 SQL，在 Oracle 数据库中，一般有哪些优化的方法？</strong></p>
+<h3 id="ChatGPT-4o-回复"><a href="#ChatGPT-4o-回复" class="headerlink" title="ChatGPT 4o 回复"></a>ChatGPT 4o 回复</h3><p>在 Oracle 数据库中，针对慢查询的优化通常可以从以下几个方面入手：</p>
+<p><strong>1、分析执行计划</strong></p>
+<ul>
+<li>使用 <code>EXPLAIN PLAN</code> 或者 <code>DBMS_XPLAN.DISPLAY</code> 查看 SQL 语句的执行计划，了解每个步骤的耗时、数据访问方法（如全表扫描、索引扫描等）及其成本。</li>
+<li>重点关注全表扫描（Full Table Scan）、排序操作（SORT）、嵌套循环（Nested Loop）、哈希连接（Hash Join）等耗时操作。</li>
+</ul>
+<p><strong>2、创建和优化索引</strong></p>
+<ul>
+<li>检查查询中使用的条件，确保适当的字段有索引。</li>
+<li>优化复合索引（Composite Index）和函数索引（Function-based Index），避免不必要的全表扫描。</li>
+<li>删除冗余、不常用或影响写操作性能的索引，减少索引维护的开销。</li>
+</ul>
+<p><strong>3、使用分区表</strong></p>
+<ul>
+<li>对于数据量较大的表，使用分区可以有效加快查询速度，尤其是针对时间维度的查询。</li>
+<li>根据查询条件选择合适的分区方式（如 Range 分区、List 分区、Hash 分区等）。</li>
+</ul>
+<p><strong>4、调整统计信息</strong></p>
+<ul>
+<li>Oracle 的优化器依赖表和索引的统计信息来决定执行计划，因此定期更新统计信息非常重要。</li>
+<li>使用 <code>DBMS_STATS.GATHER_TABLE_STATS</code> 和 <code>DBMS_STATS.GATHER_INDEX_STATS</code> 定期收集表和索引的最新统计信息，确保优化器基于最新的数据做出最优决策。</li>
+</ul>
+<p><strong>5、避免不必要的排序操作</strong></p>
+<ul>
+<li>在查询中减少或优化 <code>ORDER BY</code> 和 <code>GROUP BY</code> 的使用。</li>
+<li>如果必须排序，可以考虑增加索引，减少排序开销。</li>
+</ul>
+<p><strong>6、优化联接和子查询</strong></p>
+<ul>
+<li>对于复杂的多表联接操作，考虑使用适当的连接方式（如 Hash Join、Merge Join 等）。</li>
+<li>尽量避免在子查询中使用 <code>IN</code>，可以用 <code>EXISTS</code> 或 <code>JOIN</code> 替代以提高性能。</li>
+<li>合并子查询和减少嵌套查询的层次，避免冗余查询操作。</li>
+</ul>
+<p><strong>7、使用绑定变量</strong></p>
+<ul>
+<li>避免硬编码 SQL 参数，改用绑定变量（Bind Variables）来减少解析开销，提高数据库的缓存命中率。</li>
+</ul>
+<p><strong>8、使用 Hints</strong></p>
+<ul>
+<li>Oracle 提供了多种 Hints（提示）来强制指定执行计划的选择，比如 <code>USE_NL</code>（使用嵌套循环）、<code>INDEX</code>（使用索引）等。</li>
+<li>但应谨慎使用 Hints，过度依赖 Hints 可能会降低 SQL 的通用性和灵活性。</li>
+</ul>
+<p><strong>9、减少网络开销</strong></p>
+<ul>
+<li>尽量减少从数据库传输的数据量，比如限制返回的列数和数据量（使用 <code>ROWNUM</code>、分页查询等）。</li>
+<li>优化客户端与数据库的连接池，减少频繁的连接和断开。</li>
+</ul>
+<p><strong>10、分解复杂查询</strong></p>
+<ul>
+<li>将复杂的 SQL 查询分解为多个简单的步骤，使用临时表或视图存储中间结果。</li>
+<li>可以先处理数据过滤和聚合，然后再进行联接等复杂操作，减少查询的复杂度。</li>
+</ul>
+<p>通过以上方法，可以显著优化慢查询的性能。在具体场景中，可以结合实际需求、数据量以及硬件配置来选择最适合的优化方法。</p>
+<h3 id="可行性分析"><a href="#可行性分析" class="headerlink" title="可行性分析"></a>可行性分析</h3><p>通过以上回复，我们可以发现 ChatGPT 4o 提供了很多的优化方法：</p>
+<ul>
+<li>分析执行计划</li>
+<li>调整统计信息</li>
+<li>创建和优化索引</li>
+<li>使用分区表</li>
+<li>使用绑定变量</li>
+<li>使用 Hint</li>
+<li>改写复杂 SQL</li>
+</ul>
+<p>等等一系列常规优化方法，回答还算是中规中矩。</p>
+<p><strong>那如果提供一个慢查询 SQL，是否可以帮忙给出合理的优化方案呢？</strong></p>
+<p>在开发过程中，很多人都喜欢用 <code>distinct</code>，<code>in/not in</code>，<code>like/not like</code>，<code>is null/is not null</code> 这些语法，但在性能和效率方面可能存在一些问题。在大数据量环境下，滥用这些操作符可能会导致性能下降。</p>
+<ul>
+<li><strong>避免无意义的 DISTINCT</strong>：仅在确实需要去重时使用 DISTINCT，否则尽量避免。</li>
+<li><strong>IN&#x2F;NOT IN 替换</strong>：优先使用 EXISTS&#x2F;NOT EXISTS 替代 IN&#x2F;NOT IN，特别是大数据集和可能含 NULL 的子查询。</li>
+<li><strong>优化 LIKE 查询</strong>：能用前缀匹配时尽量使用前缀匹配；对于大量文本查询，考虑使用全文索引。</li>
+<li><strong>IS NULL 优化</strong>：对 IS NULL&#x2F;IS NOT NULL 查询可以考虑函数索引，提升查询效率。</li>
+</ul>
+<p>针对以上情况，这里选几个经典的慢 SQL 案例：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-comment">-- 使用 NOT IN，可能有 NULL 问题</span><br><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> orders <span class="hljs-keyword">WHERE</span> customer_id <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">IN</span> (<span class="hljs-keyword">SELECT</span> customer_id <span class="hljs-keyword">FROM</span> vip_customers);<br><br><span class="hljs-comment">-- 使用 IS NULL，可能无法利用索引</span><br><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> employees <span class="hljs-keyword">WHERE</span> manager_id <span class="hljs-keyword">IS</span> <span class="hljs-keyword">NULL</span>;<br><br><span class="hljs-comment">-- 非前缀匹配，无法利用索引</span><br><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> employees <span class="hljs-keyword">WHERE</span> last_name <span class="hljs-keyword">LIKE</span> <span class="hljs-string">&#x27;%Smith&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>ChatGPT 4o 给出的优化方式：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-comment">-- 替代为 NOT EXISTS，性能和准确性更高</span><br><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> orders o <span class="hljs-keyword">WHERE</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-number">1</span> <span class="hljs-keyword">FROM</span> vip_customers v <span class="hljs-keyword">WHERE</span> v.customer_id = o.customer_id);<br><br><span class="hljs-comment">-- 使用函数索引后的查询</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">INDEX</span> idx_col_is_null <span class="hljs-keyword">ON</span> <span class="hljs-built_in">table_name</span> (NVL(<span class="hljs-keyword">column</span>, <span class="hljs-string">&#x27;NO_NULL&#x27;</span>));<br><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> employees <span class="hljs-keyword">WHERE</span> NVL(manager_id, <span class="hljs-number">-1</span>) = <span class="hljs-number">-1</span>;<br><br><span class="hljs-comment">-- 前缀匹配，可以使用索引</span><br><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> employees <span class="hljs-keyword">WHERE</span> last_name <span class="hljs-keyword">LIKE</span> <span class="hljs-string">&#x27;Smith%&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>对于 GPT 给出的回复，大家觉得优化的如何？</p>
+<h2 id="免费体验-ChatGPT-4o-Plus"><a href="#免费体验-ChatGPT-4o-Plus" class="headerlink" title="免费体验 ChatGPT 4o Plus"></a>免费体验 ChatGPT 4o Plus</h2><p>这里我使用的是 Plus 版本的 GPT 探索功能：</p>
+<p>可以发现有很多关于 SQL 优化的 GPT 可供使用。</p>
+<hr>
+<p><strong>如果大家对如何使用 ChatGPT 来运维数据库和编写 Shell 代码感兴趣的话，后续我会继续更新这方面的内容！</strong></p>
+<p><strong>PS：</strong> 如果想免费体验 ChatGPT 4o，可以<strong>扫码进群</strong>，我会在每个工作日免费发放 Plus 会员的体验授权码。社群中还有准备好的 GPT 保姆级教程，进群后记得查看群公告噢！</p>
+<p>群里会通知最新的活动情况和使用教程等信息。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/143294214/">https://pc-study.github.io/csdn-blog/posts/143294214/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/sql/">sql</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/143330805/" title="达梦数据库参数配置与一键优化指南"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">达梦数据库参数配置与一键优化指南</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/143279733/" title="效率翻倍！达梦数据库 disql 使用技巧全攻略"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">效率翻倍！达梦数据库 disql 使用技巧全攻略</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/122590500/" title="[译] ALTER SYSTEM CANCEL SQL : 在 Oracle Database 18c 的会话中取消 SQL 语句"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-19</div><div class="info-item-2">[译] ALTER SYSTEM CANCEL SQL : 在 Oracle Database 18c 的会话中取消 SQL 语句</div></div><div class="info-2"><div class="info-item-1">原文地址： 原文作者：Tim Hall Oracle Database 18C 引入了 命令，用于取消会话中的 SQL 语句，提供了杀死恶意会话的替代方法。 目录 语法 指定要取消的会话 语法 命令的基本语法如下所示： 如果不加 ，默认代表当前 实例 。如果 不写，则代表是在当前指定会话中运行的 S</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121311398/" title="3 万字，关系型数据库性能体系，设计和效率提升"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-11-14</div><div class="info-item-2">3 万字，关系型数据库性能体系，设计和效率提升</div></div><div class="info-2"><div class="info-item-1">目录 前言 一、预期的读者和阅读建议 二、数据库模型设计规范 1、数据库建模原则性规范 2、实体型之间关系认定规范 3、范式化 1NF 的规范 4、范式化 2NF 的规范 5、范式化3NF的规范 6、反范式化冗余字段使用规范 7、数据库对象命名基本规范 - 7.1、遵循行业规范 7.2、简单命名原则</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120236438/" title="Oracle 数据泵迁移用户创建 SQL语句"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-11</div><div class="info-item-2">Oracle 数据泵迁移用户创建 SQL语句</div></div><div class="info-2"><div class="info-item-1">在进行数据泵迁移时，通常是按照用户进行导入导出，因此需要确认当前数据库中存在那些非系统用户！ 查看数据库中用户状态为 OPEN 的用户： 通过上述sql查询出的结果中，根据 字段可以筛选掉非系统用户！ 查看数据库中的角色： 创建用户 SQL： 用户授权： 📢 注意：如果是使用expdp，则不需要创建</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120236191/" title="Oracle 重做日志调整 SQL语句"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-11</div><div class="info-item-2">Oracle 重做日志调整 SQL语句</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库 安装之后，重做日志默认为 3组，如果需要新增删除，可以通过以下方式！ 查询： 新增： 单机数据库： RAC集群数据库： 删除： 📢 注意：如果当前要删除的 logfile 状态不是 ，那么删除会报错，需要执行 来切换日志，直到状态为 才可以删除！ 本次分享到此结束啦~ 如果觉得</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145010492/" title="基础篇：数据库 SQL 入门教程"><img class="cover" src="/csdn-blog/images/151ce3dd95c108f1ff4e8eeffec661da.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-08</div><div class="info-item-2">基础篇：数据库 SQL 入门教程</div></div><div class="info-2"><div class="info-item-1">目录 📚 前言 🌴 SQL 介绍 🌼 什么是 SQL 🌀 SQL 的类型 🌵 学习 SQL 的作用 🍄 数据库是什么 🐥 SQL 基础语言学习 🐤 CREATE TABLE – 创建表 🐑 INSERT – 插入数据 🐼 SELECT – 查询数据 🐫 DISTINCT – 去除重复值 🐸 WHER</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120070003/" title="基础篇：数据库 SQL 入门教程"><img class="cover" src="/csdn-blog/images/151ce3dd95c108f1ff4e8eeffec661da.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-12</div><div class="info-item-2">基础篇：数据库 SQL 入门教程</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 ❤️ 前些天发现了一个通俗易懂，风趣幽默的 人工智能学习网站！👈🏻 免费学习 目录 📚 前言 🌴 SQL 介绍 🌼 什么是 SQL 🌀 SQL 的类型 🌵 学习 SQL 的作用 🍄 数据库是什么 🐥 SQL 基础语言学习 🐤 CR</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ChatGPT-%E9%97%AE%E7%AD%94"><span class="toc-number">3.</span> <span class="toc-text">ChatGPT 问答</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E9%97%AE"><span class="toc-number">3.1.</span> <span class="toc-text">提问</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ChatGPT-4o-%E5%9B%9E%E5%A4%8D"><span class="toc-number">3.2.</span> <span class="toc-text">ChatGPT 4o 回复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E8%A1%8C%E6%80%A7%E5%88%86%E6%9E%90"><span class="toc-number">3.3.</span> <span class="toc-text">可行性分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%8D%E8%B4%B9%E4%BD%93%E9%AA%8C-ChatGPT-4o-Plus"><span class="toc-number">4.</span> <span class="toc-text">免费体验 ChatGPT 4o Plus</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Oracle SQL 字段是如何做到 “四大皆空“（BUG） | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="问题分析 首先，我们看一张图，我称之为 “四大皆空”，此图来源于 刘晨 的视频分享 Oracle中新增字段的点点滴滴，很有意思，从图中可以发现两段 SQL，看看一下这张图有什么奇怪的地方！ 本文参考资料： 非空字段空值对查询的影响 非空字段空值的产生 Oracle中新增字段的点点滴滴 SQL 分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Oracle SQL 字段是如何做到 “四大皆空“（BUG）">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/123732698/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="问题分析 首先，我们看一张图，我称之为 “四大皆空”，此图来源于 刘晨 的视频分享 Oracle中新增字段的点点滴滴，很有意思，从图中可以发现两段 SQL，看看一下这张图有什么奇怪的地方！ 本文参考资料： 非空字段空值对查询的影响 非空字段空值的产生 Oracle中新增字段的点点滴滴 SQL 分析">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/tech.svg">
+<meta property="article:published_time" content="2022-03-25T07:22:29.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.406Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="后端">
+<meta property="article:tag" content="开发语言">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/tech.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Oracle SQL 字段是如何做到 “四大皆空“（BUG）","url":"https://pc-study.github.io/csdn-blog/posts/123732698/","image":"https://pc-study.github.io/csdn-blog/img/covers/tech.svg","datePublished":"2022-03-25T07:22:29.000Z","dateModified":"2026-03-20T12:25:38.406Z","description":"问题分析 首先，我们看一张图，我称之为 “四大皆空”，此图来源于 刘晨 的视频分享 Oracle中新增字段的点点滴滴，很有意思，从图中可以发现两段 SQL，看看一下这张图有什么奇怪的地方！ 本文参考资料： 非空字段空值对查询的影响 非空字段空值的产生 Oracle中新增字段的点点滴滴 SQL 分析","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/123732698/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/123732698/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Oracle SQL 字段是如何做到 “四大皆空“（BUG）',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/tech.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">Oracle SQL 字段是如何做到 “四大皆空“（BUG）</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Oracle SQL 字段是如何做到 “四大皆空“（BUG）<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2022-03-25-123732698.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-03-25T07:22:29.000Z" title="发表于 2022-03-25 15:22:29">2022-03-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.406Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>首先，我们看一张图，我称之为 “四大皆空”，此图来源于 <a target="_blank" rel="noopener" href="https://www.modb.pro/u/6583">刘晨</a> 的视频分享 <a target="_blank" rel="noopener" href="https://www.modb.pro/video/5098">Oracle中新增字段的点点滴滴</a>，很有意思，从图中可以发现两段 SQL，看看一下这张图有什么奇怪的地方！</p>
+<p><em><strong>本文参考资料：</strong></em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://yangtingkun.net/?p=1481">非空字段空值对查询的影响</a></li>
+<li><a target="_blank" rel="noopener" href="http://yangtingkun.net/?p=1483">非空字段空值的产生</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/video/5098">Oracle中新增字段的点点滴滴</a></li>
+</ul>
+<h3 id="SQL-分析"><a href="#SQL-分析" class="headerlink" title="SQL 分析"></a>SQL 分析</h3><p><strong>第一段 SQL：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> test <span class="hljs-keyword">where</span> c1 <span class="hljs-keyword">is</span> <span class="hljs-keyword">null</span>;<br><span class="hljs-keyword">no</span> <span class="hljs-keyword">rows</span> selected<br><br><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> test <span class="hljs-keyword">where</span> c1 <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">null</span>;<br>  ID	<span class="hljs-type">NAME</span>	C1<br><span class="hljs-comment">------  -------	---</span><br>  <span class="hljs-number">1</span>	a<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>有一张 test 表有个 c1 字段；</li>
+<li>当查询 c1 字段值为空时，没有记录返回，得出结论：<strong>test 表中不存在 c1 字段值为空的数据；</strong></li>
+<li>当查询 c1 字段值不为空时，有一条记录返回，且 c1 字段是空值，得出结论：<strong>test 表中存在 c1 字段值不能空，但是 c1 字段值返回是空值？</strong></li>
+</ul>
+<p><strong>看完第一段 SQL，是不是已经产生疑惑 😵？</strong> 先不急，接着看第二段 SQL！</p>
+<p><strong>第二段 SQL：</strong></p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">SQL&gt; select dump(c1) as d from test;<br><span class="hljs-section">D</span><br><span class="hljs-section">-------</span><br>NULL<br><br>SQL&gt; select nvl(c1,<span class="hljs-emphasis">&#x27;is null&#x27;</span>) as c1 from test;<br><span class="hljs-section">C1</span><br><span class="hljs-section">-------</span><br>IS NULL<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>同一张 test 表的相同字段 c1；</li>
+<li>当使用 <a target="_blank" rel="noopener" href="https://docs.oracle.com/cd/E11882_01/server.112/e41084/functions055.htm#SQLRF00635">DUMP 函数</a> 来判断 c1 的值，返回值为空，根据官方文档描述：<strong>If expr is null, then this function returns NULL</strong>，可以得出结论：<strong>c1 字段值为空</strong>。</li>
+<li>当使用 <a target="_blank" rel="noopener" href="https://docs.oracle.com/cd/E11882_01/server.112/e41084/functions119.htm#SQLRF00684">NVL 函数</a> 来判断 c1 的值，返回值为 IS NULL，根据官方文档描述：<strong>If expr1 is null, then NVL returns expr2. If expr1 is not null, then NVL returns expr1</strong> ，得出结论：<strong>c1 字段值为空</strong>。</li>
+</ul>
+<p>看完第二段 SQL，得出统一的结论就是：<strong>c1 字段值为空。</strong></p>
+<p>根据上面两段 SQL 的结论，也就有了上图中的 <code>where PK dump/nvl？</code> 的疑问，那么到底是什么导致的这个问题呢？</p>
+<h2 id="猜测实践"><a href="#猜测实践" class="headerlink" title="猜测实践"></a>猜测实践</h2><p>首先，这明显不是一个正常的操作能够导致的问题，所以首先排除插入空值到非空字段的情况，需要从其他的思路的进行探讨。</p>
+<p>通过 dbms_metadata.get_ddl 函数获取 test 表结构的定义：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> dbms_metadata.get_ddl(<span class="hljs-string">&#x27;TABLE&#x27;</span>, <span class="hljs-string">&#x27;TEST&#x27;</span>) <span class="hljs-keyword">from</span> dual;<br>DBMS_METADATA.GET_DDL(<span class="hljs-string">&#x27;TABLE&#x27;</span>,<span class="hljs-string">&#x27;TEST&#x27;</span>)<br><span class="hljs-comment">--------------------------------------------------------------------------------</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> &quot;TEST&quot;.&quot;TEST&quot;<br>( &quot;ID&quot; NUMBER,<br>&quot;NAME&quot; VARCHAR2(<span class="hljs-number">8</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;a&#x27;</span>,<br>&quot;C1&quot; VARCHAR2(<span class="hljs-number">8</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;&#x27;</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">ENABLE</span><br>) SEGMENT CREATION <span class="hljs-keyword">IMMEDIATE</span><br>PCTFREE <span class="hljs-number">10</span> PCTUSED <span class="hljs-number">40</span> INITRANS <span class="hljs-number">1</span> MAXTRANS <span class="hljs-number">255</span><br>NOCOMPRESS LOGGING<br><span class="hljs-keyword">STORAGE</span>(INITIAL <span class="hljs-number">65536</span> NEXT <span class="hljs-number">1048576</span> MINEXTENTS <span class="hljs-number">1</span> MAXEXTENTS <span class="hljs-number">2147483645</span><br>PCTINCREASE <span class="hljs-number">0</span> FREELISTS <span class="hljs-number">1</span> FREELIST <span class="hljs-keyword">GROUPS</span> <span class="hljs-number">1</span><br>BUFFER_POOL <span class="hljs-keyword">DEFAULT</span> FLASH_CACHE <span class="hljs-keyword">DEFAULT</span> CELL_FLASH_CACHE <span class="hljs-keyword">DEFAULT</span>)<br><span class="hljs-keyword">TABLESPACE</span> &quot;USERS&quot;<br></code></pre></td></tr></table></figure>
+
+<p><strong>小知识拓展：</strong></p>
+<ul>
+<li>Oracle 数据库中，对于 char 和 varchar2 字段来说，缺省值 ‘’ 就是 null；</li>
+<li>但是 where 条件后的 ‘’ 不等于 null。</li>
+</ul>
+<p>可以发现，<strong>c1 字段是非空字段，且默认值为空。</strong> 为什么 Oracle 会允许空值插入到非空约束字段中？</p>
+<p><strong>想要搞明白原因，光靠猜测是没有用的，实践是检验真理的唯一标准。</strong></p>
+<h3 id="猜测一"><a href="#猜测一" class="headerlink" title="猜测一"></a>猜测一</h3><p>有没有可能是，插入记录时有非空约束的列默认为空导致：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> TEST (id, <span class="hljs-type">name</span>) <span class="hljs-keyword">values</span> (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;a&#x27;</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> TEST (id, <span class="hljs-type">name</span>) <span class="hljs-keyword">values</span> (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;a&#x27;</span>)<br>*<br>ERROR at <span class="hljs-type">line</span> <span class="hljs-number">1</span>:<br>ORA<span class="hljs-number">-01400</span>: cannot <span class="hljs-keyword">insert</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">into</span> (&quot;TEST&quot;.&quot;TEST&quot;.&quot;C1&quot;)<br></code></pre></td></tr></table></figure>
+
+<p>可以看到插入报错了，说明这个思路是错的，此路不通。</p>
+<h3 id="猜测二"><a href="#猜测二" class="headerlink" title="猜测二"></a>猜测二</h3><p>按理来说，Oracle 这么多版本的更新迭代之后，应该不会在 11G 版本还出现这种问题，综上所述，猜测可能是 11G 的新特性导致的 BUG。</p>
+<p>查询官方文档中的 11G 新特性 <a target="_blank" rel="noopener" href="https://docs.oracle.com/cd/B28359_01/server.111/b28279/chapter1.htm#OBJECTIVENO04548">Enhanced ADD COLUMN Functionality</a> 可以发现：</p>
+<p>在 11G 版本中，当添加带有默认值且非空约束的列时，不直接更新当前表的所有记录的该列默认值，而是将数据存储到数据字典中的 sys.col$ 表中，后续执行 DML 操作时会自动更新该列默认值。</p>
+<p>接下来就是用新特性来测试一下，首先创建 TEST 表，不包含 C1 字段：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> TEST (ID NUMBER, <span class="hljs-type">NAME</span> VARCHAR2(<span class="hljs-number">8</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;a&#x27;</span>);<br></code></pre></td></tr></table></figure>
+
+<p>手动添加 c1 列（非空约束+默认值为空）：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> TEST <span class="hljs-keyword">add</span> c1 varchar2(<span class="hljs-number">8</span>) <span class="hljs-keyword">default</span> <span class="hljs-string">&#x27;&#x27;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">null</span>;<br></code></pre></td></tr></table></figure>
+
+<p>再次查询：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> test <span class="hljs-keyword">where</span> c1 <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">null</span>;<br>  ID	<span class="hljs-type">NAME</span>	C1<br><span class="hljs-comment">------  -------	---</span><br>  <span class="hljs-number">1</span>	a<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/494e4d92eeaa33982fa8f3ba66a7ff0e.webp" alt="Oracle SQL 字段是如何做到 “四大皆空“（BUG）" loading='lazy'></p>
+<p><strong>破案了</strong>，函数是对的，c1 字段值在默认的情况下确实为空，NOT NULL 列的默认值为 NULL，如果不指定默认值那么就相当于默认值为 NULL。</p>
+<h2 id="深入研究"><a href="#深入研究" class="headerlink" title="深入研究"></a>深入研究</h2><p>上面通过猜测和实践得出了问题的原因，但还是有些不明所以：</p>
+<ul>
+<li>where PK dump&#x2F;nvl？函数的结果是对的，where 真的错了吗？</li>
+<li>为什么要引入 Enhanced ADD COLUMN Functionality 新特性？</li>
+<li><code>.......</code></li>
+</ul>
+<h3 id="Where-错了吗？"><a href="#Where-错了吗？" class="headerlink" title="Where 错了吗？"></a>Where 错了吗？</h3><p>通过 ”四大皆空“ 图看起来，使用 Where 条件返回了错误的数据，CBO 那么聪明，执行计划判断不出来？</p>
+<p><img src="/csdn-blog/images/2125771dca6322b2aa4c3e7471b29eb7.webp" alt="Oracle SQL 字段是如何做到 “四大皆空“（BUG） - 图2" loading='lazy'></p>
+<p><strong>第一个 SQL：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> test <span class="hljs-keyword">where</span> c1 <span class="hljs-keyword">is</span> <span class="hljs-keyword">null</span>;<br><span class="hljs-keyword">no</span> <span class="hljs-keyword">rows</span> selected<br></code></pre></td></tr></table></figure>
+
+<p>分析：当查询条件 c1 为空时，CBO 给出一个谓词 filter 过滤条件 <strong><code>NULL IS NOT NULL</code></strong>，这意味着<strong>查询条件恒假</strong>，当一个查询条件恒假的时候，Oracle 不需要真正执行语句，所以看到 <strong>Cost（%CPU）</strong> 为 0，所以当一个查询条件明显的违反表中的约束条件时，Oracle 并不会去执行这个查询语句，而是直接返回了 0 条记录。</p>
+<p><strong>第二个 SQL 的执行计划：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> test <span class="hljs-keyword">where</span> c1 <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">null</span>;<br>  ID	<span class="hljs-type">NAME</span>	C1<br><span class="hljs-comment">------  -------	---</span><br>  <span class="hljs-number">1</span>	a<br></code></pre></td></tr></table></figure>
+
+<p>分析：当查询条件为 c1 不为空时，执行计划中并没有 filter 谓词条件，为什么呢？因为 c1 字段是非空约束，所以 <strong>CBO</strong> 判读 c1 is not null 这个查询条件是<strong>恒真</strong>的，也就不需要过滤，直接返回所有的数据。</p>
+<p><strong>结论：</strong> 简单的说，导致这个问题的原因是由于错误的数据存储于表中，而这导致了 CBO 在判断时出现了错误，导致和预期相反的结果返回，所以 where 并没有错误，是新特性的 BUG 导致 CBO 的判断错误。</p>
+<h3 id="新特性详解"><a href="#新特性详解" class="headerlink" title="新特性详解"></a>新特性详解</h3><p>Oracle 为什么要引入这个新特性？我们使用 3 种情况的分析一下！</p>
+<ul>
+<li>在 Oracle 11G 之前，向现有表添加一个新列需要修改该表中的所有行，以添加新列。</li>
+<li>Oracle 11G 引入了元数据唯一默认值的概念。将默认子句添加到现有表的非空列，只涉及元数据更改，而不是对表中的所有行进行更改。优化器重写新列的查询，以确保结果与默认定义一致。</li>
+<li>Oracle 12C 则更进一步，允许元数据默认值的强制和可选列。因此，在现有表中添加带有默认子句的新列将被作为一个元数据来处理，而不管该列是否被定义为不为空。这代表了空间保存和性能改进。</li>
+</ul>
+<h4 id="实践演示"><a href="#实践演示" class="headerlink" title="实践演示"></a>实践演示</h4><p>准备测试数据：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> test(id number,<span class="hljs-type">name</span> varchar2(<span class="hljs-number">1</span>));<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> test <span class="hljs-keyword">values</span>(<span class="hljs-number">1</span>,a);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> test <span class="hljs-keyword">values</span>(<span class="hljs-number">2</span>,b);<br><span class="hljs-keyword">commit</span>;<br><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> test;<br></code></pre></td></tr></table></figure>
+
+<p>通过 dump 操作来查看数据的实时情况：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> dbms_rowid.rowid_relative_fno(rowid), dbms_rowid.rowid_block_number(rowid) <span class="hljs-keyword">from</span> test;<br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">system</span> dump datafile <span class="hljs-number">4</span> block <span class="hljs-number">173109</span>;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/cc78f154f2a3b3b3bb4c6d3741c95dcc.webp" alt="Oracle SQL 字段是如何做到 “四大皆空“（BUG） - 图3" loading='lazy'></p>
+<p><strong>第一种情况：增加一个字段，不带默认值，不带非空约束</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> test <span class="hljs-keyword">add</span> a1 varchar2(<span class="hljs-number">1</span>);<br><span class="hljs-keyword">desc</span> test<br></code></pre></td></tr></table></figure>
+
+<p>当为表增加一个不带默认值，不带非空约束的字段时，已存记录的数据块中不会立刻存储该新增字段：</p>
+<p>只有当更新字段或插入数据的时候，数据块中才会实际存储：</p>
+<p><strong>更新操作：</strong></p>
+<p><strong>插入操作：</strong></p>
+<p><img src="/csdn-blog/images/a059021b0d9e6a9a3c9e66a02acdf93b.webp" alt="Oracle SQL 字段是如何做到 “四大皆空“（BUG） - 图4" loading='lazy'></p>
+<p><strong>第二种情况：增加一个字段，带默认值，不带非空约束</strong></p>
+<blockquote>
+<p>📢 注意：针对这种情况，12C 引入了新特性：MetaData-Only DEFAULT Column Values for NULL Columns</p>
+</blockquote>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> test <span class="hljs-keyword">add</span> a2 varchar2(<span class="hljs-number">1</span>) <span class="hljs-keyword">default</span> <span class="hljs-string">&#x27;a&#x27;</span>;<br><span class="hljs-keyword">desc</span> test<br></code></pre></td></tr></table></figure>
+
+<p>Oracle 11g，新增一个带默认值，不带非空约束的字段，会立刻在表的数据块中增加该字段：</p>
+<p>并执行全表更新的操作，将该值更新为默认值，DDL操作的执行时间和表的数据量相关：</p>
+<p><strong>第三种情况：增加一个字段，带默认值，带非空约束</strong></p>
+<blockquote>
+<p>📢 注意：针对这种情况，11G 引入了新特性：Enhanced ADD COLUMN Functionality！</p>
+</blockquote>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> test <span class="hljs-keyword">add</span> a2 varchar2(<span class="hljs-number">1</span>) <span class="hljs-keyword">default</span> <span class="hljs-string">&#x27;a&#x27;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">null</span>;<br><span class="hljs-keyword">desc</span> test<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/4625551a51caa1f2da53d90ff5f86a6e.webp" alt="Oracle SQL 字段是如何做到 “四大皆空“（BUG） - 图5" loading='lazy'></p>
+<p>Oracle 11g，新增一个带默认值，带非空约束的字段，已存记录的数据块中不会立刻存储该新增字段：</p>
+<p>而是将其作为元数据存储在数据字典中的 <code>sys.col$</code> 中：</p>
+<p>同时在 <code>sys.ecol$</code> 中可以看到：</p>
+<p><img src="/csdn-blog/images/6bb378f3b081aa218e26c6d1f5fb0253.webp" alt="Oracle SQL 字段是如何做到 “四大皆空“（BUG） - 图6" loading='lazy'></p>
+<p>但是，当改变新增列的默认值时，<code>sys.ecol$</code> 的数据不会实时变化，仅存储第一次增加列时的默认值：</p>
+<p>只有当更新字段或插入数据的时候，数据块才会实际存储：</p>
+<p><img src="/csdn-blog/images/082ca442dce0a1b285282fb5bb948f03.webp" alt="Oracle SQL 字段是如何做到 “四大皆空“（BUG） - 图7" loading='lazy'></p>
+<p>通过这种优化，缩短了DDL执行时间，这就是 Oracle 11G 引入 Enhanced ADD COLUMN Functionality 新特性的原因。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>值得一提的是，Oracle 在 12C 以后已经修复了这个 BUG，增加了如下判断（DEFAULT 为 NULL 是禁止的）：</p>
+<p>Oracle 学习路漫漫，茫茫文档需要看，直觉前路要变宽，到头还被 BUG 绊！😂</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/123732698/">https://pc-study.github.io/csdn-blog/posts/123732698/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/python/">python</a><a class="post-meta__tags" href="/csdn-blog/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">开发语言</a><a class="post-meta__tags" href="/csdn-blog/tags/%E5%90%8E%E7%AB%AF/">后端</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/124039086/" title="Java零基础如何入门学习？给初学者的建议，非常全面"><img class="cover" src="/csdn-blog/img/covers/tech.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Java零基础如何入门学习？给初学者的建议，非常全面</div></div><div class="info-2"><div class="info-item-1">前言 如果你想自学 Java，认真看完本文，你以后的IT职场生涯至少少走1年弯路。 满满的Java学习干货，建议收藏！ 初衷 经常有小伙伴私聊问我 “如何自学 Java”、“想转行 Java 靠谱吗” 等问题，因为接触过很多类似经历的同学，所以很能理解这些同学的痛苦和迷茫。 写这篇文章前，我看了一些</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/123635262/" title="比SQL还好用，又一门国产数据库语言诞生了"><img class="cover" src="/csdn-blog/img/covers/tech.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">比SQL还好用，又一门国产数据库语言诞生了</div></div><div class="info-2"><div class="info-item-1">前言 自 SQL 语言出现之后，一直是一门很受欢迎的语言；那么问题来了，发展了这么多年，有没有比 SQL 好用的语言呢？答案是肯定的，SPL 应时而生。 数据库语言的目标 要说清这个目标，先要理解数据库是做什么的。 数据库这个软件，名字中有个“库”字，会让人觉得它主要是为了存储的。其实不然，数据库实</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/123064282/" title="Python 零基础入门必看，这些知识点你都掌握了吗？"><img class="cover" src="/csdn-blog/images/faa7e015851afbda44fedf55021f1af5.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-25</div><div class="info-item-2">Python 零基础入门必看，这些知识点你都掌握了吗？</div></div><div class="info-2"><div class="info-item-1">导读 Python 作为当今最受欢迎的编程语言之一，几乎各个领域都会涉及到，所以学习 Python 自然刻不容缓！作为一个没有接触过 Python 的小白，一开始要想的不是如何使用以及各种高深莫测的玩法，从最基础的了解以及构建环境才是正道。 点我跳转文末 抽奖领书，价值 99 元，新出版的 《Pyt</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148737645/" title="统治编程世界！AI时代，Python已是编程语言独一档"><img class="cover" src="/csdn-blog/images/4714e6dafbfae119ce29abed2e083ec1.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-18</div><div class="info-item-2">统治编程世界！AI时代，Python已是编程语言独一档</div></div><div class="info-2"><div class="info-item-1">2025年5月，Python与第二名 C++ 之间的市场份额差距首次超过了 15%，创造了TIOBE榜单历史。 这意味着 Python 不再只是“热门”，而是遥遥领先，成为编程世界统治级别的语言。从现实情况来看，Python 在数据科学、自动化测试等确实已形成压倒性优势。 随着AI浪潮的到来，Pyt</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122525287/" title="PyGame每日一练——五子棋小游戏"><img class="cover" src="/csdn-blog/img/covers/tech.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-16</div><div class="info-item-2">PyGame每日一练——五子棋小游戏</div></div><div class="info-2"><div class="info-item-1">前言 PyGame 是一个专门设计来进行 游戏开发 设计的 Python 模块，允许实时电子游戏研发而无需被低级语言（如机器语言和汇编语言）束缚，使用起来非常的简单，非常适合新手拿来玩耍，本教程源码均基于 Python 3.x 版本。 点我跳转文末 ，关注公众号，回复 “五子棋” 获取完整源码！ 五</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/141211888/" title="一篇文章让你彻底掌握 Python"><img class="cover" src="/csdn-blog/img/covers/tech.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-08-15</div><div class="info-item-2">一篇文章让你彻底掌握 Python</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer 三思而后行，专注于提升数据库运维效率。 目录 一篇文章让你彻底掌握 Python 解释器 注释 数据类型 操作符 - 算术运算符 比较运算符 赋值运算符 位运算符 逻辑运算符 成员运算符 身份运算符 运算符优先级 控制语句 - 条件语句 循环语句 while for</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139899232/" title="统信 UOS V20 1001(c) 一键安装 Oracle 21C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-23</div><div class="info-item-2">统信 UOS V20 1001(c) 一键安装 Oracle 21C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 统信 UOS V20 1001© 一键安装 Oracle 21C 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安装</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145697041/" title="实战篇：JS kgl get object wait 等待事件分析"><img class="cover" src="/csdn-blog/images/ddd98524b5ab32850a1d20202a1bd937.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-18</div><div class="info-item-2">实战篇：JS kgl get object wait 等待事件分析</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 AWR 报告 探索 BUG 解决方案 下载 oneoff 补丁 更新 OPatch 安装 oneoff 补丁 写在最后 前言 今天给客户巡检数据库时发现有一套 19C RAC CDB 数据库，AWR 报告中 等待事件比</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">问题分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SQL-%E5%88%86%E6%9E%90"><span class="toc-number">1.1.</span> <span class="toc-text">SQL 分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8C%9C%E6%B5%8B%E5%AE%9E%E8%B7%B5"><span class="toc-number">2.</span> <span class="toc-text">猜测实践</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8C%9C%E6%B5%8B%E4%B8%80"><span class="toc-number">2.1.</span> <span class="toc-text">猜测一</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8C%9C%E6%B5%8B%E4%BA%8C"><span class="toc-number">2.2.</span> <span class="toc-text">猜测二</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E5%85%A5%E7%A0%94%E7%A9%B6"><span class="toc-number">3.</span> <span class="toc-text">深入研究</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Where-%E9%94%99%E4%BA%86%E5%90%97%EF%BC%9F"><span class="toc-number">3.1.</span> <span class="toc-text">Where 错了吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E7%89%B9%E6%80%A7%E8%AF%A6%E8%A7%A3"><span class="toc-number">3.2.</span> <span class="toc-text">新特性详解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E8%B7%B5%E6%BC%94%E7%A4%BA"><span class="toc-number">3.2.1.</span> <span class="toc-text">实践演示</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text">最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

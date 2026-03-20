@@ -1,0 +1,282 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>推荐 21 款博主常用 Windows 软件 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="目录 📚 前言 ☀️ 软件介绍 🏈 火绒 🏀 IDM 🎾 Bandizip for Windows ⚽️ Geek Uninstaller 🎱 PotPlayer ⚾️ 元气壁纸 🏄 Microsoft Edge 🏊 Everything Toolbar 🎿 Memreduct 📛 Ditto 🎻">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐 21 款博主常用 Windows 软件">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/117903774/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="目录 📚 前言 ☀️ 软件介绍 🏈 火绒 🏀 IDM 🎾 Bandizip for Windows ⚽️ Geek Uninstaller 🎱 PotPlayer ⚾️ 元气壁纸 🏄 Microsoft Edge 🏊 Everything Toolbar 🎿 Memreduct 📛 Ditto 🎻">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/aaf003ce652703d43d54795ed7e8caea.webp">
+<meta property="article:published_time" content="2021-09-09T02:21:45.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.254Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="windows">
+<meta property="article:tag" content="分享">
+<meta property="article:tag" content="软件推荐">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/aaf003ce652703d43d54795ed7e8caea.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"推荐 21 款博主常用 Windows 软件","url":"https://pc-study.github.io/csdn-blog/posts/117903774/","image":"https://pc-study.github.io/csdn-blog/images/aaf003ce652703d43d54795ed7e8caea.webp","datePublished":"2021-09-09T02:21:45.000Z","dateModified":"2026-03-20T12:25:38.254Z","description":"目录 📚 前言 ☀️ 软件介绍 🏈 火绒 🏀 IDM 🎾 Bandizip for Windows ⚽️ Geek Uninstaller 🎱 PotPlayer ⚾️ 元气壁纸 🏄 Microsoft Edge 🏊 Everything Toolbar 🎿 Memreduct 📛 Ditto 🎻","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/117903774/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/117903774/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '推荐 21 款博主常用 Windows 软件',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/aaf003ce652703d43d54795ed7e8caea.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">推荐 21 款博主常用 Windows 软件</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">推荐 21 款博主常用 Windows 软件<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-09-09-117903774.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-09-09T02:21:45.000Z" title="发表于 2021-09-09 10:21:45">2021-09-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.254Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E5%B7%A5%E5%85%B7%E4%B8%8E%E6%95%88%E7%8E%87/">工具与效率</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#__1">📚 前言</a></li>
+<li><a href="#__7">☀️ 软件介绍</a></li>
+<li><ul>
+<li><a href="#__8">🏈 火绒</a></li>
+<li><a href="#_IDM_11">🏀 IDM</a></li>
+<li><a href="#_Bandizip_for_Windows_14">🎾 Bandizip for Windows</a></li>
+<li><a href="#_Geek_Uninstaller_17">⚽️ Geek Uninstaller</a></li>
+<li><a href="#_PotPlayer_20">🎱 PotPlayer</a></li>
+<li><a href="#__24">⚾️ 元气壁纸</a></li>
+<li><a href="#_Microsoft_Edge_28">🏄 Microsoft Edge</a></li>
+<li><a href="#_Everything_Toolbar_32">🏊 Everything Toolbar</a></li>
+<li><a href="#_Memreduct_35">🎿 Memreduct</a></li>
+<li><a href="#_Ditto_38">📛 Ditto</a></li>
+<li><a href="#_ShareX_42">🎻 ShareX</a></li>
+<li><a href="#_Windows10__46">🎯 Windows10 系统优化工具</a></li>
+<li><a href="#_AutoDarkMode_49">🎤 AutoDarkMode</a></li>
+<li><a href="#__52">🏂 全能格式转换器</a></li>
+<li><a href="#_win10_56">👾 win10切换版本</a></li>
+<li><a href="#_Office_Tool_Plus_59">⛳️ Office Tool Plus</a></li>
+<li><a href="#_Empty_Folder_Finder_63">🎳 空文件夹删除器(Empty Folder Finder)</a></li>
+<li><a href="#_QuickLook_Windows_67">🎬 QuickLook Windows</a></li>
+<li><a href="#_Clover_71">🍀 Clover</a></li>
+<li><a href="#_Notepads_75">📝 Notepads</a></li>
+</ul>
+</li>
+<li><a href="#__80">🎉 软件获取方式</a></li>
+</ul>
+<h2 id="📚-前言"><a href="#📚-前言" class="headerlink" title="📚 前言"></a>📚 前言</h2><p>经常会有朋友让我推荐一些好用的软件，因此我打算来介绍一下这些我认为爱不释手的软件！</p>
+<p><strong>❤️ 用 MacOS 的小伙伴看这里：<a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/120097664">21 款爆赞 MacOS 必备软件，还不来白嫖？使用舒适度满分！！！</a></strong></p>
+<p><strong>🔥 排名不分先后，提升电脑使用舒适度100倍的21款软件🔥！</strong></p>
+<h2 id="☀️-软件介绍"><a href="#☀️-软件介绍" class="headerlink" title="☀️ 软件介绍"></a>☀️ 软件介绍</h2><h3 id="🏈-火绒"><a href="#🏈-火绒" class="headerlink" title="🏈 火绒"></a>🏈 火绒</h3><p>作为一款安全软件，火绒算是国内的一股清流（官网的口号是：<strong>强悍、 轻巧、 干净</strong>），没有广告、弹窗等骚扰用户的行为，而且火绒还关停了流量业务，也赢来了好的口碑。  </p>
+<h3 id="🏀-IDM"><a href="#🏀-IDM" class="headerlink" title="🏀 IDM"></a>🏀 IDM</h3><p><code>IDM</code>（Internet Download Manager）是国外优秀下载工具，可提升下载速度（最多可达5倍），能安排下载计划，或续传下载一半的下载软件。IDM简体<br>中文<br>特别版，安装后免序列号即为注册版。配合浏览器插件使用，堪称神器。  </p>
+<h3 id="🎾-Bandizip-for-Windows"><a href="#🎾-Bandizip-for-Windows" class="headerlink" title="🎾 Bandizip for Windows"></a>🎾 Bandizip for Windows</h3><p>对于解压缩软件，大部分人用的都是WinRAR，我以前也是。但是有一个问题是：广告太多。而Bandizi作为一款免费无广告文件压缩&#x2F;解压缩工具软件，完全可以替代WinRAR和7-ZIP。  </p>
+<h3 id="⚽️-Geek-Uninstaller"><a href="#⚽️-Geek-Uninstaller" class="headerlink" title="⚽️ Geek Uninstaller"></a>⚽️ Geek Uninstaller</h3><p><code>Geek Uninstaller</code> 是一个免费的专业卸载软件，体积小巧，但是拥有出众的功能，帮助用户卸载软件无残留，也不影响系统的运行速度，还有强制卸载功能。软件界面简单，清除速度快，使用简单，自带多国语言文件。  </p>
+<h3 id="🎱-PotPlayer"><a href="#🎱-PotPlayer" class="headerlink" title="🎱 PotPlayer"></a>🎱 PotPlayer</h3><p>PotPlayer软件内置硬件加速解码，方便快捷，安装后可观看任何格式视频文件，功能非常强大。PotPlayer播放器启动速度快，播放稳定，还支持给视频加字幕，设置个性皮肤。<br> <strong>体积小巧、界面简洁、功能强大，没有任何广告和垃圾信息，是本地视频播放器的最佳不二之选。</strong></p>
+<h3 id="⚾️-元气壁纸"><a href="#⚾️-元气壁纸" class="headerlink" title="⚾️ 元气壁纸"></a>⚾️ 元气壁纸</h3><p>元气壁纸是一款专为年轻人打造的动静态壁纸及桌面美化的电脑应用软件。内置游戏渲染引擎，真实还原雨雪光特效和各种粒子效果，让动态壁纸效果栩栩如真，每张壁纸内置专属背景音和鼠标效果，为你打造桌面壁纸的绝美盛宴。<br> 桌面整理助手：智能识别文件，一键分<br>类<br>整理，个性设计排版，壁纸自动切换。</p>
+<h3 id="🏄-Microsoft-Edge"><a href="#🏄-Microsoft-Edge" class="headerlink" title="🏄 Microsoft Edge"></a>🏄 Microsoft Edge</h3><p>Microsoft Edge浏览器是微软与Win10同步推出的一款新版浏览器，标志着IE时代正式结束。Microsoft Edge浏览器改进了IE时代的所有不足，在安全性上较IE更胜一筹。<br> Edge浏览器在最新的Windows 10预览版上已经支持，交互界面更加简洁，还将兼容现有Chrome与Firefox两大浏览器的扩展程序。</p>
+<h3 id="🏊-Everything-Toolbar"><a href="#🏊-Everything-Toolbar" class="headerlink" title="🏊 Everything Toolbar"></a>🏊 Everything Toolbar</h3><p>Everything Toolbar 是一款适用于 Windows 10 的系统辅助工具，它能用 Everything 的搜索框替代 Windows 10 任务栏搜索框，让搜索更方便。<br> <img src="/csdn-blog/images/aaf003ce652703d43d54795ed7e8caea.webp" alt="推荐 21 款博主常用 Windows 软件" loading='lazy'></p>
+<h3 id="🎿-Memreduct"><a href="#🎿-Memreduct" class="headerlink" title="🎿 Memreduct"></a>🎿 Memreduct</h3><p><code>MemReduct</code> 官方版是一款非常受欢迎的<br>内存<br>整理神器，MemReduct官方版体积小巧、启动速度快速，十分轻巧且占用内存极少，但功能非常强大，拥有专业而易用的硬件检测，能够有效清理多余内存。<br> <img src="/csdn-blog/images/a5ca74b5f8172e7a2b72d8ad204c2368.webp" alt="推荐 21 款博主常用 Windows 软件 - 图2" loading='lazy'></p>
+<h3 id="📛-Ditto"><a href="#📛-Ditto" class="headerlink" title="📛 Ditto"></a>📛 Ditto</h3><p><code>Ditto</code> 是一款开源、免费、强大的剪贴板增强工具。可以把复制过的所有内容保存起来（可以设定保存日期或条目总数），快捷地供后续调用。还可以合并粘贴，纯文本粘贴，支持分组、置顶、快速搜索、热键粘贴功能。<br> <img src="/csdn-blog/images/18198c12f6aa55c5f8ebd871b66d05b6.webp" alt="推荐 21 款博主常用 Windows 软件 - 图3" loading='lazy'><br> 还可以通过网络共享剪贴板内容。</p>
+<h3 id="🎻-ShareX"><a href="#🎻-ShareX" class="headerlink" title="🎻 ShareX"></a>🎻 ShareX</h3><p><strong>别人有的我都有</strong>，<code>ShareX</code> 是开源的高级截图工具和屏幕记录器。使用 ShareX，只需要一个快捷键就可以保存截图到你的粘贴板，硬盘或者上传到 40 不同的文件存储服务上。<br> <img src="/csdn-blog/images/82efc2d42b9ede0b34ca5385e113e6be.webp" alt="推荐 21 款博主常用 Windows 软件 - 图4" loading='lazy'><br> ShareX 的插件还可以上传图片，文本文件和其他各种文件类型。</p>
+<h3 id="🎯-Windows10-系统优化工具"><a href="#🎯-Windows10-系统优化工具" class="headerlink" title="🎯 Windows10 系统优化工具"></a>🎯 Windows10 系统优化工具</h3><p>通过Windows10优化工具可以方便的修改Windows中的配置项，做到一键开启或者关闭。<br> <img src="/csdn-blog/images/7e79929676c7ab79411cf8d319d653f6.webp" alt="推荐 21 款博主常用 Windows 软件 - 图5" loading='lazy'></p>
+<h3 id="🎤-AutoDarkMode"><a href="#🎤-AutoDarkMode" class="headerlink" title="🎤 AutoDarkMode"></a>🎤 AutoDarkMode</h3><p><code>Auto Dark Mode</code> (WIN10主题自动切换)是一款能够自动帮助用户随着时间自动切换电脑主题的软件，使用软件后用户的win10系统会随着时间的变化，不断自动切换当前的主题，有需要的可以下载使用。  </p>
+<h3 id="🏂-全能格式转换器"><a href="#🏂-全能格式转换器" class="headerlink" title="🏂 全能格式转换器"></a>🏂 全能格式转换器</h3><p>全能格式转换器可以随时随地观看、下载、编辑、转换、刻录视频，无论您选择哪一项操作，其最终的结果都将是非常完美的（即使在Utrla HD，3D或VR），不会丢失关键帧。转换速度是市面同类产品的30倍！<br> 操作简便，支持158种常见视频格式无损转换，兼具网络视频下载，视频剪辑及DVD刻录等多功能于一身，更有内置播放器让您畅享完美视觉体验！</p>
+<h3 id="👾-win10切换版本"><a href="#👾-win10切换版本" class="headerlink" title="👾 win10切换版本"></a>👾 win10切换版本</h3><p>win10切换版本工具支持任意切换操作系统版本。  </p>
+<h3 id="⛳️-Office-Tool-Plus"><a href="#⛳️-Office-Tool-Plus" class="headerlink" title="⛳️ Office Tool Plus"></a>⛳️ Office Tool Plus</h3><p><code>Office Tool Plus</code> 基于 Office 部署工具 (ODT) 打造，可以很轻松地部署 Office。<br> <img src="/csdn-blog/images/13d7b573f47c45f4b71aa01a15241503.webp" alt="推荐 21 款博主常用 Windows 软件 - 图6" loading='lazy'><br> 无论你是个体还是团队，Office Tool Plus 都是您的 Office 小助手。</p>
+<h3 id="🎳-空文件夹删除器-Empty-Folder-Finder"><a href="#🎳-空文件夹删除器-Empty-Folder-Finder" class="headerlink" title="🎳 空文件夹删除器(Empty Folder Finder)"></a>🎳 空文件夹删除器(Empty Folder Finder)</h3><p>❤️ <strong>强迫症专用！</strong> 有时候系统中存在的很多空的文件夹，虽然不占空间，但是会影响到搜索的速度，通过空文件夹删除器可以快速找出并删除他们。<br> 你觉得它鸡肋，但是有人如获至宝！</p>
+<h3 id="🎬-QuickLook-Windows"><a href="#🎬-QuickLook-Windows" class="headerlink" title="🎬 QuickLook Windows"></a>🎬 QuickLook Windows</h3><p><code>macOS</code> 上有一个「Quick Look」功能，在文件或者文件夹上按下<code>空格键</code>，就可以快速预览到文件的内容或者资料了。在 Windows 上没有这种功能，虽然说资源管理器里还有其他类似的功能，但使用效率便捷性来说远远比不上这个。<br> <img src="/csdn-blog/images/df3c551cba417a5ddc11b1a871c82ce0.webp" alt="推荐 21 款博主常用 Windows 软件 - 图7" loading='lazy'><br> 不过现在 Windows 下有 QuickLook 这个小工具，也一样可以实现上面的功能。</p>
+<h3 id="🍀-Clover"><a href="#🍀-Clover" class="headerlink" title="🍀 Clover"></a>🍀 Clover</h3><p><code>Clover</code> 中文版是一款非常小巧，便捷实用的窗口标签化工具。Clover中文版是 Windows Explorer 资源管理器的一个扩展，为其增加类似谷歌 Chrome 浏览器的多标签页功能。<br> <img src="/csdn-blog/images/5c8a9447c40627a21ef7e99cee55f598.webp" alt="推荐 21 款博主常用 Windows 软件 - 图8" loading='lazy'><br> Clover中文版功能强大，操作简单，打开我的电脑可以像浏览器一样，将CDE盘标签化在一个窗口里面非常方便，不用再打开E盘后再返回退到D盘啦。</p>
+<h3 id="📝-Notepads"><a href="#📝-Notepads" class="headerlink" title="📝 Notepads"></a>📝 Notepads</h3><p><code>Notepads</code> 是Windows平台下一款开源简约轻量级文本编辑器，作者开发之初是想做一个win32记事本的替代品，流利的设计，内置标签系统，速度快得惊人，重量轻得惊人！<br> <strong>❤️ 不要问我为什么只有 20 款？因为，还有一款放上来就发不出来了，想要的朋友可以加我好友✌🏻！</strong></p>
+<h2 id="🎉-软件获取方式"><a href="#🎉-软件获取方式" class="headerlink" title="🎉 软件获取方式"></a>🎉 软件获取方式</h2><p>关注公众号之后，菜单栏自取，或者后台回复<code>暗号</code>：<strong>Windows</strong>。<br> <strong>❤️ 可以扫码关注下方👇公众号，菜单栏自取！❤️</strong></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/117903774/">https://pc-study.github.io/csdn-blog/posts/117903774/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/windows/">windows</a><a class="post-meta__tags" href="/csdn-blog/tags/%E5%88%86%E4%BA%AB/">分享</a><a class="post-meta__tags" href="/csdn-blog/tags/%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90/">软件推荐</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/120196606/" title="Linux 配置本地 yum 源（6/7/8）"><img class="cover" src="/csdn-blog/images/a5829b29aa86fb44efc1b7370bb96345.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Linux 配置本地 yum 源（6/7/8）</div></div><div class="info-2"><div class="info-item-1">一、挂载 ISO 安装镜像 查看当前主机 系统 版本： 下载对应的 linux iso安装镜像： ⭐️ 点击下载 👉 超全 Linux 8/7/6/5 安装包合集下载地址 ⭐️ ❤️ 也可以扫码关注公众号，菜单栏自取！❤️ 挂载分为两种方式： 1、上传iso安装 镜像 到服务器主机指定目录下，以 /</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119977285/" title="达梦 DM8 数据库安装详细手册（Windows+Linux+Docker）"><img class="cover" src="/csdn-blog/images/e9401aff6af7455f73ff7c72105b3640.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">达梦 DM8 数据库安装详细手册（Windows+Linux+Docker）</div></div><div class="info-2"><div class="info-item-1">目录 🌲 前言 💬 介绍 💦 安装介质下载 🔥 达梦8安装包 💥 Centos7 box 🏆 Linux 下 DM 的安装 🍭 Centos7 环境安装 - vagrant 启动 centos7 上传安装介质 初始化配置 🍰 安装前准备 - 检查Linux(Unix)系统信息 创建安装用户 创建安装</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/118087577/" title="实战篇：使用 StarWind 配置 ISCSI 共享存储"><img class="cover" src="/csdn-blog/images/53fdf417204e087f843bced406d5b8d5.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-31</div><div class="info-item-2">实战篇：使用 StarWind 配置 ISCSI 共享存储</div></div><div class="info-2"><div class="info-item-1">前言 之前讲过一篇文章 一步步教你Linux7安装Oracle RAC（11GR2版本） 教大家如何安装 Oracle RAC。 有朋友希望将共享存储配置这一块详细讲一讲，因此便写了这篇。 一、介绍 （Internet Small Computer System Interface，Internet</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122705749/" title="虚拟机玩转 Veritas NetBackup（NBU）之 Windows 配置 NBU 客户端"><img class="cover" src="/csdn-blog/images/e5f4ac339663bb44125ceb280af17deb.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-26</div><div class="info-item-2">虚拟机玩转 Veritas NetBackup（NBU）之 Windows 配置 NBU 客户端</div></div><div class="info-2"><div class="info-item-1">前言 NBU 的使用需要在客户端安装配置，否则无法使用，NBU 客户端支持 Linux、Window 以及 AIX 三个平台，安装过程都比较简单，本文介绍下如何在 Windows 下配置 NBU 客户端。 一、上传并解压客户端安装包 首先下载 Windows 的 NBU 客户端软件： NetBack</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119977285/" title="达梦 DM8 数据库安装详细手册（Windows+Linux+Docker）"><img class="cover" src="/csdn-blog/images/e9401aff6af7455f73ff7c72105b3640.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-08</div><div class="info-item-2">达梦 DM8 数据库安装详细手册（Windows+Linux+Docker）</div></div><div class="info-2"><div class="info-item-1">目录 🌲 前言 💬 介绍 💦 安装介质下载 🔥 达梦8安装包 💥 Centos7 box 🏆 Linux 下 DM 的安装 🍭 Centos7 环境安装 - vagrant 启动 centos7 上传安装介质 初始化配置 🍰 安装前准备 - 检查Linux(Unix)系统信息 创建安装用户 创建安装</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120684777/" title="保姆级教程：手把手教你升级 Windows 11 系统"><img class="cover" src="/csdn-blog/images/720fe34ef3d554d101c5dfcaf62843f5.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-13</div><div class="info-item-2">保姆级教程：手把手教你升级 Windows 11 系统</div></div><div class="info-2"><div class="info-item-1">目录 📚 前言 💻 安装 Windows 11 企业版 确保本地拥有 Windows 10 系统 升级为 Windows 11 系统 🌲 写在最后 📚 前言 Windows 11 发布于 2021 年 6 月 24 日，2021 年 10 月 5 日正式发行！ 这不，国庆期间正式版发行了，很多人都用</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/118558758/" title="实战篇：VMware Workstation 虚拟机安装 Linux 系统"><img class="cover" src="/csdn-blog/images/b7beb7fac967ce2b945808fec2304770.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-11-04</div><div class="info-item-2">实战篇：VMware Workstation 虚拟机安装 Linux 系统</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友工作学习中需要在 Windows 上安装 Linux 系统，最常用的就是使用 VMware Workstation 虚拟机。 本文将讲解如何在 VMware Workstation 上安装 Linux 主机！ 一、安装前准备 1、下载 VMware Workstation 📢 注意：</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9A-%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">📚 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%98%80%EF%B8%8F-%E8%BD%AF%E4%BB%B6%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">☀️ 软件介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8F%88-%E7%81%AB%E7%BB%92"><span class="toc-number">3.1.</span> <span class="toc-text">🏈 火绒</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8F%80-IDM"><span class="toc-number">3.2.</span> <span class="toc-text">🏀 IDM</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%BE-Bandizip-for-Windows"><span class="toc-number">3.3.</span> <span class="toc-text">🎾 Bandizip for Windows</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9A%BD%EF%B8%8F-Geek-Uninstaller"><span class="toc-number">3.4.</span> <span class="toc-text">⚽️ Geek Uninstaller</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%B1-PotPlayer"><span class="toc-number">3.5.</span> <span class="toc-text">🎱 PotPlayer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9A%BE%EF%B8%8F-%E5%85%83%E6%B0%94%E5%A3%81%E7%BA%B8"><span class="toc-number">3.6.</span> <span class="toc-text">⚾️ 元气壁纸</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8F%84-Microsoft-Edge"><span class="toc-number">3.7.</span> <span class="toc-text">🏄 Microsoft Edge</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8F%8A-Everything-Toolbar"><span class="toc-number">3.8.</span> <span class="toc-text">🏊 Everything Toolbar</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%BF-Memreduct"><span class="toc-number">3.9.</span> <span class="toc-text">🎿 Memreduct</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%9B-Ditto"><span class="toc-number">3.10.</span> <span class="toc-text">📛 Ditto</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%BB-ShareX"><span class="toc-number">3.11.</span> <span class="toc-text">🎻 ShareX</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%AF-Windows10-%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96%E5%B7%A5%E5%85%B7"><span class="toc-number">3.12.</span> <span class="toc-text">🎯 Windows10 系统优化工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%A4-AutoDarkMode"><span class="toc-number">3.13.</span> <span class="toc-text">🎤 AutoDarkMode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8F%82-%E5%85%A8%E8%83%BD%E6%A0%BC%E5%BC%8F%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="toc-number">3.14.</span> <span class="toc-text">🏂 全能格式转换器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%91%BE-win10%E5%88%87%E6%8D%A2%E7%89%88%E6%9C%AC"><span class="toc-number">3.15.</span> <span class="toc-text">👾 win10切换版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9B%B3%EF%B8%8F-Office-Tool-Plus"><span class="toc-number">3.16.</span> <span class="toc-text">⛳️ Office Tool Plus</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%B3-%E7%A9%BA%E6%96%87%E4%BB%B6%E5%A4%B9%E5%88%A0%E9%99%A4%E5%99%A8-Empty-Folder-Finder"><span class="toc-number">3.17.</span> <span class="toc-text">🎳 空文件夹删除器(Empty Folder Finder)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%AC-QuickLook-Windows"><span class="toc-number">3.18.</span> <span class="toc-text">🎬 QuickLook Windows</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%80-Clover"><span class="toc-number">3.19.</span> <span class="toc-text">🍀 Clover</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%9D-Notepads"><span class="toc-number">3.20.</span> <span class="toc-text">📝 Notepads</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8E%89-%E8%BD%AF%E4%BB%B6%E8%8E%B7%E5%8F%96%E6%96%B9%E5%BC%8F"><span class="toc-number">4.</span> <span class="toc-text">🎉 软件获取方式</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

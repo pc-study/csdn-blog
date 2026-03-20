@@ -1,0 +1,256 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="华为联合云南建投物流推出的智慧物流全球样板点，搭配云链物流大模型的研发启动，近期成为行业热议焦点。从原料采购到销售服务的全流程智能化管理，让物流行业的数智化转型有了清晰的实践范本。 而这一成功案例的底层逻辑，正藏在《华为数据之道》中。对于正在数字化转型路上挣扎的企业而言，这本书绝非空泛的理论合集，而">
+<meta property="og:type" content="article">
+<meta property="og:title" content="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/156853585/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="华为联合云南建投物流推出的智慧物流全球样板点，搭配云链物流大模型的研发启动，近期成为行业热议焦点。从原料采购到销售服务的全流程智能化管理，让物流行业的数智化转型有了清晰的实践范本。 而这一成功案例的底层逻辑，正藏在《华为数据之道》中。对于正在数字化转型路上挣扎的企业而言，这本书绝非空泛的理论合集，而">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/bigdata.svg">
+<meta property="article:published_time" content="2026-01-12T02:49:22.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.514Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="大数据">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/bigdata.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南","url":"https://pc-study.github.io/csdn-blog/posts/156853585/","image":"https://pc-study.github.io/csdn-blog/img/covers/bigdata.svg","datePublished":"2026-01-12T02:49:22.000Z","dateModified":"2026-03-20T08:34:08.514Z","description":"华为联合云南建投物流推出的智慧物流全球样板点，搭配云链物流大模型的研发启动，近期成为行业热议焦点。从原料采购到销售服务的全流程智能化管理，让物流行业的数智化转型有了清晰的实践范本。 而这一成功案例的底层逻辑，正藏在《华为数据之道》中。对于正在数字化转型路上挣扎的企业而言，这本书绝非空泛的理论合集，而","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/156853585/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/156853585/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/bigdata.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2026-01-12-156853585.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.514Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/">大数据 &amp; AI</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><p>华为联合云南建投物流推出的智慧物流全球样板点，搭配云链物流大模型的研发启动，近期成为行业热议焦点。从原料采购到销售服务的全流程智能化管理，让物流行业的数智化转型有了清晰的实践范本。</p>
+<p>而这一成功案例的底层逻辑，正藏在《华为数据之道》中。对于正在数字化转型路上挣扎的企业而言，这本书绝非空泛的理论合集，而是能直接落地的实战指南，更是破解转型困境的核心密钥。</p>
+<p>华为的成功，从不是偶然</p>
+<p>为什么华为能在不同行业的数字化转型中屡创佳绩？核心在于其沉淀多年的系统化数据治理方法论。</p>
+<p>《华为数据之道》由华为数据管理部亲笔撰写，凝聚了华为支撑全球170多个国家&#x2F;地区多业态运营的实战经验。书中提出的“面向‘联接共享’的数据底座”理念，正是智慧物流样板点成功的核心支撑——通过数据湖实现全链条数据的逻辑汇聚，再以标准化的主题联接方式将数据转化为可用信息，最终实现物流全流程的可视可控。  针对企业普遍面临的“数据孤岛”“标准混乱”等痛点，书中构建的“企业级数据综合治理体系”给出了系统性解决方案：明确数据管理的责任主体在业务，建立统一的数据标准、数据模型与分布架构，理顺数据与变革、运营、IT的协同关系。云南建投物流之所以能快速打破业务环节的数据壁垒，正是这套体系的成功复用。</p>
+<p>跨行业通用，所有转型企业都需要</p>
+<p>作为典型的非数字原生企业，华为曾面临产业链条长、数据复杂、历史包袱重等传统企业的共性问题。而《华为数据之道》正是基于这些痛点，总结出普适性极强的转型框架，无论身处哪个行业，都能从中找到适配的解决方案。</p>
+<ul>
+<li><p>数据从业者：书中关于信息架构四组件、数据底座建设细节、数据服务生命周期管理的内容，可直接应用于实际工作，大幅减少试错成本；</p>
+</li>
+<li><p>企业管理者：能深入理解数据治理的底层逻辑，掌握搭建高效数据管理组织的方法，明确“数据管理责任在业务”的核心原则；</p>
+</li>
+<li><p>转型推动者：从数据分类、质量管控到安全共享的全流程方法论，可有效避开“重技术轻治理”“为数字化而数字化”的常见误区。</p>
+</li>
+</ul>
+<p>国家电网大数据中心主任王继业曾评价：“这本书是在充分的数据治理实践基础上提炼而成的，具有可操作的方法论，是企业数据工作者对口的有益良药。”</p>
+<p>北汽福田集团IT总监辛海明也强烈推荐，称其“全面阐述了数字化转型时期企业数据治理的全对象、全流程、全要素”。</p>
+<p>为什么这本手册值得闭眼入？</p>
+<p>在公开出版前，《华为数据之道》已在华为内部发行14000余册，积累了极佳的口碑。其核心价值，在于“真实、实用、可复用”：</p>
+<p>✅ 实战沉淀：所有方法论均来自华为自身数字化转型的亲身实践，而非理论堆砌，每一个模型、规范都经过实际场景验证；</p>
+<p>✅ 内容全面：涵盖数据治理全流程，从企业级治理体系搭建，到数据感知、质量提升、安全共享，再到未来AI治理与数据生态，层层递进；</p>
+<p>✅ 大咖背书：华为董事、质量与流程IT总裁陶景文等高管写序推荐，北大教授、头部企业IT负责人等行业权威纷纷力荐；</p>
+<p>✅ 细节拉满：详细拆解数据湖建设标准、元数据管理策略、数据服务分类规范等实操内容，拿到就能落地应用。</p>
+<p>如今，数据已成为企业核心生产要素，数字化转型不再是“选择题”而是“必修课”。但很多企业仍在盲目跟风做AI、建系统，却忽略了最基础的数据治理。华为的实践已经证明：只有先通过科学的治理让数据成为高质量资产，才能充分释放其价值。</p>
+<p>《华为数据之道》提供的不仅是技术与流程的标准，更是一种“以数据为纲”的转型思维。无论你身处物流、制造、金融还是政务领域，这本书都将为你打通数据壁垒、激活数据价值提供最坚实的支撑。  现在入手《华为数据之道》，借鉴华为的成熟经验，让企业数字化转型少走弯路，让数据真正成为驱动业务增长的强大引擎。</p>
+<blockquote>
+<p><strong>京东链接</strong>：<a target="_blank" rel="noopener" href="https://item.jd.com/15125630.html" title="https:&#x2F;&#x2F;item.jd.com&#x2F;15125630.html">https://item.jd.com/15125630.html</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/156853585/">https://pc-study.github.io/csdn-blog/posts/156853585/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Oracle 直连 TiDB 可行吗？</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习数据库路上的知识和经验。 目录 前言 环境信息 Oracle 端配置 透明网关检查 安装 unixODBC 安装 MySQL ODBC 驱动 配置 ODBC 数据源 验证 ODBC 连通性 配置 Oracle TNS 配置透明网关参数 配置监听 验证</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img class="cover" src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">看来 Oracle 还是听劝的！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习数据库路上的知识和经验。 @TOC 前言 自从 Oracle MOS 更新版本之后，备受吐槽，各种问题纷至沓来，我也写了两篇文章聊了聊这个事： Oracle MOS 重磅升级？嗯，什么东西！ 听说 Oracle MOS 又放大招！ 今天登陆 MOS，</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/148619922/" title="夸克AI高效学习法，打造你的个性化学习引擎"><img class="cover" src="/csdn-blog/images/df6797d90a44cc2b3635063d251d0297.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-12</div><div class="info-item-2">夸克AI高效学习法，打造你的个性化学习引擎</div></div><div class="info-2"><div class="info-item-1">高考落幕，千万考生卸下重担，却立刻面临人生第一次重大抉择——志愿填报。无数院校、海量专业、庞杂信息如同迷雾，让考生与家长深陷焦虑漩涡。一个选择，或许就决定着未来四年乃至一生的方向。面对这场无声的战役，《夸克 AI 高效学习法》如同一盏明灯，其核心武器“夸克AI志愿填报系统”，正为学子们开辟出一条通往</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/123637987/" title="大数据生态圈如何入门？"><img class="cover" src="/csdn-blog/images/d831398d329330292db1d0f000c2ae5b.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-21</div><div class="info-item-2">大数据生态圈如何入门？</div></div><div class="info-2"><div class="info-item-1">大数据平台架构 大数据技术已经被应用到各行各业，涉及人们生活的方方面面。大数据技术大大提高了数据存储和计算能力，从而为企业快速决策提供了数据支撑，能够助力企业改进业务流程、控制成本、提高产品质量，应用大数据技术为企业核心竞争力的提升打下了坚实的基础。 大数据技术在企业项目开发中主要涉及数据采集、数据</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139176703/" title="银河麒麟 Kylin V10 SP3 一键安装 Oracle 19C RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">银河麒麟 Kylin V10 SP3 一键安装 Oracle 19C RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 麒麟 Kylin V10 SP3 一键安装 Oracle 19C RAC（19.23）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/138160389/" title="麒麟 Kylin V10 一键安装 Oracle 11GR2 单机 ASM（231017）"><img class="cover" src="/csdn-blog/images/2b29a552fcf1b62cfe10aed5b8434dbd.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-24</div><div class="info-item-2">麒麟 Kylin V10 一键安装 Oracle 11GR2 单机 ASM（231017）</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示麒麟 Kylin V10 一键安装 Oracle 11GR2 单机 ASM（231017）过程（全程无需人工干预）：（脚本包括 ORALCE PSU/OJVM 等补丁自动安装） ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 脚本第三代支持 N 节点一</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139176675/" title="银河麒麟 Kylin V10 SP3 一键安装 Oracle 19C 单机 ASM"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">银河麒麟 Kylin V10 SP3 一键安装 Oracle 19C 单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 麒麟 Kylin V10 SP3 一键安装 Oracle 19C 单机 ASM（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139176720/" title="银河麒麟 Kylin V10 SP3 一键安装 Oracle 21C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">银河麒麟 Kylin V10 SP3 一键安装 Oracle 21C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 麒麟 Kylin V10 SP3 一键安装 Oracle 21C 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安装</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

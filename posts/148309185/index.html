@@ -1,0 +1,280 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>生成式AI第一课：零基础图解Transformer与大模型实战 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="一本让开发者与 AI 从业者翘首以盼的 LLM 入门与实战指南——《图解大模型：生成式 AI 原理与实战》重磅上市！ 本书由 Jay Alammar 与 Maarten Grootendorst 联袂创作，两位在大模型与自然语言处理领域具有广泛影响力的专家，内容融合广受欢迎的图解系列精华，一经推出便">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生成式AI第一课：零基础图解Transformer与大模型实战">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/148309185/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="一本让开发者与 AI 从业者翘首以盼的 LLM 入门与实战指南——《图解大模型：生成式 AI 原理与实战》重磅上市！ 本书由 Jay Alammar 与 Maarten Grootendorst 联袂创作，两位在大模型与自然语言处理领域具有广泛影响力的专家，内容融合广受欢迎的图解系列精华，一经推出便">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/6c209a67ca97e2b0def17161f25029e4.webp">
+<meta property="article:published_time" content="2025-05-29T06:13:37.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.230Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="人工智能">
+<meta property="article:tag" content="大模型">
+<meta property="article:tag" content="生成式AI">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/6c209a67ca97e2b0def17161f25029e4.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"生成式AI第一课：零基础图解Transformer与大模型实战","url":"https://pc-study.github.io/csdn-blog/posts/148309185/","image":"https://pc-study.github.io/csdn-blog/images/6c209a67ca97e2b0def17161f25029e4.webp","datePublished":"2025-05-29T06:13:37.000Z","dateModified":"2026-03-20T12:25:39.230Z","description":"一本让开发者与 AI 从业者翘首以盼的 LLM 入门与实战指南——《图解大模型：生成式 AI 原理与实战》重磅上市！ 本书由 Jay Alammar 与 Maarten Grootendorst 联袂创作，两位在大模型与自然语言处理领域具有广泛影响力的专家，内容融合广受欢迎的图解系列精华，一经推出便","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/148309185/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/148309185/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '生成式AI第一课：零基础图解Transformer与大模型实战',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/6c209a67ca97e2b0def17161f25029e4.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">生成式AI第一课：零基础图解Transformer与大模型实战</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">生成式AI第一课：零基础图解Transformer与大模型实战<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-05-29-148309185.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-29T06:13:37.000Z" title="发表于 2025-05-29 14:13:37">2025-05-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.230Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/">大数据 &amp; AI</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><p>一本让开发者与 AI 从业者翘首以盼的 LLM 入门与实战指南——**《图解大模型：生成式 AI 原理与实战》**重磅上市！</p>
+<p>本书由 Jay Alammar 与 Maarten Grootendorst 联袂创作，两位在大模型与自然语言处理领域具有广泛影响力的专家，内容融合广受欢迎的图解系列精华，一经推出便获得业内高度评价。</p>
+<p>从基础概念、核心原理到应用实践，本书用超过 300 幅可视化图解，搭建出一条清晰、系统、低门槛的大模型学习路径。</p>
+<p><img src="/csdn-blog/images/6c209a67ca97e2b0def17161f25029e4.webp" alt="生成式AI第一课：零基础图解Transformer与大模型实战" loading='lazy'></p>
+<p>无论你是 AI 初学者，还是希望深入掌握 Transformer 架构、掌握生成式 AI 核心能力的从业者，甚至是希望真正“搞懂大模型”的普通读者，这本书都将是不可或缺的学习宝典。</p>
+<p><strong>让所有的技术难点都可视化</strong></p>
+<p>LLM 很复杂，但学习它不该是痛苦的。</p>
+<p>为帮助读者轻松、高效地掌握大模型核心知识与技能，全书绘制了 <strong>300+ 幅全彩图示，配合直观讲解</strong>，从底层逻辑到实战部署，层层拆解，看图也能学懂大模型。</p>
+<p><img src="/csdn-blog/images/2f75f1145861bffbd5b1cf1bffd69f28.webp" alt="微信图片_2025-05-12_085439_055_副本2.jpg" loading='lazy'></p>
+<p>Transformer 的注意力机制、微调流程、嵌入向量如何工作？——不再是 “文字迷宫”，而是 “图解让人一目了然”。</p>
+<p><strong>系统全面的知识架构</strong></p>
+<p>全书精心编排了 12 章内容，架构清晰，循序渐进，为读者搭建起从基础认知到高阶应用的完整学习阶梯，共分为四个部分：</p>
+<p><strong>内容亮点，中文版专属！</strong></p>
+<p>**第四部分“图解 DeepSeek-R1”（**<strong>附录）<strong>是中文版独有的重磅内容：18 幅精心绘制的图解，深入剖析 DeepSeek 的底层原理。当前，深入浅出地解读 DeepSeek-R1 技术原理的资料仍然稀缺，这一部分堪称</strong>超值“彩蛋”</strong>，强烈推荐阅读！</p>
+<p><img src="/csdn-blog/images/e1a1bd64f38a0d74b133ed8af398b515.webp" alt="图片" loading='lazy'></p>
+<p>**第一部分 “理解语言模型”（第 1 - 3 章）：**聚焦于夯实基础，深入剖析语言模型的核心概念。</p>
+<p>从<strong>词元</strong>这一文本处理的基本单元讲起，阐述其在模型中的角色；引入嵌入概念，解释如何将单词或文本转化为计算机可理解的向量形式，实现语义的数字化表达；<strong>Transformer 架构</strong>更是讲解重点，通过详细拆解其结构与运行机制，让读者明白这一支撑现代大语言模型的底层架构是如何运作的，为后续深入学习筑牢根基。</p>
+<p>即使是初次接触大模型的新手，也能在这部分内容引导下，顺利建立起对语言模型的初步认知。</p>
+<p>**第二部分 “使用预训练语言模型”（第 4 - 9 章）：**带领读者从理论走向实践，着重介绍如何运用现有的预训练大模型解决实际问题。</p>
+<p>覆盖了<strong>文本分类</strong>任务，教会读者如何让模型自动识别文本所属类别，如新闻分类、情感分析等场景应用；<strong>聚类技术</strong>可将相似文本聚为一类，助力信息整理与分析；<strong>语义搜索</strong>使搜索结果不再局限于关键词匹配，而是基于语义理解，大大提升搜索精准度；<strong>文本生成</strong>能根据给定提示创作连贯文本，像智能写作助手、故事生成器等皆基于此技术；此外，还涉及<strong>多模态扩展</strong>，打破单一文本模态限制，融合图像、音频等多种信息，拓宽大模型应用边界，全方位提升读者对大模型应用能力的掌握。</p>
+<p>**第三部分 “训练和微调语言模型”（第 10 - 12 章）：**深入探讨模型优化的关键环节。</p>
+<p>详细讲解<strong>嵌入模型构建</strong>，如何打造更贴合特定任务的文本向量表示；<strong>分类任务</strong>优化围绕提升模型在分类场景中的准确率、召回率等指标展开，介绍一系列调优技巧；<strong>生成模型微调</strong>则针对生成内容的质量、风格等方面进行定制，使模型能适应如个性化写作、特定领域对话生成等特定需求。</p>
+<p>这部分内容对于期望深入掌握模型定制，提升模型性能以适配实际业务的读者而言，极具价值。</p>
+<p><strong>AI 领域造诣颇深的作者</strong></p>
+<p>全网疯传的图解系列文章 “<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MjM5Njc0MjIwMA==&mid=2649833859&idx=1&sn=b1f94954fa9fb6421e8d2fb6a04a9f51&scene=21#wechat_redirect" title="The Illustrated Transformer「图解 Transformer，一文吃透工作原理」">The Illustrated Transformer「图解 Transformer，一文吃透工作原理」</a>”、“<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MjM5Njc0MjIwMA==&mid=2649830190&idx=1&sn=ad83ca6c874b852467dbeb8900180363&scene=21#wechat_redirect" title="The Illustrated DeepSeek-R1「图解DeepSeek-R1」">The Illustrated DeepSeek-R1「图解DeepSeek-R1」</a>” 想必大家都看过，没错，就是作者 Jay Alammar 的代表作！Jay 与 Maarten 合著的这本新书延续了同样的风格——<strong>用最直观的方式讲清楚最复杂的原理。</strong></p>
+<p><img src="/csdn-blog/images/d50db42ab49abd9a441233ba4a987fc8.webp" alt="image.png" loading='lazy'></p>
+<p><strong>业内专家李博杰倾力翻译</strong></p>
+<p>中文版由 AI 创业者、PINE AI 联合创始人，曾入选华为“天才少年项目”的 <strong>李博杰</strong> 亲自操刀翻译。</p>
+<p>更重要的是——他特别为本书整理出一套 <strong>200 道大模型面试题</strong>，作为读者专属福利，配合书中实战内容使用，应试、跳槽、面试直接起飞！</p>
+<p><img src="/csdn-blog/images/4e161e462a8b39e686b9d99cf5e467da.webp" alt="图片" loading='lazy'></p>
+<p><strong>看得懂、学得会、跑得动</strong></p>
+<p>本书实操性超棒，每章节均贴心配备相应开源代码，这些代码全部托管于 GitHub 平台，方便读者随时获取。并且，代码支持在 Google Colab 平台上直接运行，无需复杂的本地环境搭建，打开即跑，边学边练，真正做到“看得懂、学得会、跑得动”。</p>
+<p><strong>广泛的适用人群</strong></p>
+<h3 id="《图解大模型：生成式-AI-原理与实战》-适合不同层次、不同背景的读者："><a href="#《图解大模型：生成式-AI-原理与实战》-适合不同层次、不同背景的读者：" class="headerlink" title="**《图解大模型：生成式 AI 原理与实战》**适合不同层次、不同背景的读者："></a>**《图解大模型：生成式 AI 原理与实战》**适合不同层次、不同背景的读者：</h3><ul>
+<li>对于对大模型满怀热忱，却<strong>苦于缺乏深度学习基础知识的 Python 开发者</strong>而言，本书是绝佳的入门指引。无需深厚的理论铺垫，凭借书中清晰的讲解与丰富的案例，可快速踏入大模型开发的大门。</li>
+<li>期望系统梳理、全面提升大模型应用与优化技术的 <strong>AI 从业者</strong>，能在书中获取前沿且实用的知识与技巧，进一步完善自身知识体系，提升专业技能。</li>
+<li><strong>科研人员以及行业从业者</strong>若在寻求大模型实战经验，以推动科研项目进展或解决实际业务问题，本书丰富的实践案例与深入分析，定能为其提供诸多灵感与有效解决方案。</li>
+<li>非常渴望理解模型能力边界的<strong>产品经理与设计师</strong>，以便自己更好地参与技术落地。</li>
+</ul>
+<p><strong>知名专家热评推荐</strong></p>
+<p><img src="/csdn-blog/images/a350bb8174c39ebe3c2fb0fabc1019a5.webp" alt="微信图片_2025-05-12_085439_055.jpg" loading='lazy'></p>
+<p><strong>一本真正“看得懂的大模型书”</strong></p>
+<p><strong>一本真正“看得懂的大模型书”</strong></p>
+<p>在这个“人人喊 AI”的时代，真正掌握底层原理、亲手跑通项目的大模型开发者，才能够具备核心竞争力。</p>
+<p>这不是一本花架子的“科普书”，而是一本“有代码、能实战、跑得通”的专业指南。它用图解让技术变得轻松易学，用项目让理论真正落地。</p>
+<p>如果你也想掌握生成式 AI 的底层逻辑与实践路径，**《图解大模型：生成式 AI 原理与实战》**将是你踏入 LLM 世界的首选入门书。</p>
+<p><strong>现已全网发售，点击下方链接，即可立即开启学习之旅。</strong></p>
+<blockquote>
+<p>京东链接：<a target="_blank" rel="noopener" href="https://item.jd.com/15022560.html" title="https:&#x2F;&#x2F;item.jd.com&#x2F;15022560.html">https://item.jd.com/15022560.html</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/148309185/">https://pc-study.github.io/csdn-blog/posts/148309185/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">人工智能</a><a class="post-meta__tags" href="/csdn-blog/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">大模型</a><a class="post-meta__tags" href="/csdn-blog/tags/%E7%94%9F%E6%88%90%E5%BC%8FAI/">生成式AI</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/148435384/" title="追忆萨师煊教授：我国数据库学科的拓荒人与奠基者"><img class="cover" src="/csdn-blog/images/bd0714d6ae6f3e21912478267abb038e.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">追忆萨师煊教授：我国数据库学科的拓荒人与奠基者</div></div><div class="info-2"><div class="info-item-1">萨家大院，坐落于福州市朱紫坊片区，是国家级文物保护单位，近代著名海军将领萨镇冰、抗日海军将领“中山舰”舰长萨师俊等名人都曾经在这里居住过，也是我国数据库学科奠基人萨师煊教授的祖宅。近日，光明日报记者敲开萨家大院大红漆门，领略这座名宅与众不同的风采。 1978年，中国人民大学经济信息管理系创建人萨师煊</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148293355/" title="Oracle Linux 9 安装 EMCC 13.5：避坑细节与实战经验汇总！"><img class="cover" src="/csdn-blog/images/ec1baadf7e0bbead262f413972e1d8e0.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Oracle Linux 9 安装 EMCC 13.5：避坑细节与实战经验汇总！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 安装前准备 主机信息 硬件要求 EMCC 需要开放端口 建议补丁 安装包上传 数据库安装 Oracle 19C 一键安装 数据库修改参数 EMCC 安装准备 emcc 依赖包安装 配置 net.ipv4.ip\local\por</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/149216973/" title="智能对话与大模型入门指南"><img class="cover" src="/csdn-blog/images/c107c9200bbf4f108470bff15f422d16.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">智能对话与大模型入门指南</div></div><div class="info-2"><div class="info-item-1">前言 人工智能浪潮席卷全球，深刻改变着人类的生产生活方式。其中，智能对话系统作为人机交互的核心纽带，已广泛应用于智能客服、虚拟助手、智能搜索等领域，极大提升了服务效率和用户体验。同时，大语言模型（LLM） 的爆发式发展，更是为人工智能赋予了前所未有的理解和生成能力，开启了通用人工智能（AGI）探索的</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148737645/" title="统治编程世界！AI时代，Python已是编程语言独一档"><img class="cover" src="/csdn-blog/images/4714e6dafbfae119ce29abed2e083ec1.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-18</div><div class="info-item-2">统治编程世界！AI时代，Python已是编程语言独一档</div></div><div class="info-2"><div class="info-item-1">2025年5月，Python与第二名 C++ 之间的市场份额差距首次超过了 15%，创造了TIOBE榜单历史。 这意味着 Python 不再只是“热门”，而是遥遥领先，成为编程世界统治级别的语言。从现实情况来看，Python 在数据科学、自动化测试等确实已形成压倒性优势。 随着AI浪潮的到来，Pyt</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/123063938/" title="手把手教你绘制数据治理实施路线图"><img class="cover" src="/csdn-blog/images/1e27ed78abc90c8292b657ecf7fb2b14.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-22</div><div class="info-item-2">手把手教你绘制数据治理实施路线图</div></div><div class="info-2"><div class="info-item-1">导读 很多企业知道数据治理很重要，但是却不清楚如何做好数据治理。有的企业开展数据治理是“摸着石头过河”，还有一部分企业是"想过河但是不知道该摸哪一块石头”。 数据治理成熟度评估为企业提供了一个数据治理的切入点，通过发现企业数据治理中存在的问题，找到与业界领先企业的差距，绘制出符合企业现状和需求的数据</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148158495/" title="飞书知识问答深度测评：企业AI应用落地的“范本级”产品"><img class="cover" src="/csdn-blog/images/b01316fabed78ecd8cd3b37d0d582d48.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-23</div><div class="info-item-2">飞书知识问答深度测评：企业AI应用落地的“范本级”产品</div></div><div class="info-2"><div class="info-item-1">前言 当 AI 逐渐从技术前沿走向日常办公，我们最常听到的一个词是“效率提升”。但真正能做到降本增效、让企业员工切实受益的 AI 产品，仍属少数。尤其是在组织内部知识管理这一块，大多数企业仍停留在“搜索靠关键词、记录靠记忆、协作靠问人”的阶段，信息重复、碎片化、沉没的现象普遍存在。 飞书推出的“知识</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149325799/" title="7个故事，学会人工智能时代必懂的算法常识"><img class="cover" src="/csdn-blog/images/fdc473aef8f18ffe86b69423e707d869.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-14</div><div class="info-item-2">7个故事，学会人工智能时代必懂的算法常识</div></div><div class="info-2"><div class="info-item-1">在数字化和智能化时代，“算法”一词频繁出现在公众视野，基于算法的技术已经深深融入了我们的日常生活，改变着我们的生活方式。就像每个人都该懂点物理、化学一样，算法和计算的基本概念，也正在成为现代人必备的常识。 拿起手机，你就会接触到各种技术产品。无论是社交媒体、购物平台还是搜索引擎，信息推送算法都会影响</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148080033/" title="硬件工程师的电源修炼手册：DC&#x2F;DC设计全链路突破"><img class="cover" src="/csdn-blog/images/6ea3ad4e8dd63a390e324f55ecf8384e.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-09</div><div class="info-item-2">硬件工程师的电源修炼手册：DC&#x2F;DC设计全链路突破</div></div><div class="info-2"><div class="info-item-1">前言 电源作为电子系统的"心脏"，其设计能力直接决定着硬件产品的可靠性与效能。本书凝聚三位资深专家在军工、通信、汽车电子等领域的二十年工程经验，以DC/DC电源为切入点，构建了从器件特性到系统优化的完整知识体系。不同于传统教材的抽象理论堆砌，我们独创"问题驱动"的写作模式：通过典型故障案例反推设计要</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E3%80%8A%E5%9B%BE%E8%A7%A3%E5%A4%A7%E6%A8%A1%E5%9E%8B%EF%BC%9A%E7%94%9F%E6%88%90%E5%BC%8F-AI-%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E6%88%98%E3%80%8B-%E9%80%82%E5%90%88%E4%B8%8D%E5%90%8C%E5%B1%82%E6%AC%A1%E3%80%81%E4%B8%8D%E5%90%8C%E8%83%8C%E6%99%AF%E7%9A%84%E8%AF%BB%E8%80%85%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">**《图解大模型：生成式 AI 原理与实战》**适合不同层次、不同背景的读者：</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

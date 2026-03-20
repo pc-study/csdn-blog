@@ -1,0 +1,363 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题描述 环境准备 问题复现 写在最后 前言 今天有个朋友说他们有套 Oracle 19C 数据库，数据库字符集为 ，应用系统查询数据时，有个特殊字符 ™ 有时候正常显示，有时候又会显示乱码，非常诡异，开发硬">
+<meta property="og:type" content="article">
+<meta property="og:title" content="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/145697149/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题描述 环境准备 问题复现 写在最后 前言 今天有个朋友说他们有套 Oracle 19C 数据库，数据库字符集为 ，应用系统查询数据时，有个特殊字符 ™ 有时候正常显示，有时候又会显示乱码，非常诡异，开发硬">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/945748028c92a6fb4c33c9f427e00203.webp">
+<meta property="article:published_time" content="2025-02-18T01:12:46.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.202Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/945748028c92a6fb4c33c9f427e00203.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题","url":"https://pc-study.github.io/csdn-blog/posts/145697149/","image":"https://pc-study.github.io/csdn-blog/images/945748028c92a6fb4c33c9f427e00203.webp","datePublished":"2025-02-18T01:12:46.000Z","dateModified":"2026-03-20T12:25:39.202Z","description":"大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题描述 环境准备 问题复现 写在最后 前言 今天有个朋友说他们有套 Oracle 19C 数据库，数据库字符集为 ，应用系统查询数据时，有个特殊字符 ™ 有时候正常显示，有时候又会显示乱码，非常诡异，开发硬","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/145697149/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/145697149/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/945748028c92a6fb4c33c9f427e00203.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-02-18-145697149.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-02-18T01:12:46.000Z" title="发表于 2025-02-18 09:12:46">2025-02-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.202Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，分享一些学习国产数据库路上的知识和经验。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#_9">问题描述</a></li>
+<li><a href="#_76">环境准备</a></li>
+<li><a href="#_108">问题复现</a></li>
+<li><a href="#_229">写在最后</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>今天有个朋友说他们有套 Oracle 19C 数据库，数据库字符集为 <code>ZHS16GBK</code>，应用系统查询数据时，有个特殊字符 <strong>™</strong> 有时候正常显示，有时候又会显示乱码，非常诡异，<strong>开发硬要说是数据库字符集有问题</strong>，需要帮忙排查一下问题（<strong>甩锅</strong>）。</p>
+<p>本文记录一下问题分析过程，并使用测试环境复现一下问题。</p>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>首先展示问题，使用 PLSQL 查询发现数据时显示乱码：</p>
+<p><img src="/csdn-blog/images/4b6f4dc458f49d2eb2ce5883127102b6.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题" loading='lazy'></p>
+<p>正常应该显示为：</p>
+<p><img src="/csdn-blog/images/e87f5342be77f5e3adc4e9c107d8882c.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图2" loading='lazy'></p>
+<p>查看数据库字符集：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SQL</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">set</span> line2222 pages1000<br>col <span class="hljs-keyword">parameter</span> <span class="hljs-keyword">for</span> a30<br>col <span class="hljs-keyword">value</span> <span class="hljs-keyword">for</span> a20<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> nls_database_parameters <span class="hljs-keyword">where</span> <span class="hljs-keyword">parameter</span><span class="hljs-operator">=</span><span class="hljs-string">&#x27;NLS_CHARACTERSET&#x27;</span>;<br><br><span class="hljs-keyword">PARAMETER</span>                      <span class="hljs-keyword">VALUE</span><br><span class="hljs-comment">------------------------------ --------------------</span><br>NLS_CHARACTERSET               ZHS16GBK<br></code></pre></td></tr></table></figure>
+
+<p>我初步怀疑有可能是 <strong>客户端字符集</strong> 配置有问题，为了确认这个问题，直接在数据库本地 sqlplus 查询看看：</p>
+<p><img src="/csdn-blog/images/bc6460541a9b2975db34dfd6678ca61b.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图3" loading='lazy'></p>
+<p>结果发现还是乱码，查看一下数据库主机的客户端字符集：</p>
+<p><img src="/csdn-blog/images/bf07d747490f7b22b4087935fdbfcd90.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图4" loading='lazy'></p>
+<p>数据库主机没有设置客户端字符集，如果没有设置 <strong>NLS_LANG</strong> 环境变量，Oracle 客户端会默认使用操作系统的默认字符集。</p>
+<p>在 Unix&#x2F;Linux 系统中，默认字符集通常与系统的 <code>locale</code> 设置相关：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><span class="hljs-section">[oracle@orcl19c:/home/oracle]$ locale</span><br>LANG=en_US.UTF-8<br>LC_CTYPE=<span class="hljs-string">&quot;en_US.UTF-8&quot;</span><br>LC_NUMERIC=<span class="hljs-string">&quot;en_US.UTF-8&quot;</span><br>LC_TIME=<span class="hljs-string">&quot;en_US.UTF-8&quot;</span><br>LC_COLLATE=<span class="hljs-string">&quot;en_US.UTF-8&quot;</span><br>LC_MONETARY=<span class="hljs-string">&quot;en_US.UTF-8&quot;</span><br>LC_MESSAGES=<span class="hljs-string">&quot;en_US.UTF-8&quot;</span><br>LC_PAPER=<span class="hljs-string">&quot;en_US.UTF-8&quot;</span><br>LC_NAME=<span class="hljs-string">&quot;en_US.UTF-8&quot;</span><br>LC_ADDRESS=<span class="hljs-string">&quot;en_US.UTF-8&quot;</span><br>LC_TELEPHONE=<span class="hljs-string">&quot;en_US.UTF-8&quot;</span><br>LC_MEASUREMENT=<span class="hljs-string">&quot;en_US.UTF-8&quot;</span><br>LC_IDENTIFICATION=<span class="hljs-string">&quot;en_US.UTF-8&quot;</span><br>LC_ALL=<br></code></pre></td></tr></table></figure>
+
+<p>比如系统的 locale 设置为 <code>en_US.UTF-8</code>，则客户端的字符集可能会默认为 AL32UTF8 或 UTF-8，此时与我们的数据库字符集明显不匹配，此时插入数据时就可能会造成乱码问题。</p>
+<p>这里我尝试将客户端字符集修改成：<code>AMERICAN_AMERICA.ZHS16GBK</code>：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">export</span> <span class="hljs-attribute">NLS_LANG</span>=AMERICAN_AMERICA.ZHS16GBK<br></code></pre></td></tr></table></figure>
+
+<p>再次查询，可以发现结果依然显示乱码：</p>
+<p><img src="/csdn-blog/images/d3840ed9c9ee5e21cc6e4257137ce93b.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图5" loading='lazy'></p>
+<p><strong>这是为什么呢？</strong> 我明明已经把客户端字符集已经修改成正确的了。</p>
+<blockquote>
+<p><strong>问题原因</strong>：当 NLS_LANG 设置错误时，数据库会以错误的字符集存储数据，导致特殊字符 ™ 变为乱码 ???，这是一个<strong>不可逆</strong>的行为。即使后续修改为正确的 NLS_LANG，新的数据会正确存储，但已存储的乱码数据无法自动恢复，因为字符已经以错误的编码方式存储。</p>
+</blockquote>
+<p>其实问题分析到这里，基本已经能确定问题所在了。</p>
+<ol>
+<li><strong>为什么特殊字符 ™ 有时候会变成乱码 ??? 字符？</strong></li>
+<li><strong>为什么特殊字符 ™ 有时候又显示正常？</strong></li>
+</ol>
+<p>这里我先不说答案，下面我用测试环境复现一下整个过程，大家就能明白了。</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>环境信息如下：</p>
+<table>
+<thead>
+<tr>
+<th>主机名</th>
+<th>服务IP</th>
+<th>主机版本</th>
+<th>CPU</th>
+<th>内存</th>
+<th>系统盘</th>
+<th>Oracle版本</th>
+<th>字符集</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>orcl19c</td>
+<td>192.168.6.154</td>
+<td>rhel8.10</td>
+<td>x86_64</td>
+<td>8G</td>
+<td>100G</td>
+<td>19C</td>
+<td>ZHS16GBK</td>
+</tr>
+</tbody></table>
+<p>使用开源版 <strong>Oracle 一键安装脚本</strong> 安装一套 19C 数据库，Oracle 一键安装脚本是托管于 Gitee 代码平台：</p>
+<blockquote>
+<p>脚本下载地址：<a target="_blank" rel="noopener" href="https://gitee.com/luciferlpc/OracleShellInstall">https://gitee.com/luciferlpc/OracleShellInstall</a></p>
+</blockquote>
+<p><strong>⭐️ 使用教程可以参考</strong>：<a target="_blank" rel="noopener" href="https://www.modb.pro/db/1878623781711785984">2025 年宣布一件大事，Oracle 一键安装脚本开源了！</a></p>
+<p>执行一键安装：</p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs autohotkey">./OracleShellInstall -lf ens192 `# 主机网卡名称`\<br>-n orcl19c `# 主机名`\<br>-op oracle `# 主机 oracle 用户密码`\<br>-d /u01 `# Oracle 软件安装基础目录`\<br>-ord /oradata `# 数据库文件存放目录`\<br>-o lucifer `# 数据库名称`\<br>-dp oracle `# sys/system 用户密码`\<br>-ds ZHS16GBK `# 数据库字符集`\<br>-ns AL16UTF16 `# 国家字符集`\<br>-redo <span class="hljs-number">100</span> `# 在线重做日志大小（M）`\<br>-opd Y `# 是否优化数据库`<br></code></pre></td></tr></table></figure>
+
+<p>执行后选择对应需要安装的模式以及版本即可安装：</p>
+<p><img src="/csdn-blog/images/945748028c92a6fb4c33c9f427e00203.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图6" loading='lazy'></p>
+<p>等待重启后，数据库就已经安装完成了！测试环境已经准备好了，接下来先回溯一下问题分析过程。</p>
+<h2 id="问题复现"><a href="#问题复现" class="headerlink" title="问题复现"></a>问题复现</h2><p>首先确认一下安装好的数据库字符集是 ZHS16GBK：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SQL</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">set</span> line2222 pages1000<br>col <span class="hljs-keyword">parameter</span> <span class="hljs-keyword">for</span> a30<br>col <span class="hljs-keyword">value</span> <span class="hljs-keyword">for</span> a20<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> nls_database_parameters <span class="hljs-keyword">where</span> <span class="hljs-keyword">parameter</span><span class="hljs-operator">=</span><span class="hljs-string">&#x27;NLS_CHARACTERSET&#x27;</span>;<br><br><span class="hljs-keyword">PARAMETER</span>                      <span class="hljs-keyword">VALUE</span><br><span class="hljs-comment">------------------------------ --------------------</span><br>NLS_CHARACTERSET               ZHS16GBK<br></code></pre></td></tr></table></figure>
+
+<p>然后，我们把测试表创建好：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">## 创建测试表<br><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> test (id <span class="hljs-type">int</span>, ename varchar2(<span class="hljs-number">50</span>));<br><br><span class="hljs-keyword">Table</span> created.<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/6a3956a1c0fbb301984c02cf3af6ca07.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图7" loading='lazy'></p>
+<p><strong>📢 注意</strong>：使用脚本安装好的数据库主机，会在 <code>/home/oracle/.bash_profile</code> 文件中自动配置好客户端字符集：</p>
+<p><img src="/csdn-blog/images/5cc219ad4fea3a02105fb9dc417b1bc4.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图8" loading='lazy'></p>
+<p>模拟测试数据插入：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> test <span class="hljs-keyword">values</span>(<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;Pierce™ Dilution-Free™ Rapid Gold BCA Protein&#x27;</span>);<br><br><span class="hljs-number">1</span> <span class="hljs-keyword">row</span> created.<br><br><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">commit</span>;<br><br><span class="hljs-keyword">Commit</span> complete.<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/3b322c74161a629dcd1e0def0c0f872e.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图9" loading='lazy'></p>
+<p>此时，查看测试数据的特殊符号 ™ 是否会显示为乱码：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SQL</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">select</span> ename <span class="hljs-keyword">from</span> test;<br><br>        ID TEXT<br><span class="hljs-comment">---------- --------------------------------------------------</span><br>         <span class="hljs-number">1</span> Pierce™ Dilution<span class="hljs-operator">-</span><span class="hljs-keyword">Free</span>™ Rapid Gold BCA Protein<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/08414abbb17b9f08345f2aeb9fddf8ed.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图10" loading='lazy'></p>
+<p>可以发现没有显示为乱码，为什么呢？</p>
+<blockquote>
+<p>当设置 <code>NLS_LANG=AMERICAN_AMERICA.ZHS16GBK</code> 后，客户端知道它应该使用 ZHS16GBK 字符集来解码字符数据，因此能够正确显示 ™ 字符。</p>
+</blockquote>
+<p>这就是为什么特殊字符 ™ 有时候显示正常的原因，客户端字符集与数据库字符集相匹配，设置对了就能正确存储，正常显示嘛！</p>
+<p>这个好解释，那么问题来了，<strong>为什么特殊字符 ™ 有时候会变成乱码 ??? 字符？</strong> 别急，接着看！</p>
+<p>首先，我们先将客户端字符集配置取消，或者设置为一个错误的客户端字符集：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 我这里修改为一个错误的客户端字符集</span><br>[oracle<span class="hljs-variable">@orcl19c</span><span class="hljs-symbol">:/home/oracle</span>]<span class="hljs-variable">$ </span>export <span class="hljs-title class_">NLS_LANG</span>=<span class="hljs-title class_">AMERICAN_AMERICA</span>.<span class="hljs-title class_">AL32UTF8</span><br>[oracle<span class="hljs-variable">@orcl19c</span><span class="hljs-symbol">:/home/oracle</span>]<span class="hljs-variable">$ </span>echo <span class="hljs-variable">$NLS_LANG</span><br><span class="hljs-title class_">AMERICAN_AMERICA</span>.<span class="hljs-title class_">AL32UTF8</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/ea2694b2619e1fb138b7e1f1e01264f1.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图11" loading='lazy'></p>
+<p>再次插入测试数据：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> test <span class="hljs-keyword">values</span>(<span class="hljs-number">2</span>,<span class="hljs-string">&#x27;Pierce™ Dilution-Free™ Rapid Gold BCA Protein&#x27;</span>);<br><br><span class="hljs-number">1</span> <span class="hljs-keyword">row</span> created.<br><br><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">commit</span>;<br><br><span class="hljs-keyword">Commit</span> complete.<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/d0bd1252cfd5152a26b834c9c308e916.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图12" loading='lazy'></p>
+<p>再次查询测试结果：</p>
+<p><img src="/csdn-blog/images/39e1568d541c514aee236a8f94c34fce.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图13" loading='lazy'></p>
+<p>显示乱码了，但是有朋友说，你这也不是一开始问题里的 ??? 啊！行，那就再测试一下取消客户端字符集：</p>
+<p><img src="/csdn-blog/images/549fcffe80bc0c0036df32355c81df31.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图14" loading='lazy'></p>
+<p>再次插入测试数据：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> test <span class="hljs-keyword">values</span>(<span class="hljs-number">3</span>,<span class="hljs-string">&#x27;Pierce™ Dilution-Free™ Rapid Gold BCA Protein&#x27;</span>);<br><br><span class="hljs-number">1</span> <span class="hljs-keyword">row</span> created.<br><br><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">commit</span>;<br><br><span class="hljs-keyword">Commit</span> complete.<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/68fb420ee5294556f9bc204ad7862d77.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图15" loading='lazy'></p>
+<p>再次查询测试结果：</p>
+<p><img src="/csdn-blog/images/65896f4034cbf39885f3fc166d6a34c1.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图16" loading='lazy'></p>
+<p>好嘛！三个问号来了。</p>
+<p>此时，即使我们把客户端字符集恢复正确：</p>
+<p><img src="/csdn-blog/images/d0c34bd891db91d9ad9fbe9ef6317ed6.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图17" loading='lazy'></p>
+<p>再次查询：</p>
+<p><img src="/csdn-blog/images/9d41b3503bbdbbb0015613ce1e5d4093.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图18" loading='lazy'></p>
+<p>可以发现，三行数据的查询结果截然不同！这是不是就还原出来了：</p>
+<ol>
+<li><strong>为什么特殊字符 ™ 有时候会变成乱码 ??? 字符？</strong></li>
+<li><strong>为什么特殊字符 ™ 有时候又显示正常？</strong></li>
+</ol>
+<p>说回到一开始发的问题截图：</p>
+<p><img src="/csdn-blog/images/90498291643c2cfb3a3185818111a582.webp" alt="甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题 - 图19" loading='lazy'></p>
+<p>哎，乱码是<strong>一个问号 ?</strong>，那你客户端字符集八成是设置成 <code>AMERICAN_AMERICA.AL32UTF8</code> 了吧！</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>所以，问题的关键还是在于 <strong>客户端字符集</strong> 的设置是否正确 ✅，<strong>那这锅，DBA 可不接了</strong>！爱谁接谁接吧~</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/145697149/">https://pc-study.github.io/csdn-blog/posts/145697149/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/145739382/" title="老张的国产数据库历险记：从怀疑金仓数据库到真香的心路历程"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">老张的国产数据库历险记：从怀疑金仓数据库到真香的心路历程</div></div><div class="info-2"><div class="info-item-1">"你猜怎么着？我们那套SQLServer系统，居然真的成功迁移到国产数据库上了！"前几个月的凌晨两点，老张突然给我发来语音，声音里充满了兴奋。 我揉着眼睛看了眼窗外漆黑的夜色：“你们领导终于决定换掉那台十几年老旧服务器了？” “比那还让人惊讶！上周五领导突然说要搞数据库国产化，刚开始我有点担心——你</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145697128/" title="一文掌握 Oracle OPatch 实用技巧"><img class="cover" src="/csdn-blog/images/0e5055ff7722d7e6e2a06ce17656caec.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">一文掌握 Oracle OPatch 实用技巧</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 OPatch 更新 OPatch 下载 OPatch 备份 OPatch 更新 OPatch OPatch 常用命令 OPatch 常见问题 写在最后 前言 OPatch 是什么？ 对于 Oracle DBA</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/122011588/" title="Oracle 从入门到精通系列 - 交流社区"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-18</div><div class="info-item-2">Oracle 从入门到精通系列 - 交流社区</div></div><div class="info-2"><div class="info-item-1">交流专区 ->返回总目录返回总目录<-</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119878261/" title="《零基础安装 Oracle 数据库》RAC集群系列 ❷ 简单两步快速安装 Oracle 12CR2 RAC 数据库"><img class="cover" src="/csdn-blog/images/f0b76787497ac9c46eaf5e8b261b97e8.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-23</div><div class="info-item-2">《零基础安装 Oracle 数据库》RAC集群系列 ❷ 简单两步快速安装 Oracle 12CR2 RAC 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持 RAC 集群版本一键安装了！❗️ 依然不支持 Linux 6 系统</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139180004/" title="Oracle Linux 8.9 一键安装 Oracle 12CR2 RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">Oracle Linux 8.9 一键安装 Oracle 12CR2 RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 8.9 一键安装 Oracle 12CR2 RAC（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139179364/" title="阿里龙蜥 Anolis 7.9 一键安装 Oracle 11GR2 RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">阿里龙蜥 Anolis 7.9 一键安装 Oracle 11GR2 RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 龙蜥 Anolis 7.9 一键安装 Oracle 11GR2 RAC（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149572948/" title="Oracle 19.28 RU 升级最佳实践指南"><img class="cover" src="/csdn-blog/images/82e8b7f67988325cfee969a9cdfc7abf.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-23</div><div class="info-item-2">Oracle 19.28 RU 升级最佳实践指南</div></div><div class="info-2"><div class="info-item-1">前言 作为关键基础设施维护的关键环节，季度补丁更新（Release Update）是保障 Oracle 数据库安全与稳定的核心任务。本文将以生产环境标准流程，详细记录 Oracle 19.3.0 单机环境升级至 19.28 RU 的完整操作，重点阐述技术风险控制与最佳实践。 补丁获取与预处理 MOS</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120285647/" title="Oracle 无效对象查询，编译无效对象"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-14</div><div class="info-item-2">Oracle 无效对象查询，编译无效对象</div></div><div class="info-2"><div class="info-item-1">查看当前无效对象 编译无效对象： 有两种方式： 1、执行sql查询结果： 2、 脚本 编译： 本次分享到此结束啦~ 如果觉得文章对你有帮助，点赞、收藏、关注、评论，一键四连支持，你的支持就是我创作最大的动力。 ❤️ 技术 交流可以 关注公众号：Lucifer三思而后行 ❤️</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-number">3.</span> <span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">4.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%A4%8D%E7%8E%B0"><span class="toc-number">5.</span> <span class="toc-text">问题复现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">6.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

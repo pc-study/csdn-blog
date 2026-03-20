@@ -1,0 +1,257 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux 配置 multipath 多路径 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="目录 📚 前言 ☀️ 安装 multipath ⭐️ 配置 multipath 🌛 重载 multipath 📚 前言 通常 Linux 主机挂载存储盘时，每次重启后对应的 都会变，而且不好辨识！ 这时可以通过 multipath 多路径来绑定磁盘！ ☀️ 安装 multipath 需提前配置 yu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 配置 multipath 多路径">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/120211295/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="目录 📚 前言 ☀️ 安装 multipath ⭐️ 配置 multipath 🌛 重载 multipath 📚 前言 通常 Linux 主机挂载存储盘时，每次重启后对应的 都会变，而且不好辨识！ 这时可以通过 multipath 多路径来绑定磁盘！ ☀️ 安装 multipath 需提前配置 yu">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/linux.svg">
+<meta property="article:published_time" content="2021-09-09T14:34:45.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:13:19.746Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/linux.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Linux 配置 multipath 多路径","url":"https://pc-study.github.io/csdn-blog/posts/120211295/","image":"https://pc-study.github.io/csdn-blog/img/covers/linux.svg","datePublished":"2021-09-09T14:34:45.000Z","dateModified":"2026-03-20T12:13:19.746Z","description":"目录 📚 前言 ☀️ 安装 multipath ⭐️ 配置 multipath 🌛 重载 multipath 📚 前言 通常 Linux 主机挂载存储盘时，每次重启后对应的 都会变，而且不好辨识！ 这时可以通过 multipath 多路径来绑定磁盘！ ☀️ 安装 multipath 需提前配置 yu","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/120211295/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/120211295/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux 配置 multipath 多路径',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/linux.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">Linux 配置 multipath 多路径</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Linux 配置 multipath 多路径<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-09-09-120211295.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-09-09T14:34:45.000Z" title="发表于 2021-09-09 22:34:45">2021-09-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:13:19.746Z" title="更新于 2026-03-20 20:13:19">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/">Linux 运维</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">439</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>1分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:13:19&quot;}" hidden></div><h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#__1">📚 前言</a></li>
+<li><a href="#__multipath_6">☀️ 安装 multipath</a></li>
+<li><a href="#__multipath_17">⭐️ 配置 multipath</a></li>
+<li><a href="#__multipath_54">🌛 重载 multipath</a></li>
+</ul>
+<h2 id="📚-前言"><a href="#📚-前言" class="headerlink" title="📚 前言"></a>📚 前言</h2><p>通常 Linux 主机挂载存储盘时，每次重启后对应的 <code>/dev/sd*</code> 都会变，而且不好辨识！</p>
+<p>这时可以通过 multipath 多路径来绑定磁盘！</p>
+<h2 id="☀️-安装-multipath"><a href="#☀️-安装-multipath" class="headerlink" title="☀️ 安装 multipath"></a>☀️ 安装 multipath</h2><p><strong>需提前配置 yum 源，可参考：<a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/120196606">Linux 配置本地 yum 源（6&#x2F;7&#x2F;8）</a></strong></p>
+<p>如果选择最小化安装的 Linux 主机，则需要手动安装 multipath，否则默认为自动安装。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs css">yum install -<span class="hljs-attribute">y</span> device-mapper-multipath<br>mpathconf <span class="hljs-attr">--enable</span> <span class="hljs-attr">--with_multipathd</span> <span class="hljs-attribute">y</span><br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p>执行以上命令后，multipath 已经成功安装并且初始化！</p>
+<h2 id="⭐️-配置-multipath"><a href="#⭐️-配置-multipath" class="headerlink" title="⭐️ 配置 multipath"></a>⭐️ 配置 multipath</h2><p>默认将 <code>sda</code><br>系统<br>盘排除，配置文件内容如下：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">cat</span> &lt;&lt;EOF &gt;/etc/multipath.<span class="hljs-keyword">conf</span><br>defaults &#123;<br>    user_friendly_names yes<br>&#125;<br> <br>blacklist &#123;<br>  devnode <span class="hljs-string">&quot;^sda&quot;</span><br>&#125;<br>EOF<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br></code></pre></td></tr></table></figure>
+
+<p>执行以上命令，将绑定除系统安装盘之外所有的盘！</p>
+<p>📢 注意：如果需要配置对应的盘的名称，可以通过指定 UUID 和别名的方式：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs gams">cat &lt;&lt;EOF &gt;/etc/multipath.conf<br>defaults &#123;<br>    user_friendly_names <span class="hljs-keyword">yes</span><br>&#125;<br> <br>blacklist &#123;<br>  devnode <span class="hljs-string">&quot;^sda&quot;</span><br>&#125;<br><br>multipaths &#123;<br>  multipath &#123;<br>  wwid 获取对应磁盘的UUID<br>  <span class="hljs-keyword">alias</span> 需要自定义的别名<br>  &#125;<br>&#125;<br>EOF<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br><span class="hljs-comment">* 13</span><br><span class="hljs-comment">* 14</span><br><span class="hljs-comment">* 15</span><br><span class="hljs-comment">* 16</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>上面👆🏻命令中的 UUID 获取方式可以参考：<a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/120211454">Linux 获取磁盘的UUID</a></strong></p>
+<h2 id="🌛-重载-multipath"><a href="#🌛-重载-multipath" class="headerlink" title="🌛 重载 multipath"></a>🌛 重载 multipath</h2><p>配置完 multipath 之后，并不会立即生效，需要手动刷新！</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-keyword">multipath </span>-F<br><span class="hljs-keyword">multipath </span>-v2<br><span class="hljs-keyword">multipath </span>-<span class="hljs-keyword">ll</span><br><span class="hljs-keyword"></span><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+
+<p>至此，multipath 即配置完成！</p>
+<hr>
+<p>本次分享到此结束啦~</p>
+<p>如果觉得文章对你有帮助，<strong>点赞、收藏、关注、评论</strong>，一键四连支持，你的支持就是我创作最大的动力。</p>
+<p>❤️<br>技术<br>交流可以 关注公众号：<strong>Lucifer三思而后行</strong> ❤️</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/120211295/">https://pc-study.github.io/csdn-blog/posts/120211295/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/linux/">linux</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/120211726/" title="Oracle 杀掉 session 相关 sql 语句"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Oracle 杀掉 session 相关 sql 语句</div></div><div class="info-2"><div class="info-item-1">kill某个等待事件对应的spid： 对应的alter system kill session的语法： kill某个sql\_id对应的spid： 对应的alter system kill session的语法： 被kill会话的类型： blocking会话类型和kill blocking会话： k</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120211454/" title="Linux 获取磁盘的UUID和序列号WWID"><img class="cover" src="/csdn-blog/img/covers/linux.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Linux 获取磁盘的UUID和序列号WWID</div></div><div class="info-2"><div class="info-item-1">前言 背景描述，在Linux系统中，如果添加了新的 SCSI 磁盘或者映射SAN存储LUN操作，重启操作系统之后会出现磁盘标识符（sd\）错乱的情况。 介绍 例如之前添加的SAN存储LUN的磁盘标识符为/dev/sdd，重启之后发现变成/dev/sdh，特别是oracle RAC环境下我们是不希望出</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img class="cover" src="/csdn-blog/img/covers/linux.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-19</div><div class="info-item-2">veeam agent 纳管 Ubuntu 20.04 报错解决</div></div><div class="info-2"><div class="info-item-1">前言 昨天 Veeam 纳管一台 Ubuntu 20.04 时遇到了一些问题，先是提示主机需要联外网下载依赖，配置网络之后，agent 安装又失败了，报错： 本文记录一下分析过程以及解决步骤。 问题分析 首先查看主机系统版本： VBR 纳管报错，格式化内容之后如下： 联系网络管理员临时开通外网后，重</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/143955255/" title="红帽 RHEL 10.0 Beta 闪亮登场！（附安装教程）"><img class="cover" src="/csdn-blog/img/covers/linux.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-11-21</div><div class="info-item-2">红帽 RHEL 10.0 Beta 闪亮登场！（附安装教程）</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 社群交流 前言 RHEL10 Beta 更新概述 RHEL10 Beta 安装 初始界面 磁盘分区 配置主机名和网络 配置时区 配置 root 密码 创建用户 开始安装 新版体验 基本信息 配置本地软件源 VNC 写在最后</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/138719905/" title="Oracle Linux 6.10 一键安装 Oracle 11GR2（231017）单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-11</div><div class="info-item-2">Oracle Linux 6.10 一键安装 Oracle 11GR2（231017）单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 6.10 一键安装 Oracle 11GR2 单机（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121942762/" title="教你美化苹果电脑，终端不会用，Homebrew 没安装？"><img class="cover" src="/csdn-blog/images/fa06640e2402f836a9917bf87a2d0d52.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-14</div><div class="info-item-2">教你美化苹果电脑，终端不会用，Homebrew 没安装？</div></div><div class="info-2"><div class="info-item-1">前言 不会吧？不会还有人用mac没有安装Homebrew吧？ iTerm2 都不会用，还敢自称老司机？ 都说玩溜了Linux的大佬，MacOS也不在话下。作为常年使用Linux的我，刚入手mbp的时候，打开终端的我真是一言难尽，因此我开始折腾它，也算是小有心得。 因此，打算分享一波，关于如何打造Ma</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122879837/" title="Oracle 11GR2 实战指南之手工创建数据库"><img class="cover" src="/csdn-blog/images/dfa9579e7fbcd0d04b552e344eb778dc.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-27</div><div class="info-item-2">Oracle 11GR2 实战指南之手工创建数据库</div></div><div class="info-2"><div class="info-item-1">目录 前言 一、环境准备 二、创建数据库 1、初始化实例 ID 2、创建密码文件 3、编写初始化参数文件 4、创建目录 5、创建 spfile 文件 6、启动实例至 nomount 状态 7、编写建库脚本 8、执行建库脚本 9、运行脚本创建数据字典 三、知识拓展 前言 如何不使用 ，手动一步步快速创</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/138160428/" title="Oracle Linux 8.8 一键安装 Oracle 11GR2 RAC（231017）"><img class="cover" src="/csdn-blog/images/6353573894a19540fc1590341b3cb293.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-24</div><div class="info-item-2">Oracle Linux 8.8 一键安装 Oracle 11GR2 RAC（231017）</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 8.8 一键安装 Oracle 11GR2 RAC（231017）过程（全程无需人工干预）：（脚本包括 ORALCE PSU/OJVM 等补丁自动安装） ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 脚本第三代支持 N 节</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9A-%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">📚 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%98%80%EF%B8%8F-%E5%AE%89%E8%A3%85-multipath"><span class="toc-number">3.</span> <span class="toc-text">☀️ 安装 multipath</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%AD%90%EF%B8%8F-%E9%85%8D%E7%BD%AE-multipath"><span class="toc-number">4.</span> <span class="toc-text">⭐️ 配置 multipath</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%9B-%E9%87%8D%E8%BD%BD-multipath"><span class="toc-number">5.</span> <span class="toc-text">🌛 重载 multipath</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

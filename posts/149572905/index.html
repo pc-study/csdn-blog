@@ -1,0 +1,373 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>90% 的运维都不知道：top 命令还能这样用！ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 概述 是 Linux 系统中最常用的实时系统监控命令之一，能够动态显示系统中正在运行的进程信息，包括 CPU 使用率、内存占用、系统负载等关键性能指标。 基本语法 界面说明 系统信息区域（前 5 行） 第一行：系统时间和负载 ：当前时间">
+<meta property="og:type" content="article">
+<meta property="og:title" content="90% 的运维都不知道：top 命令还能这样用！">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/149572905/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 概述 是 Linux 系统中最常用的实时系统监控命令之一，能够动态显示系统中正在运行的进程信息，包括 CPU 使用率、内存占用、系统负载等关键性能指标。 基本语法 界面说明 系统信息区域（前 5 行） 第一行：系统时间和负载 ：当前时间">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/linux.svg">
+<meta property="article:published_time" content="2025-07-23T07:26:54.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.506Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="ffmpeg">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="运维">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/linux.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"90% 的运维都不知道：top 命令还能这样用！","url":"https://pc-study.github.io/csdn-blog/posts/149572905/","image":"https://pc-study.github.io/csdn-blog/img/covers/linux.svg","datePublished":"2025-07-23T07:26:54.000Z","dateModified":"2026-03-20T08:34:08.506Z","description":"大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 概述 是 Linux 系统中最常用的实时系统监控命令之一，能够动态显示系统中正在运行的进程信息，包括 CPU 使用率、内存占用、系统负载等关键性能指标。 基本语法 界面说明 系统信息区域（前 5 行） 第一行：系统时间和负载 ：当前时间","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/149572905/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/149572905/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '90% 的运维都不知道：top 命令还能这样用！',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/linux.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">90% 的运维都不知道：top 命令还能这样用！</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">90% 的运维都不知道：top 命令还能这样用！<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-07-23-149572905.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-23T07:26:54.000Z" title="发表于 2025-07-23 15:26:54">2025-07-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.506Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/">Linux 运维</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><blockquote>
+<p>大家好，这里是 <strong>DBA 学习之路</strong>，专注于提升数据库运维效率。</p>
+</blockquote>
+<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p><code>top</code> 是 Linux 系统中最常用的实时系统监控命令之一，能够动态显示系统中正在运行的进程信息，包括 CPU 使用率、内存占用、系统负载等关键性能指标。</p>
+<h3 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-attribute">top</span> <span class="hljs-selector-attr">[选项]</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><h4 id="系统信息区域（前-5-行）"><a href="#系统信息区域（前-5-行）" class="headerlink" title="系统信息区域（前 5 行）"></a>系统信息区域（前 5 行）</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">top</span> <span class="hljs-bullet">-</span> <span class="hljs-number">14</span><span class="hljs-string">:30:25</span> <span class="hljs-string">up</span> <span class="hljs-number">10</span> <span class="hljs-string">days,</span>  <span class="hljs-number">5</span><span class="hljs-string">:42,</span>  <span class="hljs-number">2</span> <span class="hljs-string">users,</span>  <span class="hljs-attr">load average:</span> <span class="hljs-number">0.15</span><span class="hljs-string">,</span> <span class="hljs-number">0.25</span><span class="hljs-string">,</span> <span class="hljs-number">0.30</span><br><span class="hljs-attr">Tasks:</span> <span class="hljs-number">287</span> <span class="hljs-string">total,</span>   <span class="hljs-number">1</span> <span class="hljs-string">running,</span> <span class="hljs-number">286</span> <span class="hljs-string">sleeping,</span>   <span class="hljs-number">0</span> <span class="hljs-string">stopped,</span>   <span class="hljs-number">0</span> <span class="hljs-string">zombie</span><br><span class="hljs-string">%Cpu(s):</span>  <span class="hljs-number">5.2</span> <span class="hljs-string">us,</span>  <span class="hljs-number">2.1</span> <span class="hljs-string">sy,</span>  <span class="hljs-number">0.0</span> <span class="hljs-string">ni,</span> <span class="hljs-number">92.5</span> <span class="hljs-string">id,</span>  <span class="hljs-number">0.2</span> <span class="hljs-string">wa,</span>  <span class="hljs-number">0.0</span> <span class="hljs-string">hi,</span>  <span class="hljs-number">0.0</span> <span class="hljs-string">si,</span>  <span class="hljs-number">0.0</span> <span class="hljs-string">st</span><br><span class="hljs-attr">MiB Mem :</span>  <span class="hljs-number">16384.0</span> <span class="hljs-string">total,</span>   <span class="hljs-number">2048.5 </span><span class="hljs-string">free,</span>   <span class="hljs-number">8192.3 </span><span class="hljs-string">used,</span>   <span class="hljs-number">6143.2 </span><span class="hljs-string">buff/cache</span><br><span class="hljs-attr">MiB Swap:</span>   <span class="hljs-number">4096.0 </span><span class="hljs-string">total,</span>   <span class="hljs-number">4096.0 </span><span class="hljs-string">free,</span>      <span class="hljs-number">0.0</span> <span class="hljs-string">used.</span>   <span class="hljs-number">7680.1 </span><span class="hljs-string">avail</span> <span class="hljs-string">Mem</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="第一行：系统时间和负载"><a href="#第一行：系统时间和负载" class="headerlink" title="第一行：系统时间和负载"></a>第一行：系统时间和负载</h5><ul>
+<li><code>14:30:25</code>：当前时间</li>
+<li><code>up 10 days, 5:42</code>：系统运行时间</li>
+<li><code>2 users</code>：当前登录用户数</li>
+<li><code>load average: 0.15, 0.25, 0.30</code>：1 分钟、5 分钟、15 分钟的平均负载</li>
+</ul>
+<h5 id="第二行：进程统计"><a href="#第二行：进程统计" class="headerlink" title="第二行：进程统计"></a>第二行：进程统计</h5><ul>
+<li><code>287 total</code>：总进程数</li>
+<li><code>1 running</code>：运行中的进程数</li>
+<li><code>286 sleeping</code>：睡眠状态进程数</li>
+<li><code>0 stopped</code>：停止的进程数</li>
+<li><code>0 zombie</code>：僵尸进程数</li>
+</ul>
+<h5 id="第三行：CPU-使用率"><a href="#第三行：CPU-使用率" class="headerlink" title="第三行：CPU 使用率"></a>第三行：CPU 使用率</h5><ul>
+<li><code>us</code>：用户空间占用 CPU 百分比</li>
+<li><code>sy</code>：内核空间占用 CPU 百分比</li>
+<li><code>ni</code>：改变过优先级的进程占用 CPU 百分比</li>
+<li><code>id</code>：空闲 CPU 百分比</li>
+<li><code>wa</code>：IO 等待占用 CPU 百分比</li>
+<li><code>hi</code>：硬中断占用 CPU 百分比</li>
+<li><code>si</code>：软中断占用 CPU 百分比</li>
+<li><code>st</code>：虚拟机占用 CPU 百分比</li>
+</ul>
+<h5 id="第四、五行：内存信息"><a href="#第四、五行：内存信息" class="headerlink" title="第四、五行：内存信息"></a>第四、五行：内存信息</h5><ul>
+<li><code>total</code>：总内存</li>
+<li><code>free</code>：空闲内存</li>
+<li><code>used</code>：已使用内存</li>
+<li><code>buff/cache</code>：缓冲和缓存内存</li>
+<li><code>avail Mem</code>：可用内存</li>
+</ul>
+<h4 id="进程列表区域"><a href="#进程列表区域" class="headerlink" title="进程列表区域"></a>进程列表区域</h4><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache">  <span class="hljs-attribute">PID</span> USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND<br><span class="hljs-attribute">12345</span> root      <span class="hljs-number">20</span>   <span class="hljs-number">0</span>  <span class="hljs-number">162</span>.<span class="hljs-number">5</span>m  <span class="hljs-number">12</span>.<span class="hljs-number">3</span>m   <span class="hljs-number">8</span>.<span class="hljs-number">9</span>m S   <span class="hljs-number">2</span>.<span class="hljs-number">3</span>   <span class="hljs-number">0</span>.<span class="hljs-number">8</span>   <span class="hljs-number">0</span>:<span class="hljs-number">05</span>.<span class="hljs-number">67</span> oracle<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>PID</code>：进程 ID</li>
+<li><code>USER</code>：进程所有者</li>
+<li><code>PR</code>：优先级</li>
+<li><code>NI</code>：nice 值</li>
+<li><code>VIRT</code>：虚拟内存</li>
+<li><code>RES</code>：物理内存</li>
+<li><code>SHR</code>：共享内存</li>
+<li><code>S</code>：进程状态（R 运行，S 睡眠，D 不可中断睡眠，Z 僵尸，T 停止）</li>
+<li><code>%CPU</code>：CPU 使用百分比</li>
+<li><code>%MEM</code>：内存使用百分比</li>
+<li><code>TIME+</code>：累计 CPU 时间</li>
+<li><code>COMMAND</code>：命令名称</li>
+</ul>
+<h3 id="常用选项"><a href="#常用选项" class="headerlink" title="常用选项"></a>常用选项</h3><h4 id="基本选项"><a href="#基本选项" class="headerlink" title="基本选项"></a>基本选项</h4><figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs nsis"><span class="hljs-comment"># 显示特定用户的进程</span><br><span class="hljs-literal">top</span> -u username<br><br><span class="hljs-comment"># 显示特定进程ID</span><br><span class="hljs-literal">top</span> -p <span class="hljs-number">1234</span><br><br><span class="hljs-comment"># 批处理模式，适合脚本使用</span><br><span class="hljs-literal">top</span> -b<br><br><span class="hljs-comment"># 指定刷新次数后退出</span><br><span class="hljs-literal">top</span> -n <span class="hljs-number">5</span><br><br><span class="hljs-comment"># 设置刷新间隔（秒）</span><br><span class="hljs-literal">top</span> -d <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="交互式按键"><a href="#交互式按键" class="headerlink" title="交互式按键"></a>交互式按键</h4><p>在 top 运行时，可以使用以下按键进行交互：</p>
+<h5 id="显示控制"><a href="#显示控制" class="headerlink" title="显示控制"></a>显示控制</h5><ul>
+<li><code>q</code>：退出 top</li>
+<li><code>h</code> 或 <code>?</code>：显示帮助信息</li>
+<li><code>z</code>：彩色&#x2F;单色显示切换</li>
+<li><code>B</code>：粗体显示切换</li>
+</ul>
+<h5 id="排序控制"><a href="#排序控制" class="headerlink" title="排序控制"></a>排序控制</h5><ul>
+<li><code>P</code>：按 CPU 使用率排序（默认）</li>
+<li><code>M</code>：按内存使用率排序</li>
+<li><code>T</code>：按累计时间排序</li>
+<li><code>N</code>：按 PID 排序</li>
+<li><code>R</code>：颠倒排序顺序</li>
+</ul>
+<h5 id="进程管理"><a href="#进程管理" class="headerlink" title="进程管理"></a>进程管理</h5><ul>
+<li><code>k</code>：终止进程（需要输入 PID）</li>
+<li><code>r</code>：重新设置进程优先级</li>
+<li><code>u</code>：只显示特定用户的进程</li>
+</ul>
+<h5 id="显示选项"><a href="#显示选项" class="headerlink" title="显示选项"></a>显示选项</h5><ul>
+<li><code>1</code>：显示&#x2F;隐藏每个 CPU 核心信息</li>
+<li><code>t</code>：切换 CPU 信息显示格式</li>
+<li><code>m</code>：切换内存信息显示格式</li>
+<li><code>l</code>：切换负载平均值和启动时间显示</li>
+<li><code>f</code>：添加或删除显示字段</li>
+<li><code>o</code>：改变显示字段顺序</li>
+</ul>
+<h3 id="实际应用场景"><a href="#实际应用场景" class="headerlink" title="实际应用场景"></a>实际应用场景</h3><h4 id="1-系统性能监控"><a href="#1-系统性能监控" class="headerlink" title="1. 系统性能监控"></a>1. 系统性能监控</h4><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-comment"># 持续监控系统性能，每2秒刷新一次</span><br><span class="hljs-attribute">top</span> -d <span class="hljs-number">2</span><br><br><span class="hljs-comment"># 监控特定时间段，运行10次后退出</span><br><span class="hljs-attribute">top</span> -n <span class="hljs-number">10</span> -d <span class="hljs-number">5</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-问题排查"><a href="#2-问题排查" class="headerlink" title="2. 问题排查"></a>2. 问题排查</h4><h5 id="查找-CPU-占用高的进程"><a href="#查找-CPU-占用高的进程" class="headerlink" title="查找 CPU 占用高的进程"></a>查找 CPU 占用高的进程</h5><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs autoit"><span class="hljs-meta"># 按CPU使用率排序（默认）</span><br>top<br><span class="hljs-meta"># 然后按 <span class="hljs-string">&#x27;P&#x27;</span> 键确保按CPU排序</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="查找内存占用高的进程"><a href="#查找内存占用高的进程" class="headerlink" title="查找内存占用高的进程"></a>查找内存占用高的进程</h5><figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs nsis"><span class="hljs-comment"># 启动top后按 &#x27;M&#x27; 键按内存排序</span><br><span class="hljs-literal">top</span><br><span class="hljs-comment"># 或者直接使用命令行方式</span><br><span class="hljs-literal">top</span> -o %MEM<br></code></pre></td></tr></table></figure>
+
+<h5 id="监控特定进程"><a href="#监控特定进程" class="headerlink" title="监控特定进程"></a>监控特定进程</h5><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-comment"># 监控oracle进程</span><br><span class="hljs-attribute">top</span> -p $(pgrep oracle)<br><br><span class="hljs-comment"># 监控多个进程</span><br><span class="hljs-attribute">top</span> -p <span class="hljs-number">1234</span>,<span class="hljs-number">5678</span>,<span class="hljs-number">9012</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-数据库运维场景"><a href="#3-数据库运维场景" class="headerlink" title="3. 数据库运维场景"></a>3. 数据库运维场景</h4><h5 id="监控数据库进程"><a href="#监控数据库进程" class="headerlink" title="监控数据库进程"></a>监控数据库进程</h5><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-comment"># 监控oracle相关进程</span><br>top -u <span class="hljs-keyword">oracle</span><br><span class="hljs-keyword"></span><br><span class="hljs-comment"># 批处理模式输出到文件</span><br>top -<span class="hljs-keyword">b </span>-n <span class="hljs-number">1</span> -u <span class="hljs-keyword">oracle </span>&gt; <span class="hljs-keyword">oracle_performance.txt</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="性能分析"><a href="#性能分析" class="headerlink" title="性能分析"></a>性能分析</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 每30秒记录一次系统状态，持续记录24小时</span><br><span class="hljs-keyword">while</span> <span class="hljs-literal">true</span>; <span class="hljs-keyword">do</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;=== <span class="hljs-subst">$(date)</span> ===&quot;</span> &gt;&gt; system_monitor.log<br>    top -b -n 1 &gt;&gt; system_monitor.log<br>    <span class="hljs-built_in">sleep</span> 30<br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="4-服务器维护场景"><a href="#4-服务器维护场景" class="headerlink" title="4. 服务器维护场景"></a>4. 服务器维护场景</h4><h5 id="服务器健康检查"><a href="#服务器健康检查" class="headerlink" title="服务器健康检查"></a>服务器健康检查</h5><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-comment"># 快速查看系统概况</span><br><span class="hljs-attribute">top</span> -b -n <span class="hljs-number">1</span> | head -<span class="hljs-number">10</span><br><br><span class="hljs-comment"># 检查是否有异常进程</span><br><span class="hljs-attribute">top</span> -b -n <span class="hljs-number">1</span> | grep -E <span class="hljs-string">&quot;(zombie|stopped)&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="资源使用统计"><a href="#资源使用统计" class="headerlink" title="资源使用统计"></a>资源使用统计</h5><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-comment"># 获取内存使用前10的进程</span><br><span class="hljs-attribute">top</span> -b -n <span class="hljs-number">1</span> -o %MEM | head -<span class="hljs-number">20</span><br><br><span class="hljs-comment"># 获取CPU使用前10的进程</span><br><span class="hljs-attribute">top</span> -b -n <span class="hljs-number">1</span> -o %CPU | head -<span class="hljs-number">20</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="5-自动化脚本示例"><a href="#5-自动化脚本示例" class="headerlink" title="5. 自动化脚本示例"></a>5. 自动化脚本示例</h4><h5 id="系统监控脚本"><a href="#系统监控脚本" class="headerlink" title="系统监控脚本"></a>系统监控脚本</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-comment"># system_monitor.sh</span><br><br>LOGFILE=<span class="hljs-string">&quot;/var/log/system_monitor.log&quot;</span><br>THRESHOLD_CPU=80<br>THRESHOLD_MEM=90<br><br><span class="hljs-keyword">while</span> <span class="hljs-literal">true</span>; <span class="hljs-keyword">do</span><br>    <span class="hljs-comment"># 获取CPU使用率最高的进程</span><br>    CPU_TOP=$(top -b -n 1 | awk <span class="hljs-string">&#x27;NR&gt;7 &#123;print $9,$12&#125;&#x27;</span> | <span class="hljs-built_in">sort</span> -nr | <span class="hljs-built_in">head</span> -1)<br>    CPU_USAGE=$(<span class="hljs-built_in">echo</span> <span class="hljs-variable">$CPU_TOP</span> | awk <span class="hljs-string">&#x27;&#123;print $1&#125;&#x27;</span>)<br>    CPU_PROCESS=$(<span class="hljs-built_in">echo</span> <span class="hljs-variable">$CPU_TOP</span> | awk <span class="hljs-string">&#x27;&#123;print $2&#125;&#x27;</span>)<br><br>    <span class="hljs-comment"># 获取内存使用率最高的进程</span><br>    MEM_TOP=$(top -b -n 1 | awk <span class="hljs-string">&#x27;NR&gt;7 &#123;print $10,$12&#125;&#x27;</span> | <span class="hljs-built_in">sort</span> -nr | <span class="hljs-built_in">head</span> -1)<br>    MEM_USAGE=$(<span class="hljs-built_in">echo</span> <span class="hljs-variable">$MEM_TOP</span> | awk <span class="hljs-string">&#x27;&#123;print $1&#125;&#x27;</span>)<br>    MEM_PROCESS=$(<span class="hljs-built_in">echo</span> <span class="hljs-variable">$MEM_TOP</span> | awk <span class="hljs-string">&#x27;&#123;print $2&#125;&#x27;</span>)<br><br>    <span class="hljs-comment"># 记录日志</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;[<span class="hljs-subst">$(date)</span>] CPU: <span class="hljs-variable">$&#123;CPU_USAGE&#125;</span>% (<span class="hljs-variable">$&#123;CPU_PROCESS&#125;</span>), MEM: <span class="hljs-variable">$&#123;MEM_USAGE&#125;</span>% (<span class="hljs-variable">$&#123;MEM_PROCESS&#125;</span>)&quot;</span> &gt;&gt; <span class="hljs-variable">$LOGFILE</span><br><br>    <span class="hljs-comment"># 检查阈值</span><br>    <span class="hljs-keyword">if</span> (( $(echo &quot;<span class="hljs-variable">$CPU_USAGE</span> &gt; <span class="hljs-variable">$THRESHOLD_CPU</span>&quot; | bc -l) )); <span class="hljs-keyword">then</span><br>        <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;WARNING: High CPU usage: <span class="hljs-variable">$&#123;CPU_USAGE&#125;</span>% by <span class="hljs-variable">$&#123;CPU_PROCESS&#125;</span>&quot;</span> &gt;&gt; <span class="hljs-variable">$LOGFILE</span><br>    <span class="hljs-keyword">fi</span><br><br>    <span class="hljs-keyword">if</span> (( $(echo &quot;<span class="hljs-variable">$MEM_USAGE</span> &gt; <span class="hljs-variable">$THRESHOLD_MEM</span>&quot; | bc -l) )); <span class="hljs-keyword">then</span><br>        <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;WARNING: High memory usage: <span class="hljs-variable">$&#123;MEM_USAGE&#125;</span>% by <span class="hljs-variable">$&#123;MEM_PROCESS&#125;</span>&quot;</span> &gt;&gt; <span class="hljs-variable">$LOGFILE</span><br>    <span class="hljs-keyword">fi</span><br><br>    <span class="hljs-built_in">sleep</span> 60<br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="高级使用技巧"><a href="#高级使用技巧" class="headerlink" title="高级使用技巧"></a>高级使用技巧</h3><h4 id="1-自定义显示字段"><a href="#1-自定义显示字段" class="headerlink" title="1. 自定义显示字段"></a>1. 自定义显示字段</h4><p>按 <code>f</code> 键进入字段选择界面，可以添加或删除显示列：</p>
+<ul>
+<li>使用上下箭头选择字段</li>
+<li>按空格键切换字段显示状态</li>
+<li>按 <code>q</code> 退出字段选择</li>
+</ul>
+<h4 id="2-保存配置"><a href="#2-保存配置" class="headerlink" title="2. 保存配置"></a>2. 保存配置</h4><p>top 的配置可以保存到用户配置文件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">在top界面按 <span class="hljs-string">&#x27;W&#x27;</span> 键保存当前配置</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">配置文件位置：~/.toprc</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-多核-CPU-监控"><a href="#3-多核-CPU-监控" class="headerlink" title="3. 多核 CPU 监控"></a>3. 多核 CPU 监控</h4><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs autoit"><span class="hljs-meta"># 显示每个CPU核心的使用情况</span><br>top<br><span class="hljs-meta"># 然后按 <span class="hljs-string">&#x27;1&#x27;</span> 键切换单个/多个CPU显示</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="4-进程树显示"><a href="#4-进程树显示" class="headerlink" title="4. 进程树显示"></a>4. 进程树显示</h4><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs autoit"><span class="hljs-meta"># 显示进程树（需要按 <span class="hljs-string">&#x27;V&#x27;</span> 键）</span><br>top<br><span class="hljs-meta"># 在界面中按 <span class="hljs-string">&#x27;V&#x27;</span> 显示进程父子关系</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="性能优化建议"><a href="#性能优化建议" class="headerlink" title="性能优化建议"></a>性能优化建议</h3><h4 id="1-系统负载分析"><a href="#1-系统负载分析" class="headerlink" title="1. 系统负载分析"></a>1. 系统负载分析</h4><ul>
+<li>负载平均值 &gt; CPU 核心数：系统可能过载</li>
+<li>负载平均值 &lt; CPU 核心数：系统正常</li>
+<li>1 分钟负载 &gt; 15 分钟负载：负载在上升</li>
+</ul>
+<h4 id="2-CPU-使用率分析"><a href="#2-CPU-使用率分析" class="headerlink" title="2. CPU 使用率分析"></a>2. CPU 使用率分析</h4><ul>
+<li><code>us</code> 高：用户程序消耗 CPU 多</li>
+<li><code>sy</code> 高：系统调用多，可能 IO 密集</li>
+<li><code>wa</code> 高：IO 等待时间长，可能磁盘瓶颈</li>
+<li><code>id</code> 低：CPU 使用率高</li>
+</ul>
+<h4 id="3-内存使用分析"><a href="#3-内存使用分析" class="headerlink" title="3. 内存使用分析"></a>3. 内存使用分析</h4><ul>
+<li><code>free</code> 很低但 <code>available</code> 充足：正常，系统在使用缓存</li>
+<li><code>available</code> 也很低：可能需要增加内存</li>
+<li>大量 <code>swap</code> 使用：内存不足</li>
+</ul>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
+<li><strong>权限问题</strong>：某些进程信息需要 root 权限才能查看</li>
+<li><strong>性能影响</strong>：top 本身也会消耗系统资源，高频刷新会增加系统负载</li>
+<li><strong>数据准确性</strong>：瞬时数据可能不准确，建议观察一段时间的趋势</li>
+<li><strong>版本差异</strong>：不同 Linux 发行版的 top 可能有细微差异</li>
+</ol>
+<h3 id="替代工具"><a href="#替代工具" class="headerlink" title="替代工具"></a>替代工具</h3><ul>
+<li><code>htop</code>：增强版 top，界面更友好</li>
+<li><code>atop</code>：更详细的系统监控</li>
+<li><code>iotop</code>：专门监控 IO 使用情况</li>
+<li><code>nethogs</code>：网络使用监控</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>top 命令是 Linux 系统管理员必须掌握的基础工具，通过合理使用各种选项和交互命令，可以有效监控系统性能、排查问题、优化系统资源配置。在日常运维工作中，建议结合脚本自动化监控，及时发现和处理系统异常。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/149572905/">https://pc-study.github.io/csdn-blog/posts/149572905/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/linux/">linux</a><a class="post-meta__tags" href="/csdn-blog/tags/%E8%BF%90%E7%BB%B4/">运维</a><a class="post-meta__tags" href="/csdn-blog/tags/ffmpeg/">ffmpeg</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/149572926/" title="昨天去看了电科金仓的发布会，有点东西！"><img class="cover" src="/csdn-blog/images/bd09e71393ba70dd6f50460b6f5a9b53.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">昨天去看了电科金仓的发布会，有点东西！</div></div><div class="info-2"><div class="info-item-1">前言 昨天（7 月 15 日），我受邀参加了电科金仓的 2025 年度发布会，主题是“融合进化 智领未来”。作为一个跟数据库打了快十年交道的 DBA，我太清楚这个领域现在有多热闹了：国产化势头猛，AI 技术天天变，老一套运维方法快顶不住了。 这次去，我带着学习的态度，真心想看看国产数据库能拿出什么新</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149572886/" title="SSH 一键互信配置脚本 V2.0 使用指南"><img class="cover" src="/csdn-blog/images/52bc6a6232068b04315193a4aab0dbf3.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">SSH 一键互信配置脚本 V2.0 使用指南</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 本次升级亮点 使用场景 脚本使用 参数详解 使用案例 - 案例 1：Oracle RAC 集群互信配置 案例 2：非标准 SSH 端口配置 案例 3：Kubernetes 集群节点互信 案例 4：调试模式排查问题 案例 5：混</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/120860134/" title="Linux查看物理CPU、内存信息"><img class="cover" src="/csdn-blog/img/covers/linux.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-21</div><div class="info-item-2">Linux查看物理CPU、内存信息</div></div><div class="info-2"><div class="info-item-1">CPU 计算 公式 总核数 = 物理CPU个数 X 每颗物理CPU的核数 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数 查看 命令 查看物理CPU个数 查看每个物理CPU中core的个数(即核数) 查看逻辑CPU的个数 查看CPU信息（型号） 查看内存 信息</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148558781/" title="Linux 系统如何挂载安装镜像 ISO，看我！"><img class="cover" src="/csdn-blog/images/2c51a477770869256376d81c99ac0b76.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-10</div><div class="info-item-2">Linux 系统如何挂载安装镜像 ISO，看我！</div></div><div class="info-2"><div class="info-item-1">一般 Linux 系统会安装在虚拟机或者实体机上，根据安装方式的原因，有两种方式进行挂载 ISO。 目录 CD/DVD 驱动器挂载 物理层面连接 ISO 主机层面挂载 ISO 手工上传镜像挂载 物理层面上传 ISO 主机层面挂载 ISO CD/DVD 驱动器挂载 物理层面连接 ISO 不管是使用虚拟</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/138160586/" title="Rocky Linux 8.9 一键安装 Oracle 11GR2（231017）单机 ASM"><img class="cover" src="/csdn-blog/img/covers/linux.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-24</div><div class="info-item-2">Rocky Linux 8.9 一键安装 Oracle 11GR2（231017）单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Rocky Linux 8.9 一键安装 Oracle 11GR2 单机 ASM（231017）过程（全程无需人工干预）。（脚本包括 ORALCE PSU/OJVM 等补丁自动安装） ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 脚本第三代支持 N</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/151115756/" title="教你 Centos 如何离线安装 rlwrap 插件（内网环境）"><img class="cover" src="/csdn-blog/images/f2ba5b734cccd1c99de5e27158da2914.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-02</div><div class="info-item-2">教你 Centos 如何离线安装 rlwrap 插件（内网环境）</div></div><div class="info-2"><div class="info-item-1">目录 前言 下载 rpm 包 downloadonly 在线镜像源下载 安装 rlwrap 插件 写在最后 前言 今天在一台数据库主机上想安装 rlwrap 插件（上下文切换，退格优化），方便运维操作，但是 rlwrap 需要前置安装 ，因为是内网环境，也不方便挂载镜像 ISO、没有 YUM 源的情</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122393279/" title="三天入门 Linux 系统 - 第三天：Linux 高级命令"><img class="cover" src="/csdn-blog/images/ef7c1669e2e1a800c692f90b8eb5b82c.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-09</div><div class="info-item-2">三天入门 Linux 系统 - 第三天：Linux 高级命令</div></div><div class="info-2"><div class="info-item-1">前言 第二天我们学习了 Linux 的一些简单基础命令，本篇将讲一些比较高级的命令以及操作。 👇所有学员需加入每日一练活动群👇 一、高级命令 1、配置网络 YUM 源 可以参考 CentOS 源使用帮助 来一键配置网络镜像源： 首先确保可以联网，才可以使用上述方式，替换之后请运行 更新缓存。 如果不</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148558773/" title="手把手教你安装 Linux 操作系统"><img class="cover" src="/csdn-blog/images/f566085ba5de5bfdac4ec9cb8854ef86.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-10</div><div class="info-item-2">手把手教你安装 Linux 操作系统</div></div><div class="info-2"><div class="info-item-1">前言 对于很多没有接触过 Linux 操作系统的用户来说，系统的安装过程可能会感到陌生和复杂。为了让大家更好地理解和掌握 Linux 的安装过程，本文将以 Oracle Linux 8 为例，详细讲解安装过程中的每一步操作。需要注意的是，虽然本教程以 Oracle Linux 为例，但其他 Linu</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">基本语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%95%8C%E9%9D%A2%E8%AF%B4%E6%98%8E"><span class="toc-number">3.</span> <span class="toc-text">界面说明</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E4%BF%A1%E6%81%AF%E5%8C%BA%E5%9F%9F%EF%BC%88%E5%89%8D-5-%E8%A1%8C%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">系统信息区域（前 5 行）</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E8%A1%8C%EF%BC%9A%E7%B3%BB%E7%BB%9F%E6%97%B6%E9%97%B4%E5%92%8C%E8%B4%9F%E8%BD%BD"><span class="toc-number">3.1.1.</span> <span class="toc-text">第一行：系统时间和负载</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E8%A1%8C%EF%BC%9A%E8%BF%9B%E7%A8%8B%E7%BB%9F%E8%AE%A1"><span class="toc-number">3.1.2.</span> <span class="toc-text">第二行：进程统计</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E8%A1%8C%EF%BC%9ACPU-%E4%BD%BF%E7%94%A8%E7%8E%87"><span class="toc-number">3.1.3.</span> <span class="toc-text">第三行：CPU 使用率</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E3%80%81%E4%BA%94%E8%A1%8C%EF%BC%9A%E5%86%85%E5%AD%98%E4%BF%A1%E6%81%AF"><span class="toc-number">3.1.4.</span> <span class="toc-text">第四、五行：内存信息</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E5%88%97%E8%A1%A8%E5%8C%BA%E5%9F%9F"><span class="toc-number">3.2.</span> <span class="toc-text">进程列表区域</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9"><span class="toc-number">4.</span> <span class="toc-text">常用选项</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E9%80%89%E9%A1%B9"><span class="toc-number">4.1.</span> <span class="toc-text">基本选项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%8C%89%E9%94%AE"><span class="toc-number">4.2.</span> <span class="toc-text">交互式按键</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E6%8E%A7%E5%88%B6"><span class="toc-number">4.2.1.</span> <span class="toc-text">显示控制</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%8E%92%E5%BA%8F%E6%8E%A7%E5%88%B6"><span class="toc-number">4.2.2.</span> <span class="toc-text">排序控制</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86"><span class="toc-number">4.2.3.</span> <span class="toc-text">进程管理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E9%80%89%E9%A1%B9"><span class="toc-number">4.2.4.</span> <span class="toc-text">显示选项</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">5.</span> <span class="toc-text">实际应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%B3%BB%E7%BB%9F%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7"><span class="toc-number">5.1.</span> <span class="toc-text">1. 系统性能监控</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5"><span class="toc-number">5.2.</span> <span class="toc-text">2. 问题排查</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9F%A5%E6%89%BE-CPU-%E5%8D%A0%E7%94%A8%E9%AB%98%E7%9A%84%E8%BF%9B%E7%A8%8B"><span class="toc-number">5.2.1.</span> <span class="toc-text">查找 CPU 占用高的进程</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9F%A5%E6%89%BE%E5%86%85%E5%AD%98%E5%8D%A0%E7%94%A8%E9%AB%98%E7%9A%84%E8%BF%9B%E7%A8%8B"><span class="toc-number">5.2.2.</span> <span class="toc-text">查找内存占用高的进程</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%9B%91%E6%8E%A7%E7%89%B9%E5%AE%9A%E8%BF%9B%E7%A8%8B"><span class="toc-number">5.2.3.</span> <span class="toc-text">监控特定进程</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%90%E7%BB%B4%E5%9C%BA%E6%99%AF"><span class="toc-number">5.3.</span> <span class="toc-text">3. 数据库运维场景</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%9B%91%E6%8E%A7%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E7%A8%8B"><span class="toc-number">5.3.1.</span> <span class="toc-text">监控数据库进程</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="toc-number">5.3.2.</span> <span class="toc-text">性能分析</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BB%B4%E6%8A%A4%E5%9C%BA%E6%99%AF"><span class="toc-number">5.4.</span> <span class="toc-text">4. 服务器维护场景</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5"><span class="toc-number">5.4.1.</span> <span class="toc-text">服务器健康检查</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8%E7%BB%9F%E8%AE%A1"><span class="toc-number">5.4.2.</span> <span class="toc-text">资源使用统计</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E8%87%AA%E5%8A%A8%E5%8C%96%E8%84%9A%E6%9C%AC%E7%A4%BA%E4%BE%8B"><span class="toc-number">5.5.</span> <span class="toc-text">5. 自动化脚本示例</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E7%9B%91%E6%8E%A7%E8%84%9A%E6%9C%AC"><span class="toc-number">5.5.1.</span> <span class="toc-text">系统监控脚本</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7"><span class="toc-number">6.</span> <span class="toc-text">高级使用技巧</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%98%BE%E7%A4%BA%E5%AD%97%E6%AE%B5"><span class="toc-number">6.1.</span> <span class="toc-text">1. 自定义显示字段</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E4%BF%9D%E5%AD%98%E9%85%8D%E7%BD%AE"><span class="toc-number">6.2.</span> <span class="toc-text">2. 保存配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%A4%9A%E6%A0%B8-CPU-%E7%9B%91%E6%8E%A7"><span class="toc-number">6.3.</span> <span class="toc-text">3. 多核 CPU 监控</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E8%BF%9B%E7%A8%8B%E6%A0%91%E6%98%BE%E7%A4%BA"><span class="toc-number">6.4.</span> <span class="toc-text">4. 进程树显示</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%BB%BA%E8%AE%AE"><span class="toc-number">7.</span> <span class="toc-text">性能优化建议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%B3%BB%E7%BB%9F%E8%B4%9F%E8%BD%BD%E5%88%86%E6%9E%90"><span class="toc-number">7.1.</span> <span class="toc-text">1. 系统负载分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-CPU-%E4%BD%BF%E7%94%A8%E7%8E%87%E5%88%86%E6%9E%90"><span class="toc-number">7.2.</span> <span class="toc-text">2. CPU 使用率分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8%E5%88%86%E6%9E%90"><span class="toc-number">7.3.</span> <span class="toc-text">3. 内存使用分析</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">8.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9B%BF%E4%BB%A3%E5%B7%A5%E5%85%B7"><span class="toc-number">9.</span> <span class="toc-text">替代工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

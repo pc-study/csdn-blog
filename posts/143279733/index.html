@@ -1,0 +1,364 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>效率翻倍！达梦数据库 disql 使用技巧全攻略 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="效率翻倍！达梦数据库 disql 使用技巧全攻略">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/143279733/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg">
+<meta property="article:published_time" content="2024-10-28T01:08:26.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.450Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="达梦数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"效率翻倍！达梦数据库 disql 使用技巧全攻略","url":"https://pc-study.github.io/csdn-blog/posts/143279733/","image":"https://pc-study.github.io/csdn-blog/img/covers/database.svg","datePublished":"2024-10-28T01:08:26.000Z","dateModified":"2026-03-20T08:34:08.450Z","description":"大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/143279733/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/143279733/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '效率翻倍！达梦数据库 disql 使用技巧全攻略',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/database.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">效率翻倍！达梦数据库 disql 使用技巧全攻略</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">效率翻倍！达梦数据库 disql 使用技巧全攻略<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-10-28-143279733.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-10-28T01:08:26.000Z" title="发表于 2024-10-28 09:08:26">2024-10-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.450Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>10分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，分享一些学习国产数据库路上的知识和经验。</p>
+</blockquote>
+<h2 id="社群交流"><a href="#社群交流" class="headerlink" title="社群交流"></a>社群交流</h2><p>为了给大家提供一些技术交流的平台，目前已成立的技术交流群：</p>
+<ul>
+<li>Oracle 数据库交流群</li>
+<li>国产数据库交流群</li>
+<li>Linux 技术交流群</li>
+<li>ChatGPT 4o 免费体验群</li>
+</ul>
+<p>需要进群（<strong>均已超过 200 人，需要邀请</strong>）可以添加号主微信：Lucifer-0622，备注对应的群名即可。</p>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_2">社群交流</a></li>
+<li><a href="#_13">前言</a></li>
+<li><a href="#_42">快捷指令</a></li>
+<li><ul>
+<li><a href="#alias__47">alias 别名</a></li>
+<li><a href="#_69">配置环境变量</a></li>
+<li><a href="#_90">花样玩法</a></li>
+<li><ul>
+<li><a href="#_93">多实例自由切换</a></li>
+<li><a href="#_SQL__107">一键调用 SQL 脚本</a></li>
+<li><a href="#_131">秒速连接数据库</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_147">上下文切换</a></li>
+<li><ul>
+<li><a href="#rlwrap__151">rlwrap 下载</a></li>
+<li><a href="#rlwrap__160">rlwrap 安装</a></li>
+<li><a href="#_223">配置环境变量</a></li>
+</ul>
+</li>
+<li><a href="#glogin__232">glogin 优化</a></li>
+<li><a href="#_287">写在最后</a></li>
+<li><a href="#_292">往期精彩文章</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>达梦数据库的 disql 等同于 Oracle 数据库的 sqlplus，都是 DBA 最常用的客户端连接工具，但是都有一个共同的问题：<strong>不咋好用</strong>。</p>
+<p>为什么不好用？根据我的使用经验，大致有以下几点原因：</p>
+<ul>
+<li><strong>连接方式复杂</strong>：有很多连接参数，初学者很难记全；</li>
+<li><strong>连接命令冗长</strong>：连接数据库需要输入一长串命令，费时费事；</li>
+<li><strong>输出格式散乱</strong>：SQL 查询输出结果格式不整齐，容易造成阅读障碍；</li>
+<li><strong>历史命令查看</strong>：不支持历史命令上下文翻页查看和修改，无法光标移动；</li>
+<li><strong>连接信息显示</strong>：客户端连接后没有库和用户相关信息提示，可能会造成误操作；</li>
+</ul>
+<p>针对以上痛点，我之前在 Oracle 数据库针对 sqlplus 有介绍过一系列优化方式以及提升效率的技巧：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/course/article/142?lsId=5899&catalogId=1">SQLPlus 基础使用和进阶玩法</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/84720">手把手教你玩转SQL*Plus命令行，工作效率提升200%</a></li>
+</ul>
+<p>同样的，在达梦数据库中，disql 可以照葫芦画瓢，拿来主义！</p>
+<p>本文所有优化配置以及使用技巧，在达梦一键安装脚本中均以加入，一键安装以及优化配置：<strong><a target="_blank" rel="noopener" href="https://gitee.com/hnyuanzj/DMShellInstall">DMShellInstall 一键安装脚本</a></strong></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs"> ███████   ████     ████  ████████ ██               ██  ██ ██                    ██              ██  ██<br>░██░░░░██ ░██░██   ██░██ ██░░░░░░ ░██              ░██ ░██░██                   ░██             ░██ ░██<br>░██    ░██░██░░██ ██ ░██░██       ░██       █████  ░██ ░██░██ ███████   ██████ ██████  ██████   ░██ ░██<br>░██    ░██░██ ░░███  ░██░█████████░██████  ██░░░██ ░██ ░██░██░░██░░░██ ██░░░░ ░░░██░  ░░░░░░██  ░██ ░██<br>░██    ░██░██  ░░█   ░██░░░░░░░░██░██░░░██░███████ ░██ ░██░██ ░██  ░██░░█████   ░██    ███████  ░██ ░██<br>░██    ██ ░██   ░    ░██       ░██░██  ░██░██░░░░  ░██ ░██░██ ░██  ░██ ░░░░░██  ░██   ██░░░░██  ░██ ░██<br>░███████  ░██        ░██ ████████ ░██  ░██░░██████ ███ ███░██ ███  ░██ ██████   ░░██ ░░████████ ███ ███<br>░░░░░░░   ░░         ░░ ░░░░░░░░  ░░   ░░  ░░░░░░ ░░░ ░░░ ░░ ░░░   ░░ ░░░░░░     ░░   ░░░░░░░░ ░░░ ░░░<br></code></pre></td></tr></table></figure>
+
+<p>目前还是免费使用，快来下载体验吧！</p>
+<h2 id="快捷指令"><a href="#快捷指令" class="headerlink" title="快捷指令"></a>快捷指令</h2><p>首先解决连接不方便的问题，为了避免冗长复杂的连接命令，我们可以直接使用 alias 别名的方式来创建快捷指令。</p>
+<p><strong>📢 注意</strong>：在安全允许的情况下，建议大家在达梦数据库主机上配置操作系统免密认证：<strong><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1836331190435012608">达梦如何开启免密登录</a></strong>，连接更方便。</p>
+<h3 id="alias-别名"><a href="#alias-别名" class="headerlink" title="alias 别名"></a>alias 别名</h3><p>开启了免密登录之后，可以直接使用 <code>disql / as sysdba</code> 的方式连接，使用 alias 别名就是：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 直接使用 disql / as sysdba 命令连接</span><br>[dmdba<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>disql / as sysdba<br><br>服务器[<span class="hljs-symbol">LOCALHOST:</span><span class="hljs-number">5236</span>]<span class="hljs-symbol">:</span>处于普通打开状态<br>登录使用时间 : <span class="hljs-number">4.773</span>(ms)<br>disql <span class="hljs-title class_">V8</span><br><span class="hljs-title class_">SQL</span>&gt;<br><br><span class="hljs-comment">## 配置别名 ds，直接使用 ds 命令连接，十分方便快捷</span><br>[dmdba<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span><span class="hljs-keyword">alias</span> ds=<span class="hljs-string">&#x27;disql / as sysdba&#x27;</span><br>[dmdba<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>ds<br><br>服务器[<span class="hljs-symbol">LOCALHOST:</span><span class="hljs-number">5236</span>]<span class="hljs-symbol">:</span>处于普通打开状态<br>登录使用时间 : <span class="hljs-number">4.321</span>(ms)<br>disql <span class="hljs-title class_">V8</span><br><span class="hljs-title class_">SQL</span>&gt;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，每次连接数据库都只需要输入 ds 即可，不需要输入完整的连接命令。那就有人要说了，那你每次不都要输入 <code>alias ds=&#39;disql / as sysdba&#39;</code> 这个别名命令吗？</p>
+<h3 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h3><p>确实，正常是需要的，但是，可以通过配置环境变量的方式来实现自动配置别名，比如：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 将别名 ds 写入到 dmdba 用户的环境变量中</span><br>[dmdba<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>cat&lt;&lt;-<span class="hljs-title class_">EOF</span>&gt;&gt;~/.bash_profile<br><span class="hljs-keyword">alias</span> ds=<span class="hljs-string">&#x27;disql / as sysdba&#x27;</span><br><span class="hljs-title class_">EOF</span><br><br><span class="hljs-comment">## 重新登录 dmdba 用户，就可以直接使用 ds 连接达梦数据库</span><br>[dmdba<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>exit<br>登出<br>[root<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># su - dmdba</span><br>[dmdba<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>ds<br><br>服务器[<span class="hljs-symbol">LOCALHOST:</span><span class="hljs-number">5236</span>]<span class="hljs-symbol">:</span>处于普通打开状态<br>登录使用时间 : <span class="hljs-number">4.083</span>(ms)<br>disql <span class="hljs-title class_">V8</span><br><span class="hljs-title class_">SQL</span>&gt;<br></code></pre></td></tr></table></figure>
+
+<p>通过以上方式我们可以非常便捷得连接和使用达梦数据库。</p>
+<h3 id="花样玩法"><a href="#花样玩法" class="headerlink" title="花样玩法"></a>花样玩法</h3><p>如果熟练掌握 disql 的连接方式，还可以玩出很多种花样。</p>
+<h4 id="多实例自由切换"><a href="#多实例自由切换" class="headerlink" title="多实例自由切换"></a>多实例自由切换</h4><p>通过给每个实例指定不同的别名，比如使用端口号进行区分，5237 则别名为 ds5237：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 指定连接端口号 5237 数据库的别名为 ds5237</span><br><span class="hljs-keyword">alias</span> ds5237=<span class="hljs-string">&quot;disql /:5237 as sysdba&quot;</span><br><br><span class="hljs-comment">## 连接 5237 数据库</span><br>[dmdba<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>ds5237<br><br>服务器[<span class="hljs-symbol">LOCALHOST:</span><span class="hljs-number">5237</span>]<span class="hljs-symbol">:</span>处于普通打开状态<br>登录使用时间 : <span class="hljs-number">3.948</span>(ms)<br>disql <span class="hljs-title class_">V8</span><br><span class="hljs-title class_">SQL</span>&gt;<br></code></pre></td></tr></table></figure>
+
+<h4 id="一键调用-SQL-脚本"><a href="#一键调用-SQL-脚本" class="headerlink" title="一键调用 SQL 脚本"></a>一键调用 SQL 脚本</h4><p>disql 调用 SQL 脚本是比较复杂的，需要十分了解才能运用自如，这里可以通过配置快捷命令来降低使用难度：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-comment">## 1、指定执行 SQL 的别名 dsql（增加格式化输出配置）</span><br><span class="hljs-attribute">alias</span> dsql=<span class="hljs-string">&quot;disql -S /:5236 as sysdba -C \\&quot;</span>set linesize <span class="hljs-number">999</span> pagesize <span class="hljs-number">999</span> long <span class="hljs-number">1000</span> feed <span class="hljs-literal">off</span>\\<span class="hljs-string">&quot; -E&quot;</span><br><br><span class="hljs-comment">## 2、指定调用 SQL 脚本的别名 dssql</span><br><span class="hljs-attribute">alias</span> dssql=<span class="hljs-string">&quot;disql -L -S /:5236 as sysdba \\\`&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>使用方式：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">## dsql 跟上需要执行的 SQL 语句即可<br>[dmdba@dm8:~]$ dsql &quot;select name from v\$database;&quot;<br><br><span class="hljs-section">NAME</span><br><span class="hljs-section">------</span><br>DAMENG<br><br>## dssql 跟上需要执行的 SQL 脚本即可<br>[dmdba@dm8:~]$ dssql dbname.sql<br><br>DAMENG<br></code></pre></td></tr></table></figure>
+
+<p>这里如果想写达梦巡检脚本的话，可以是一个很好的辅助，可以封装成函数来调用。</p>
+<h4 id="秒速连接数据库"><a href="#秒速连接数据库" class="headerlink" title="秒速连接数据库"></a>秒速连接数据库</h4><p>如果再给 root 用户配上 sd 别名，那么连接达梦数据库只需要短短两个命令，1s 完成连接：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-keyword">alias</span> sd=<span class="hljs-string">&#x27;su - dmdba&#x27;</span><br><br><span class="hljs-comment">## sd &amp; ds，so easy，一个字：快！</span><br>[root<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># sd</span><br>[dmdba<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>ds<br><br>服务器[<span class="hljs-symbol">LOCALHOST:</span><span class="hljs-number">5236</span>]<span class="hljs-symbol">:</span>处于普通打开状态<br>登录使用时间 : <span class="hljs-number">3.650</span>(ms)<br>disql <span class="hljs-title class_">V8</span><br><span class="hljs-title class_">SQL</span>&gt;<br></code></pre></td></tr></table></figure>
+
+<p>这里就介绍这么多，对于平常运维已经足够使用，更多玩法可以自行探索！</p>
+<h2 id="上下文切换"><a href="#上下文切换" class="headerlink" title="上下文切换"></a>上下文切换</h2><p>介绍完上面的快捷指令，其实对于 disql 的外部使用效率已经是翻天覆地了，接下来就得介绍 disql 的内部使用优化秘籍了。</p>
+<p>熟悉的人看到上下文切换应该就猜到了，没错就是：<strong>rlwrap</strong>，堪称神器！！！</p>
+<h3 id="rlwrap-下载"><a href="#rlwrap-下载" class="headerlink" title="rlwrap 下载"></a>rlwrap 下载</h3><p>rlwrap 是一款十分好用的 readline wrapper，在 disql 中可以解决我们的两个痛点：</p>
+<ol>
+<li><strong>历史命令无法查看修改</strong></li>
+<li><strong>光标无法前后移动</strong></li>
+</ol>
+<blockquote>
+<p>rlwrap 下载地址：<a target="_blank" rel="noopener" href="https://github.com/hanslub42/rlwrap/releases">https://github.com/hanslub42/rlwrap/releases</a></p>
+</blockquote>
+<p>这个工具完美解决了困扰了很多 DBA 的问题，可以不用一次次的因为输错命令而重复输入，或者因为无法切换到上一条命令再次执行。</p>
+<h3 id="rlwrap-安装"><a href="#rlwrap-安装" class="headerlink" title="rlwrap 安装"></a>rlwrap 安装</h3><p>rlwrap 依赖 readline 库，而 gcc 是一个编译器，由于官方提供的是源码安装包，所以建议使用源码编译来安装，也就需要提前安装这两个依赖软件包。</p>
+<p>在 Linux 系统安装软件依赖包就需要配置软件源，这里参考我之前写过的：<strong><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1811576090578665472">DBA 必备：Linux 软件源配置全攻略</a></strong>，选择对应系统以及版本，直接一键配置软件源：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 挂载本地 ISO 镜像源</span><br>[root@dm8:/root]# mount /dev/cdrom /mnt/<br>mount: /dev/sr0 写保护，将以只读方式挂载<br><br><span class="hljs-comment">## 一键配置本地软件源</span><br><span class="hljs-comment">## 备份系统初始配置文件</span><br><span class="hljs-built_in">mkdir</span> -p /etc/yum.repos.d/bak<br><span class="hljs-built_in">mv</span> /etc/yum.repos.d/* /etc/yum.repos.d/bak<br><span class="hljs-comment">## 一键配置软件源，默认 ISO 安装镜像挂载在 /mnt 目录下</span><br><span class="hljs-built_in">cat</span>&lt;&lt;-<span class="hljs-string">EOF&gt;/etc/yum.repos.d/local.repo</span><br><span class="hljs-string">[server]</span><br><span class="hljs-string">name=server</span><br><span class="hljs-string">baseurl=file:///mnt</span><br><span class="hljs-string">enabled=1</span><br><span class="hljs-string">gpgcheck=0</span><br><span class="hljs-string">EOF</span><br><span class="hljs-comment">## 查看配置好的软件源</span><br><span class="hljs-built_in">cat</span> /etc/yum.repos.d/local.repo<br></code></pre></td></tr></table></figure>
+
+<p>安装 gcc 和 readline 软件：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 安装过程省略</span><br>[root<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># yum install -y gcc readline-devel</span><br><br><span class="hljs-comment">## 检查是否安装成功，有输出则代表成功</span><br>[root<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># rpm -qa gcc readline</span><br>gcc<span class="hljs-number">-4.8</span>.<span class="hljs-number">5</span><span class="hljs-number">-44</span>.el7.x86_64<br>readline<span class="hljs-number">-6.2</span><span class="hljs-number">-11</span>.el7.x86_64<br></code></pre></td></tr></table></figure>
+
+<p>安装完成后就可以编译安装 rlwrap 插件（这里我选用的是 0.42 版本，我比较常用，大家可以自行选择）：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 需要在 root 用户执行安装</span><br>[root<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:/soft</span>]<span class="hljs-comment"># tar -xf rlwrap-0.42.tar.gz</span><br>[root<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:/soft</span>]<span class="hljs-comment"># cd rlwrap-0.42</span><br><br><span class="hljs-comment">## 一键安装，安装过程太长，此处省略</span><br>[root<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:/soft/rlwrap-</span><span class="hljs-number">0.42</span>]<span class="hljs-comment"># ./configure &amp;&amp; make &amp;&amp; make install</span><br><br><span class="hljs-comment">## 检查是否安装成功</span><br>[root<span class="hljs-variable">@dm8</span><span class="hljs-symbol">:/soft/rlwrap-</span><span class="hljs-number">0.42</span>]<span class="hljs-comment"># rlwrap -v</span><br>rlwrap <span class="hljs-number">0.42</span><br></code></pre></td></tr></table></figure>
+
+<p>插件安装完成后就可以使用了，使用方式很简单：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">## 只需要在执行的命令前加上 rlwrap 即可<br>[dmdba@dm8:~]$ rlwrap disql / <span class="hljs-keyword">as</span> sysdba<br><br>服务器[LOCALHOST:<span class="hljs-number">5236</span>]:处于普通打开状态<br>登录使用时间 : <span class="hljs-number">4.923</span>(ms)<br>disql V8<br><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">select</span> <span class="hljs-type">name</span> <span class="hljs-keyword">from</span> v$<span class="hljs-keyword">database</span>;<br><br>行号     <span class="hljs-type">NAME</span><br><span class="hljs-comment">---------- ------</span><br><span class="hljs-number">1</span>          DAMENG<br></code></pre></td></tr></table></figure>
+
+<p>这里没法具体演示上下文切换以及光标移动，大家可以自行安装体验。</p>
+<h3 id="配置环境变量-1"><a href="#配置环境变量-1" class="headerlink" title="配置环境变量"></a>配置环境变量</h3><p>同样的，为了方便使用，可以通过配置环境变量➕ alias 别名的方式来实现调用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span>&lt;&lt;-<span class="hljs-string">EOF&gt;&gt;/home/dmdba/.bash_profile</span><br><span class="hljs-string">alias disql=&#x27;rlwrap disql&#x27;</span><br><span class="hljs-string">EOF</span><br></code></pre></td></tr></table></figure>
+
+<p>这里只需要针对 disql 进行配置 rlwrap，相对的 ds，ds5237 等别名都会自动生效，前提是 rlwrap 这个命令需要放到最前面确保最先生效！</p>
+<h2 id="glogin-优化"><a href="#glogin-优化" class="headerlink" title="glogin 优化"></a>glogin 优化</h2><p>讲到这里，基本已经解决了大多数人使用 disql 的痛点，80% 的朋友已经可以愉快地使用了，剩下的少部分人可能更加注重细节以及使用体验。</p>
+<p>虽然配置 glogin 在很多人眼里是有一些风险的，因为 glogin 文件是比较容易造成 SQL 注入的方式之一，所以不太熟悉的可以直接忽略这部分的配置。</p>
+<p>这里我分享一下我常用的 glogin 配置，大家可以自行选配：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">cat&lt;&lt;-\EOF&gt;$DM_HOME/bin/disql_conf/glogin.<span class="hljs-keyword">sql</span><br><span class="hljs-comment">-- 显示密钥过期时间</span><br><span class="hljs-keyword">column</span> expired_date new_value _edate<br><span class="hljs-keyword">select</span> to_char(expired_date,<span class="hljs-string">&#x27;yyyy-mm-dd&#x27;</span>) expired_date <span class="hljs-keyword">from</span> v$license;<br>host echo &quot;密钥过期时间：&amp;_edate&quot;<br><span class="hljs-comment">-- 设置 dbms_output 输出缓冲区大小</span><br><span class="hljs-keyword">set</span> serveroutput <span class="hljs-keyword">on</span> size <span class="hljs-number">1000000</span><br><span class="hljs-comment">-- 设置输出格式</span><br><span class="hljs-keyword">set</span> long <span class="hljs-number">200</span> linesize <span class="hljs-number">500</span> pages <span class="hljs-number">5000</span><br><span class="hljs-comment">-- 去除重定向输出每行拖尾空格</span><br><span class="hljs-keyword">set</span> trimspool <span class="hljs-keyword">on</span><br><span class="hljs-comment">-- 去除行号显示</span><br><span class="hljs-keyword">set</span> lineshow <span class="hljs-keyword">off</span><br><span class="hljs-comment">-- 显示当前连接信息</span><br>col <span class="hljs-type">name</span> new_value _dname<br><span class="hljs-keyword">select</span> <span class="hljs-type">name</span> <span class="hljs-keyword">from</span> v$<span class="hljs-keyword">database</span>;<br>col port_num new_value _port<br><span class="hljs-keyword">select</span> para_value port_num <span class="hljs-keyword">from</span> v$dm_ini <span class="hljs-keyword">where</span> para_name=<span class="hljs-string">&#x27;PORT_NUM&#x27;</span>;<br><span class="hljs-keyword">set</span> SQLPROMPT &quot;_USER&#x27;@&#x27;_dname&#x27;:&#x27;_port SQL&gt; &quot;<br><span class="hljs-comment">-- 显示当前时间</span><br><span class="hljs-keyword">set</span> <span class="hljs-type">time</span> <span class="hljs-keyword">on</span><br>EOF<br></code></pre></td></tr></table></figure>
+
+<p>重新登录 disql，效果如下：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">[dmdba@dm8:~]$ ds<br><br>服务器[LOCALHOST:5236]:处于普通打开状态<br>登录使用时间 : 3.881(ms)<br>密钥过期时间：2025-07-03<br>disql V8<br>23:04:41 dmdba@DAMENG:5236 SQL&gt; select name from v$database;<br><br><span class="hljs-section">NAME</span><br><span class="hljs-section">------</span><br>DAMENG<br><br>已用时间: 0.601(毫秒). 执行号:2805.<br></code></pre></td></tr></table></figure>
+
+<p>可以看到 disql 连接数据库后，多了很多信息：</p>
+<ul>
+<li>数据库连接用户：dmdba</li>
+<li>数据库名称：DAMENG</li>
+<li>数据库端口号：5236</li>
+<li>密钥过期时间：2025-07-03</li>
+<li>当前系统时间：23:04:41</li>
+</ul>
+<p>这些信息对于 DBA 来说十分重要，可以很大程度上避免数据库误操作。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>disql 与 sqlplus 的设计理念十分相似，这种借鉴方式其实对 Oracle DBA 来说是十分友好的，使用起来基本可以算是无缝切换，值得点赞！<strong>文不在深，实用则灵！</strong></p>
+<p><strong>希望看完本文之后，可以让你的达梦数据库运维效率直接翻倍！</strong> 如果有遗漏或者不足的地方，欢迎评论区补充或者投稿，感谢阅读！</p>
+<h2 id="往期精彩文章"><a href="#往期精彩文章" class="headerlink" title="往期精彩文章"></a>往期精彩文章</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/gjQBBvjIFsHC1rtEjn30nw">达梦数据库安装最详细教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/hapMuAF9xg8fbdlKJpsN6A">一招教你学会达梦数据库的免密登录</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/pZIcZiICY1pUiTAWQRtUKg">一文讲透达梦数据库的大小写敏感</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Yd3gkFki_OJsCfCFKf1Ttw">金仓数据库 KingbaseES V9 单机安装指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/u7HK4soHUght3p0tzHPanA">KingbaseES KSQL 免密登录的几种方式</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vdsFR2aPNp8Gys1G4qX5cQ">KingbaseES 控制文件冗余与恢复秘籍</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/MwmvwR7sUQ6VuoftHM19mA">南大通用 GBASE 8s V8.8 数据库最全安装指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/XL2jYOPEf9x_bXW0VFE6kg">GBase 8s GDCA 认证课后练习题大全（题库）</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/oIEWt5pzK0KfhUq3GUNGCA">GBase 8s 数据库巡检报告及一键巡检脚本</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/i-L_tAF-XIIY_d4YCn0MIw">YashanDB 一键生成 AWR 报告</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/sgB3WQ6A8mGl3QaIJj5v1A">YashanDB 数据库安装部署</a></p>
+</blockquote>
+<hr>
+<p>「喜欢这篇文章，您的关注和赞赏是给作者最好的鼓励」</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/143279733/">https://pc-study.github.io/csdn-blog/posts/143279733/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/%E8%BE%BE%E6%A2%A6%E6%95%B0%E6%8D%AE%E5%BA%93/">达梦数据库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/143294214/" title="ChatGPT 4o 优化 SQL 可靠吗？"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">ChatGPT 4o 优化 SQL 可靠吗？</div></div><div class="info-2"><div class="info-item-1">目录 前言 ChatGPT 问答 提问 ChatGPT 4o 回复 可行性分析 免费体验 ChatGPT 4o Plus 前言 前天写的一篇 听说 ChatGPT 4o 可以取代初级 DBA？ 在群里引起了广泛讨论，很多朋友觉得在基础运维方面，ChatGPT 4o > 初级 DBA，但是在 SQL</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/143171024/" title="GBase 8s GDCA 认证课后练习题大全（题库）"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">GBase 8s GDCA 认证课后练习题大全（题库）</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 单选题 多选题 判断题 写在最后 前言 近期，南大通用 GBase 8s 数据库新一期的 GDCA 认证开启火热报名：培训预告 2024十月GBase 8s认证培训班开始报名啦~，到今天为止，培训课程已经学习</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/149113273/" title="Oracle 表空间不足？用 Shell 脚本实现自动扩容！"><img class="cover" src="/csdn-blog/images/3e0eaa46e3f81a3bf5a28bfbbb804ebe.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-04</div><div class="info-item-2">Oracle 表空间不足？用 Shell 脚本实现自动扩容！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 脚本演示 测试环境准备 部署并执行自动扩展脚本 配置定时任务 (crontab) 写在最后 前言 最近有客户反馈了一个困扰已久的问题：频繁收到表空间使用率超过 90% 的告警邮件，每次都需要手动添加数据文件来解决。客户询问：O</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119845979/" title="《零基础安装 Oracle 数据库》单机系列 ⑤ 一键快速安装 Oracle 21C 数据库"><img class="cover" src="/csdn-blog/images/aaa7a3fa8bfa445092bb51c0645f6c6a.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-21</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机系列 ⑤ 一键快速安装 Oracle 21C 数据库</div></div><div class="info-2"><div class="info-item-1">目录 前言 安装 下载项目 安装软件 下载 Oracle 安装包 安装 编辑 vagrant.yml 文件 开始安装 使用方式 连接主机 关闭主机 开启主机 销毁主机 写在最后 前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + she</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145697072/" title="Oracle Alert 日志频繁告警 12170 TNS-12535&#x2F;TNS-00505，我看看怎么个事儿？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-18</div><div class="info-item-2">Oracle Alert 日志频繁告警 12170 TNS-12535&#x2F;TNS-00505，我看看怎么个事儿？</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 问题描述 问题重现 解决方案 调整防火墙 调整 Oracle 参数 治标不治本 写在最后 前言 节后巡检一套 Oracle 11GR2 的库，发现 alert 日志很大，于是看看 alert 日志里都记录了啥？好家伙，</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139778336/" title="OpenCloudOS 8.8 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-18</div><div class="info-item-2">OpenCloudOS 8.8 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 OpenCloudOS 8.8 一键安装 Oracle 19C 单机（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/143920136/" title="Oracle 中针对表中的某些列授予查询权限（视图）"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-11-20</div><div class="info-item-2">Oracle 中针对表中的某些列授予查询权限（视图）</div></div><div class="info-2"><div class="info-item-1">有一套 Oracle 11GR2 数据库，开发想要针对表中的某些列授权查询，其他列不可查询，按照常规的授权方式是无法针对表中的某些列进行授权查询的，最基础的都需要针对表进行授权。 首先排除网上那些所谓支持列单独授权的言论： Oracle 目前没有这种写法（测试版本为 11GR2 数据库）。 解决方案</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/144504477/" title="干货分享：达梦共享集群（DMDSC）一键安装脚本"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-16</div><div class="info-item-2">干货分享：达梦共享集群（DMDSC）一键安装脚本</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群可以添加号主微信：Lucifer-0622，备注</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BE%E7%BE%A4%E4%BA%A4%E6%B5%81"><span class="toc-number">1.</span> <span class="toc-text">社群交流</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">目录</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BF%AB%E6%8D%B7%E6%8C%87%E4%BB%A4"><span class="toc-number">3.</span> <span class="toc-text">快捷指令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#alias-%E5%88%AB%E5%90%8D"><span class="toc-number">3.1.</span> <span class="toc-text">alias 别名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">3.2.</span> <span class="toc-text">配置环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8A%B1%E6%A0%B7%E7%8E%A9%E6%B3%95"><span class="toc-number">3.3.</span> <span class="toc-text">花样玩法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E5%AE%9E%E4%BE%8B%E8%87%AA%E7%94%B1%E5%88%87%E6%8D%A2"><span class="toc-number">3.3.1.</span> <span class="toc-text">多实例自由切换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E9%94%AE%E8%B0%83%E7%94%A8-SQL-%E8%84%9A%E6%9C%AC"><span class="toc-number">3.3.2.</span> <span class="toc-text">一键调用 SQL 脚本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A7%92%E9%80%9F%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">3.3.3.</span> <span class="toc-text">秒速连接数据库</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2"><span class="toc-number">4.</span> <span class="toc-text">上下文切换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#rlwrap-%E4%B8%8B%E8%BD%BD"><span class="toc-number">4.1.</span> <span class="toc-text">rlwrap 下载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rlwrap-%E5%AE%89%E8%A3%85"><span class="toc-number">4.2.</span> <span class="toc-text">rlwrap 安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F-1"><span class="toc-number">4.3.</span> <span class="toc-text">配置环境变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#glogin-%E4%BC%98%E5%8C%96"><span class="toc-number">5.</span> <span class="toc-text">glogin 优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">6.</span> <span class="toc-text">写在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%80%E6%9C%9F%E7%B2%BE%E5%BD%A9%E6%96%87%E7%AB%A0"><span class="toc-number">7.</span> <span class="toc-text">往期精彩文章</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>【Oracle数据库】手滑删错数据，一步步教你如何挽救？ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="前言 常在河边走，哪能不湿鞋？ 今天有客户联系说误更新数据表，导致数据错乱了，希望将这张表恢复到 一周前 的指定时间点。 数据库版本为 操作系统是 数据已经被更改超过1周时间 数据库已开启归档模式 没有DG容灾 有RMAN备份 下面模拟一下问题的详细解决过程！ 一、分析 以下只列出常规恢复手段： 数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Oracle数据库】手滑删错数据，一步步教你如何挽救？">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/117957275/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="前言 常在河边走，哪能不湿鞋？ 今天有客户联系说误更新数据表，导致数据错乱了，希望将这张表恢复到 一周前 的指定时间点。 数据库版本为 操作系统是 数据已经被更改超过1周时间 数据库已开启归档模式 没有DG容灾 有RMAN备份 下面模拟一下问题的详细解决过程！ 一、分析 以下只列出常规恢复手段： 数">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/linux.svg">
+<meta property="article:published_time" content="2021-11-10T14:50:55.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.306Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="rman备份恢复">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="新星计划">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/linux.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"【Oracle数据库】手滑删错数据，一步步教你如何挽救？","url":"https://pc-study.github.io/csdn-blog/posts/117957275/","image":"https://pc-study.github.io/csdn-blog/img/covers/linux.svg","datePublished":"2021-11-10T14:50:55.000Z","dateModified":"2026-03-20T12:25:38.306Z","description":"前言 常在河边走，哪能不湿鞋？ 今天有客户联系说误更新数据表，导致数据错乱了，希望将这张表恢复到 一周前 的指定时间点。 数据库版本为 操作系统是 数据已经被更改超过1周时间 数据库已开启归档模式 没有DG容灾 有RMAN备份 下面模拟一下问题的详细解决过程！ 一、分析 以下只列出常规恢复手段： 数","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/117957275/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/117957275/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '【Oracle数据库】手滑删错数据，一步步教你如何挽救？',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/linux.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">【Oracle数据库】手滑删错数据，一步步教你如何挽救？</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">【Oracle数据库】手滑删错数据，一步步教你如何挽救？<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-11-10-117957275.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-11-10T14:50:55.000Z" title="发表于 2021-11-10 22:50:55">2021-11-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.306Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/">Linux 运维</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>10分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><strong>常在河边走，哪能不湿鞋？</strong></p>
+<p>今天有客户联系说误更新数据表，导致数据错乱了，希望将这张表恢复到 <strong>一周前</strong> 的指定时间点。</p>
+<ul>
+<li>数据库版本为 <code>11.2.0.1</code></li>
+<li>操作系统是 <code>Windows64</code></li>
+<li>数据已经被更改超过1周时间</li>
+<li>数据库已开启归档模式</li>
+<li>没有DG容灾</li>
+<li>有RMAN备份</li>
+</ul>
+<p><strong>下面模拟一下问题的详细解决过程！</strong></p>
+<h2 id="一、分析"><a href="#一、分析" class="headerlink" title="一、分析"></a>一、分析</h2><p><strong>以下只列出常规恢复手段：</strong></p>
+<ul>
+<li>数据已经误操作超过一周，所以排除使用UNDO快照来找回；</li>
+<li>没有DG容灾环境，排除使用DG闪回；</li>
+<li>主库已开启归档模式，并且存在RMAN备份，可使用RMAN异机恢复表对应表空间，使用DBLINK捞回数据表；</li>
+<li>Oracle 12C后支持单张表恢复；</li>
+</ul>
+<p><strong>结论：安全起见，使用RMAN异机恢复表空间来捞回数据表。</strong></p>
+<h2 id="二、思路"><a href="#二、思路" class="headerlink" title="二、思路"></a>二、思路</h2><p>客户希望将表数据恢复到 &lt;2021&#x2F;06&#x2F;08 17:00:00&gt; 之前某个时间点。</p>
+<p><strong>大致操作步骤如下：</strong></p>
+<ul>
+<li>主库查询误更新数据表对应的表空间和无需恢复的表空间。</li>
+<li>新主机安装Oracle 11.2.0.1数据库软件，无需建库，目录结构最好保持一致。</li>
+<li>主库拷贝参数文件，密码文件至新主机，根据新主机修改参数文件和创建新实例所需目录。</li>
+<li>新主机使用修改后的参数文件打开数据库实例到nomount状态。</li>
+<li>主库拷贝备份的控制文件至新主机，新主机使用RMAN恢复控制文件，并且MOUNT新实例。</li>
+<li>新主机RESTORE TABLESPACE恢复至时间点 <strong>&lt;2021&#x2F;06&#x2F;08 16:00:00&gt;</strong>。</li>
+<li>新主机RECOVER DATABASE SKIP TABLESPACE恢复至时间点 <strong>&lt;2021&#x2F;06&#x2F;08 16:00:00&gt;</strong>。</li>
+<li>新主机实例开启到只读模式。</li>
+<li>确认新主机实例的表数据是否正确，若不正确则重复 <strong>第7步</strong> 调整时间点慢慢往 <strong>&lt;2021&#x2F;06&#x2F;08 17:00:00&gt;</strong> 推进恢复。</li>
+<li>主库创建连通新主机实例的DBLINK，通过DBLINK从新主机实例捞取表数据。</li>
+</ul>
+<p><strong>📢 注意：</strong> 选择表空间恢复是因为主库数据量比较大，如果全库恢复需要大量时间。</p>
+<h2 id="三、测试环境模拟"><a href="#三、测试环境模拟" class="headerlink" title="三、测试环境模拟"></a>三、测试环境模拟</h2><p>为了数据脱敏，因此以测试环境模拟场景进行演示！</p>
+<p>⭐️ 测试环境可以使用脚本安装，可以使用博主编写的 Oracle 一键安装脚本，同时支持单机和 RAC 集群模式！</p>
+<blockquote>
+<p><strong><a target="_blank" rel="noopener" href="https://www.modb.pro/db/101853">开源项目：Install Oracle Database By Scripts！</a></strong></p>
+</blockquote>
+<p><strong>更多更详细的脚本使用方式可以订阅专栏：<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_50546016/category_11127389.html">Oracle一键安装脚本</a>。</strong></p>
+<h3 id="1、环境准备"><a href="#1、环境准备" class="headerlink" title="1、环境准备"></a>1、环境准备</h3><p>测试环境信息如下：</p>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>主机版本</th>
+<th>主机名</th>
+<th>实例名</th>
+<th>Oracle版本</th>
+<th>IP地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主库</td>
+<td>rhel6.9</td>
+<td>orcl</td>
+<td>orcl</td>
+<td>11.2.0.1</td>
+<td>10.211.55.111</td>
+</tr>
+<tr>
+<td>新主机</td>
+<td>rhel6.9</td>
+<td>orcl</td>
+<td>不创建实例</td>
+<td>11.2.0.1</td>
+<td>10.211.55.112</td>
+</tr>
+</tbody></table>
+<h3 id="2、模拟测试场景"><a href="#2、模拟测试场景" class="headerlink" title="2、模拟测试场景"></a>2、模拟测试场景</h3><p>主库开启归档模式：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs gams">sqlplus / as sysdba<br>## 设置归档路径<br>alter <span class="hljs-keyword">system</span> <span class="hljs-keyword">set</span> log_archive_dest_1=<span class="hljs-string">&#x27;LOCATION=/archivelog&#x27;</span>;<br>## 重启开启归档模式<br>shutdown immediate<br>startup mount<br>alter database archivelog；<br>## 打开数据库<br>alter database open;<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br></code></pre></td></tr></table></figure>
+
+<p>创建测试数据：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">sqlplus / <span class="hljs-keyword">as</span> sysdba<br>## 创建表空间<br><span class="hljs-keyword">create</span> <span class="hljs-keyword">tablespace</span> lucifer datafile <span class="hljs-string">&#x27;/oradata/orcl/lucifer01.dbf&#x27;</span> size <span class="hljs-number">10</span>M autoextend <span class="hljs-keyword">off</span>;<br><span class="hljs-keyword">create</span> <span class="hljs-keyword">tablespace</span> ltest datafile <span class="hljs-string">&#x27;/oradata/orcl/ltest01.dbf&#x27;</span> size <span class="hljs-number">10</span>M autoextend <span class="hljs-keyword">off</span>;<br>## 创建用户<br><span class="hljs-keyword">create</span> <span class="hljs-keyword">user</span> lucifer identified <span class="hljs-keyword">by</span> lucifer;<br><span class="hljs-keyword">grant</span> dba <span class="hljs-keyword">to</span> lucifer;<br>## 创建表<br>conn lucifer/lucifer<br><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> lucifer(id number <span class="hljs-keyword">not</span> <span class="hljs-keyword">null</span>,<span class="hljs-type">name</span> varchar2(<span class="hljs-number">20</span>)) <span class="hljs-keyword">tablespace</span> lucifer;<br>## 插入数据<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> lucifer <span class="hljs-keyword">values</span>(<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;lucifer&#x27;</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> lucifer <span class="hljs-keyword">values</span>(<span class="hljs-number">2</span>,<span class="hljs-string">&#x27;test1&#x27;</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> lucifer <span class="hljs-keyword">values</span>(<span class="hljs-number">3</span>,<span class="hljs-string">&#x27;test2&#x27;</span>);<br><span class="hljs-keyword">commit</span>;<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br>* <span class="hljs-number">6</span><br>* <span class="hljs-number">7</span><br>* <span class="hljs-number">8</span><br>* <span class="hljs-number">9</span><br>* <span class="hljs-number">10</span><br>* <span class="hljs-number">11</span><br>* <span class="hljs-number">12</span><br>* <span class="hljs-number">13</span><br>* <span class="hljs-number">14</span><br>* <span class="hljs-number">15</span><br></code></pre></td></tr></table></figure>
+
+<p>进行数据库全备：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs stata">rman target /<br>## 进入 rman 后执行以下命令<br><span class="hljs-keyword">run</span> &#123;<br>allocate channel c1 device <span class="hljs-keyword">type</span> disk;<br>allocate channel c2 device <span class="hljs-keyword">type</span> disk;<br>crosscheck backup;<br>crosscheck archivelog all; <br>sql<span class="hljs-string">&quot;alter system switch logfile&quot;</span>;<br>delete noprompt expired backup;<br>delete noprompt obsolete device <span class="hljs-keyword">type</span> disk;<br>backup database <span class="hljs-keyword">include</span> current controlfile <span class="hljs-keyword">format</span> &#x27;/backup/backlv0_%d_%T_%t_%s_%p&#x27;;<br>backup archivelog all DELETE <span class="hljs-keyword">INPUT</span>;<br>release channel c1;<br>release channel c2;<br>&#125;<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br><span class="hljs-comment">* 13</span><br><span class="hljs-comment">* 14</span><br><span class="hljs-comment">* 15</span><br></code></pre></td></tr></table></figure>
+
+<p>模拟数据修改：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">sqlplus / <span class="hljs-keyword">as</span> sysdba<br>conn lucifer/lucifer<br><span class="hljs-keyword">delete</span> <span class="hljs-keyword">from</span> lucifer <span class="hljs-keyword">where</span> id=<span class="hljs-number">1</span>;<br><span class="hljs-keyword">update</span> lucifer <span class="hljs-keyword">set</span> <span class="hljs-type">name</span>=<span class="hljs-string">&#x27;lucifer&#x27;</span> <span class="hljs-keyword">where</span> id=<span class="hljs-number">2</span>;<br><span class="hljs-keyword">commit</span>;<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>📢 注意：</strong> 为了模拟客户环境，假设无法通过UNDO快照找回，当前删除时间点为：<strong>&lt;2021&#x2F;06&#x2F;17 18:10:00&gt;</strong>。</p>
+<p><strong>如果使用UNDO快照，比较方便：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">sqlplus / <span class="hljs-keyword">as</span> sysdba<br>## 查找UNDO快照数据是否正确<br><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> lucifer.lucifer <span class="hljs-keyword">as</span> <span class="hljs-keyword">of</span> <span class="hljs-type">timestamp</span> to_timestamp(<span class="hljs-string">&#x27;2021-06-17 18:05:00&#x27;</span>,<span class="hljs-string">&#x27;YYYY-MM-DD HH24:MI:SS&#x27;</span>);<br>## 将UNDO快照数据捞至新建表中<br><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> lucifer.lucifer_0617 <span class="hljs-keyword">as</span> <span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> lucifer.lucifer <span class="hljs-keyword">as</span> <span class="hljs-keyword">of</span> <span class="hljs-type">timestamp</span> to_timestamp(<span class="hljs-string">&#x27;2021-06-17 18:05:00&#x27;</span>,<span class="hljs-string">&#x27;YYYY-MM-DD HH24:MI:SS&#x27;</span>);<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="四、RMAN完整恢复过程"><a href="#四、RMAN完整恢复过程" class="headerlink" title="四、RMAN完整恢复过程"></a>四、RMAN完整恢复过程</h2><p>主库查询误更新数据表对应的表空间和无需恢复的表空间：</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs axapta">sqlplus / <span class="hljs-keyword">as</span> sysdba<br><span class="hljs-meta">## 查询误更新数据表对应表空间</span><br><span class="hljs-keyword">select</span> owner,tablespace_name <span class="hljs-keyword">from</span> dba_segments <span class="hljs-keyword">where</span> segment_name=<span class="hljs-string">&#x27;LUCIFER&#x27;</span>;<br><span class="hljs-meta">## 查询所有表空间</span><br><span class="hljs-keyword">select</span> tablespace_name <span class="hljs-keyword">from</span> dba_tablespaces;<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/923400da838b49fcc3695968080f3bff.webp" alt="【Oracle数据库】手滑删错数据，一步步教你如何挽救？ - 图3" loading='lazy'></p>
+<p>主库拷贝参数文件，密码文件至新主机，根据新主机修改参数文件和创建新实例所需目录：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment">## 生成pfile参数文件</span><br>sqlplus / as sysdba<br>create pfile=<span class="hljs-string">&#x27;/home/oracle/pfile.ora&#x27;</span> from spfile;<br><span class="hljs-keyword">exit</span>;<br><span class="hljs-comment">## 拷贝至新主机</span><br>su - oracle<br>scp <span class="hljs-regexp">/home/</span>oracle<span class="hljs-regexp">/pfile.ora 10.211.55.112:/</span>tmp<br>scp <span class="hljs-variable">$ORACLE_HOME</span><span class="hljs-regexp">/dbs/</span>orapworcl <span class="hljs-number">10.211</span>.<span class="hljs-number">55.112</span>:<span class="hljs-variable">$ORACLE_HOME</span>/dbs<br><span class="hljs-comment">## 新主机根据实际情况修改参数文件并且创建目录</span><br>mkdir -p <span class="hljs-regexp">/u01/</span>app<span class="hljs-regexp">/oracle/</span>admin<span class="hljs-regexp">/orcl/</span>adump<br>mkdir -p <span class="hljs-regexp">/oradata/</span>orcl/<br>mkdir -p /archivelog<br>chown -R oracle:oinstall /archivelog<br>chown -R oracle:oinstall /oradata<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br>* <span class="hljs-number">6</span><br>* <span class="hljs-number">7</span><br>* <span class="hljs-number">8</span><br>* <span class="hljs-number">9</span><br>* <span class="hljs-number">10</span><br>* <span class="hljs-number">11</span><br>* <span class="hljs-number">12</span><br>* <span class="hljs-number">13</span><br>* <span class="hljs-number">14</span><br></code></pre></td></tr></table></figure>
+
+<p>新主机使用修改后的参数文件打开数据库实例到nomount状态：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs gams">sqlplus / as sysdba<br>startup nomount pfile=<span class="hljs-string">&#x27;/tmp/pfile.ora&#x27;</span>;<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/c08aae036a3e04bcd2c6b14e176e493b.webp" alt="【Oracle数据库】手滑删错数据，一步步教你如何挽救？ - 图5" loading='lazy'></p>
+<p>主库拷贝备份的控制文件至新主机，新主机使用RMAN恢复控制文件，并且MOUNT新实例：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs awk">rman target /<br>list backup of controlfile;<br><span class="hljs-keyword">exit</span>;<br><span class="hljs-comment">## 拷贝备份文件至新主机</span><br>scp <span class="hljs-regexp">/backup/</span>backlv0_ORCL_20210617_107548592* <span class="hljs-number">10.211</span>.<span class="hljs-number">55.112</span>:/tmp<br>scp <span class="hljs-regexp">/u01/</span>app<span class="hljs-regexp">/oracle/</span>product<span class="hljs-regexp">/11.2.0/</span>db<span class="hljs-regexp">/dbs/</span><span class="hljs-number">0</span>c01l775_1_1 <span class="hljs-number">10.211</span>.<span class="hljs-number">55.112</span>:/tmp<br><span class="hljs-comment">## 新主机恢复控制文件并开启到mount状态</span><br>rman target /<br>restore controlfile from <span class="hljs-string">&#x27;/tmp/backlv0_ORCL_20210617_1075485924_9_1&#x27;</span>;<br>alter database mount;<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br>* <span class="hljs-number">6</span><br>* <span class="hljs-number">7</span><br>* <span class="hljs-number">8</span><br>* <span class="hljs-number">9</span><br>* <span class="hljs-number">10</span><br></code></pre></td></tr></table></figure>
+
+<p>通过 <code>list backup of controlfile;</code> 可以看到控制文件位置：</p>
+<p><img src="/csdn-blog/images/fc227f644e19f08e98c14deab4f93a5e.webp" alt="【Oracle数据库】手滑删错数据，一步步教你如何挽救？ - 图7" loading='lazy'></p>
+<p>新主机RESTORE TABLESPACE恢复至时间点 <strong>&lt;2021&#x2F;06&#x2F;17 18:06:00&gt;</strong> ：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs stata">## 新主机注册备份集<br>rman target /<br>catalog start with &#x27;/tmp/backlv0_ORCL_20210617_107548592&#x27;;<br>crosscheck backup;<br>delete noprompt expired backup;<br>delete noprompt obsolete device <span class="hljs-keyword">type</span> disk;<br>## 恢复表空间LUCIFER和系统表空间，指定时间点 `2021/06/17 18:06:00`<br><span class="hljs-keyword">run</span> &#123;<br>sql &#x27;alter session <span class="hljs-keyword">set</span> nls_date_format=<span class="hljs-string">&quot;yyyy-mm-dd hh24:mi:ss&quot;</span>&#x27;;<br><span class="hljs-keyword">set</span> until time &#x27;2021-06-17 18:06:00&#x27;;<br>allocate channel ch01 device <span class="hljs-keyword">type</span> disk;<br>allocate channel ch02 device <span class="hljs-keyword">type</span> disk;<br><span class="hljs-keyword">restore</span> tablespace SYSTEM,SYSAUX,UNDOTBS1,USERS,LUCIFER;<br>release channel ch01;<br>release channel ch02;<br>&#125;<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br><span class="hljs-comment">* 13</span><br><span class="hljs-comment">* 14</span><br><span class="hljs-comment">* 15</span><br><span class="hljs-comment">* 16</span><br></code></pre></td></tr></table></figure>
+
+<p>新主机RECOVER DATABASE SKIP TABLESPACE恢复至时间点 <strong>&lt;2021&#x2F;06&#x2F;17 18:06:00&gt;</strong> ：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs stata">rman target /<br><span class="hljs-keyword">run</span> &#123;<br>sql &#x27;alter session <span class="hljs-keyword">set</span> nls_date_format=<span class="hljs-string">&quot;yyyy-mm-dd hh24:mi:ss&quot;</span>&#x27;;<br><span class="hljs-keyword">set</span> until time &#x27;2021-06-17 18:06:00&#x27;;<br>allocate channel ch01 device <span class="hljs-keyword">type</span> disk;<br>recover database skip tablespace LTEST,EXAMPLE;<br>release channel ch01;<br>&#125;<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>这里有一个小BUG：</strong> 客户环境是Windows，执行这一步最后报错，手动offline数据文件依然无法开启数据库。</p>
+<p><strong>解决方案：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">sqlplus / <span class="hljs-keyword">as</span> sysdba<br>## 将恢复跳过的表空间都offline <span class="hljs-keyword">drop</span>掉，执行以下查询结果<br><span class="hljs-keyword">select</span> <span class="hljs-string">&#x27;alter database datafile &#x27;</span>|| file_id ||<span class="hljs-string">&#x27; offline drop;&#x27;</span> <span class="hljs-keyword">from</span> dba_data_files <span class="hljs-keyword">where</span> tablespace_name <span class="hljs-keyword">in</span> (<span class="hljs-string">&#x27;LTEST&#x27;</span>,<span class="hljs-string">&#x27;EXAMPLE&#x27;</span>);<br>## 再次开启数据库<br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">database</span> <span class="hljs-keyword">open</span> <span class="hljs-keyword">read</span> <span class="hljs-keyword">only</span>;<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>📢 注意：</strong> 如果显示缺归档日志，可以参考如下步骤：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs stata">sqlplus / <span class="hljs-keyword">as</span> sysdba<br>## 查询恢复需要的归档日志号时间 <br>alter session <span class="hljs-keyword">set</span> nls_date_format=<span class="hljs-string">&quot;yyyy-mm-dd hh24:mi:ss&quot;</span>; <br>select first_time,sequence# from v<span class="hljs-variable">$archived_log</span> where sequence#=&#x27;7&#x27;;<br><span class="hljs-keyword">exit</span>;<br>## 通过备份<span class="hljs-keyword">RESTORE</span>吐出所需的归档日志 <br>rman target / <br>catalog start with &#x27;/tmp/0c01l775_1_1&#x27;; <br>crosscheck archivelog all; <br><span class="hljs-keyword">run</span> &#123; <br>allocate channel ch01 device <span class="hljs-keyword">type</span> disk; <br><span class="hljs-keyword">SET</span> ARCHIVELOG DESTINATION TO &#x27;/archivelog&#x27;;<br><span class="hljs-keyword">restore</span> ARCHIVELOG SEQUENCE 7; <br>release channel ch01; <br>&#125;<br>## 再次recover进行恢复至指定时间点 2021-06-17 18:06:00 <br><span class="hljs-keyword">run</span> &#123; <br>sql &#x27;alter session <span class="hljs-keyword">set</span> nls_date_format=<span class="hljs-string">&quot;yyyy-mm-dd hh24:mi:ss&quot;</span>&#x27;; <br><span class="hljs-keyword">set</span> until time &#x27;2021-06-17 18:06:00&#x27;; <br>allocate channel ch01 device <span class="hljs-keyword">type</span> disk; <br>recover database skip tablespace LTEST,EXAMPLE; <br>release channel ch01; <br>&#125; <br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br><span class="hljs-comment">* 13</span><br><span class="hljs-comment">* 14</span><br><span class="hljs-comment">* 15</span><br><span class="hljs-comment">* 16</span><br><span class="hljs-comment">* 17</span><br><span class="hljs-comment">* 18</span><br><span class="hljs-comment">* 19</span><br><span class="hljs-comment">* 20</span><br><span class="hljs-comment">* 21</span><br><span class="hljs-comment">* 22</span><br><span class="hljs-comment">* 23</span><br></code></pre></td></tr></table></figure>
+
+<p>新主机实例开启到只读模式：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">sqlplus / <span class="hljs-keyword">as</span> sysdba<br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">database</span> <span class="hljs-keyword">open</span> <span class="hljs-keyword">read</span> <span class="hljs-keyword">only</span>;<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/acc1a785feb094b24d042673441fc4f3.webp" alt="【Oracle数据库】手滑删错数据，一步步教你如何挽救？ - 图10" loading='lazy'><br> 确认新主机实例的表数据是否正确：</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs axapta">sqlplus / <span class="hljs-keyword">as</span> sysdba<br><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> lucifer.lucifer;<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>📢 注意：</strong> 若不正确则重复 第7步 调整时间点慢慢往 2021&#x2F;06&#x2F;17 18:10:00 推进恢复:</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs stata">## 关闭数据库<br>sqlplus / <span class="hljs-keyword">as</span> sysdba<br>shutdown immediate; <br>## 开启数据库到mount状态<br>startup mount pfile=&#x27;/tmp/pfile.ora&#x27;;<br>## 重复 第7步，往前推进1分钟，调整时间点为 `2021/06/08 18:07:00`<br>rman target /<br><span class="hljs-keyword">run</span> &#123;<br>sql &#x27;alter session <span class="hljs-keyword">set</span> nls_date_format=<span class="hljs-string">&quot;yyyy-mm-dd hh24:mi:ss&quot;</span>&#x27;;<br><span class="hljs-keyword">set</span> until time &#x27;2021-06-17 18:07:00&#x27;;<br>allocate channel ch01 device <span class="hljs-keyword">type</span> disk;<br>recover database skip tablespace LTEST,EXAMPLE;<br>release channel ch01;<br>&#125;<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br><span class="hljs-comment">* 13</span><br><span class="hljs-comment">* 14</span><br></code></pre></td></tr></table></figure>
+
+<p>主库创建连通新主机实例的DBLINK，通过DBLINK从新主机实例捞取表数据：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs stata">sqlplus / <span class="hljs-keyword">as</span> sysdba<br>## 创建dblinnk<br>CREATE PUBLIC DATABASE LINK ORCL112<br>CONNECT TO lucifer<br>IDENTIFIED <span class="hljs-keyword">BY</span> lucifer<br>USING &#x27;(DESCRIPTION_LIST=<br>(DESCRIPTION=<br>(ADDRESS=(PROTOCOL=tcp)(HOST=10.211.55.112)(PORT=1521))<br>(CONNECT_DATA=<br>(SERVICE_NAME=orcl)<br>)<br>)<br>)&#x27;;<br>## 通过dblink捞取数据<br>create <span class="hljs-keyword">table</span> lucifer.lucifer_0618 <span class="hljs-keyword">as</span> select <span class="hljs-comment">/*+full(lucifer)*/</span> * from lucifer.lucifer@ORCL112;<br>select * from lucifer.lucifer_0618;<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br><span class="hljs-comment">* 13</span><br><span class="hljs-comment">* 14</span><br><span class="hljs-comment">* 15</span><br><span class="hljs-comment">* 16</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>至此，整个RMAN恢复过程就结束了！</strong></p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>备份永远是最后一道防线，所以备份一定要做好！！！</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/117957275/">https://pc-study.github.io/csdn-blog/posts/117957275/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/linux/">linux</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%96%B0%E6%98%9F%E8%AE%A1%E5%88%92/">新星计划</a><a class="post-meta__tags" href="/csdn-blog/tags/rman%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D/">rman备份恢复</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/117607801/" title="实战篇：手把手教你 DBCA 搭建 Oracle ADG"><img class="cover" src="/csdn-blog/images/14746ca6a05ef34f56c70283edb07de7.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">实战篇：手把手教你 DBCA 搭建 Oracle ADG</div></div><div class="info-2"><div class="info-item-1">前言 Oracle Data Guard 简称 DG，是 Oracle MAA（Maximum Availability Architecture）中的成员之一。 从 版本开始推出 STANDBY DATABASE 的概念，慢慢受到大家的欢迎。 随着 Oracle 数据库版本的更迭，搭建备库的方式多</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121188558/" title="实战篇：SUSE 15 SP3 安装 Oracle 19C RAC 数据库"><img class="cover" src="/csdn-blog/images/46046eb887e3f953cf417768712ace57.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">实战篇：SUSE 15 SP3 安装 Oracle 19C RAC 数据库</div></div><div class="info-2"><div class="info-item-1">前言 这两天看到交流群里有朋友咨询 SUSE 15 SP3 安装 Oracle 19C RAC 遇到点问题，趁着周末有时间，抱着学习的心态，研究了一下如何安装，接下来就分享一下从零开始部署的流程！ 总体来说，和 RHEL 部署流程上大同小异，主要是有一些命令不一样，废话不多说直接开始了~ 目录 前言</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/117857145/" title="实战篇：一步步教你 Linux 7 安装 Oracle 11GR2 RAC"><img class="cover" src="/csdn-blog/images/426656afcf085ea9acc794c9fa3701bb.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-31</div><div class="info-item-2">实战篇：一步步教你 Linux 7 安装 Oracle 11GR2 RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle RAC是什么? Oracle Real Application Clusters (RAC) 允许客户跨多台服务器运行单个 Oracle 数据库，以最大限度地提高可用性并实现水平可扩展性，同时访问共享存储。 连接到 Oracle RAC 实例的用户会话可以在中断期间进行故障转移并</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/118101696/" title="第三章【Oracle自动化部署脚本】使用"><img class="cover" src="/csdn-blog/images/3a3cf7e153c661627d221db35ce9bdd1.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-22</div><div class="info-item-2">第三章【Oracle自动化部署脚本】使用</div></div><div class="info-2"><div class="info-item-1">前言 我猜很多朋友拿到脚本后一脸懵逼，不知道如何下手，所以打算先教大家用脚本以最便捷的方式在 Linux 上安装一套 Oracle 数据库。 使用脚本的流程可以参照下方： Linux 系统安装可以参考：保姆级 VirtualBox 虚拟机安装 Linux 系统 确保我们已经安装配置好 Linux 系</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139179947/" title="Oracle Linux 8.9 一键安装 Oracle 12CR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">Oracle Linux 8.9 一键安装 Oracle 12CR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 8.9 一键安装 Oracle 12CR2 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/138720075/" title="Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-11</div><div class="info-item-2">Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 IS</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139176185/" title="Oracle Linux 6.10 一键安装 Oracle 12CR2 单机 ASM"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">Oracle Linux 6.10 一键安装 Oracle 12CR2 单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 6.10 一键安装 Oracle 12CR2 单机 ASM（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/138160428/" title="Oracle Linux 8.8 一键安装 Oracle 11GR2 RAC（231017）"><img class="cover" src="/csdn-blog/images/6353573894a19540fc1590341b3cb293.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-24</div><div class="info-item-2">Oracle Linux 8.8 一键安装 Oracle 11GR2 RAC（231017）</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 8.8 一键安装 Oracle 11GR2 RAC（231017）过程（全程无需人工干预）：（脚本包括 ORALCE PSU/OJVM 等补丁自动安装） ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 脚本第三代支持 N 节</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">一、分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%80%9D%E8%B7%AF"><span class="toc-number">3.</span> <span class="toc-text">二、思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%A8%A1%E6%8B%9F"><span class="toc-number">4.</span> <span class="toc-text">三、测试环境模拟</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">4.1.</span> <span class="toc-text">1、环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E6%A8%A1%E6%8B%9F%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF"><span class="toc-number">4.2.</span> <span class="toc-text">2、模拟测试场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81RMAN%E5%AE%8C%E6%95%B4%E6%81%A2%E5%A4%8D%E8%BF%87%E7%A8%8B"><span class="toc-number">5.</span> <span class="toc-text">四、RMAN完整恢复过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">6.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

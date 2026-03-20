@@ -1,0 +1,357 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>当 ORA-4036 来敲门：到底是 PGA 任性还是 DBA 疏忽？ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群可以添加微信：Lucifer-0622，备注对应">
+<meta property="og:type" content="article">
+<meta property="og:title" content="当 ORA-4036 来敲门：到底是 PGA 任性还是 DBA 疏忽？">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/144671884/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群可以添加微信：Lucifer-0622，备注对应">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/fd6228f22aa2683524414362f012df0d.webp">
+<meta property="article:published_time" content="2024-12-23T08:32:33.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.190Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="dba">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/fd6228f22aa2683524414362f012df0d.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"当 ORA-4036 来敲门：到底是 PGA 任性还是 DBA 疏忽？","url":"https://pc-study.github.io/csdn-blog/posts/144671884/","image":"https://pc-study.github.io/csdn-blog/images/fd6228f22aa2683524414362f012df0d.webp","datePublished":"2024-12-23T08:32:33.000Z","dateModified":"2026-03-20T12:25:39.190Z","description":"大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群可以添加微信：Lucifer-0622，备注对应","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/144671884/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/144671884/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '当 ORA-4036 来敲门：到底是 PGA 任性还是 DBA 疏忽？',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/fd6228f22aa2683524414362f012df0d.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">当 ORA-4036 来敲门：到底是 PGA 任性还是 DBA 疏忽？</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">当 ORA-4036 来敲门：到底是 PGA 任性还是 DBA 疏忽？<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-12-23-144671884.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-23T08:32:33.000Z" title="发表于 2024-12-23 16:32:33">2024-12-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.190Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，致力于分享数据库领域相关知识。</p>
+</blockquote>
+<h2 id="社群交流"><a href="#社群交流" class="headerlink" title="社群交流"></a>社群交流</h2><p>为了给大家提供一些技术交流的平台，目前已成立的技术交流群：</p>
+<ul>
+<li>Oracle 数据库交流群</li>
+<li>国产数据库交流群</li>
+<li>Linux 技术交流群</li>
+<li>ChatGPT 4o 免费体验群</li>
+</ul>
+<p>需要进群可以添加微信：<strong>Lucifer-0622</strong>，备注对应的群名即可。</p>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_3">社群交流</a></li>
+<li><a href="#_14">前言</a></li>
+<li><a href="#PGA_19">PGA</a></li>
+<li><a href="#PGA_AGGREGATE_LIMIT_32">PGA_AGGREGATE_LIMIT</a></li>
+<li><a href="#ORA4036_46">ORA-4036</a></li>
+<li><a href="#_62">解决方案</a></li>
+<li><ul>
+<li><a href="#1_PGA_AGGREGATE_LIMIT__0_65">1、设置 PGA_AGGREGATE_LIMIT &#x3D; 0</a></li>
+<li><a href="#2_PGA_AGGREGATE_LIMIT_72">2、增加初始化参数 PGA_AGGREGATE_LIMIT</a></li>
+<li><a href="#3_85">3、减少内存使用</a></li>
+<li><ul>
+<li><a href="#_Optimizer_Statistics_Advisor__88">关闭 Optimizer Statistics Advisor 功能</a></li>
+<li><a href="#_temp_LOBs_125">使用 temp LOBs</a></li>
+<li><a href="#_130">当连接进程的内存不断增长时</a></li>
+<li><a href="#BUG__177">BUG 问题</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_184">写在最后</a></li>
+<li><a href="#_195">往期精彩文章</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近有一个客户的数据库（12CR2）报错：<code>ORA-04036: PGA memory used by the instance exceeds PGA_AGGREGATE_LIMIT</code>。经过分析之后，发现是因为一条 SQL 在执行解析时消耗了大量的 PGA，导致 PGA 超出了参数 <strong>PGA_AGGREGATE_LIMIT</strong> 的值上限。</p>
+<p>针对这个问题，我在分析过程中研究了一下这个参数，并且整理了一些如何避免 ORA-4036 报错的建议。</p>
+<h2 id="PGA"><a href="#PGA" class="headerlink" title="PGA"></a>PGA</h2><p><strong>什么是 PGA？</strong></p>
+<p>PGA（Program Global Area）是用于存储服务器进程数据和控制信息的内存区域。它是 Oracle 数据库在启动服务器进程时分配的非共享内存，仅供相应的服务器进程访问。每个服务器进程都有自己的 PGA，同时，后台进程也会分配独立的 PGA。</p>
+<p>与 Oracle 数据库实例相关的所有服务器进程和后台进程的 PGA 内存总和被称为<strong>总实例 PGA 内存</strong>，即所有单独 PGA 的集合，简称为<strong>实例 PGA</strong>。</p>
+<p><img src="/csdn-blog/images/ccffd7cbf8237902532e80293e338c87.webp" alt="当 ORA-4036 来敲门：到底是 PGA 任性还是 DBA 疏忽？" loading='lazy'></p>
+<p>PGA（进程全局区）是特定于进程的一段内存。换句话说，PGA 是操作系统中某个进程或线程专用的内存，不允许系统中的其他进程或线程访问。PGA 一般是通过 C 语言运行时调用 <code>malloc()</code> 或 <code>memmap()</code> 来分配，而且可以在运行时动态扩大（或收缩）。PGA 绝对不会在 Oracle 的 SGA 中分配，而总是由进程或线程为自身分配。PGA 中的 P 代表 Process（进程）或 Program（程序），是不共享的。</p>
+<p>PGA 内存中的其他区域通常用于完成内存中的排序、位图合并以及散列。</p>
+<h2 id="PGA-AGGREGATE-LIMIT"><a href="#PGA-AGGREGATE-LIMIT" class="headerlink" title="PGA_AGGREGATE_LIMIT"></a>PGA_AGGREGATE_LIMIT</h2><p><strong>为什么会出现 PGA_AGGREGATE_LIMIT 参数？</strong></p>
+<p>在 Oracle 12C 版本之前，我们通常是通过设置参数 PGA_AGGREGATE_TARGET 来确定一个 PGA 的使用量。但是，PGA_AGGREGATE_TARGET 不会限制 PGA 内存使用量，它只是一个目标，用于动态调整进程工作区的大小。它不会影响允许超出此限制的其他 PGA 区域，也就是说这不是硬限制，有时候会超出上限，导致 PGA 内存使用无法准确掌控。</p>
+<p>所以从 Oracle 12C 开始引入了一个参数 <strong>PGA_AGGREGATE_LIMIT</strong>，允许数据库管理员设置 PGA（Program Global Area）内存的使用上限。通过配置该参数，可以对 PGA 的使用量进行硬性限制。如果 PGA 使用超出设置的值，Oracle 数据库会中止或终止占用最多、不可调整 PGA 内存的会话或进程。</p>
+<p><img src="/csdn-blog/images/1b25e9b00cf48281fe934a9e8c9a3367.webp" alt="当 ORA-4036 来敲门：到底是 PGA 任性还是 DBA 疏忽？ - 图2" loading='lazy'></p>
+<p>在 Oracle 18C 及更高版本中，<strong>MGA（Managed Global Area）</strong> 被包含在 PGA 中。这意味着在这些版本中，PGA 的大小需要适当增加，以容纳 MGA。PGA 内存分配要求 <strong>PGA_AGGREGATE_LIMIT</strong> 足够大，才能满足 MGA 和其他 PGA 的需求。</p>
+<blockquote>
+<p><strong>📢注意：连接的进程在其生命周期内不会将分配的内存释放回操作系统，除非进程断开连接</strong>。</p>
+</blockquote>
+<p>这是预期行为，因为 PGA 在进程整个生命周期内保持分配状态，并根据运行时需求动态增长。如果操作系统需要，可能会为实例分配额外内存以处理大型排序等操作。然而，PGA 的内存一旦分配并释放用于实例操作（例如完成大型排序后），这部分内存将保留在进程中以供将来使用，而不会缩减或归还给操作系统。</p>
+<h2 id="ORA-4036"><a href="#ORA-4036" class="headerlink" title="ORA-4036"></a>ORA-4036</h2><p>通过 oerr 可以查看 ORA-4036 的详细解释：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs swift">[oracle<span class="hljs-meta">@oracle19c</span>:<span class="hljs-regexp">/home/</span>oracle]$ oerr ora <span class="hljs-number">4036</span><br><span class="hljs-number">04036</span>, <span class="hljs-number">00000</span>, <span class="hljs-string">&quot;PGA memory used by the instance exceeds PGA_AGGREGATE_LIMIT&quot;</span><br><span class="hljs-comment">// *Cause:  Private memory across the instance exceeded the limit specified</span><br><span class="hljs-comment">//          in the PGA_AGGREGATE_LIMIT initialization parameter.  The largest</span><br><span class="hljs-comment">//          sessions using Program Global Area (PGA) memory were interrupted</span><br><span class="hljs-comment">//          to get under the limit.</span><br><span class="hljs-comment">// *Action: Increase the PGA_AGGREGATE_LIMIT initialization parameter or reduce</span><br><span class="hljs-comment">//          memory usage.</span><br></code></pre></td></tr></table></figure>
+
+<p>当实例中的私有内存超出 <code>PGA_AGGREGATE_LIMIT</code> 初始化参数中指定的限制时，会发生 ORA-04036 错误。使用Program Global Area (PGA) 内存的最大会话被中断以低于限制。</p>
+<p>此错误通常是由于使用、应用程序或配置问题引起的，但在某些情况下，它们可能是由 bug 问题引起的。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>其实避免 ORA-04036 错误的方法很简单，也就是避免内存使用超过 PGA_AGGREGATE_LIMIT 硬限制。</p>
+<h3 id="1、设置-PGA-AGGREGATE-LIMIT-0"><a href="#1、设置-PGA-AGGREGATE-LIMIT-0" class="headerlink" title="1、设置 PGA_AGGREGATE_LIMIT &#x3D; 0"></a>1、设置 PGA_AGGREGATE_LIMIT &#x3D; 0</h3><p>将参数 PGA_AGGREGATE_LIMIT 设置为 0 表示不限制 PGA 的增长（即无限制），相当于 Oracle 12C 之前的版本，此时 PGA 的增长将不受控制：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">SQL&gt; alter<span class="hljs-built_in"> system </span><span class="hljs-built_in">set</span> <span class="hljs-attribute">pga_aggregate_limit</span>=0;<br></code></pre></td></tr></table></figure>
+
+<p>自然也就不会报错 ORA-04036。</p>
+<h3 id="2、增加初始化参数-PGA-AGGREGATE-LIMIT"><a href="#2、增加初始化参数-PGA-AGGREGATE-LIMIT" class="headerlink" title="2、增加初始化参数 PGA_AGGREGATE_LIMIT"></a>2、增加初始化参数 PGA_AGGREGATE_LIMIT</h3><p>这个就更简单了，不够我就加：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SQL</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">alter</span> <span class="hljs-keyword">system</span> <span class="hljs-keyword">set</span> PGA_AGGREGATE_LIMIT <span class="hljs-operator">=</span> <span class="hljs-operator">&lt;</span><span class="hljs-keyword">value</span><span class="hljs-operator">&gt;</span>;<br></code></pre></td></tr></table></figure>
+
+<p><strong>PGA_AGGREGATE_LIMIT 的经验法则是</strong>：</p>
+<blockquote>
+<p>PGA_AGGREGATE_LIMIT &#x3D;(original PGA_AGGREGATE_LIMIT value) + ((maximum number of connected processes) * 4M)</p>
+</blockquote>
+<p>具体可以参考以下文档：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=1602891.1">使用数据库参数 PGA_AGGREGATE_LIMIT 限制进程大小 (Doc ID 1602891.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2808761.1">Sizing the PGA in Oracle 19c - How to Account for the MGA Size (Doc ID 2808761.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2638904.1">MGA (Managed Global Area) Reference Note (Doc ID 2638904.1)</a></li>
+</ul>
+<h3 id="3、减少内存使用"><a href="#3、减少内存使用" class="headerlink" title="3、减少内存使用"></a>3、减少内存使用</h3><p>关于减少内存使用的情况比较复杂，这里我列举几种可能情况。</p>
+<h4 id="关闭-Optimizer-Statistics-Advisor-功能"><a href="#关闭-Optimizer-Statistics-Advisor-功能" class="headerlink" title="关闭 Optimizer Statistics Advisor 功能"></a>关闭 Optimizer Statistics Advisor 功能</h4><p>从 Oracle 12CR2 开始，存在很多与 <code>Optimizer Statistics Advisor</code> 这个功能有关的问题：</p>
+<ul>
+<li>对于 Oracle 版本 &gt;&#x3D; 19.1 但低于 21.1，执行 <code>DBMS_STATS.GATHER_TABLE_STATS</code> 时：<a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=30846782.8">Bug 30846782 - 19c+ Fast&#x2F;Excessive PGA Growth when Using dbms_stats.gather_table_stats in a Loop (Doc ID 30846782.8)</a></li>
+<li>对于低于 23.1 的 Oracle 版本，执行 <code>DBMS_STATS.GATHER_FIXED_OBJECTS_STATS</code> 时：<a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2856094.1">ORA-4036 PGA Memory Exceeds PGA_AGGREGATE_LIMIT when DBMS_STATS.GATHER_FIXED_OBJECTS_STATS is Run (Doc ID 2856094.1)</a></li>
+</ul>
+<blockquote>
+<p><strong>📢注意</strong>：这里的 <code>Optimizer Statistics Advisor</code> 不是自动统计信息收集的 JOB，关闭这个功能完全不影响自动统计信息收集，不会对数据库造成任何影响。</p>
+</blockquote>
+<p>在 Oracle 12CR2 ~ 19C 版本中想要关闭这个功能，需要打一个补丁 <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/BugDisplay?parent=DOCUMENT&sourceId=2728765.1&id=26749785">Bug 26749785 : PERF_DIAG: NEED TO HAVE MORE CONTROL IN DICTIONARY FOR AUTO_STATS_ADVISOR_TASK</a> 后才能实现，21C 开始默认支持。</p>
+<p>打补丁之后新增了 “AUTO_STATS_ADVISOR_TASK” 的属性设置，可以手动启用&#x2F;禁用 AUTO_STATS_ADVISOR_TASK。</p>
+<p>检查当前属性：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">SQL&gt; select dbms_stats.get_prefs(<span class="hljs-emphasis">&#x27;AUTO_STATS_ADVISOR_TASK&#x27;</span>) from dual;<br><br><span class="hljs-section">DBMS_STATS.GET_PREFS(&#x27;AUTO_STATS_ADVISOR_TASK&#x27;)</span><br><span class="hljs-section">--------------------------------------------------------------------------------</span><br>TRUE<br></code></pre></td></tr></table></figure>
+
+<p>禁用统计顾问：</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">SQL&gt; exec dbms_stats.set_global_prefs(<span class="hljs-string">&#x27;AUTO_STATS_ADVISOR_TASK&#x27;</span>,<span class="hljs-string">&#x27;FALSE&#x27;</span>)<span class="hljs-punctuation">;</span><br><br>PL/SQL <span class="hljs-keyword">procedure</span> <span class="hljs-title function_">successfully</span> <span class="hljs-title function_">completed</span>.<br><br><span class="hljs-title function_">SQL</span>&gt; <span class="hljs-title function_">select</span> <span class="hljs-title function_">dbms_stats</span>.<span class="hljs-title function_">get_prefs</span><span class="hljs-params">(<span class="hljs-string">&#x27;AUTO_STATS_ADVISOR_TASK&#x27;</span>)</span> <span class="hljs-title function_">from</span> <span class="hljs-title function_">dual</span>;<br><br>DBMS_STATS.GET_PREFS(<span class="hljs-string">&#x27;AUTO_STATS_ADVISOR_TASK&#x27;</span>)<br>--------------------------------------------------------------------------------<br><span class="hljs-keyword">FALSE</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>不建议直接禁用统计信息收集任务！除非有定时手动收集统计信息的计划。</strong></p>
+<p>具体可以参考以下文档：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2727813.1">Optimizer Statistics Advisor Task Consumes Excessive PGA Memory and ORA-4036 Occurs. (Doc ID 2727813.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2728765.1">从12.2开始如何关闭 Optimizer Statistics Advisor 功能 (Doc ID 2728765.1)</a></li>
+</ul>
+<h4 id="使用-temp-LOBs"><a href="#使用-temp-LOBs" class="headerlink" title="使用 temp LOBs"></a>使用 temp LOBs</h4><p>例如，Oracle Text 应用程序可能会在 <code>kolarsCreateCtx</code> 调用时分配大量 PGA。如果未显式释放，可能导致内存占用居高不下。</p>
+<p>因此，应用程序需要确保释放创建的临时 LOB 和其他资源，以避免内存泄漏和不必要的资源消耗。检查应用程序代码并确保正确调用内存释放操作。</p>
+<h4 id="当连接进程的内存不断增长时"><a href="#当连接进程的内存不断增长时" class="headerlink" title="当连接进程的内存不断增长时"></a>当连接进程的内存不断增长时</h4><p>PGA 中的某些区域无法通过初始化参数直接控制，例如 PL&#x2F;SQL 内存集合（如 PL&#x2F;SQL 表和 VARRAY）以及本地 PL&#x2F;SQL 变量。这些区域的大小取决于编程代码和处理的数据量，可能会变得非常大（内部限制为 10G，最高可达 20G），从而消耗大量内存。此外，编程错误也会导致内存使用量过大。例如，递归或无限循环可能会耗尽内存。</p>
+<p>这种内存增长可以通过采用良好的编程实践进行控制。例如，结合使用 <strong>LIMIT</strong> 子句和 <strong>BULK COLLECT</strong>，可以有效减少一次性加载到内存的数据量，从而优化内存使用并避免不必要的资源消耗。</p>
+<p>因此，应采用良好的编码实践来避免 PL&#x2F;SQL 过度使用 PGA。</p>
+<p>这里分享一些可以查看当前进程消耗内存量的 SQL：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">COLUMN</span> alme     HEADING &quot;Allocated MB&quot; <span class="hljs-keyword">FORMAT</span> <span class="hljs-number">99999</span>D9<br><span class="hljs-keyword">COLUMN</span> usme     HEADING &quot;Used MB&quot;      <span class="hljs-keyword">FORMAT</span> <span class="hljs-number">99999</span>D9<br><span class="hljs-keyword">COLUMN</span> frme     HEADING &quot;Freeable MB&quot;  <span class="hljs-keyword">FORMAT</span> <span class="hljs-number">99999</span>D9<br><span class="hljs-keyword">COLUMN</span> mame     HEADING &quot;Max MB&quot;       <span class="hljs-keyword">FORMAT</span> <span class="hljs-number">99999</span>D9<br><span class="hljs-keyword">COLUMN</span> username                        <span class="hljs-keyword">FORMAT</span> a15<br><span class="hljs-keyword">COLUMN</span> program                         <span class="hljs-keyword">FORMAT</span> a22<br><span class="hljs-keyword">COLUMN</span> sid                             <span class="hljs-keyword">FORMAT</span> a5<br><span class="hljs-keyword">COLUMN</span> spid                            <span class="hljs-keyword">FORMAT</span> a8<br><span class="hljs-keyword">SET</span> LINESIZE <span class="hljs-number">300</span><br><span class="hljs-keyword">SELECT</span> s.username, SUBSTR(s.sid,<span class="hljs-number">1</span>,<span class="hljs-number">5</span>) sid, p.spid, logon_time,<br>       SUBSTR(s.program,<span class="hljs-number">1</span>,<span class="hljs-number">22</span>) program , s.process pid_remote,<br>       s.status,<br>       ROUND(pga_used_mem/<span class="hljs-number">1024</span>/<span class="hljs-number">1024</span>) usme,<br>       ROUND(pga_alloc_mem/<span class="hljs-number">1024</span>/<span class="hljs-number">1024</span>) alme,<br>       ROUND(pga_freeable_mem/<span class="hljs-number">1024</span>/<span class="hljs-number">1024</span>) frme,<br>       ROUND(pga_max_mem/<span class="hljs-number">1024</span>/<span class="hljs-number">1024</span>) mame<br><span class="hljs-keyword">FROM</span>  v$<span class="hljs-keyword">session</span> s,v$process p<br><span class="hljs-keyword">WHERE</span> p.addr=s.paddr<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> pga_max_mem,logon_time;<br><br><span class="hljs-keyword">COLUMN</span> category      HEADING &quot;Category&quot;<br><span class="hljs-keyword">COLUMN</span> allocated     HEADING &quot;Allocated bytes&quot;<br><span class="hljs-keyword">COLUMN</span> used          HEADING &quot;Used bytes&quot;<br><span class="hljs-keyword">COLUMN</span> max_allocated HEADING &quot;Max allocated bytes&quot;<br><span class="hljs-keyword">SELECT</span> pid, category, allocated, used, max_allocated<br><span class="hljs-keyword">FROM</span>   v$process_memory<br><span class="hljs-keyword">WHERE</span>  pid = (<span class="hljs-keyword">SELECT</span> pid<br>              <span class="hljs-keyword">FROM</span>   v$process<br>              <span class="hljs-keyword">WHERE</span>  addr= (<span class="hljs-keyword">select</span> paddr<br>                            <span class="hljs-keyword">FROM</span>   v$<span class="hljs-keyword">session</span><br>                            <span class="hljs-keyword">WHERE</span>  sid = <span class="hljs-number">141</span>));<br></code></pre></td></tr></table></figure>
+
+<p>通过上述执行结果可以快速追踪到具体是哪个进程的组件在消耗大量的内存。</p>
+<p>具体可参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=206007.1">How To Automate Cleanup Of Dead Connections And INACTIVE Sessions (Doc ID 206007.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=822527.1">How To Find Where The Memory Is Growing For A Process (Doc ID 822527.1)</a></li>
+</ul>
+<h4 id="BUG-问题"><a href="#BUG-问题" class="headerlink" title="BUG 问题"></a>BUG 问题</h4><p>当然，不可避免的还有一些 BUG 会导致 PGA 内存使用的问题。这里就不一一介绍了，具体可以参考：<a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2010590.1">OERR: ORA-4036 “PGA memory used by the instance exceeds PGA_AGGREGATE_LIMIT” Reference Note (Doc ID 2010590.1)</a></p>
+<p><img src="/csdn-blog/images/fd6228f22aa2683524414362f012df0d.webp" alt="当 ORA-4036 来敲门：到底是 PGA 任性还是 DBA 疏忽？ - 图3" loading='lazy'></p>
+<p>选择对应的数据库版本进行检索，通常可以很快的找到需要的 BUG 文档。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>本文通过介绍参数 PGA_AGGREGATE_LIMIT 以及 ORA-4036 错误，引出了如何避免 ORA-4036 问题的一系列解决方案，与君共勉！</p>
+<hr>
+<p>参考官方文档：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/database/121/REFRN/GUID-509A6343-5882-4260-BAD0-DC6B2BDC8301.htm#REFRN-GUID-509A6343-5882-4260-BAD0-DC6B2BDC8301">Changes in Oracle Database 12c Release 1 (12.1.0.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/database/121/REFRN/GUID-E364D0E5-19F2-4081-B55E-131DF09CFDB3.htm#REFRN10328">PGA_AGGREGATE_LIMIT（12.1.0.1）</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/18/refrn/PGA_AGGREGATE_LIMIT.html#REFRN10328">PGA_AGGREGATE_LIMIT（18c）</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=3037347.1">ORA-4036 “实例使用的 PGA 内存超出 PGA_AGGREGATE_LIMIT” (Doc ID 3037347.1)</a></li>
+</ul>
+<h2 id="往期精彩文章"><a href="#往期精彩文章" class="headerlink" title="往期精彩文章"></a>往期精彩文章</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/tYJxDmLWu5ag1CBvQv59eQ">眼见不一定为实：一条 SQL 背后隐藏的 BUG</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/QV-Xg2Sf3cfKfzxTvyaKEA">第 1 天：VirtualBox 虚拟机安装 Linux 系统</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Q9z0gHQlCOUgb9FTI175-g">第 2 天：RHEL 6 安装 Oracle 11GR2 数据库</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Zx7_0hEyuCANCCtgN3SC0g">第 3 天：RHEL 7 安装 Oracle 11GR2 数据库</a></p>
+</blockquote>
+<hr>
+<p>「喜欢这篇文章，您的关注和赞赏是给作者最好的鼓励」</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/144671884/">https://pc-study.github.io/csdn-blog/posts/144671884/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/dba/">dba</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/144743414/" title="达梦 DM8 参数设置全攻略，建库前先看这篇！"><img class="cover" src="/csdn-blog/img/covers/media.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">达梦 DM8 参数设置全攻略，建库前先看这篇！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群可以添加微信：Lucifer-0622，备注对应</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/144663614/" title="实战篇：Oracle EMCC 24ai 保姆级安装教程！"><img class="cover" src="/csdn-blog/images/8ae1ffa6360ac318dafc0b02a694218f.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">实战篇：Oracle EMCC 24ai 保姆级安装教程！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 目录 社群交流 EMCC 24ai 环境准备 主机信息</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/121311398/" title="3 万字，关系型数据库性能体系，设计和效率提升"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-11-14</div><div class="info-item-2">3 万字，关系型数据库性能体系，设计和效率提升</div></div><div class="info-2"><div class="info-item-1">目录 前言 一、预期的读者和阅读建议 二、数据库模型设计规范 1、数据库建模原则性规范 2、实体型之间关系认定规范 3、范式化 1NF 的规范 4、范式化 2NF 的规范 5、范式化3NF的规范 6、反范式化冗余字段使用规范 7、数据库对象命名基本规范 - 7.1、遵循行业规范 7.2、简单命名原则</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/125083573/" title="实战篇：Oracle 数据库标准版（SE）转换为企业版（EE）"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-01</div><div class="info-item-2">实战篇：Oracle 数据库标准版（SE）转换为企业版（EE）</div></div><div class="info-2"><div class="info-item-1">前言 很多 Oracle 数据库在初始安装的时候选择了标准版，而相对企业版来说就少了：RAC、ASM、DataGuard、闪回功能、分区表等等一些很实用的功能： 那么如何将标准版升级到企业版呢？Oracle 给我们提供了具体方案： How to Convert Database from Stand</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122318652/" title="Troubleshooting Guide ORA-609 : Opiodr aborting process unknown ospid (Doc ID 1121357.1)"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-05</div><div class="info-item-2">Troubleshooting Guide ORA-609 : Opiodr aborting process unknown ospid (Doc ID 1121357.1)</div></div><div class="info-2"><div class="info-item-1">In this Document APPLIES TO: PURPOSE TROUBLESHOOTING STEPS REFERENCES APPLIES TO: Oracle Net Services - Version 11.1.0.7 and later Oracle Database - E</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120255811/" title="Oracle DataGuard 备库配置闪回模式"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-12</div><div class="info-item-2">Oracle DataGuard 备库配置闪回模式</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库闪回通常设置在 DataGuard 备库，如果主库误删数据，可用备库闪回至删除点之前，获取丢失数据，然后再自动同步回来！ 注意： 主库不建议 开启 闪回，首先影响性能，其次主库不可能为了某些数据去做闪回，所以很鸡肋！ 那么，DataGuard 备库如何开启数据库闪回？ 需要有充足</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139408421/" title="华为欧拉 openEuler 23.09 一键安装 Oracle 21C 单机 ASM"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-03</div><div class="info-item-2">华为欧拉 openEuler 23.09 一键安装 Oracle 21C 单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 openEuler 23.09 一键安装 Oracle 21C 单机 ASM 过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139180039/" title="Oracle Linux 8.9 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">Oracle Linux 8.9 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 8.9 一键安装 Oracle 19C 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BE%E7%BE%A4%E4%BA%A4%E6%B5%81"><span class="toc-number">1.</span> <span class="toc-text">社群交流</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">目录</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PGA"><span class="toc-number">3.</span> <span class="toc-text">PGA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PGA-AGGREGATE-LIMIT"><span class="toc-number">4.</span> <span class="toc-text">PGA_AGGREGATE_LIMIT</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ORA-4036"><span class="toc-number">5.</span> <span class="toc-text">ORA-4036</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">6.</span> <span class="toc-text">解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E8%AE%BE%E7%BD%AE-PGA-AGGREGATE-LIMIT-0"><span class="toc-number">6.1.</span> <span class="toc-text">1、设置 PGA_AGGREGATE_LIMIT &#x3D; 0</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E5%A2%9E%E5%8A%A0%E5%88%9D%E5%A7%8B%E5%8C%96%E5%8F%82%E6%95%B0-PGA-AGGREGATE-LIMIT"><span class="toc-number">6.2.</span> <span class="toc-text">2、增加初始化参数 PGA_AGGREGATE_LIMIT</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E5%87%8F%E5%B0%91%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8"><span class="toc-number">6.3.</span> <span class="toc-text">3、减少内存使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%97%AD-Optimizer-Statistics-Advisor-%E5%8A%9F%E8%83%BD"><span class="toc-number">6.3.1.</span> <span class="toc-text">关闭 Optimizer Statistics Advisor 功能</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-temp-LOBs"><span class="toc-number">6.3.2.</span> <span class="toc-text">使用 temp LOBs</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BD%93%E8%BF%9E%E6%8E%A5%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%86%85%E5%AD%98%E4%B8%8D%E6%96%AD%E5%A2%9E%E9%95%BF%E6%97%B6"><span class="toc-number">6.3.3.</span> <span class="toc-text">当连接进程的内存不断增长时</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BUG-%E9%97%AE%E9%A2%98"><span class="toc-number">6.3.4.</span> <span class="toc-text">BUG 问题</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">7.</span> <span class="toc-text">写在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%80%E6%9C%9F%E7%B2%BE%E5%BD%A9%E6%96%87%E7%AB%A0"><span class="toc-number">8.</span> <span class="toc-text">往期精彩文章</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

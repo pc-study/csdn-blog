@@ -1,0 +1,356 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/144215691/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/5a69762ab0f1a6dc43c9e5ae4f82d282.webp">
+<meta property="article:published_time" content="2024-12-03T07:13:04.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.178Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="kingbasees">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="金仓数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/5a69762ab0f1a6dc43c9e5ae4f82d282.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移","url":"https://pc-study.github.io/csdn-blog/posts/144215691/","image":"https://pc-study.github.io/csdn-blog/images/5a69762ab0f1a6dc43c9e5ae4f82d282.webp","datePublished":"2024-12-03T07:13:04.000Z","dateModified":"2026-03-20T12:25:39.178Z","description":"大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/144215691/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/144215691/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/5a69762ab0f1a6dc43c9e5ae4f82d282.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-12-03-144215691.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-03T07:13:04.000Z" title="发表于 2024-12-03 15:13:04">2024-12-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.178Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，分享一些学习国产数据库路上的知识和经验。</p>
+</blockquote>
+<h2 id="社群交流"><a href="#社群交流" class="headerlink" title="社群交流"></a>社群交流</h2><p>为了给大家提供一些技术交流的平台，目前已成立的技术交流群：</p>
+<ul>
+<li>Oracle 数据库交流群</li>
+<li>国产数据库交流群</li>
+<li>Linux 技术交流群</li>
+<li>ChatGPT 4o 免费体验群</li>
+</ul>
+<p>需要进群（<strong>均已超过 200 人，需要邀请</strong>）可以添加号主微信：<strong>Lucifer-0622</strong>，备注对应的群名即可。</p>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_2">社群交流</a></li>
+<li><a href="#_13">前言</a></li>
+<li><a href="#_16">介绍</a></li>
+<li><ul>
+<li><a href="#_19">数据库版本支持</a></li>
+<li><a href="#_33">安装包下载</a></li>
+</ul>
+</li>
+<li><a href="#_BS__59">部署 BS 版</a></li>
+<li><a href="#KDTS__112">KDTS 迁移</a></li>
+<li><ul>
+<li><a href="#_115">源数据库连接</a></li>
+<li><a href="#_160">目标数据库连接</a></li>
+<li><a href="#_200">迁移任务新建</a></li>
+</ul>
+</li>
+<li><a href="#_303">写在最后</a></li>
+<li><a href="#_308">往期精彩文章</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>大家期待的 <strong><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/i2GIDkbpzPCcEzwc_Rw7nw">金仓数据库产品体验官第三期：KES数据迁移</a></strong> 活动又来了，这次是体验金仓 <strong>KES V9 KDTS</strong> 数据迁移工具，听说可以一键迁移，咱也不知道是真是假，我来试试看到底怎么个事儿！</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>数据库数据迁移平台（KDTS: Kingbase Data Transformation Service）是为用户提供 Oracle、Mysql、SQLServer、Gbase、PostgreSQL、DM、KingbaseES 数据库数据迁移到 KingbaseES 数据库的数据迁移工具。</p>
+<h3 id="数据库版本支持"><a href="#数据库版本支持" class="headerlink" title="数据库版本支持"></a>数据库版本支持</h3><p><strong>源端数据库版本支持：</strong></p>
+<p><img src="/csdn-blog/images/5a69762ab0f1a6dc43c9e5ae4f82d282.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移" loading='lazy'></p>
+<p><strong>目标数据库版本支持：</strong></p>
+<p><img src="/csdn-blog/images/47de19fae6df5c4287823a190741f022.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图2" loading='lazy'></p>
+<p><strong>源端数据库迁移对象支持：</strong></p>
+<p><img src="/csdn-blog/images/73fe40633efa36160c605cb4b4a31473.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图3" loading='lazy'></p>
+<h3 id="安装包下载"><a href="#安装包下载" class="headerlink" title="安装包下载"></a>安装包下载</h3><p>KDTS 迁移工具内置在 KES V9 安装包中：</p>
+<p><img src="/csdn-blog/images/231cee13fa9e73112bdaa1072c76c6c1.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图4" loading='lazy'></p>
+<p>直接前往官网下载 KES V9 安装包即可：</p>
+<p><img src="/csdn-blog/images/b378a607e8eb9967d6d1d7a985c43c9d.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图5" loading='lazy'></p>
+<p>下载后需要进行安装，安装教程可参考：</p>
+<blockquote>
+<p><strong><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Yd3gkFki_OJsCfCFKf1Ttw">金仓数据库 KingbaseES V9 单机安装指南</a></strong></p>
+</blockquote>
+<p>KES V9 软件安装完成后在 <code>${KES_HOME}/ClientTools/guitools/KDts/</code>目录下可以看到两个文件夹：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs elixir">[kingbase<span class="hljs-variable">@kesv9</span><span class="hljs-symbol">:/KingbaseES/V9/ClientTools/guitools/KDts</span>]<span class="hljs-variable">$ </span>ll<br>总用量 <span class="hljs-number">0</span><br>drwxrwxr-x <span class="hljs-number">9</span> kingbase kingbase <span class="hljs-number">108</span> <span class="hljs-number">12</span>月  <span class="hljs-number">3</span> <span class="hljs-number">12</span><span class="hljs-symbol">:</span><span class="hljs-number">01</span> <span class="hljs-title class_">KDTS</span>-<span class="hljs-title class_">CLI</span><br>drwxrwxr-x <span class="hljs-number">8</span> kingbase kingbase  <span class="hljs-number">77</span> <span class="hljs-number">12</span>月  <span class="hljs-number">3</span> <span class="hljs-number">12</span><span class="hljs-symbol">:</span><span class="hljs-number">02</span> <span class="hljs-title class_">KDTS</span>-<span class="hljs-title class_">WEB</span><br></code></pre></td></tr></table></figure>
+
+<p>KDTS 数据库迁移工具的产品形态有以下两种：</p>
+<ul>
+<li><strong>KDTS-WEB（BS 版）</strong>：通过浏览器以可视化界面方式设置配置项，完成数据迁移。</li>
+<li><strong>KDTS-CLI（SHELL 版）</strong>：通过手动修改配置文件的方式设置配置项，完成数据迁移。</li>
+</ul>
+<p>用户可以根据不同的场景来选择使用哪种方式来迁移数据库。</p>
+<h2 id="部署-BS-版"><a href="#部署-BS-版" class="headerlink" title="部署 BS 版"></a>部署 BS 版</h2><p>初次接触，为了方便使用，我打算部署 BS 版来进行迁移使用。</p>
+<p>进入 KDTS-WEB 文件夹中的 bin 目录下启动 KDTS 网页迁移工具：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs awk">[kingbase@kesv9:<span class="hljs-regexp">/KingbaseES/</span>V9<span class="hljs-regexp">/ClientTools/gui</span>tools<span class="hljs-regexp">/KDts/</span>KDTS-WEB<span class="hljs-regexp">/bin]$ ./</span>startup.sh <br>------------------------------------------------------------------------<br>openjdk version <span class="hljs-string">&quot;11.0.2&quot;</span> <span class="hljs-number">2019</span>-<span class="hljs-number">01</span>-<span class="hljs-number">15</span><br>OpenJDK Runtime Environment <span class="hljs-number">18.9</span> (build <span class="hljs-number">11.0</span>.<span class="hljs-number">2</span>+<span class="hljs-number">9</span>)<br>OpenJDK <span class="hljs-number">64</span>-Bit Server VM <span class="hljs-number">18.9</span> (build <span class="hljs-number">11.0</span>.<span class="hljs-number">2</span>+<span class="hljs-number">9</span>, mixed mode)<br>------------------------------------------------------------------------<br>================================================ <span class="hljs-number">2024</span>-<span class="hljs-number">12</span>-<span class="hljs-number">03</span>_13-<span class="hljs-number">32</span>-<span class="hljs-number">40</span> ================================================<br>kdts-app-console v1.<span class="hljs-number">0.3</span>.<span class="hljs-number">322</span><br>jar name: kdts-app-console-<span class="hljs-number">1.0</span>.<span class="hljs-number">3.322</span>.jar<br>base path: <span class="hljs-regexp">/KingbaseES/</span>V9<span class="hljs-regexp">/ClientTools/gui</span>tools<span class="hljs-regexp">/KDts/</span>KDTS-WEB<br>bin path: <span class="hljs-regexp">/KingbaseES/</span>V9<span class="hljs-regexp">/ClientTools/gui</span>tools<span class="hljs-regexp">/KDts/</span>KDTS-WEB/bin<br>config path: <span class="hljs-regexp">/KingbaseES/</span>V9<span class="hljs-regexp">/ClientTools/gui</span>tools<span class="hljs-regexp">/KDts/</span>KDTS-WEB/conf<br>log path: <span class="hljs-regexp">/KingbaseES/</span>V9<span class="hljs-regexp">/ClientTools/gui</span>tools<span class="hljs-regexp">/KDts/</span>KDTS-WEB<span class="hljs-regexp">/logs/</span>kdts-app-console_2024-<span class="hljs-number">12</span>-<span class="hljs-number">03</span>_13-<span class="hljs-number">32</span>-<span class="hljs-number">40</span>.log<br>java path: <span class="hljs-regexp">/KingbaseES/</span>V9<span class="hljs-regexp">/ClientTools/gui</span>tools<span class="hljs-regexp">/KDts/</span>KDTS-WEB/jdk<br><span class="hljs-comment">## ...</span><br><span class="hljs-comment">## 省略</span><br><span class="hljs-comment">## ...</span><br>See <span class="hljs-string">&quot;../logs/kdts-app-console_2024-12-03_13-32-40.log&quot;</span> or use the command-line <span class="hljs-string">&quot;tail -f ../logs/kdts-app-console_2024-12-03_13-32-40.log&quot;</span> <span class="hljs-keyword">for</span> more detail.<br></code></pre></td></tr></table></figure>
+
+<p>根据提示查看 kdts 启动日志：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs subunit">[kingbase@kesv9:/KingbaseES/V9/ClientTools/guitools/KDts/KDTS-WEB/bin]$ tail -f ../logs/kdts-app-console_2024<span class="hljs-string">-12</span><span class="hljs-string">-03</span>_13<span class="hljs-string">-32</span><span class="hljs-string">-40</span>.log<br>2024<span class="hljs-string">-12</span><span class="hljs-string">-03</span> 13:32:47.899  INFO 41010 --- [           main] com.kingbase.kdts.datasource.b           : Load JDBC driver[B] -- mysql 8.0:<br>2024<span class="hljs-string">-12</span><span class="hljs-string">-03</span> 13:32:47.899  INFO 41010 --- [           main] com.kingbase.kdts.datasource.b           :   file:/KingbaseES/V9/ClientTools/guitools/KDts/KDTS-WEB/drivers/mysql/mysql-connector-j<span class="hljs-string">-8</span>.1.0.jar<br>2024<span class="hljs-string">-12</span><span class="hljs-string">-03</span> 13:32:47.958  INFO 41010 --- [           main] c.k.k.console.config.DriverInitListener  : Load Mysql 8.0 driver end<br>2024<span class="hljs-string">-12</span><span class="hljs-string">-03</span> 13:32:47.958  INFO 41010 --- [           main] c.k.k.console.config.DriverInitListener  : Load Pg12 driver begin<br>2024<span class="hljs-string">-12</span><span class="hljs-string">-03</span> 13:32:47.959  INFO 41010 --- [           main] com.kingbase.kdts.datasource.b           : Load JDBC driver[B] -- postgresql 12:<br>2024<span class="hljs-string">-12</span><span class="hljs-string">-03</span> 13:32:47.959  INFO 41010 --- [           main] com.kingbase.kdts.datasource.b           :   file:/KingbaseES/V9/ClientTools/guitools/KDts/KDTS-WEB/drivers/postgresql/postgresql<span class="hljs-string">-42</span>.6.0.jar<br>2024<span class="hljs-string">-12</span><span class="hljs-string">-03</span> 13:32:47.966  INFO 41010 --- [           main] c.k.k.console.config.DriverInitListener  : Load pg12 driver end<br>2024<span class="hljs-string">-12</span><span class="hljs-string">-03</span> 13:32:48.028  INFO 41010 --- [           main] c.k.kdts.DataMigrationApplication        : Started DataMigrationApplication in 6.215 seconds (JVM running for 7.664)<br>2024<span class="hljs-string">-12</span><span class="hljs-string">-03</span> 13:32:48.033  INFO 41010 --- [           main] c.k.kdts.DataMigrationApplication        : Version: 1.0.3.322 Build Time: 2024<span class="hljs-string">-08</span><span class="hljs-string">-26</span> (Core Version: 1.0.5.395)<br>2024<span class="hljs-string">-12</span><span class="hljs-string">-03</span> 13:32:48.033  INFO 41010 --- [           main] c.k.kdts.DataMigrationApplication        : Open &#x27;http://localhost:54523&#x27; using a browser to access the application.<br></code></pre></td></tr></table></figure>
+
+<p>使用网页链接：<strong><a target="_blank" rel="noopener" href="http://localhost:54523/">http://192.168.6.96:54523</a></strong> 在浏览器中打开 KDTS 迁移工具即可（<strong>这里的 IP 请替换成自己环境的地址</strong>）：</p>
+<p><img src="/csdn-blog/images/39e2f8977c10640ae9fd373b3660e19e.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图6" loading='lazy'></p>
+<p>KDTS 网页端的默认登录用户名及密码：<strong>kingbase&#x2F;kingbase</strong>，登录后界面如下：</p>
+<p><img src="/csdn-blog/images/d5c56fecfc03e36910331a14343b3ee7.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图7" loading='lazy'></p>
+<p>关闭 KDTS：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs elixir">[kingbase<span class="hljs-variable">@kesv9</span><span class="hljs-symbol">:/KingbaseES/V9/ClientTools/guitools/KDts/KDTS-WEB/bin</span>]<span class="hljs-variable">$ </span>./shutdown.sh <br>/<span class="hljs-title class_">KingbaseES</span>/<span class="hljs-title class_">V9</span>/<span class="hljs-title class_">ClientTools</span>/guitools/<span class="hljs-title class_">KDts</span>/<span class="hljs-title class_">KDTS</span>-<span class="hljs-title class_">WEB</span>/pid <span class="hljs-number">41010</span><br></code></pre></td></tr></table></figure>
+
+<p>上述简单演示了 KDTS 的启动和关闭。</p>
+<h2 id="KDTS-迁移"><a href="#KDTS-迁移" class="headerlink" title="KDTS 迁移"></a>KDTS 迁移</h2><p>本文演示使用 KDTS 进行 Oracle 19C 到 KingbaseES V9 的数据库迁移步骤。</p>
+<h3 id="源数据库连接"><a href="#源数据库连接" class="headerlink" title="源数据库连接"></a>源数据库连接</h3><p>首先需要连接源端数据库：</p>
+<p><img src="/csdn-blog/images/cfc1c3815916e8367b7394cfebd0146c.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图8" loading='lazy'></p>
+<p>填写源端数据库信息，测试连通性：</p>
+<p><img src="/csdn-blog/images/d5a2eedc40a57a6042f98480c79077ca.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图9" loading='lazy'></p>
+<p>源端数据库添加成功：</p>
+<p><img src="/csdn-blog/images/58780f6eb43c58a28345c8b25573db00.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图10" loading='lazy'></p>
+<p>查看源端数据库信息：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-comment">-- 数据库字符集</span><br><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> nls_database_parameters <span class="hljs-keyword">where</span> parameter <span class="hljs-keyword">in</span> (<span class="hljs-string">&#x27;NLS_CHARACTERSET&#x27;</span>,<span class="hljs-string">&#x27;NLS_NCHAR_CHARACTERSET&#x27;</span>);<br><br>PARAMETER                      <span class="hljs-keyword">VALUE</span><br><span class="hljs-comment">------------------------------ --------------------</span><br>NLS_NCHAR_CHARACTERSET         AL16UTF16<br>NLS_CHARACTERSET               AL32UTF8<br><br><span class="hljs-comment">-- 查看用户数据</span><br><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">SELECT</span> count(*) <span class="hljs-keyword">FROM</span> dba_objects <span class="hljs-keyword">WHERE</span> owner=<span class="hljs-string">&#x27;LUCIFER&#x27;</span>;<br><br>  COUNT(*)<br><span class="hljs-comment">----------</span><br>        <span class="hljs-number">34</span><br><br><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">SELECT</span> object_type,count(*) <span class="hljs-keyword">FROM</span> dba_objects <span class="hljs-keyword">WHERE</span> owner=<span class="hljs-string">&#x27;LUCIFER&#x27;</span> <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> object_type;<br><br>OBJECT_TYPE               COUNT(*)<br><span class="hljs-comment">----------------------- ----------</span><br><span class="hljs-keyword">INDEX</span>                           <span class="hljs-number">12</span><br><span class="hljs-keyword">TABLE</span> <span class="hljs-keyword">PARTITION</span>                 <span class="hljs-number">12</span><br><span class="hljs-keyword">TABLE</span>                           <span class="hljs-number">10</span><br><br><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">SELECT</span> sum(bytes) <span class="hljs-keyword">FROM</span> dba_segments <span class="hljs-keyword">WHERE</span> owner=<span class="hljs-string">&#x27;LUCIFER&#x27;</span>;<br><br>SUM(BYTES)<br><span class="hljs-comment">----------</span><br> <span class="hljs-number">102563840</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="目标数据库连接"><a href="#目标数据库连接" class="headerlink" title="目标数据库连接"></a>目标数据库连接</h3><p>连接目标端数据库：</p>
+<p><img src="/csdn-blog/images/fb0662e5f63d07b7d6657b77f371bab9.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图11" loading='lazy'></p>
+<p>KES 数据库中创建一个 Lucifer 数据库以及模式：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">[kingbase<span class="hljs-meta">@kesv9:/home/kingbase]$</span> ksql test system<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br>test=<span class="hljs-comment"># create database lucifer encoding utf8;</span><br>CREATE DATABASE<br>test=<span class="hljs-comment"># \c lucifer system</span><br>您现在以用户名<span class="hljs-string">&quot;system&quot;</span>连接到数据库<span class="hljs-string">&quot;lucifer&quot;</span>。<br>lucifer=<span class="hljs-comment"># create schema lucifer;</span><br>CREATE SCHEMA<br>lucifer=<span class="hljs-comment"># \l lucifer;</span><br>                             数据库列表<br>  名称   |<span class="hljs-string"> 拥有者 </span>|<span class="hljs-string"> 字元编码 </span>|<span class="hljs-string">  校对规则   </span>|<span class="hljs-string">    Ctype    </span>|<span class="hljs-string"> 存取权限 </span><br><span class="hljs-string">---------+--------+----------+-------------+-------------+----------</span><br><span class="hljs-string"> lucifer </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> UTF8     </span>|<span class="hljs-string"> zh_CN.UTF-8 </span>|<span class="hljs-string"> zh_CN.UTF-8 </span>|<span class="hljs-string"> </span><br><span class="hljs-string">(1 行记录)</span><br><span class="hljs-string"></span><br><span class="hljs-string">lucifer=# \dn lucifer</span><br><span class="hljs-string">   架构模式列表</span><br><span class="hljs-string">  名称   </span>|<span class="hljs-string"> 拥有者 </span><br><span class="hljs-string">---------+--------</span><br><span class="hljs-string"> lucifer </span>|<span class="hljs-string"> system</span><br><span class="hljs-string">(1 行记录)</span><br></code></pre></td></tr></table></figure>
+
+<p>以上模式用户迁移源端数据库 lucifer 用户所建。</p>
+<p>填写好目标端数据库信息，测试连通性：</p>
+<p><img src="/csdn-blog/images/3b0563f0e665038d1413dae58c2cfcd8.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图12" loading='lazy'></p>
+<p>目标端数据库添加成功：</p>
+<p><img src="/csdn-blog/images/48c53ed4bbc8c7bdb4f3f65a0c326bbc.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图13" loading='lazy'></p>
+<h3 id="迁移任务新建"><a href="#迁移任务新建" class="headerlink" title="迁移任务新建"></a>迁移任务新建</h3><p>配置好源和目标端数据库之后，就可以创建迁移任务，开始迁移：</p>
+<p><img src="/csdn-blog/images/1e2e484961e3a192151b38bb84b80c4d.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图14" loading='lazy'></p>
+<p>选择刚刚配置好的数据库：</p>
+<p><img src="/csdn-blog/images/1bb1234f38a1b5fd7ad881a52d92e4ef.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图15" loading='lazy'></p>
+<p>这里选择需要迁移的模式，或者直接搜索需要的模式：</p>
+<p><img src="/csdn-blog/images/884a35311662b9343e93cd9be3f3c4e3.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图16" loading='lazy'></p>
+<p>Oracle 默认自带的模式我们不需要，直接搜索 <strong>LUCIFER</strong> 模式（<strong>记住一定要大写</strong>）：</p>
+<p><img src="/csdn-blog/images/71076187c0e52235d160c1ba59ea9f1d.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图17" loading='lazy'></p>
+<p>选择所有对象进行迁移（<strong>记得要手动滑动一下，后面还有一些可以勾选的对象</strong>）：</p>
+<p><img src="/csdn-blog/images/4593afdcda907952e047cdbce954f036.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图18" loading='lazy'></p>
+<p>点击下一步继续（这里我之前已经创建 lucifer 模式，可以直接覆盖）：</p>
+<p><img src="/csdn-blog/images/7432d223a3bb22cff8507184e135b090.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图19" loading='lazy'></p>
+<p>迁移所有对象：</p>
+<p><img src="/csdn-blog/images/a5fc4b144a3a1aa8427b12ef56f8c275.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图20" loading='lazy'></p>
+<p>这一步可以配置很多参数来适配迁移任务，还可以通过 KDMS 工具来做转换，这里我打算不做任何修改，看一下会有什么效果：</p>
+<p><img src="/csdn-blog/images/da7912cbefbc8534e9a89e2e4899a098.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图21" loading='lazy'></p>
+<p>保存并迁移，查看迁移进度：</p>
+<p><img src="/csdn-blog/images/f2ad7efaac13b1a2900257eec040d050.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图22" loading='lazy'></p>
+<p>可以看到短短 16s 就迁移成功了（虽然我的源数据库很简单）：</p>
+<p><img src="/csdn-blog/images/86c1c2f3405227091a0746e9747953e3.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图23" loading='lazy'></p>
+<p>通过概览也可以查看 KDTS 的使用情况：</p>
+<p><img src="/csdn-blog/images/13208345ffb520e635dbd56acdc5e57f.webp" alt="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移 - 图24" loading='lazy'></p>
+<p>但是貌似没有看到迁移后数据比对的功能，还需要加强功能啊！</p>
+<p>简单查看一下目标端迁移情况：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">lucifer=<span class="hljs-comment"># \dt lucifer.*</span><br>                      关联列表<br> 架构模式 |<span class="hljs-string">         名称          </span>|<span class="hljs-string">  类型  </span>|<span class="hljs-string"> 拥有者 </span><br><span class="hljs-string">----------+-----------------------+--------+--------</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> basic_info            </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> customers             </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> departments           </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> employees             </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> inventory             </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> order_details         </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> orders                </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> products              </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats           </span>|<span class="hljs-string"> 分区表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats_p_initial </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats_sys_p230  </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats_sys_p231  </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats_sys_p232  </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats_sys_p233  </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats_sys_p234  </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats_sys_p235  </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats_sys_p236  </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats_sys_p237  </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats_sys_p238  </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats_sys_p239  </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sales_stats_sys_p240  </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> warehouses            </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string">(22 行记录)</span><br><span class="hljs-string"></span><br><span class="hljs-string">lucifer=# \di lucifer.*</span><br><span class="hljs-string">                              关联列表</span><br><span class="hljs-string"> 架构模式 </span>|<span class="hljs-string">         名称         </span>|<span class="hljs-string">   类型   </span>|<span class="hljs-string"> 拥有者 </span>|<span class="hljs-string">    数据表     </span><br><span class="hljs-string">----------+----------------------+----------+--------+---------------</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sys_c007573_ff558803 </span>|<span class="hljs-string"> 索引     </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> basic_info</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sys_c007574_92f54b0a </span>|<span class="hljs-string"> 索引     </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> basic_info</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sys_c007577_ce3762de </span>|<span class="hljs-string"> 索引     </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> orders</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sys_c007579_7a852db8 </span>|<span class="hljs-string"> 索引     </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> customers</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sys_c007582_cef2ff36 </span>|<span class="hljs-string"> 索引     </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> products</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sys_c007584_8253185e </span>|<span class="hljs-string"> 索引     </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> order_details</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sys_c007587_c754cd3b </span>|<span class="hljs-string"> 索引     </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> employees</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sys_c007591_b91f3a42 </span>|<span class="hljs-string"> 索引     </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> departments</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sys_c007592_8ee53120 </span>|<span class="hljs-string"> 索引     </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> inventory</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sys_c007593_6d488ead </span>|<span class="hljs-string"> 索引     </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> inventory</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sys_c007595_afcc1d70 </span>|<span class="hljs-string"> 索引     </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> warehouses</span><br><span class="hljs-string"> lucifer  </span>|<span class="hljs-string"> sys_c007604_a19f8c4c </span>|<span class="hljs-string"> 全局索引 </span>|<span class="hljs-string"> system </span>|<span class="hljs-string"> sales_stats</span><br><span class="hljs-string">(12 行记录)</span><br><span class="hljs-string"></span><br><span class="hljs-string">lucifer=# \dmv lucifer.*</span><br><span class="hljs-string">Did not find any relation named &quot;lucifer.*&quot;.</span><br><span class="hljs-string">lucifer=# \ds lucifer.*</span><br><span class="hljs-string">Did not find any relation named &quot;lucifer.*&quot;.</span><br></code></pre></td></tr></table></figure>
+
+<p>可以看到 Oracle 数据库的对象已经成功迁移到 KingbaseES 数据库中。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>本文只是简单测试了金仓 KDTS 迁移工具的使用，初探感觉还不错，坑不是很多，当然真实体验还得需要更多生产实战进行检验！</p>
+<p>如果有遗漏或者不足的地方，欢迎评论区补充或者投稿，感谢阅读！</p>
+<h2 id="往期精彩文章"><a href="#往期精彩文章" class="headerlink" title="往期精彩文章"></a>往期精彩文章</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/gjQBBvjIFsHC1rtEjn30nw">达梦数据库安装最详细教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/hapMuAF9xg8fbdlKJpsN6A">一招教你学会达梦数据库的免密登录</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/pZIcZiICY1pUiTAWQRtUKg">一文讲透达梦数据库的大小写敏感</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/MWQeqdvIfo9D2d8_vi7BTg">效率翻倍！达梦数据库 disql 使用技巧全攻略</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/5EvUN21PZ3Oc0tDnygr7rw">达梦数据库参数配置与一键优化指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/4vl88Oj9Nal-goeoijAqWg">达梦 AWR 报告快速上手指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Yd3gkFki_OJsCfCFKf1Ttw">金仓数据库 KingbaseES V9 单机安装指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/u7HK4soHUght3p0tzHPanA">KingbaseES KSQL 免密登录的几种方式</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vdsFR2aPNp8Gys1G4qX5cQ">KingbaseES 控制文件冗余与恢复秘籍</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/xzPsgHFUxqfAOMi1NPZvjA">金仓 KingbaseES RAC 入门指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/zt6Jhv0liO5EsvWyc6YrOg">GBase 8a MPP 集群部署最佳实践</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/XVG7hODwoZnChzj_FT3c8g">GBase 8a GDCA 认证课后练习题大全（题库）</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/MwmvwR7sUQ6VuoftHM19mA">南大通用 GBASE 8s V8.8 数据库最全安装指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/XL2jYOPEf9x_bXW0VFE6kg">GBase 8s GDCA 认证课后练习题大全（题库）</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/oIEWt5pzK0KfhUq3GUNGCA">GBase 8s 数据库巡检报告及一键巡检脚本</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/i-L_tAF-XIIY_d4YCn0MIw">YashanDB 一键生成 AWR 报告</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/sgB3WQ6A8mGl3QaIJj5v1A">YashanDB 数据库安装部署</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/8ioXIpc9J6_XYJWt7L-RoA">YashanDB 共享集群（YAC）入门指南与技术详解</a></p>
+</blockquote>
+<hr>
+<p>「喜欢这篇文章，您的关注和赞赏是给作者最好的鼓励」</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/144215691/">https://pc-study.github.io/csdn-blog/posts/144215691/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/%E9%87%91%E4%BB%93%E6%95%B0%E6%8D%AE%E5%BA%93/">金仓数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/kingbasees/">kingbasees</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/144257216/" title="YashanDB 23.2 YAC 共享集群部署实战：轻松上手！"><img class="cover" src="/csdn-blog/images/070d4114b2dcac70155c94fa58da3c2f.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">YashanDB 23.2 YAC 共享集群部署实战：轻松上手！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/144130901/" title="基于 TencentOS 3 的 OpenTenBase 集群搭建实践"><img class="cover" src="/csdn-blog/images/5d065249bbc72934103afcbfd3c873f2.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">基于 TencentOS 3 的 OpenTenBase 集群搭建实践</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/141429715/" title="Oracle RAC 集群启动顺序"><img class="cover" src="/csdn-blog/images/ff1d85231d99fc674cd3c1395f2da9dc.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-08-22</div><div class="info-item-2">Oracle RAC 集群启动顺序</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 Oracle 11GR2 RAC 集群启动顺序 官方文档 11GR2 12CR2 18C 19C 21C 23ai 往期精彩文章推荐 前言 前几天使用脚本在 RockyLinux 9.4 安装 Oracle 11GR2</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122011504/" title="Oracle 从入门到精通系列 - 前言"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-18</div><div class="info-item-2">Oracle 从入门到精通系列 - 前言</div></div><div class="info-2"><div class="info-item-1">Oracle 从入门到精通系列 - 前言 前言 一、需要具备的知识和工具 1、必须的 2、非必须的（能有最好） 二、大家能学到什么以及能学到什么程度 1、计划 2、能学到什么 3、能学到什么程度 三、一些经验 1、学习时间 2、学习方法 四、支持 1、博主的联系方式 2、其他可能的支持 前言 ->返</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121734525/" title="[译] DBMS_CLOUD：安装在 19c 和 21c 本地数据库上"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-05</div><div class="info-item-2">[译] DBMS_CLOUD：安装在 19c 和 21c 本地数据库上</div></div><div class="info-2"><div class="info-item-1">本文介绍如何在本地 和 数据库中安装 DBMS\CLOUD 包。 该软件包已安装在 Oracle 云上的数据库中。 目录 一、参考 二、安装 DBMS\CLOUD 三、创建钱包 四、创建访问控制条目 (ACE) 五、验证安装 六、列出 Bucket 内容 相关文章： DBMS\CLOUD Packa</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139776781/" title="华为欧拉 openEuler 22.03 LTS 一键安装 Oracle 11GR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-18</div><div class="info-item-2">华为欧拉 openEuler 22.03 LTS 一键安装 Oracle 11GR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 openEuler 22.03 LTS 一键安装 Oracle 11GR2 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139469889/" title="华为欧拉 EulerOS V2.0 SP9 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-05</div><div class="info-item-2">华为欧拉 EulerOS V2.0 SP9 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示华为欧拉 EulerOS V2.0 SP9 一键安装 Oracle 19C 单机版过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139776670/" title="华为欧拉 openEuler 22.03 LTS 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-18</div><div class="info-item-2">华为欧拉 openEuler 22.03 LTS 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 openEuler 22.03 LTS 一键安装 Oracle 19C 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BE%E7%BE%A4%E4%BA%A4%E6%B5%81"><span class="toc-number">1.</span> <span class="toc-text">社群交流</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">目录</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%89%88%E6%9C%AC%E6%94%AF%E6%8C%81"><span class="toc-number">3.1.</span> <span class="toc-text">数据库版本支持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%8C%85%E4%B8%8B%E8%BD%BD"><span class="toc-number">3.2.</span> <span class="toc-text">安装包下载</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2-BS-%E7%89%88"><span class="toc-number">4.</span> <span class="toc-text">部署 BS 版</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KDTS-%E8%BF%81%E7%A7%BB"><span class="toc-number">5.</span> <span class="toc-text">KDTS 迁移</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BA%90%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5"><span class="toc-number">5.1.</span> <span class="toc-text">源数据库连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5"><span class="toc-number">5.2.</span> <span class="toc-text">目标数据库连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%81%E7%A7%BB%E4%BB%BB%E5%8A%A1%E6%96%B0%E5%BB%BA"><span class="toc-number">5.3.</span> <span class="toc-text">迁移任务新建</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">6.</span> <span class="toc-text">写在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%80%E6%9C%9F%E7%B2%BE%E5%BD%A9%E6%96%87%E7%AB%A0"><span class="toc-number">7.</span> <span class="toc-text">往期精彩文章</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

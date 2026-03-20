@@ -1,0 +1,1212 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>一篇文章让你彻底掌握 Shell | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 文章目录 一篇文章让你彻底掌握 Shell 简介 什么是 shell 什么是 shell 脚本 Shell 环境 - 指定脚本解释器 模式 - 交互模式 非交互模式 基本语法 - 解释器 注释 echo printf printf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一篇文章让你彻底掌握 Shell">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/141211766/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 文章目录 一篇文章让你彻底掌握 Shell 简介 什么是 shell 什么是 shell 脚本 Shell 环境 - 指定脚本解释器 模式 - 交互模式 非交互模式 基本语法 - 解释器 注释 echo printf printf">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/linux.svg">
+<meta property="article:published_time" content="2024-08-15T01:51:00.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.414Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="bash">
+<meta property="article:tag" content="shell">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/linux.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"一篇文章让你彻底掌握 Shell","url":"https://pc-study.github.io/csdn-blog/posts/141211766/","image":"https://pc-study.github.io/csdn-blog/img/covers/linux.svg","datePublished":"2024-08-15T01:51:00.000Z","dateModified":"2026-03-20T08:34:08.414Z","description":"大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 文章目录 一篇文章让你彻底掌握 Shell 简介 什么是 shell 什么是 shell 脚本 Shell 环境 - 指定脚本解释器 模式 - 交互模式 非交互模式 基本语法 - 解释器 注释 echo printf printf","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/141211766/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/141211766/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '一篇文章让你彻底掌握 Shell',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/linux.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">一篇文章让你彻底掌握 Shell</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">一篇文章让你彻底掌握 Shell<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-08-15-141211766.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-15T01:51:00.000Z" title="发表于 2024-08-15 09:51:00">2024-08-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.414Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/">Linux 运维</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">11.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>46分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><blockquote>
+<p>大家好，这里是 <strong>Lucifer三思而后行</strong>，专注于提升数据库运维效率。</p>
+</blockquote>
+<h4 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h4><ul>
+<li><a href="#_Shell_3">一篇文章让你彻底掌握 Shell</a></li>
+<li><a href="#_17">简介</a></li>
+<li><ul>
+<li><a href="#_shell_19">什么是 shell</a></li>
+<li><a href="#_shell__27">什么是 shell 脚本</a></li>
+<li><a href="#Shell__33">Shell 环境</a></li>
+<li><ul>
+<li><a href="#_45">指定脚本解释器</a></li>
+</ul>
+</li>
+<li><a href="#_71">模式</a></li>
+<li><ul>
+<li><a href="#_75">交互模式</a></li>
+<li><a href="#_87">非交互模式</a></li>
+</ul>
+</li>
+<li><a href="#_126">基本语法</a></li>
+<li><ul>
+<li><a href="#_128">解释器</a></li>
+<li><a href="#_142">注释</a></li>
+<li><a href="#echo_170">echo</a></li>
+<li><a href="#printf_283">printf</a></li>
+<li><ul>
+<li><a href="#printf__334">printf 的转义符</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_350">变量</a></li>
+<li><ul>
+<li><a href="#_356">变量命名原则</a></li>
+<li><a href="#_363">声明变量</a></li>
+<li><a href="#_375">只读变量</a></li>
+<li><a href="#_386">删除变量</a></li>
+<li><a href="#_400">变量类型</a></li>
+</ul>
+</li>
+<li><a href="#_480">字符串</a></li>
+<li><ul>
+<li><a href="#_482">单引号和双引号</a></li>
+<li><a href="#_491">拼接字符串</a></li>
+<li><a href="#_511">获取字符串长度</a></li>
+<li><a href="#_520">截取子字符串</a></li>
+</ul>
+</li>
+<li><a href="#_531">查找子字符串</a></li>
+<li><a href="#_658">数组</a></li>
+<li><ul>
+<li><a href="#_664">创建数组</a></li>
+<li><a href="#_672">访问数组元素</a></li>
+<li><ul>
+<li><a href="#_674">访问数组的单个元素</a></li>
+<li><a href="#_681">访问数组的所有元素</a></li>
+<li><a href="#_724">访问数组的部分元素</a></li>
+</ul>
+</li>
+<li><a href="#_734">访问数组长度</a></li>
+<li><a href="#_742">向数组中添加元素</a></li>
+<li><a href="#_755">从数组中删除元素</a></li>
+</ul>
+</li>
+<li><a href="#_826">运算符</a></li>
+<li><ul>
+<li><a href="#_828">算术运算符</a></li>
+<li><a href="#_887">关系运算符</a></li>
+<li><a href="#_956">布尔运算符</a></li>
+<li><a href="#_1006">逻辑运算符</a></li>
+<li><a href="#_1043">字符串运算符</a></li>
+<li><a href="#_1102">文件测试运算符</a></li>
+</ul>
+</li>
+<li><a href="#_1175">控制语句</a></li>
+<li><ul>
+<li><a href="#_1177">条件语句</a></li>
+<li><ul>
+<li><a href="#if_1185">if</a></li>
+<li><a href="#case_1236">case</a></li>
+</ul>
+</li>
+<li><a href="#_1269">循环语句</a></li>
+<li><ul>
+<li><a href="#for__1280">for 循环</a></li>
+<li><a href="#while__1319">while 循环</a></li>
+<li><a href="#until__1354">until 循环</a></li>
+<li><a href="#select__1374">select 循环</a></li>
+<li><a href="#break__continue_1420">break 和 continue</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_1461">函数</a></li>
+<li><ul>
+<li><a href="#_1529">位置参数</a></li>
+<li><a href="#_1590">函数处理参数</a></li>
+</ul>
+</li>
+<li><a href="#Shell__1643">Shell 扩展</a></li>
+<li><ul>
+<li><a href="#_1649">大括号扩展</a></li>
+<li><a href="#_1664">命令置换</a></li>
+<li><a href="#_1676">算数扩展</a></li>
+<li><a href="#_1695">单引号和双引号</a></li>
+</ul>
+</li>
+<li><a href="#_1724">流和重定向</a></li>
+<li><ul>
+<li><a href="#_1732">输入、输出流</a></li>
+<li><a href="#_1744">重定向</a></li>
+<li><a href="#devnull__1773">&#x2F;dev&#x2F;null 文件</a></li>
+</ul>
+</li>
+<li><a href="#Debug_1789">Debug</a></li>
+<li><a href="#_1873">往期精彩文章</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="一篇文章让你彻底掌握-Shell"><a href="#一篇文章让你彻底掌握-Shell" class="headerlink" title="一篇文章让你彻底掌握 Shell"></a>一篇文章让你彻底掌握 Shell</h2><blockquote>
+<p>Bash 是 Linux 标准默认的 shell 解释器，可以说 bash 是 shell 编程的基础。<br> 本文主要介绍 bash 的语法，对于 Linux 指令不做任何介绍。</p>
+</blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs">███████╗██╗  ██╗███████╗██╗     ██╗<br>██╔════╝██║  ██║██╔════╝██║     ██║<br>███████╗███████║█████╗  ██║     ██║<br>╚════██║██╔══██║██╔══╝  ██║     ██║<br>███████║██║  ██║███████╗███████╗███████╗<br>╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝<br></code></pre></td></tr></table></figure>
+
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><h3 id="什么是-shell"><a href="#什么是-shell" class="headerlink" title="什么是 shell"></a>什么是 shell</h3><ul>
+<li>Shell 是一个用 C 语言编写的程序，它是用户使用 Linux 的桥梁。</li>
+<li>Shell 既是一种命令语言，又是一种程序设计语言。</li>
+<li>Shell 是指一种应用程序，这个应用程序提供了一个界面，用户通过这个界面访问 Linux 内核的服务。</li>
+</ul>
+<p>Ken Thompson 的 sh 是第一种 Unix Shell，Windows Explorer 是一个典型的图形界面 Shell。</p>
+<h3 id="什么是-shell-脚本"><a href="#什么是-shell-脚本" class="headerlink" title="什么是 shell 脚本"></a>什么是 shell 脚本</h3><p>Shell 脚本（shell script），是一种为 shell 编写的脚本程序，一般文件后缀为 <code>.sh</code>。</p>
+<p>业界所说的 shell 通常都是指 shell 脚本，但 shell 和 shell script 是两个不同的概念。</p>
+<h3 id="Shell-环境"><a href="#Shell-环境" class="headerlink" title="Shell 环境"></a>Shell 环境</h3><p>Shell 编程跟 java、php 编程一样，只要有一个能编写代码的文本编辑器和一个能解释执行的脚本解释器就可以了。</p>
+<p>Shell 的解释器种类众多，常见的有：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.gnu.org/software/bash" title="sh">sh</a> - 即 Bourne Shell。sh 是 Unix 标准默认的 shell。</li>
+<li><a target="_blank" rel="noopener" href="https://www.gnu.org/software/bash/" title="bash">bash</a> - 即 Bourne Again Shell。bash 是 Linux 标准默认的 shell。</li>
+<li><a target="_blank" rel="noopener" href="https://fishshell.com/" title="fish">fish</a> - 智能和用户友好的命令行 shell。</li>
+<li><a target="_blank" rel="noopener" href="http://xiki.org/" title="xiki">xiki</a> - 使 shell 控制台更友好，更强大。</li>
+<li><a target="_blank" rel="noopener" href="http://www.zsh.org/" title="zsh">zsh</a> - 功能强大的 shell 与脚本语言。</li>
+</ul>
+<h4 id="指定脚本解释器"><a href="#指定脚本解释器" class="headerlink" title="指定脚本解释器"></a>指定脚本解释器</h4><p>在 shell 脚本，<code>#!</code> 告诉系统其后路径所指定的程序即是解释此脚本文件的 Shell 解释器。<code>#!</code> 被称作 <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Shebang" title="shebang（也称为 Hashbang ）">shebang（也称为 Hashbang ）</a>。</p>
+<p>所以，你应该会在 shell 中，见到诸如以下的注释：</p>
+<p>指定 sh 解释器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/sh</span><br></code></pre></td></tr></table></figure>
+
+<p>指定 bash 解释器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong> 上面的指定解释器的方式是比较常见的，但有时候，你可能也会看到下面的方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span><br></code></pre></td></tr></table></figure>
+
+<p>这样做的好处是，系统会自动在 PATH 环境变量中查找你指定的程序（本例中的 bash）。相比第一种写法，你应该尽量用这种写法，因为程序的路径是不确定的。这样写还有一个好处，操作系统的 PATH 变量有可能被配置为指向程序的另一个版本。比如，安装完新版本的 bash，我们可能将其路径添加到 PATH 中，来“隐藏”老版本。如果直接用 <code>#!/bin/bash</code>，那么系统会选择老版本的 bash 来执行脚本，如果用 <code>#!/usr/bin/env bash</code>，则会使用新版本。</p>
+<h3 id="模式"><a href="#模式" class="headerlink" title="模式"></a>模式</h3><p>shell 有交互和非交互两种模式。</p>
+<h4 id="交互模式"><a href="#交互模式" class="headerlink" title="交互模式"></a>交互模式</h4><blockquote>
+<p>简单来说，你可以将 shell 的交互模式理解为执行命令行。</p>
+</blockquote>
+<p>看到形如下面的东西，说明 shell 处于交互模式下：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs elixir">user<span class="hljs-variable">@host</span><span class="hljs-symbol">:~</span>$<br></code></pre></td></tr></table></figure>
+
+<p>接着，便可以输入一系列 Linux 命令，比如 ls，grep，cd，mkdir，rm 等等。</p>
+<h4 id="非交互模式"><a href="#非交互模式" class="headerlink" title="非交互模式"></a>非交互模式</h4><p>简单来说，你可以将 shell 的非交互模式理解为执行 shell 脚本。</p>
+<p>在非交互模式下，shell 从文件或者管道中读取命令并执行。</p>
+<p>当 shell 解释器执行完文件中的最后一个命令，shell 进程终止，并回到父进程。</p>
+<p>可以使用下面的命令让 shell 以非交互模式运行：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">sh</span> /path/<span class="hljs-keyword">to</span>/script.<span class="hljs-keyword">sh</span><br>bash /path/<span class="hljs-keyword">to</span>/script.<span class="hljs-keyword">sh</span><br><span class="hljs-keyword">source</span> /path/<span class="hljs-keyword">to</span>/script.<span class="hljs-keyword">sh</span><br>./path/<span class="hljs-keyword">to</span>/script.<span class="hljs-keyword">sh</span><br></code></pre></td></tr></table></figure>
+
+<p>上面的例子中，script.sh 是一个包含 shell 解释器可以识别并执行的命令的普通文本文件，sh 和 bash 是 shell 解释器程序。你可以使用任何喜欢的编辑器创建 script.sh（vim，nano，Sublime Text, Atom 等等）。</p>
+<p>其中，<code>source /path/to/script.sh</code> 和 <code>./path/to/script.sh</code> 是等价的。</p>
+<p>除此之外，你还可以通过 chmod 命令给文件添加可执行的权限，来直接执行脚本文件：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs css">chmod +<span class="hljs-attribute">x</span> /<span class="hljs-selector-tag">path</span>/<span class="hljs-selector-tag">to</span>/script<span class="hljs-selector-class">.sh</span> #使脚本具有执行权限<br>/<span class="hljs-selector-tag">path</span>/<span class="hljs-selector-tag">to</span>/test<span class="hljs-selector-class">.sh</span><br></code></pre></td></tr></table></figure>
+
+<p>这种方式要求脚本文件的第一行必须指明运行该脚本的程序，比如：</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Hello, world!&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>上面的例子中，我们使用了一个很有用的命令 echo 来输出字符串到屏幕上。</p>
+<h3 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h3><h4 id="解释器"><a href="#解释器" class="headerlink" title="解释器"></a>解释器</h4><p>前面虽然两次提到了 <code>#!</code> ，但是本着重要的事情说三遍的精神，这里再强调一遍：</p>
+<p>在 shell 脚本，<code>#!</code> 告诉系统其后路径所指定的程序即是解释此脚本文件的 Shell 解释器。<code>#!</code> 被称作 shebang（也称为 Hashbang ）。</p>
+<p><code>#!</code> 决定了脚本可以像一个独立的可执行文件一样执行，而不用在终端之前输入 sh, bash, python, php 等。</p>
+<figure class="highlight d"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs d"># 以下两种方式都可以指定 shell 解释器为 bash，第二种方式更好<br><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-meta">#!/usr/bin/env bash</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h4><p>注释可以说明你的代码是什么作用，以及为什么这样写。</p>
+<p>shell 语法中，注释是特殊的语句，会被 shell 解释器忽略。</p>
+<ul>
+<li>单行注释 - 以 <code>#</code> 开头，到行尾结束。</li>
+<li>多行注释 - 以 <code>:&lt;&lt;EOF</code> 开头，到 <code>EOF</code> 结束。</li>
+</ul>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs clean">#--------------------------------------------<br># shell 注释示例<br># author：zp<br>#--------------------------------------------<br><br># echo <span class="hljs-string">&#x27;这是单行注释&#x27;</span><br><br>########## 这是分割线 ##########<br><br>:&lt;&lt;EOF<br>echo <span class="hljs-string">&#x27;这是多行注释&#x27;</span><br>echo <span class="hljs-string">&#x27;这是多行注释&#x27;</span><br>echo <span class="hljs-string">&#x27;这是多行注释&#x27;</span><br>EOF<br></code></pre></td></tr></table></figure>
+
+<h4 id="echo"><a href="#echo" class="headerlink" title="echo"></a>echo</h4><p>echo 用于字符串的输出。</p>
+<p>输出普通字符串：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;hello, world&quot;</span><br><span class="hljs-comment"># Output: hello, world</span><br></code></pre></td></tr></table></figure>
+
+<p>输出含变量的字符串：</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sqf"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;hello, \&quot;</span>zp\<span class="hljs-string">&quot;&quot;</span><br><span class="hljs-meta"># Output: hello, <span class="hljs-string">&quot;zp&quot;</span></span><br></code></pre></td></tr></table></figure>
+
+<p>输出含变量的字符串：</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs nix">n<span class="hljs-attr">ame</span><span class="hljs-operator">=</span>zp<br>echo <span class="hljs-string">&quot;hello, <span class="hljs-char escape_">\&quot;</span><span class="hljs-subst">$&#123;name&#125;</span><span class="hljs-char escape_">\&quot;</span>&quot;</span><br><span class="hljs-comment"># Output: hello, &quot;zp&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>输出含换行符的字符串：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 输出含换行符的字符串</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;YES\nNO&quot;</span><br><span class="hljs-comment">#  Output: YES\nNO</span><br><br><span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;YES\nNO&quot;</span> <span class="hljs-comment"># -e 开启转义</span><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  YES</span><br><span class="hljs-comment">#  NO</span><br></code></pre></td></tr></table></figure>
+
+<p>输出含不换行符的字符串：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;YES&quot;</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;NO&quot;</span><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  YES</span><br><span class="hljs-comment">#  NO</span><br><br><span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;YES\c&quot;</span> <span class="hljs-comment"># -e 开启转义 \c 不换行</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;NO&quot;</span><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  YESNO</span><br></code></pre></td></tr></table></figure>
+
+<p>输出重定向至文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;test&quot;</span> &gt; test.txt<br></code></pre></td></tr></table></figure>
+
+<p>输出执行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> `<span class="hljs-built_in">pwd</span>`<br><span class="hljs-comment">#  Output:(当前目录路径)</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span><br><br><span class="hljs-comment"># 输出普通字符串</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;hello, world&quot;</span><br><span class="hljs-comment">#  Output: hello, world</span><br><br><span class="hljs-comment"># 输出含变量的字符串</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;hello, \&quot;zp\&quot;&quot;</span><br><span class="hljs-comment">#  Output: hello, &quot;zp&quot;</span><br><br><span class="hljs-comment"># 输出含变量的字符串</span><br>name=zp<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;hello, \&quot;<span class="hljs-variable">$&#123;name&#125;</span>\&quot;&quot;</span><br><span class="hljs-comment">#  Output: hello, &quot;zp&quot;</span><br><br><span class="hljs-comment"># 输出含换行符的字符串</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;YES\nNO&quot;</span><br><span class="hljs-comment">#  Output: YES\nNO</span><br><span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;YES\nNO&quot;</span> <span class="hljs-comment"># -e 开启转义</span><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  YES</span><br><span class="hljs-comment">#  NO</span><br><br><span class="hljs-comment"># 输出含不换行符的字符串</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;YES&quot;</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;NO&quot;</span><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  YES</span><br><span class="hljs-comment">#  NO</span><br><br><span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;YES\c&quot;</span> <span class="hljs-comment"># -e 开启转义 \c 不换行</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;NO&quot;</span><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  YESNO</span><br><br><span class="hljs-comment"># 输出内容定向至文件</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;test&quot;</span> &gt; test.txt<br><br><span class="hljs-comment"># 输出执行结果</span><br><span class="hljs-built_in">echo</span> `<span class="hljs-built_in">pwd</span>`<br><span class="hljs-comment">#  Output:(当前目录路径)</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="printf"><a href="#printf" class="headerlink" title="printf"></a>printf</h4><p>printf 用于格式化输出字符串。</p>
+<p>默认，printf 不会像 echo 一样自动添加换行符，如果需要换行可以手动添加 \n。</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs perl"><span class="hljs-comment"># 单引号</span><br><span class="hljs-keyword">printf</span> <span class="hljs-string">&#x27;%d %s\n&#x27;</span> <span class="hljs-number">1</span> <span class="hljs-string">&quot;abc&quot;</span><br><span class="hljs-comment">#  Output:1 abc</span><br><br><span class="hljs-comment"># 双引号</span><br><span class="hljs-keyword">printf</span> <span class="hljs-string">&quot;<span class="hljs-variable">%d</span> <span class="hljs-variable">%s</span>\n&quot;</span> <span class="hljs-number">1</span> <span class="hljs-string">&quot;abc&quot;</span><br><span class="hljs-comment">#  Output:1 abc</span><br><br><span class="hljs-comment"># 无引号</span><br><span class="hljs-keyword">printf</span> <span class="hljs-variable">%s</span> abcdef<br><span class="hljs-comment">#  Output: abcdef(并不会换行)</span><br><br><span class="hljs-comment"># 格式只指定了一个参数，但多出的参数仍然会按照该格式输出</span><br><span class="hljs-keyword">printf</span> <span class="hljs-string">&quot;<span class="hljs-variable">%s</span>\n&quot;</span> abc def<br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  abc</span><br><span class="hljs-comment">#  def</span><br><br><span class="hljs-keyword">printf</span> <span class="hljs-string">&quot;<span class="hljs-variable">%s</span> <span class="hljs-variable">%s</span> <span class="hljs-variable">%s</span>\n&quot;</span> a b c d e f g h i j<br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  a b c</span><br><span class="hljs-comment">#  d e f</span><br><span class="hljs-comment">#  g h i</span><br><span class="hljs-comment">#  j</span><br><br><span class="hljs-comment"># 如果没有参数，那么 %s 用 NULL 代替，%d 用 0 代替</span><br><span class="hljs-keyword">printf</span> <span class="hljs-string">&quot;<span class="hljs-variable">%s</span> and <span class="hljs-variable">%d</span> \n&quot;</span><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#   and 0</span><br><br><span class="hljs-comment"># 格式化输出</span><br><span class="hljs-keyword">printf</span> <span class="hljs-string">&quot;<span class="hljs-variable">%-</span>10s <span class="hljs-variable">%-</span>8s <span class="hljs-variable">%-</span>4s\n&quot;</span> 姓名 性别 体重kg<br><span class="hljs-keyword">printf</span> <span class="hljs-string">&quot;<span class="hljs-variable">%-</span>10s <span class="hljs-variable">%-</span>8s <span class="hljs-variable">%-</span>4.2f\n&quot;</span> 郭靖 男 <span class="hljs-number">66.1234</span><br><span class="hljs-keyword">printf</span> <span class="hljs-string">&quot;<span class="hljs-variable">%-</span>10s <span class="hljs-variable">%-</span>8s <span class="hljs-variable">%-</span>4.2f\n&quot;</span> 杨过 男 <span class="hljs-number">48.6543</span><br><span class="hljs-keyword">printf</span> <span class="hljs-string">&quot;<span class="hljs-variable">%-</span>10s <span class="hljs-variable">%-</span>8s <span class="hljs-variable">%-</span>4.2f\n&quot;</span> 郭芙 女 <span class="hljs-number">47.9876</span><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  姓名     性别   体重kg</span><br><span class="hljs-comment">#  郭靖     男      66.12</span><br><span class="hljs-comment">#  杨过     男      48.65</span><br><span class="hljs-comment">#  郭芙     女      47.99</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="printf-的转义符"><a href="#printf-的转义符" class="headerlink" title="printf 的转义符"></a>printf 的转义符</h5><table>
+<thead>
+<tr>
+<th>序列</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>\a</code></td>
+<td>警告字符，通常为 ASCII 的 BEL 字符</td>
+</tr>
+<tr>
+<td><code>\b</code></td>
+<td>后退</td>
+</tr>
+<tr>
+<td><code>\c</code></td>
+<td>抑制（不显示）输出结果中任何结尾的换行字符（只在%b 格式指示符控制下的参数字符串中有效），而且，任何留在参数里的字符、任何接下来的参数以及任何留在格式字符串中的字符，都被忽略</td>
+</tr>
+<tr>
+<td><code>\f</code></td>
+<td>换页（formfeed）</td>
+</tr>
+<tr>
+<td><code>\n</code></td>
+<td>换行</td>
+</tr>
+<tr>
+<td><code>\r</code></td>
+<td>回车（Carriage return）</td>
+</tr>
+<tr>
+<td><code>\t</code></td>
+<td>水平制表符</td>
+</tr>
+<tr>
+<td><code>\v</code></td>
+<td>垂直制表符</td>
+</tr>
+<tr>
+<td><code>\\</code></td>
+<td>一个字面上的反斜杠字符</td>
+</tr>
+<tr>
+<td><code>\ddd</code></td>
+<td>表示 1 到 3 位数八进制值的字符。仅在格式字符串中有效</td>
+</tr>
+<tr>
+<td><code>\0ddd</code></td>
+<td>表示 1 到 3 位的八进制值字符</td>
+</tr>
+</tbody></table>
+<h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><p>跟许多程序设计语言一样，你可以在 bash 中创建变量。</p>
+<p>Bash 中没有数据类型，bash 中的变量可以保存一个数字、一个字符、一个字符串等等。同时无需提前声明变量，给变量赋值会直接创建变量。</p>
+<h4 id="变量命名原则"><a href="#变量命名原则" class="headerlink" title="变量命名原则"></a>变量命名原则</h4><ul>
+<li>命名只能使用英文字母，数字和下划线，首个字符不能以数字开头。</li>
+<li>中间不能有空格，可以使用下划线（_）。</li>
+<li>不能使用标点符号。</li>
+<li>不能使用 bash 里的关键字（可用 help 命令查看保留关键字）。</li>
+</ul>
+<h4 id="声明变量"><a href="#声明变量" class="headerlink" title="声明变量"></a>声明变量</h4><p>访问变量的语法形式为：<code>${var}</code> 和 <code>$var</code> 。</p>
+<p>变量名外面的花括号是可选的，加不加都行，加花括号是为了帮助解释器识别变量的边界，所以推荐加花括号。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs applescript"><span class="hljs-built_in">word</span>=<span class="hljs-string">&quot;hello&quot;</span><br>echo $&#123;<span class="hljs-built_in">word</span>&#125;<br><span class="hljs-comment"># Output: hello</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="只读变量"><a href="#只读变量" class="headerlink" title="只读变量"></a>只读变量</h4><p>使用 readonly 命令可以将变量定义为只读变量，只读变量的值不能被改变。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">rword=<span class="hljs-string">&quot;hello&quot;</span><br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$&#123;rword&#125;</span><br><span class="hljs-built_in">readonly</span> rword<br><span class="hljs-comment"># rword=&quot;bye&quot;  # 如果放开注释，执行时会报错</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="删除变量"><a href="#删除变量" class="headerlink" title="删除变量"></a>删除变量</h4><p>使用 unset 命令可以删除变量。变量被删除后不能再次使用。unset 命令不能删除只读变量。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">dword=<span class="hljs-string">&quot;hello&quot;</span>  <span class="hljs-comment"># 声明变量</span><br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$&#123;dword&#125;</span>  <span class="hljs-comment"># 输出变量值</span><br><span class="hljs-comment"># Output: hello</span><br><br><span class="hljs-built_in">unset</span> dword    <span class="hljs-comment"># 删除变量</span><br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$&#123;dword&#125;</span><br><span class="hljs-comment"># Output: （空）</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="变量类型"><a href="#变量类型" class="headerlink" title="变量类型"></a>变量类型</h4><ul>
+<li>局部变量 - 局部变量是仅在某个脚本内部有效的变量。它们不能被其他的程序和脚本访问。</li>
+<li>环境变量 - 环境变量是对当前 shell 会话内所有的程序或脚本都可见的变量。创建它们跟创建局部变量类似，但使用的是 export 关键字，shell 脚本也可以定义环境变量。</li>
+</ul>
+<p>常见的环境变量：</p>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>$HOME</code></td>
+<td>当前用户的用户目录</td>
+</tr>
+<tr>
+<td><code>$PATH</code></td>
+<td>用分号分隔的目录列表，shell 会到这些目录中查找命令</td>
+</tr>
+<tr>
+<td><code>$PWD</code></td>
+<td>当前工作目录</td>
+</tr>
+<tr>
+<td><code>$RANDOM</code></td>
+<td>0 到 32767 之间的整数</td>
+</tr>
+<tr>
+<td><code>$UID</code></td>
+<td>数值类型，当前用户的用户 ID</td>
+</tr>
+<tr>
+<td><code>$PS1</code></td>
+<td>主要系统输入提示符</td>
+</tr>
+<tr>
+<td><code>$PS2</code></td>
+<td>次要系统输入提示符</td>
+</tr>
+</tbody></table>
+<p><a target="_blank" rel="noopener" href="http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_03_02.html###sect_03_02_04" title="这里">这里</a> 有一张更全面的 Bash 环境变量列表。</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs clean">#!/usr/bin/env bash<br><br>################### 声明变量 ###################<br>name=<span class="hljs-string">&quot;world&quot;</span><br>echo <span class="hljs-string">&quot;hello $&#123;name&#125;&quot;</span><br># Output: hello world<br><br>################### 输出变量 ###################<br>folder=$(pwd)<br>echo <span class="hljs-string">&quot;current path: $&#123;folder&#125;&quot;</span><br><br>################### 只读变量 ###################<br>rword=<span class="hljs-string">&quot;hello&quot;</span><br>echo $&#123;rword&#125;<br># Output: hello<br>readonly rword<br># rword=<span class="hljs-string">&quot;bye&quot;</span>  # 如果放开注释，执行时会报错<br><br>################### 删除变量 ###################<br>dword=<span class="hljs-string">&quot;hello&quot;</span> # 声明变量<br>echo $&#123;dword&#125; # 输出变量值<br># Output: hello<br><br>unset dword # 删除变量<br>echo $&#123;dword&#125;<br># Output: （空）<br><br>################### 系统变量 ###################<br>echo <span class="hljs-string">&quot;UID:$UID&quot;</span><br>echo LOGNAME:$LOGNAME<br>echo User:$USER<br>echo HOME:$HOME<br>echo PATH:$PATH<br>echo HOSTNAME:$HOSTNAME<br>echo SHELL:$SHELL<br>echo LANG:$LANG<br><br>################### 自定义变量 ###################<br>days=<span class="hljs-number">10</span><br>user=<span class="hljs-string">&quot;admin&quot;</span><br>echo <span class="hljs-string">&quot;$user logged in $days days age&quot;</span><br>days=<span class="hljs-number">5</span><br>user=<span class="hljs-string">&quot;root&quot;</span><br>echo <span class="hljs-string">&quot;$user logged in $days days age&quot;</span><br># Output:<br># admin logged <span class="hljs-keyword">in</span> <span class="hljs-number">10</span> days age<br># root logged <span class="hljs-keyword">in</span> <span class="hljs-number">5</span> days age<br><br>################### 从变量读取列表 ###################<br>colors=<span class="hljs-string">&quot;Red Yellow Blue&quot;</span><br>colors=$colors<span class="hljs-string">&quot; White Black&quot;</span><br><br>for color <span class="hljs-keyword">in</span> $colors<br>do<br>  echo <span class="hljs-string">&quot; $color&quot;</span><br>done<br></code></pre></td></tr></table></figure>
+
+<h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><h4 id="单引号和双引号"><a href="#单引号和双引号" class="headerlink" title="单引号和双引号"></a>单引号和双引号</h4><p>shell 字符串可以用单引号 ‘’，也可以用双引号 “”，也可以不用引号。</p>
+<ul>
+<li>单引号的特点 - 单引号里不识别变量 - 单引号里不能出现单独的单引号（使用转义符也不行），但可成对出现，作为字符串拼接使用。</li>
+<li>双引号的特点 - 双引号里识别变量 - 双引号里可以出现转义字符</li>
+</ul>
+<p>综上，推荐使用双引号。</p>
+<h4 id="拼接字符串"><a href="#拼接字符串" class="headerlink" title="拼接字符串"></a>拼接字符串</h4><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment"># 使用单引号拼接</span><br><span class="hljs-attribute">name1</span>=<span class="hljs-string">&#x27;white&#x27;</span><br><span class="hljs-attribute">str1</span>=<span class="hljs-string">&#x27;hello, &#x27;</span><span class="hljs-variable">$&#123;name1&#125;</span><span class="hljs-string">&#x27;&#x27;</span><br><span class="hljs-attribute">str2</span>=<span class="hljs-string">&#x27;hello, $&#123;name1&#125;&#x27;</span><br>echo <span class="hljs-variable">$&#123;str1&#125;</span>_<span class="hljs-variable">$&#123;str2&#125;</span><br><span class="hljs-comment"># Output:</span><br><span class="hljs-comment"># hello, white_hello, $&#123;name1&#125;</span><br><br><span class="hljs-comment"># 使用双引号拼接</span><br><span class="hljs-attribute">name2</span>=<span class="hljs-string">&quot;black&quot;</span><br><span class="hljs-attribute">str3</span>=<span class="hljs-string">&quot;hello, &quot;</span><span class="hljs-variable">$&#123;name2&#125;</span><span class="hljs-string">&quot;&quot;</span><br><span class="hljs-attribute">str4</span>=<span class="hljs-string">&quot;hello, <span class="hljs-variable">$&#123;name2&#125;</span>&quot;</span><br>echo <span class="hljs-variable">$&#123;str3&#125;</span>_<span class="hljs-variable">$&#123;str4&#125;</span><br><span class="hljs-comment"># Output:</span><br><span class="hljs-comment"># hello, black_hello, black</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="获取字符串长度"><a href="#获取字符串长度" class="headerlink" title="获取字符串长度"></a>获取字符串长度</h4><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs applescript"><span class="hljs-built_in">text</span>=<span class="hljs-string">&quot;12345&quot;</span><br>echo $&#123;<span class="hljs-comment">#text&#125;</span><br><span class="hljs-comment"># Output:</span><br><span class="hljs-comment"># 5</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="截取子字符串"><a href="#截取子字符串" class="headerlink" title="截取子字符串"></a>截取子字符串</h4><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs applescript"><span class="hljs-built_in">text</span>=<span class="hljs-string">&quot;12345&quot;</span><br>echo $&#123;<span class="hljs-built_in">text</span>:<span class="hljs-number">2</span>:<span class="hljs-number">2</span>&#125;<br><span class="hljs-comment"># Output:</span><br><span class="hljs-comment"># 34</span><br></code></pre></td></tr></table></figure>
+
+<p>从第 3 个字符开始，截取 2 个字符。</p>
+<h3 id="查找子字符串"><a href="#查找子字符串" class="headerlink" title="查找子字符串"></a>查找子字符串</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span><br><br>text=<span class="hljs-string">&quot;hello&quot;</span><br><span class="hljs-built_in">echo</span> `<span class="hljs-built_in">expr</span> index <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;text&#125;</span>&quot;</span> ll`<br><br><span class="hljs-comment"># Execute: ./str-demo5.sh</span><br><span class="hljs-comment"># Output:</span><br><span class="hljs-comment"># 3</span><br></code></pre></td></tr></table></figure>
+
+<p>查找 ll 子字符在 hello 字符串中的起始位置。</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><code class="hljs clean">#!/usr/bin/env bash<br><br>################### 使用单引号拼接字符串 ###################<br>name1=<span class="hljs-string">&#x27;white&#x27;</span><br>str1=<span class="hljs-string">&#x27;hello, &#x27;</span>$&#123;name1&#125;<span class="hljs-string">&#x27;&#x27;</span><br>str2=<span class="hljs-string">&#x27;hello, $&#123;name1&#125;&#x27;</span><br>echo $&#123;str1&#125;_$&#123;str2&#125;<br># Output:<br># hello, white_hello, $&#123;name1&#125;<br><br>################### 使用双引号拼接字符串 ###################<br>name2=<span class="hljs-string">&quot;black&quot;</span><br>str3=<span class="hljs-string">&quot;hello, &quot;</span>$&#123;name2&#125;<span class="hljs-string">&quot;&quot;</span><br>str4=<span class="hljs-string">&quot;hello, $&#123;name2&#125;&quot;</span><br>echo $&#123;str3&#125;_$&#123;str4&#125;<br># Output:<br># hello, black_hello, black<br><br>################### 获取字符串长度 ###################<br>text=<span class="hljs-string">&quot;12345&quot;</span><br>echo <span class="hljs-string">&quot;$&#123;text&#125; length is: $&#123;#text&#125;&quot;</span><br># Output:<br># <span class="hljs-number">12345</span> length is: <span class="hljs-number">5</span><br><br># 获取子字符串<br>text=<span class="hljs-string">&quot;12345&quot;</span><br>echo $&#123;text:<span class="hljs-number">2</span>:<span class="hljs-number">2</span>&#125;<br># Output:<br># <span class="hljs-number">34</span><br><br>################### 查找子字符串 ###################<br>text=<span class="hljs-string">&quot;hello&quot;</span><br>echo `expr index <span class="hljs-string">&quot;$&#123;text&#125;&quot;</span> ll`<br># Output:<br># <span class="hljs-number">3</span><br><br>################### 判断字符串中是否包含子字符串 ###################<br>result=$(echo <span class="hljs-string">&quot;$&#123;str&#125;&quot;</span> | grep <span class="hljs-string">&quot;feature/&quot;</span>)<br><span class="hljs-keyword">if</span> [[ <span class="hljs-string">&quot;$result&quot;</span> != <span class="hljs-string">&quot;&quot;</span> ]]; then<br>  echo <span class="hljs-string">&quot;feature/ 是 $&#123;str&#125; 的子字符串&quot;</span><br>else<br>  echo <span class="hljs-string">&quot;feature/ 不是 $&#123;str&#125; 的子字符串&quot;</span><br>fi<br><br>################### 截取关键字左边内容 ###################<br>full_branch=<span class="hljs-string">&quot;feature/1.0.0&quot;</span><br>branch=`echo $&#123;full_branch#feature/&#125;`<br>echo <span class="hljs-string">&quot;branch is $&#123;branch&#125;&quot;</span><br><br>################### 截取关键字右边内容 ###################<br>full_version=<span class="hljs-string">&quot;0.0.1-SNAPSHOT&quot;</span><br>version=`echo $&#123;full_version%-SNAPSHOT&#125;`<br>echo <span class="hljs-string">&quot;version is $&#123;version&#125;&quot;</span><br><br>################### 字符串分割成数组 ###################<br>str=<span class="hljs-string">&quot;0.0.0.1&quot;</span><br>OLD_IFS=<span class="hljs-string">&quot;$IFS&quot;</span><br>IFS=<span class="hljs-string">&quot;.&quot;</span><br>array=( $&#123;str&#125; )<br>IFS=<span class="hljs-string">&quot;$OLD_IFS&quot;</span><br>size=$&#123;#array[*]&#125;<br>lastIndex=`expr $&#123;size&#125; - <span class="hljs-number">1</span>`<br>echo <span class="hljs-string">&quot;数组长度：$&#123;size&#125;&quot;</span><br>echo <span class="hljs-string">&quot;最后一个数组元素：$&#123;array[$&#123;lastIndex&#125;]&#125;&quot;</span><br>for item <span class="hljs-keyword">in</span> $&#123;array[@]&#125;<br>do<br>  echo <span class="hljs-string">&quot;$item&quot;</span><br>done<br><br>################### 判断字符串是否为空 ###################<br>#-n 判断长度是否非零<br>#-z 判断长度是否为零<br><br>str=testing<br>str2=<span class="hljs-string">&#x27;&#x27;</span><br><span class="hljs-keyword">if</span> [[ -n <span class="hljs-string">&quot;$str&quot;</span> ]]<br>then<br>  echo <span class="hljs-string">&quot;The string $str is not empty&quot;</span><br>else<br>  echo <span class="hljs-string">&quot;The string $str is empty&quot;</span><br>fi<br><br><span class="hljs-keyword">if</span> [[ -n <span class="hljs-string">&quot;$str2&quot;</span> ]]<br>then<br>  echo <span class="hljs-string">&quot;The string $str2 is not empty&quot;</span><br>else<br>  echo <span class="hljs-string">&quot;The string $str2 is empty&quot;</span><br>fi<br><br>#  Output:<br>#  The string testing is not empty<br>#  The string  is empty<br><br>################### 字符串比较 ###################<br>str=hello<br>str2=world<br><span class="hljs-keyword">if</span> [[ $str = <span class="hljs-string">&quot;hello&quot;</span> ]]; then<br>  echo <span class="hljs-string">&quot;str equals hello&quot;</span><br>else<br>  echo <span class="hljs-string">&quot;str not equals hello&quot;</span><br>fi<br><br><span class="hljs-keyword">if</span> [[ $str2 = <span class="hljs-string">&quot;hello&quot;</span> ]]; then<br>  echo <span class="hljs-string">&quot;str2 equals hello&quot;</span><br>else<br>  echo <span class="hljs-string">&quot;str2 not equals hello&quot;</span><br>fi<br></code></pre></td></tr></table></figure>
+
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><p>bash 只支持一维数组。</p>
+<p>数组下标从 0 开始，下标可以是整数或算术表达式，其值应大于或等于 0。</p>
+<h4 id="创建数组"><a href="#创建数组" class="headerlink" title="创建数组"></a>创建数组</h4><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-comment"># 创建数组的不同方式</span><br><span class="hljs-attr">nums</span>=([<span class="hljs-number">2</span>]=<span class="hljs-number">2</span> [<span class="hljs-number">0</span>]=<span class="hljs-number">0</span> [<span class="hljs-number">1</span>]=<span class="hljs-number">1</span>)<br><span class="hljs-attr">colors</span>=(red yellow <span class="hljs-string">&quot;dark blue&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<h4 id="访问数组元素"><a href="#访问数组元素" class="headerlink" title="访问数组元素"></a>访问数组元素</h4><h5 id="访问数组的单个元素"><a href="#访问数组的单个元素" class="headerlink" title="访问数组的单个元素"></a>访问数组的单个元素</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-variable">$&#123;nums[1]&#125;</span><br><span class="hljs-comment"># Output: 1</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="访问数组的所有元素"><a href="#访问数组的所有元素" class="headerlink" title="访问数组的所有元素"></a>访问数组的所有元素</h5><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">echo</span> <span class="hljs-variable">$&#123;colors[*]&#125;</span><br><span class="hljs-comment"># Output: red yellow dark blue</span><br><br><span class="hljs-attribute">echo</span> <span class="hljs-variable">$&#123;colors[@]&#125;</span><br><span class="hljs-comment"># Output: red yellow dark blue</span><br></code></pre></td></tr></table></figure>
+
+<p>上面两行有很重要（也很微妙）的区别：</p>
+<p>为了将数组中每个元素单独一行输出，我们用 printf 命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">printf</span> <span class="hljs-string">&quot;+ %s\n&quot;</span> <span class="hljs-variable">$&#123;colors[*]&#125;</span><br><span class="hljs-comment"># Output:</span><br><span class="hljs-comment"># + red</span><br><span class="hljs-comment"># + yellow</span><br><span class="hljs-comment"># + dark</span><br><span class="hljs-comment"># + blue</span><br></code></pre></td></tr></table></figure>
+
+<p>为什么 dark 和 blue 各占了一行？尝试用引号包起来：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs perl"><span class="hljs-keyword">printf</span> <span class="hljs-string">&quot;+ <span class="hljs-variable">%s</span>\n&quot;</span> <span class="hljs-string">&quot;<span class="hljs-subst">$&#123;colors[*]&#125;</span>&quot;</span><br><span class="hljs-comment"># Output:</span><br><span class="hljs-comment"># + red yellow dark blue</span><br></code></pre></td></tr></table></figure>
+
+<p>现在所有的元素都在一行输出 —— 这不是我们想要的！让我们试试 ${colors[@]}</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs perl"><span class="hljs-keyword">printf</span> <span class="hljs-string">&quot;+ <span class="hljs-variable">%s</span>\n&quot;</span> <span class="hljs-string">&quot;<span class="hljs-subst">$&#123;colors[<span class="hljs-variable">@]</span>&#125;</span>&quot;</span><br><span class="hljs-comment"># Output:</span><br><span class="hljs-comment"># + red</span><br><span class="hljs-comment"># + yellow</span><br><span class="hljs-comment"># + dark blue</span><br></code></pre></td></tr></table></figure>
+
+<p>在引号内，${colors[@]}将数组中的每个元素扩展为一个单独的参数；数组元素中的空格得以保留。</p>
+<h5 id="访问数组的部分元素"><a href="#访问数组的部分元素" class="headerlink" title="访问数组的部分元素"></a>访问数组的部分元素</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-variable">$&#123;nums[@]:0:2&#125;</span><br><span class="hljs-comment"># Output:</span><br><span class="hljs-comment"># 0 1</span><br></code></pre></td></tr></table></figure>
+
+<p>在上面的例子中，${array[@]} 扩展为整个数组，:0:2 取出了数组中从 0 开始，长度为 2 的元素。</p>
+<h4 id="访问数组长度"><a href="#访问数组长度" class="headerlink" title="访问数组长度"></a>访问数组长度</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-variable">$&#123;#nums[*]&#125;</span><br><span class="hljs-comment"># Output:</span><br><span class="hljs-comment"># 3</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="向数组中添加元素"><a href="#向数组中添加元素" class="headerlink" title="向数组中添加元素"></a>向数组中添加元素</h4><p>向数组中添加元素也非常简单：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">colors=(white <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;colors[@]&#125;</span>&quot;</span> green black)<br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$&#123;colors[@]&#125;</span><br><span class="hljs-comment"># Output:</span><br><span class="hljs-comment"># white red yellow dark blue green black</span><br></code></pre></td></tr></table></figure>
+
+<p>上面的例子中，${colors[@]} 扩展为整个数组，并被置换到复合赋值语句中，接着，对数组 colors 的赋值覆盖了它原来的值。</p>
+<h4 id="从数组中删除元素"><a href="#从数组中删除元素" class="headerlink" title="从数组中删除元素"></a>从数组中删除元素</h4><p>用 unset 命令来从数组中删除一个元素：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">unset</span> nums[0]<br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$&#123;nums[@]&#125;</span><br><span class="hljs-comment"># Output:</span><br><span class="hljs-comment"># 1 2</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs clean">#!/usr/bin/env bash<br><br>################### 创建数组 ###################<br>nums=( [ <span class="hljs-number">2</span> ] = <span class="hljs-number">2</span> [ <span class="hljs-number">0</span> ] = <span class="hljs-number">0</span> [ <span class="hljs-number">1</span> ] = <span class="hljs-number">1</span> )<br>colors=( red yellow <span class="hljs-string">&quot;dark blue&quot;</span> )<br><br>################### 访问数组的单个元素 ###################<br>echo $&#123;nums[<span class="hljs-number">1</span>]&#125;<br># Output: <span class="hljs-number">1</span><br><br>################### 访问数组的所有元素 ###################<br>echo $&#123;colors[*]&#125;<br># Output: red yellow dark blue<br><br>echo $&#123;colors[@]&#125;<br># Output: red yellow dark blue<br><br>printf <span class="hljs-string">&quot;+ %s\n&quot;</span> $&#123;colors[*]&#125;<br># Output:<br># + red<br># + yellow<br># + dark<br># + blue<br><br>printf <span class="hljs-string">&quot;+ %s\n&quot;</span> <span class="hljs-string">&quot;$&#123;colors[*]&#125;&quot;</span><br># Output:<br># + red yellow dark blue<br><br>printf <span class="hljs-string">&quot;+ %s\n&quot;</span> <span class="hljs-string">&quot;$&#123;colors[@]&#125;&quot;</span><br># Output:<br># + red<br># + yellow<br># + dark blue<br><br>################### 访问数组的部分元素 ###################<br>echo $&#123;nums[@]:<span class="hljs-number">0</span>:<span class="hljs-number">2</span>&#125;<br># Output:<br># <span class="hljs-number">0</span> <span class="hljs-number">1</span><br><br>################### 获取数组长度 ###################<br>echo $&#123;#nums[*]&#125;<br># Output:<br># <span class="hljs-number">3</span><br><br>################### 向数组中添加元素 ###################<br>colors=( white <span class="hljs-string">&quot;$&#123;colors[@]&#125;&quot;</span> green black )<br>echo $&#123;colors[@]&#125;<br># Output:<br># white red yellow dark blue green black<br><br>################### 从数组中删除元素 ###################<br>unset nums[ <span class="hljs-number">0</span> ]<br>echo $&#123;nums[@]&#125;<br># Output:<br># <span class="hljs-number">1</span> <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h3><h4 id="算术运算符"><a href="#算术运算符" class="headerlink" title="算术运算符"></a>算术运算符</h4><p>下表列出了常用的算术运算符，假定变量 x 为 10，变量 y 为 20：</p>
+<table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>说明</th>
+<th>举例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>+</code></td>
+<td>加法</td>
+<td><code>expr $x + $y</code> 结果为 30。</td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td>减法</td>
+<td><code>expr $x - $y</code> 结果为 -10。</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>乘法</td>
+<td><code>expr $x * $y</code> 结果为 200。</td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td>除法</td>
+<td><code>expr $y / $x</code> 结果为 2。</td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td>取余</td>
+<td><code>expr $y % $x</code> 结果为 0。</td>
+</tr>
+<tr>
+<td><code>=</code></td>
+<td>赋值</td>
+<td><code>x=$y</code> 将把变量 y 的值赋给 x。</td>
+</tr>
+<tr>
+<td><code>==</code></td>
+<td>相等。用于比较两个数字，相同则返回 true。</td>
+<td><code>[ $x == $y ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>!=</code></td>
+<td>不相等。用于比较两个数字，不相同则返回 true。</td>
+<td><code>[ $x != $y ]</code> 返回 true。</td>
+</tr>
+</tbody></table>
+<h1 id="注意：条件表达式要放在方括号之间，并且要有空格，例如-x"><a href="#注意：条件表达式要放在方括号之间，并且要有空格，例如-x" class="headerlink" title="注意：条件表达式要放在方括号之间，并且要有空格，例如: [x"></a>注意：条件表达式要放在方括号之间，并且要有空格，例如: [<br>x</h1><p>&#x3D;<br>x&#x3D;&#x3D;<br>x&#x3D;&#x3D;y] 是错误的，必须写成 [ $x &#x3D;&#x3D; $y ]。</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs bash">x=10<br>y=20<br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;x=<span class="hljs-variable">$&#123;x&#125;</span>, y=<span class="hljs-variable">$&#123;y&#125;</span>&quot;</span><br><br>val=`<span class="hljs-built_in">expr</span> <span class="hljs-variable">$&#123;x&#125;</span> + <span class="hljs-variable">$&#123;y&#125;</span>`<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> + <span class="hljs-variable">$&#123;y&#125;</span> = <span class="hljs-variable">$val</span>&quot;</span><br><br>val=`<span class="hljs-built_in">expr</span> <span class="hljs-variable">$&#123;x&#125;</span> - <span class="hljs-variable">$&#123;y&#125;</span>`<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> - <span class="hljs-variable">$&#123;y&#125;</span> = <span class="hljs-variable">$val</span>&quot;</span><br><br>val=`<span class="hljs-built_in">expr</span> <span class="hljs-variable">$&#123;x&#125;</span> \* <span class="hljs-variable">$&#123;y&#125;</span>`<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> * <span class="hljs-variable">$&#123;y&#125;</span> = <span class="hljs-variable">$val</span>&quot;</span><br><br>val=`<span class="hljs-built_in">expr</span> <span class="hljs-variable">$&#123;y&#125;</span> / <span class="hljs-variable">$&#123;x&#125;</span>`<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;y&#125;</span> / <span class="hljs-variable">$&#123;x&#125;</span> = <span class="hljs-variable">$val</span>&quot;</span><br><br>val=`<span class="hljs-built_in">expr</span> <span class="hljs-variable">$&#123;y&#125;</span> % <span class="hljs-variable">$&#123;x&#125;</span>`<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;y&#125;</span> % <span class="hljs-variable">$&#123;x&#125;</span> = <span class="hljs-variable">$val</span>&quot;</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> == <span class="hljs-variable">$&#123;y&#125;</span> ]]<br><span class="hljs-keyword">then</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> = <span class="hljs-variable">$&#123;y&#125;</span>&quot;</span><br><span class="hljs-keyword">fi</span><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> != <span class="hljs-variable">$&#123;y&#125;</span> ]]<br><span class="hljs-keyword">then</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> != <span class="hljs-variable">$&#123;y&#125;</span>&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  x=10, y=20</span><br><span class="hljs-comment">#  10 + 20 = 30</span><br><span class="hljs-comment">#  10 - 20 = -10</span><br><span class="hljs-comment">#  10 * 20 = 200</span><br><span class="hljs-comment">#  20 / 10 = 2</span><br><span class="hljs-comment">#  20 % 10 = 0</span><br><span class="hljs-comment">#  10 != 20</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="关系运算符"><a href="#关系运算符" class="headerlink" title="关系运算符"></a>关系运算符</h4><p>关系运算符只支持数字，不支持字符串，除非字符串的值是数字。</p>
+<p>下表列出了常用的关系运算符，假定变量 x 为 10，变量 y 为 20：</p>
+<table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>说明</th>
+<th>举例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-eq</code></td>
+<td>检测两个数是否相等，相等返回 true。</td>
+<td><code>[ $a -eq $b ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>-ne</code></td>
+<td>检测两个数是否相等，不相等返回 true。</td>
+<td><code>[ $a -ne $b ]</code> 返回 true。</td>
+</tr>
+<tr>
+<td><code>-gt</code></td>
+<td>检测左边的数是否大于右边的，如果是，则返回 true。</td>
+<td><code>[ $a -gt $b ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>-lt</code></td>
+<td>检测左边的数是否小于右边的，如果是，则返回 true。</td>
+<td><code>[ $a -lt $b ]</code> 返回 true。</td>
+</tr>
+<tr>
+<td><code>-ge</code></td>
+<td>检测左边的数是否大于等于右边的，如果是，则返回 true。</td>
+<td><code>[ $a -ge $b ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>-le</code></td>
+<td>检测左边的数是否小于等于右边的，如果是，则返回 true。</td>
+<td><code>[ $a -le $b ]</code> 返回 true。</td>
+</tr>
+</tbody></table>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs bash">x=10<br>y=20<br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;x=<span class="hljs-variable">$&#123;x&#125;</span>, y=<span class="hljs-variable">$&#123;y&#125;</span>&quot;</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -eq <span class="hljs-variable">$&#123;y&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -eq <span class="hljs-variable">$&#123;y&#125;</span> : x 等于 y&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -eq <span class="hljs-variable">$&#123;y&#125;</span>: x 不等于 y&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -ne <span class="hljs-variable">$&#123;y&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -ne <span class="hljs-variable">$&#123;y&#125;</span>: x 不等于 y&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -ne <span class="hljs-variable">$&#123;y&#125;</span>: x 等于 y&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -gt <span class="hljs-variable">$&#123;y&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -gt <span class="hljs-variable">$&#123;y&#125;</span>: x 大于 y&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -gt <span class="hljs-variable">$&#123;y&#125;</span>: x 不大于 y&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -lt <span class="hljs-variable">$&#123;y&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -lt <span class="hljs-variable">$&#123;y&#125;</span>: x 小于 y&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -lt <span class="hljs-variable">$&#123;y&#125;</span>: x 不小于 y&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -ge <span class="hljs-variable">$&#123;y&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -ge <span class="hljs-variable">$&#123;y&#125;</span>: x 大于或等于 y&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -ge <span class="hljs-variable">$&#123;y&#125;</span>: x 小于 y&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -le <span class="hljs-variable">$&#123;y&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -le <span class="hljs-variable">$&#123;y&#125;</span>: x 小于或等于 y&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -le <span class="hljs-variable">$&#123;y&#125;</span>: x 大于 y&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  x=10, y=20</span><br><span class="hljs-comment">#  10 -eq 20: x 不等于 y</span><br><span class="hljs-comment">#  10 -ne 20: x 不等于 y</span><br><span class="hljs-comment">#  10 -gt 20: x 不大于 y</span><br><span class="hljs-comment">#  10 -lt 20: x 小于 y</span><br><span class="hljs-comment">#  10 -ge 20: x 小于 y</span><br><span class="hljs-comment">#  10 -le 20: x 小于或等于 y</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="布尔运算符"><a href="#布尔运算符" class="headerlink" title="布尔运算符"></a>布尔运算符</h4><p>下表列出了常用的布尔运算符，假定变量 x 为 10，变量 y 为 20：</p>
+<table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>说明</th>
+<th>举例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>!</code></td>
+<td>非运算，表达式为 true 则返回 false，否则返回 true。</td>
+<td><code>[ ! false ]</code> 返回 true。</td>
+</tr>
+<tr>
+<td><code>-o</code></td>
+<td>或运算，有一个表达式为 true 则返回 true。</td>
+<td><code>[ $a -lt 20 -o $b -gt 100 ]</code> 返回 true。</td>
+</tr>
+<tr>
+<td><code>-a</code></td>
+<td>与运算，两个表达式都为 true 才返回 true。</td>
+<td><code>[ $a -lt 20 -a $b -gt 100 ]</code> 返回 false。</td>
+</tr>
+</tbody></table>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs bash">x=10<br>y=20<br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;x=<span class="hljs-variable">$&#123;x&#125;</span>, y=<span class="hljs-variable">$&#123;y&#125;</span>&quot;</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> != <span class="hljs-variable">$&#123;y&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> != <span class="hljs-variable">$&#123;y&#125;</span> : x 不等于 y&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> != <span class="hljs-variable">$&#123;y&#125;</span>: x 等于 y&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -lt 100 &amp;&amp; <span class="hljs-variable">$&#123;y&#125;</span> -gt 15 ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> 小于 100 且 <span class="hljs-variable">$&#123;y&#125;</span> 大于 15 : 返回 true&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> 小于 100 且 <span class="hljs-variable">$&#123;y&#125;</span> 大于 15 : 返回 false&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -lt 100 || <span class="hljs-variable">$&#123;y&#125;</span> -gt 100 ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> 小于 100 或 <span class="hljs-variable">$&#123;y&#125;</span> 大于 100 : 返回 true&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> 小于 100 或 <span class="hljs-variable">$&#123;y&#125;</span> 大于 100 : 返回 false&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -lt 5 || <span class="hljs-variable">$&#123;y&#125;</span> -gt 100 ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> 小于 5 或 <span class="hljs-variable">$&#123;y&#125;</span> 大于 100 : 返回 true&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> 小于 5 或 <span class="hljs-variable">$&#123;y&#125;</span> 大于 100 : 返回 false&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  x=10, y=20</span><br><span class="hljs-comment">#  10 != 20 : x 不等于 y</span><br><span class="hljs-comment">#  10 小于 100 且 20 大于 15 : 返回 true</span><br><span class="hljs-comment">#  10 小于 100 或 20 大于 100 : 返回 true</span><br><span class="hljs-comment">#  10 小于 5 或 20 大于 100 : 返回 false</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="逻辑运算符"><a href="#逻辑运算符" class="headerlink" title="逻辑运算符"></a>逻辑运算符</h4><p>以下介绍 Shell 的逻辑运算符，假定变量 x 为 10，变量 y 为 20:</p>
+<table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>说明</th>
+<th>举例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&amp;&amp;</code></td>
+<td>逻辑的 AND</td>
+<td><code>[[ ${x} -lt 100 &amp;&amp; ${y} -gt 100 ]]</code> 返回 false</td>
+</tr>
+<tr>
+<td>&#96;</td>
+<td></td>
+<td>&#96;</td>
+</tr>
+</tbody></table>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs bash">x=10<br>y=20<br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;x=<span class="hljs-variable">$&#123;x&#125;</span>, y=<span class="hljs-variable">$&#123;y&#125;</span>&quot;</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -lt 100 &amp;&amp; <span class="hljs-variable">$&#123;y&#125;</span> -gt 100 ]]<br><span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -lt 100 &amp;&amp; <span class="hljs-variable">$&#123;y&#125;</span> -gt 100 返回 true&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -lt 100 &amp;&amp; <span class="hljs-variable">$&#123;y&#125;</span> -gt 100 返回 false&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -lt 100 || <span class="hljs-variable">$&#123;y&#125;</span> -gt 100 ]]<br><span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -lt 100 || <span class="hljs-variable">$&#123;y&#125;</span> -gt 100 返回 true&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> -lt 100 || <span class="hljs-variable">$&#123;y&#125;</span> -gt 100 返回 false&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  x=10, y=20</span><br><span class="hljs-comment">#  10 -lt 100 &amp;&amp; 20 -gt 100 返回 false</span><br><span class="hljs-comment">#  10 -lt 100 || 20 -gt 100 返回 true</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="字符串运算符"><a href="#字符串运算符" class="headerlink" title="字符串运算符"></a>字符串运算符</h4><p>下表列出了常用的字符串运算符，假定变量 a 为 “abc”，变量 b 为 “efg”：</p>
+<table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>说明</th>
+<th>举例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>=</code></td>
+<td>检测两个字符串是否相等，相等返回 true。</td>
+<td><code>[ $a = $b ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>!=</code></td>
+<td>检测两个字符串是否相等，不相等返回 true。</td>
+<td><code>[ $a != $b ]</code> 返回 true。</td>
+</tr>
+<tr>
+<td><code>-z</code></td>
+<td>检测字符串长度是否为 0，为 0 返回 true。</td>
+<td><code>[ -z $a ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>-n</code></td>
+<td>检测字符串长度是否为 0，不为 0 返回 true。</td>
+<td><code>[ -n $a ]</code> 返回 true。</td>
+</tr>
+<tr>
+<td><code>str</code></td>
+<td>检测字符串是否为空，不为空返回 true。（注：这可能是一个误解，因为<code>str</code>不是标准的 shell 测试运算符。正确的可能是 <code>-n</code> 或 <code>[[ ]]</code> 测试。）</td>
+<td><code>[ $a ]</code> 返回 true。</td>
+</tr>
+</tbody></table>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs bash">x=<span class="hljs-string">&quot;abc&quot;</span><br>y=<span class="hljs-string">&quot;xyz&quot;</span><br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;x=<span class="hljs-variable">$&#123;x&#125;</span>, y=<span class="hljs-variable">$&#123;y&#125;</span>&quot;</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> = <span class="hljs-variable">$&#123;y&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> = <span class="hljs-variable">$&#123;y&#125;</span> : x 等于 y&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> = <span class="hljs-variable">$&#123;y&#125;</span>: x 不等于 y&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> != <span class="hljs-variable">$&#123;y&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> != <span class="hljs-variable">$&#123;y&#125;</span> : x 不等于 y&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> != <span class="hljs-variable">$&#123;y&#125;</span>: x 等于 y&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ -z <span class="hljs-variable">$&#123;x&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;-z <span class="hljs-variable">$&#123;x&#125;</span> : 字符串长度为 0&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;-z <span class="hljs-variable">$&#123;x&#125;</span> : 字符串长度不为 0&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ -n <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span>&quot;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;-n <span class="hljs-variable">$&#123;x&#125;</span> : 字符串长度不为 0&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;-n <span class="hljs-variable">$&#123;x&#125;</span> : 字符串长度为 0&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> : 字符串不为空&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> : 字符串为空&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  x=abc, y=xyz</span><br><span class="hljs-comment">#  abc = xyz: x 不等于 y</span><br><span class="hljs-comment">#  abc != xyz : x 不等于 y</span><br><span class="hljs-comment">#  -z abc : 字符串长度不为 0</span><br><span class="hljs-comment">#  -n abc : 字符串长度不为 0</span><br><span class="hljs-comment">#  abc : 字符串不为空</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="文件测试运算符"><a href="#文件测试运算符" class="headerlink" title="文件测试运算符"></a>文件测试运算符</h4><p>文件测试运算符用于检测 Unix 文件的各种属性。</p>
+<p>属性检测描述如下：</p>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>说明</th>
+<th>举例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-b</code></td>
+<td>检测文件是否是块设备文件，如果是，则返回 true。</td>
+<td><code>[ -b $file ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>-c</code></td>
+<td>检测文件是否是字符设备文件，如果是，则返回 true。</td>
+<td><code>[ -c $file ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>-d</code></td>
+<td>检测文件是否是目录，如果是，则返回 true。</td>
+<td><code>[ -d $file ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>-f</code></td>
+<td>检测文件是否是普通文件（既不是目录，也不是设备文件），如果是，则返回 true。</td>
+<td><code>[ -f $file ]</code> 返回 true。</td>
+</tr>
+<tr>
+<td><code>-g</code></td>
+<td>检测文件是否设置了 SGID 位，如果是，则返回 true。</td>
+<td><code>[ -g $file ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>-k</code></td>
+<td>检测文件是否设置了粘着位(Sticky Bit)，如果是，则返回 true。</td>
+<td><code>[ -k $file ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>-p</code></td>
+<td>检测文件是否是有名管道，如果是，则返回 true。</td>
+<td><code>[ -p $file ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>-u</code></td>
+<td>检测文件是否设置了 SUID 位，如果是，则返回 true。</td>
+<td><code>[ -u $file ]</code> 返回 false。</td>
+</tr>
+<tr>
+<td><code>-r</code></td>
+<td>检测文件是否可读，如果是，则返回 true。</td>
+<td><code>[ -r $file ]</code> 返回 true。</td>
+</tr>
+<tr>
+<td><code>-w</code></td>
+<td>检测文件是否可写，如果是，则返回 true。</td>
+<td><code>[ -w $file ]</code> 返回 true。</td>
+</tr>
+<tr>
+<td><code>-x</code></td>
+<td>检测文件是否可执行，如果是，则返回 true。</td>
+<td><code>[ -x $file ]</code> 返回 true。</td>
+</tr>
+<tr>
+<td><code>-s</code></td>
+<td>检测文件是否为空（文件大小是否大于 0），不为空返回 true。</td>
+<td><code>[ -s $file ]</code> 返回 true。</td>
+</tr>
+<tr>
+<td><code>-e</code></td>
+<td>检测文件（包括目录）是否存在，如果是，则返回 true。</td>
+<td><code>[ -e $file ]</code> 返回 true。</td>
+</tr>
+</tbody></table>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs bash">file=<span class="hljs-string">&quot;/etc/hosts&quot;</span><br><br><span class="hljs-keyword">if</span> [[ -r <span class="hljs-variable">$&#123;file&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件可读&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件不可读&quot;</span><br><span class="hljs-keyword">fi</span><br><span class="hljs-keyword">if</span> [[ -w <span class="hljs-variable">$&#123;file&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件可写&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件不可写&quot;</span><br><span class="hljs-keyword">fi</span><br><span class="hljs-keyword">if</span> [[ -x <span class="hljs-variable">$&#123;file&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件可执行&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件不可执行&quot;</span><br><span class="hljs-keyword">fi</span><br><span class="hljs-keyword">if</span> [[ -f <span class="hljs-variable">$&#123;file&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件为普通文件&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件为特殊文件&quot;</span><br><span class="hljs-keyword">fi</span><br><span class="hljs-keyword">if</span> [[ -d <span class="hljs-variable">$&#123;file&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件是个目录&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件不是个目录&quot;</span><br><span class="hljs-keyword">fi</span><br><span class="hljs-keyword">if</span> [[ -s <span class="hljs-variable">$&#123;file&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件不为空&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件为空&quot;</span><br><span class="hljs-keyword">fi</span><br><span class="hljs-keyword">if</span> [[ -e <span class="hljs-variable">$&#123;file&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件存在&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;file&#125;</span> 文件不存在&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-comment">#  Output:(根据文件的实际情况，输出结果可能不同)</span><br><span class="hljs-comment">#  /etc/hosts 文件可读</span><br><span class="hljs-comment">#  /etc/hosts 文件可写</span><br><span class="hljs-comment">#  /etc/hosts 文件不可执行</span><br><span class="hljs-comment">#  /etc/hosts 文件为普通文件</span><br><span class="hljs-comment">#  /etc/hosts 文件不是个目录</span><br><span class="hljs-comment">#  /etc/hosts 文件不为空</span><br><span class="hljs-comment">#  /etc/hosts 文件存在</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="控制语句"><a href="#控制语句" class="headerlink" title="控制语句"></a>控制语句</h3><h4 id="条件语句"><a href="#条件语句" class="headerlink" title="条件语句"></a>条件语句</h4><p>跟其它程序设计语言一样，Bash 中的条件语句让我们可以决定一个操作是否被执行。结果取决于一个包在[[ ]]里的表达式。</p>
+<p>由[[ ]]（sh 中是[ ]）包起来的表达式被称作 检测命令 或 基元。这些表达式帮助我们检测一个条件的结果。这里可以找到有关 bash 中单双中括号区别的答案。</p>
+<p>共有两个不同的条件表达式：if 和 case。</p>
+<h5 id="if"><a href="#if" class="headerlink" title="if"></a>if</h5><p>（1）if 语句</p>
+<p>if 在使用上跟其它语言相同。如果中括号里的表达式为真，那么 then 和 fi 之间的代码会被执行。fi 标志着条件代码块的结束。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs lua"># 写成一行<br><span class="hljs-keyword">if</span> <span class="hljs-string">[[ 1 -eq 1 ]]</span>; <span class="hljs-keyword">then</span> echo <span class="hljs-string">&quot;1 -eq 1 result is: true&quot;</span>; fi<br># Output: <span class="hljs-number">1</span> -eq <span class="hljs-number">1</span> result is: <span class="hljs-literal">true</span><br><br># 写成多行<br><span class="hljs-keyword">if</span> <span class="hljs-string">[[ &quot;abc&quot; -eq &quot;abc&quot; ]]</span><br><span class="hljs-keyword">then</span><br>  echo <span class="hljs-string">&quot;&quot;</span>abc<span class="hljs-string">&quot; -eq &quot;</span>abc<span class="hljs-string">&quot; result is: true&quot;</span><br>fi<br># Output: abc -eq abc result is: <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
+
+<p>（2）if else 语句</p>
+<p>同样，我们可以使用 if…else 语句，例如：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs lua"><span class="hljs-keyword">if</span> <span class="hljs-string">[[ 2 -ne 1 ]]</span>; <span class="hljs-keyword">then</span><br>  echo <span class="hljs-string">&quot;true&quot;</span><br><span class="hljs-keyword">else</span><br>  echo <span class="hljs-string">&quot;false&quot;</span><br>fi<br># Output: <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
+
+<p>（3）if elif else 语句</p>
+<p>有些时候，if…else 不能满足我们的要求。别忘了 if…elif…else，使用起来也很方便。</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">x=10<br>y=20<br><span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> &gt; <span class="hljs-variable">$&#123;y&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> &gt; <span class="hljs-variable">$&#123;y&#125;</span>&quot;</span><br><span class="hljs-keyword">elif</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> &lt; <span class="hljs-variable">$&#123;y&#125;</span> ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> &lt; <span class="hljs-variable">$&#123;y&#125;</span>&quot;</span><br><span class="hljs-keyword">else</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> = <span class="hljs-variable">$&#123;y&#125;</span>&quot;</span><br><span class="hljs-keyword">fi</span><br><span class="hljs-comment"># Output: 10 &lt; 20</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="case"><a href="#case" class="headerlink" title="case"></a>case</h5><p>如果你需要面对很多情况，分别要采取不同的措施，那么使用 case 会比嵌套的 if 更有用。使用 case 来解决复杂的条件判断，看起来像下面这样：</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">exec</span><br><span class="hljs-keyword">case</span> <span class="hljs-variable">$&#123;oper&#125;</span> <span class="hljs-keyword">in</span><br>  <span class="hljs-string">&quot;+&quot;</span>)<br>    val=`<span class="hljs-built_in">expr</span> <span class="hljs-variable">$&#123;x&#125;</span> + <span class="hljs-variable">$&#123;y&#125;</span>`<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> + <span class="hljs-variable">$&#123;y&#125;</span> = <span class="hljs-variable">$&#123;val&#125;</span>&quot;</span><br>  ;;<br>  <span class="hljs-string">&quot;-&quot;</span>)<br>    val=`<span class="hljs-built_in">expr</span> <span class="hljs-variable">$&#123;x&#125;</span> - <span class="hljs-variable">$&#123;y&#125;</span>`<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> - <span class="hljs-variable">$&#123;y&#125;</span> = <span class="hljs-variable">$&#123;val&#125;</span>&quot;</span><br>  ;;<br>  <span class="hljs-string">&quot;*&quot;</span>)<br>    val=`<span class="hljs-built_in">expr</span> <span class="hljs-variable">$&#123;x&#125;</span> \* <span class="hljs-variable">$&#123;y&#125;</span>`<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> * <span class="hljs-variable">$&#123;y&#125;</span> = <span class="hljs-variable">$&#123;val&#125;</span>&quot;</span><br>  ;;<br>  <span class="hljs-string">&quot;/&quot;</span>)<br>    val=`<span class="hljs-built_in">expr</span> <span class="hljs-variable">$&#123;x&#125;</span> / <span class="hljs-variable">$&#123;y&#125;</span>`<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;x&#125;</span> / <span class="hljs-variable">$&#123;y&#125;</span> = <span class="hljs-variable">$&#123;val&#125;</span>&quot;</span><br>  ;;<br>  *)<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Unknown oper!&quot;</span><br>  ;;<br><span class="hljs-keyword">esac</span><br></code></pre></td></tr></table></figure>
+
+<p>每种情况都是匹配了某个模式的表达式。|用来分割多个模式，)用来结束一个模式序列。第一个匹配上的模式对应的命令将会被执行。*代表任何不匹配以上给定模式的模式。命令块儿之间要用;;分隔。</p>
+<h4 id="循环语句"><a href="#循环语句" class="headerlink" title="循环语句"></a>循环语句</h4><p>循环其实不足为奇。跟其它程序设计语言一样，bash 中的循环也是只要控制条件为真就一直迭代执行的代码块。</p>
+<p>Bash 中有四种循环：</p>
+<ul>
+<li>for</li>
+<li>while</li>
+<li>until</li>
+<li>select</li>
+</ul>
+<h5 id="for-循环"><a href="#for-循环" class="headerlink" title="for 循环"></a>for 循环</h5><p>for 与它在 C 语言中的姊妹非常像。看起来是这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-keyword">for</span> arg <span class="hljs-keyword">in</span> elem1 elem2 ... elemN<br><span class="hljs-keyword">do</span><br>  <span class="hljs-comment">### 语句</span><br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
+
+<p>在每次循环的过程中，arg 依次被赋值为从 elem1 到 elemN。这些值还可以是通配符或者大括号扩展。</p>
+<p>当然，我们还可以把 for 循环写在一行，但这要求 do 之前要有一个分号，就像下面这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> &#123;1..5&#125;; <span class="hljs-keyword">do</span> <span class="hljs-built_in">echo</span> <span class="hljs-variable">$i</span>; <span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
+
+<p>还有，如果你觉得 for…in…do 对你来说有点奇怪，那么你也可以像 C 语言那样使用 for，比如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-keyword">for</span> (( i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++ )); <span class="hljs-keyword">do</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-variable">$i</span><br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
+
+<p>当我们想对一个目录下的所有文件做同样的操作时，for 就很方便了。举个例子，如果我们想把所有的.bash 文件移动到 script 文件夹中，并给它们可执行权限，我们的脚本可以这样写：</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">DIR=/home/zp<br><span class="hljs-keyword">for</span> FILE <span class="hljs-keyword">in</span> <span class="hljs-variable">$&#123;DIR&#125;</span>/*.sh; <span class="hljs-keyword">do</span><br>  <span class="hljs-built_in">mv</span> <span class="hljs-string">&quot;<span class="hljs-variable">$FILE</span>&quot;</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;DIR&#125;</span>/scripts&quot;</span><br><span class="hljs-keyword">done</span><br><span class="hljs-comment"># 将 /home/zp 目录下所有 sh 文件拷贝到 /home/zp/scripts</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="while-循环"><a href="#while-循环" class="headerlink" title="while 循环"></a>while 循环</h5><p>while 循环检测一个条件，只要这个条件为 <em>真</em>，就执行一段命令。被检测的条件跟 if…then 中使用的基元并无二异。因此一个 while 循环看起来会是这样：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs lua"><span class="hljs-keyword">while</span> <span class="hljs-string">[[ condition ]]</span><br><span class="hljs-keyword">do</span><br>  ### 语句<br>done<br></code></pre></td></tr></table></figure>
+
+<p>跟 for 循环一样，如果我们把 do 和被检测的条件写到一行，那么必须要在 do 之前加一个分号。</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">### 0到9之间每个数的平方</span><br>x=0<br><span class="hljs-keyword">while</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -lt 10 ]]; <span class="hljs-keyword">do</span><br>  <span class="hljs-built_in">echo</span> $((x * x))<br>  x=$((x + <span class="hljs-number">1</span>))<br><span class="hljs-keyword">done</span><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  0</span><br><span class="hljs-comment">#  1</span><br><span class="hljs-comment">#  4</span><br><span class="hljs-comment">#  9</span><br><span class="hljs-comment">#  16</span><br><span class="hljs-comment">#  25</span><br><span class="hljs-comment">#  36</span><br><span class="hljs-comment">#  49</span><br><span class="hljs-comment">#  64</span><br><span class="hljs-comment">#  81</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="until-循环"><a href="#until-循环" class="headerlink" title="until 循环"></a>until 循环</h5><p>until 循环跟 while 循环正好相反。它跟 while 一样也需要检测一个测试条件，但不同的是，只要该条件为 假 就一直执行循环：</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash">x=0<br><span class="hljs-keyword">until</span> [[ <span class="hljs-variable">$&#123;x&#125;</span> -ge 5 ]]; <span class="hljs-keyword">do</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-variable">$&#123;x&#125;</span><br>  x=`<span class="hljs-built_in">expr</span> <span class="hljs-variable">$&#123;x&#125;</span> + 1`<br><span class="hljs-keyword">done</span><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  0</span><br><span class="hljs-comment">#  1</span><br><span class="hljs-comment">#  2</span><br><span class="hljs-comment">#  3</span><br><span class="hljs-comment">#  4</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="select-循环"><a href="#select-循环" class="headerlink" title="select 循环"></a>select 循环</h5><p>select 循环帮助我们组织一个用户菜单。它的语法几乎跟 for 循环一致：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-keyword">select</span> answer <span class="hljs-keyword">in</span> elem1 elem2 ... elemN<br><span class="hljs-keyword">do</span><br>  <span class="hljs-comment">### 语句</span><br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
+
+<p>select 会打印 elem1…elemN 以及它们的序列号到屏幕上，之后会提示用户输入。通常看到的是 $?（PS3 变量）。用户的选择结果会被保存到 answer 中。如果 answer 是一个在 1…N 之间的数字，那么语句会被执行，紧接着会进行下一次迭代 —— 如果不想这样的话我们可以使用 break 语句。</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span><br><br>PS3=<span class="hljs-string">&quot;Choose the package manager: &quot;</span><br><span class="hljs-keyword">select</span> ITEM <span class="hljs-keyword">in</span> bower npm gem pip<br><span class="hljs-keyword">do</span><br><span class="hljs-built_in">echo</span> -n <span class="hljs-string">&quot;Enter the package name: &quot;</span> &amp;&amp; <span class="hljs-built_in">read</span> PACKAGE<br><span class="hljs-keyword">case</span> <span class="hljs-variable">$&#123;ITEM&#125;</span> <span class="hljs-keyword">in</span><br>  bower) bower install <span class="hljs-variable">$&#123;PACKAGE&#125;</span> ;;<br>  npm) npm install <span class="hljs-variable">$&#123;PACKAGE&#125;</span> ;;<br>  gem) gem install <span class="hljs-variable">$&#123;PACKAGE&#125;</span> ;;<br>  pip) pip install <span class="hljs-variable">$&#123;PACKAGE&#125;</span> ;;<br><span class="hljs-keyword">esac</span><br><span class="hljs-built_in">break</span> <span class="hljs-comment"># 避免无限循环</span><br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
+
+<p>这个例子，先询问用户他想使用什么包管理器。接着，又询问了想安装什么包，最后执行安装操作。</p>
+<p>运行这个脚本，会得到如下输出：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ada">$ ./my_script<br><span class="hljs-number">1</span>) bower<br><span class="hljs-number">2</span>) npm<br><span class="hljs-number">3</span>) gem<br><span class="hljs-number">4</span>) pip<br>Choose the <span class="hljs-keyword">package</span> <span class="hljs-title">manager: 2</span><br>Enter the <span class="hljs-keyword">package</span> <span class="hljs-title">name: gitbook-cli</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="break-和-continue"><a href="#break-和-continue" class="headerlink" title="break 和 continue"></a>break 和 continue</h5><p>如果想提前结束一个循环或跳过某次循环执行，可以使用 shell 的 break 和 continue 语句来实现。它们可以在任何循环中使用。</p>
+<p>break 语句用来提前结束当前循环。</p>
+<p>continue 语句用来跳过某次迭代。</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs lua"># 查找 <span class="hljs-number">10</span> 以内第一个能整除 <span class="hljs-number">2</span> 和 <span class="hljs-number">3</span> 的正整数<br>i=<span class="hljs-number">1</span><br><span class="hljs-keyword">while</span> <span class="hljs-string">[[ $&#123;i&#125; -lt 10 ]]</span>; <span class="hljs-keyword">do</span><br>  <span class="hljs-keyword">if</span> <span class="hljs-string">[[ $((i % 3)) -eq 0 ]]</span> &amp;&amp; <span class="hljs-string">[[ $((i % 2)) -eq 0 ]]</span>; <span class="hljs-keyword">then</span><br>    echo $&#123;i&#125;<br>    <span class="hljs-keyword">break</span>;<br>  fi<br>  i=`expr $&#123;i&#125; + <span class="hljs-number">1</span>`<br>done<br># Output: <span class="hljs-number">6</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 打印10以内的奇数</span><br><span class="hljs-keyword">for</span> (( i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i ++ )); <span class="hljs-keyword">do</span><br>  <span class="hljs-keyword">if</span> [[ $((i % <span class="hljs-number">2</span>)) -eq 0 ]]; <span class="hljs-keyword">then</span><br>    <span class="hljs-built_in">continue</span>;<br>  <span class="hljs-keyword">fi</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-variable">$&#123;i&#125;</span><br><span class="hljs-keyword">done</span><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  1</span><br><span class="hljs-comment">#  3</span><br><span class="hljs-comment">#  5</span><br><span class="hljs-comment">#  7</span><br><span class="hljs-comment">#  9</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><p>bash 函数定义语法如下：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs ada">[ <span class="hljs-keyword">function</span> <span class="hljs-title">]</span> funname [()] &#123;<br>    action;<br>    [<span class="hljs-keyword">return</span> <span class="hljs-type">int</span>;]<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>💡 说明：<br> 函数定义时，function 关键字可有可无。<br> 函数返回值 - return 返回函数返回值，返回值类型只能为整数（0-255）。如果不加 return 语句，shell 默认将以最后一条命令的运行结果，作为函数返回值。<br> 函数返回值在调用该函数后通过 $? 来获得。<br> 所有函数在使用前必须定义。这意味着必须将函数放在脚本开始部分，直至 shell 解释器首次发现它时，才可以使用。调用函数仅使用其函数名即可。</p>
+</blockquote>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span><br><br><span class="hljs-function"><span class="hljs-title">calc</span></span>()&#123;<br>  PS3=<span class="hljs-string">&quot;choose the oper: &quot;</span><br>  <span class="hljs-keyword">select</span> oper <span class="hljs-keyword">in</span> + - \* / <span class="hljs-comment"># 生成操作符选择菜单</span><br>  <span class="hljs-keyword">do</span><br>  <span class="hljs-built_in">echo</span> -n <span class="hljs-string">&quot;enter first num: &quot;</span> &amp;&amp; <span class="hljs-built_in">read</span> x <span class="hljs-comment"># 读取输入参数</span><br>  <span class="hljs-built_in">echo</span> -n <span class="hljs-string">&quot;enter second num: &quot;</span> &amp;&amp; <span class="hljs-built_in">read</span> y <span class="hljs-comment"># 读取输入参数</span><br>  <span class="hljs-built_in">exec</span><br>  <span class="hljs-keyword">case</span> <span class="hljs-variable">$&#123;oper&#125;</span> <span class="hljs-keyword">in</span><br>    <span class="hljs-string">&quot;+&quot;</span>)<br>      <span class="hljs-built_in">return</span> $((<span class="hljs-variable">$&#123;x&#125;</span> + <span class="hljs-variable">$&#123;y&#125;</span>))<br>    ;;<br>    <span class="hljs-string">&quot;-&quot;</span>)<br>      <span class="hljs-built_in">return</span> $((<span class="hljs-variable">$&#123;x&#125;</span> - <span class="hljs-variable">$&#123;y&#125;</span>))<br>    ;;<br>    <span class="hljs-string">&quot;*&quot;</span>)<br>      <span class="hljs-built_in">return</span> $((<span class="hljs-variable">$&#123;x&#125;</span> * <span class="hljs-variable">$&#123;y&#125;</span>))<br>    ;;<br>    <span class="hljs-string">&quot;/&quot;</span>)<br>      <span class="hljs-built_in">return</span> $((<span class="hljs-variable">$&#123;x&#125;</span> / <span class="hljs-variable">$&#123;y&#125;</span>))<br>    ;;<br>    *)<br>      <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;oper&#125;</span> is not support!&quot;</span><br>      <span class="hljs-built_in">return</span> 0<br>    ;;<br>  <span class="hljs-keyword">esac</span><br>  <span class="hljs-built_in">break</span><br>  <span class="hljs-keyword">done</span><br>&#125;<br>calc<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;the result is: $?&quot;</span> <span class="hljs-comment"># $? 获取 calc 函数返回值</span><br></code></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">$ ./<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-title">-demo</span>.<span class="hljs-title">sh</span></span><br><span class="hljs-number">1</span>) +<br><span class="hljs-number">2</span>) -<br><span class="hljs-number">3</span>) *<br><span class="hljs-number">4</span>) /<br>choose <span class="hljs-keyword">the</span> oper: <span class="hljs-number">3</span><br>enter <span class="hljs-keyword">first</span> <span class="hljs-built_in">num</span>: <span class="hljs-number">10</span><br>enter <span class="hljs-keyword">second</span> <span class="hljs-built_in">num</span>: <span class="hljs-number">10</span><br><span class="hljs-keyword">the</span> <span class="hljs-built_in">result</span> is: <span class="hljs-number">100</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="位置参数"><a href="#位置参数" class="headerlink" title="位置参数"></a>位置参数</h4><p>位置参数是在调用一个函数并传给它参数时创建的变量。</p>
+<p>位置参数变量表：</p>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>$0</code></td>
+<td>脚本名称</td>
+</tr>
+<tr>
+<td><code>$1 … $9</code></td>
+<td>第 1 个到第 9 个参数列表</td>
+</tr>
+<tr>
+<td><code>${10} … ${N}</code></td>
+<td>第 10 个到 N 个参数列表（N 是一个正整数）</td>
+</tr>
+<tr>
+<td><code>$*</code> 或 <code>$@</code></td>
+<td>除了 <code>$0</code> 外的所有位置参数</td>
+</tr>
+<tr>
+<td><code>$#</code></td>
+<td>不包括 <code>$0</code> 在内的位置参数的个数</td>
+</tr>
+<tr>
+<td><code>$FUNCNAME</code></td>
+<td>函数名称（仅在函数内部有值）</td>
+</tr>
+</tbody></table>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span><br><br>x=0<br><span class="hljs-keyword">if</span> [[ -n <span class="hljs-variable">$1</span> ]]; <span class="hljs-keyword">then</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;第一个参数为：<span class="hljs-variable">$1</span>&quot;</span><br>  x=<span class="hljs-variable">$1</span><br><span class="hljs-keyword">else</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;第一个参数为空&quot;</span><br><span class="hljs-keyword">fi</span><br><br>y=0<br><span class="hljs-keyword">if</span> [[ -n <span class="hljs-variable">$2</span> ]]; <span class="hljs-keyword">then</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;第二个参数为：<span class="hljs-variable">$2</span>&quot;</span><br>  y=<span class="hljs-variable">$2</span><br><span class="hljs-keyword">else</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;第二个参数为空&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-function"><span class="hljs-title">paramsFunction</span></span>()&#123;<br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;函数第一个入参：<span class="hljs-variable">$1</span>&quot;</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;函数第二个入参：<span class="hljs-variable">$2</span>&quot;</span><br>&#125;<br>paramsFunction <span class="hljs-variable">$&#123;x&#125;</span> <span class="hljs-variable">$&#123;y&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">./function-demo2.sh</span><br>第一个参数为空<br>第二个参数为空<br>函数第一个入参：0<br>函数第二个入参：0<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">./function-demo2.sh 10 20</span><br>第一个参数为：10<br>第二个参数为：20<br>函数第一个入参：10<br>函数第二个入参：20<br></code></pre></td></tr></table></figure>
+
+<p>执行 <code>./variable-demo4.sh hello world</code> ，然后在脚本中通过 <code>$1</code>、<code>$2</code> … 读取第 1 个参数、第 2 个参数。。。</p>
+<h4 id="函数处理参数"><a href="#函数处理参数" class="headerlink" title="函数处理参数"></a>函数处理参数</h4><p>另外，还有几个特殊字符用来处理参数：</p>
+<table>
+<thead>
+<tr>
+<th>参数处理</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>$#</code></td>
+<td>返回参数个数</td>
+</tr>
+<tr>
+<td><code>$*</code></td>
+<td>返回所有参数</td>
+</tr>
+<tr>
+<td><code>$$</code></td>
+<td>脚本运行的当前进程 ID 号</td>
+</tr>
+<tr>
+<td><code>$!</code></td>
+<td>后台运行的最后一个进程的 ID 号</td>
+</tr>
+<tr>
+<td><code>$@</code></td>
+<td>返回所有参数（与 <code>$*</code> 相同）</td>
+</tr>
+<tr>
+<td><code>$-</code></td>
+<td>返回 Shell 使用的当前选项，与 <code>set</code> 命令功能相同。</td>
+</tr>
+<tr>
+<td><code>$?</code></td>
+<td>函数返回值（或上一个命令的退出状态）</td>
+</tr>
+</tbody></table>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-function"><span class="hljs-title">runner</span></span>() &#123;<br>  <span class="hljs-built_in">return</span> 0<br>&#125;<br><br>name=zp<br><span class="hljs-function"><span class="hljs-title">paramsFunction</span></span>()&#123;<br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;函数第一个入参：<span class="hljs-variable">$1</span>&quot;</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;函数第二个入参：<span class="hljs-variable">$2</span>&quot;</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;传递到脚本的参数个数：<span class="hljs-variable">$#</span>&quot;</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;所有参数：&quot;</span><br>  <span class="hljs-built_in">printf</span> <span class="hljs-string">&quot;+ %s\n&quot;</span> <span class="hljs-string">&quot;$*&quot;</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;脚本运行的当前进程 ID 号：$$&quot;</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;后台运行的最后一个进程的 ID 号：$!&quot;</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;所有参数：&quot;</span><br>  <span class="hljs-built_in">printf</span> <span class="hljs-string">&quot;+ %s\n&quot;</span> <span class="hljs-string">&quot;<span class="hljs-variable">$@</span>&quot;</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Shell 使用的当前选项：$-&quot;</span><br>  runner<br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;runner 函数的返回值：$?&quot;</span><br>&#125;<br>paramsFunction 1 <span class="hljs-string">&quot;abc&quot;</span> <span class="hljs-string">&quot;hello, \&quot;zp\&quot;&quot;</span><br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  函数第一个入参：1</span><br><span class="hljs-comment">#  函数第二个入参：abc</span><br><span class="hljs-comment">#  传递到脚本的参数个数：3</span><br><span class="hljs-comment">#  所有参数：</span><br><span class="hljs-comment">#  + 1 abc hello, &quot;zp&quot;</span><br><span class="hljs-comment">#  脚本运行的当前进程 ID 号：26400</span><br><span class="hljs-comment">#  后台运行的最后一个进程的 ID 号：</span><br><span class="hljs-comment">#  所有参数：</span><br><span class="hljs-comment">#  + 1</span><br><span class="hljs-comment">#  + abc</span><br><span class="hljs-comment">#  + hello, &quot;zp&quot;</span><br><span class="hljs-comment">#  Shell 使用的当前选项：hB</span><br><span class="hljs-comment">#  runner 函数的返回值：0</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="Shell-扩展"><a href="#Shell-扩展" class="headerlink" title="Shell 扩展"></a>Shell 扩展</h3><p>扩展 发生在一行命令被分成一个个的 记号（tokens） 之后。换言之，扩展是一种执行数学运算的机制，还可以用来保存命令的执行结果，等等。</p>
+<p>感兴趣的话可以阅读<a target="_blank" rel="noopener" href="https://www.gnu.org/software/bash/manual/bash.html###Shell-Expansions" title="关于 shell 扩展的更多细节">关于 shell 扩展的更多细节</a>。</p>
+<h4 id="大括号扩展"><a href="#大括号扩展" class="headerlink" title="大括号扩展"></a>大括号扩展</h4><p>大括号扩展让生成任意的字符串成为可能。它跟 文件名扩展 很类似，举个例子：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs clean">echo beg&#123;i,a,u&#125;n ### begin began begun<br></code></pre></td></tr></table></figure>
+
+<p>大括号扩展还可以用来创建一个可被循环迭代的区间。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">echo</span> &#123;<span class="hljs-number">0</span>..<span class="hljs-number">5</span>&#125; ### <span class="hljs-number">0</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">4</span> <span class="hljs-number">5</span><br><span class="hljs-attribute">echo</span> &#123;<span class="hljs-number">00</span>..<span class="hljs-number">8</span>..<span class="hljs-number">2</span>&#125; ### <span class="hljs-number">00</span> <span class="hljs-number">02</span> <span class="hljs-number">04</span> <span class="hljs-number">06</span> <span class="hljs-number">08</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="命令置换"><a href="#命令置换" class="headerlink" title="命令置换"></a>命令置换</h4><p>命令置换允许我们对一个命令求值，并将其值置换到另一个命令或者变量赋值表达式中。当一个命令被&#96;&#96;或 $()包围时，命令置换将会执行。举个例子：</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs excel"><span class="hljs-built_in">now</span>=`<span class="hljs-built_in">date</span> +%<span class="hljs-built_in">T</span>`<br>### <span class="hljs-built_in">or</span><br><span class="hljs-built_in">now</span>=$(<span class="hljs-built_in">date</span> +%<span class="hljs-built_in">T</span>)<br><br>echo $<span class="hljs-built_in">now</span> ### <span class="hljs-symbol">19:08</span><span class="hljs-symbol">:26</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="算数扩展"><a href="#算数扩展" class="headerlink" title="算数扩展"></a>算数扩展</h4><p>在 bash 中，执行算数运算是非常方便的。算数表达式必须包在 $(( ))中。算数扩展的格式为：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">result</span>=$(( ((<span class="hljs-number">10</span> + <span class="hljs-number">5</span>*<span class="hljs-number">3</span>) - <span class="hljs-number">7</span>) / <span class="hljs-number">2</span> ))<br><span class="hljs-attribute">echo</span> $result ### <span class="hljs-number">9</span><br></code></pre></td></tr></table></figure>
+
+<p>在算数表达式中，使用变量无需带上 $ 前缀：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">x=4<br>y=7<br><span class="hljs-built_in">echo</span> $(( x + y ))     <span class="hljs-comment">### 11</span><br><span class="hljs-built_in">echo</span> $(( ++x + y++ )) <span class="hljs-comment">### 12</span><br><span class="hljs-built_in">echo</span> $(( x + y ))     <span class="hljs-comment">### 13</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="单引号和双引号-1"><a href="#单引号和双引号-1" class="headerlink" title="单引号和双引号"></a>单引号和双引号</h4><p>单引号和双引号之间有很重要的区别。在双引号中，变量引用或者命令置换是会被展开的。在单引号中是不会的。举个例子：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs clean">echo <span class="hljs-string">&quot;Your home: $HOME&quot;</span> ### Your home: /Users/&lt;username&gt;<br>echo <span class="hljs-string">&#x27;Your home: $HOME&#x27;</span> ### Your home: $HOME<br></code></pre></td></tr></table></figure>
+
+<p>当局部变量和环境变量包含空格时，它们在引号中的扩展要格外注意。随便举个例子，假如我们用 echo 来输出用户的输入：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs clean">INPUT=<span class="hljs-string">&quot;A string  with   strange    whitespace.&quot;</span><br>echo $INPUT   ### A string <span class="hljs-keyword">with</span> strange whitespace.<br>echo <span class="hljs-string">&quot;$INPUT&quot;</span> ### A string  <span class="hljs-keyword">with</span>   strange    whitespace.<br></code></pre></td></tr></table></figure>
+
+<p>调用第一个 echo 时给了它 5 个单独的参数 —— <code>$INPUT</code> 被分成了单独的词，echo 在每个词之间打印了一个空格。第二种情况，调用 echo 时只给了它一个参数（整个 <code>$INPUT</code> 的值，包括其中的空格）。</p>
+<p>来看一个更严肃的例子：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">FILE=<span class="hljs-string">&quot;Favorite Things.txt&quot;</span><br><span class="hljs-built_in">cat</span> <span class="hljs-variable">$FILE</span>   <span class="hljs-comment">### 尝试输出两个文件: `Favorite` 和 `Things.txt`</span><br><span class="hljs-built_in">cat</span> <span class="hljs-string">&quot;<span class="hljs-variable">$FILE</span>&quot;</span> <span class="hljs-comment">### 输出一个文件: `Favorite Things.txt`</span><br></code></pre></td></tr></table></figure>
+
+<p>尽管这个问题可以通过把 FILE 重命名成 Favorite-Things.txt 来解决，但是，假如这个值来自某个环境变量，来自一个位置参数，或者来自其它命令（find, cat, 等等）呢。因此，如果输入 可能 包含空格，务必要用引号把表达式包起来。</p>
+<h3 id="流和重定向"><a href="#流和重定向" class="headerlink" title="流和重定向"></a>流和重定向</h3><p>Bash 有很强大的工具来处理程序之间的协同工作。使用流，我们能将一个程序的输出发送到另一个程序或文件，因此，我们能方便地记录日志或做一些其它我们想做的事。</p>
+<p>管道给了我们创建传送带的机会，控制程序的执行成为可能。</p>
+<p>学习如何使用这些强大的、高级的工具是非常非常重要的。</p>
+<h4 id="输入、输出流"><a href="#输入、输出流" class="headerlink" title="输入、输出流"></a>输入、输出流</h4><p>Bash 接收输入，并以字符序列或 字符流 的形式产生输出。这些流能被重定向到文件或另一个流中。</p>
+<p>有三个文件描述符：</p>
+<table>
+<thead>
+<tr>
+<th>代码</th>
+<th>描述符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>stdin</td>
+<td>标准输入</td>
+</tr>
+<tr>
+<td>1</td>
+<td>stdout</td>
+<td>标准输出</td>
+</tr>
+<tr>
+<td>2</td>
+<td>stderr</td>
+<td>标准错误输出</td>
+</tr>
+</tbody></table>
+<h4 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h4><p>重定向让我们可以控制一个命令的输入来自哪里，输出结果到什么地方。这些运算符在控制流的重定向时会被用到：</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&gt;</code></td>
+<td>重定向输出</td>
+</tr>
+<tr>
+<td><code>&amp;&gt;</code></td>
+<td>重定向输出和错误输出</td>
+</tr>
+<tr>
+<td><code>&amp;&gt;&gt;</code></td>
+<td>以附加的形式重定向输出和错误输出</td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td>重定向输入</td>
+</tr>
+<tr>
+<td><code>&lt;&lt;</code></td>
+<td>Here 文档语法</td>
+</tr>
+<tr>
+<td><code>&lt;&lt;&lt;</code></td>
+<td>Here 字符串</td>
+</tr>
+</tbody></table>
+<p>以下是一些使用重定向的例子：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs clean">### ls的结果将会被写到list.txt中<br>ls -l &gt; list.txt<br><br>### 将输出附加到list.txt中<br>ls -a &gt;&gt; list.txt<br><br>### 所有的错误信息会被写到errors.txt中<br>grep da * <span class="hljs-number">2</span>&gt; errors.txt<br><br>### 从errors.txt中读取输入<br>less &lt; errors.txt<br></code></pre></td></tr></table></figure>
+
+<h4 id="dev-null-文件"><a href="#dev-null-文件" class="headerlink" title="&#x2F;dev&#x2F;null 文件"></a>&#x2F;dev&#x2F;null 文件</h4><p>如果希望执行某个命令，但又不希望在屏幕上显示输出结果，那么可以将输出重定向到 &#x2F;dev&#x2F;null：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">command</span> &gt; /dev/null</span><br></code></pre></td></tr></table></figure>
+
+<p>&#x2F;dev&#x2F;null 是一个特殊的文件，写入到它的内容都会被丢弃；如果尝试从该文件读取内容，那么什么也读不到。但是 &#x2F;dev&#x2F;null 文件非常有用，将命令的输出重定向到它，会起到”禁止输出”的效果。</p>
+<p>如果希望屏蔽 stdout 和 stderr，可以这样写：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">command</span> &gt; /dev/null 2&gt;&amp;1</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="Debug"><a href="#Debug" class="headerlink" title="Debug"></a>Debug</h3><p>shell 提供了用于 debug 脚本的工具。</p>
+<p>如果想采用 debug 模式运行某脚本，可以在其 shebang 中使用一个特殊的选项：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash options</span><br></code></pre></td></tr></table></figure>
+
+<p>options 是一些可以改变 shell 行为的选项。下表是一些可能对你有用的选项：</p>
+<table>
+<thead>
+<tr>
+<th>Short</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-f</td>
+<td>noglob</td>
+<td>禁止文件名展开（globbing）</td>
+</tr>
+<tr>
+<td>-i</td>
+<td>interactive</td>
+<td>让脚本以交互模式运行</td>
+</tr>
+<tr>
+<td>-n</td>
+<td>noexec</td>
+<td>读取命令，但不执行（语法检查）</td>
+</tr>
+<tr>
+<td>-t</td>
+<td>—</td>
+<td>执行完第一条命令后退出</td>
+</tr>
+<tr>
+<td>-v</td>
+<td>verbose</td>
+<td>在执行每条命令前，向 stderr 输出该命令</td>
+</tr>
+<tr>
+<td>-x</td>
+<td>xtrace</td>
+<td>在执行每条命令前，向 stderr 输出该命令以及该命令的扩展参数</td>
+</tr>
+</tbody></table>
+<p>举个例子，如果我们在脚本中指定了 <code>-x</code> 例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash -x</span><br><br><span class="hljs-keyword">for</span> (( i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; i++ )); <span class="hljs-keyword">do</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-variable">$i</span><br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
+
+<p>这会向 stdout 打印出变量的值和一些其它有用的信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ ./my_script<br>+ (( i = <span class="hljs-number">0</span> ))<br>+ (( i &lt; <span class="hljs-number">3</span> ))<br>+ <span class="hljs-built_in">echo</span> 0<br>0<br>+ (( i++  ))<br>+ (( i &lt; <span class="hljs-number">3</span> ))<br>+ <span class="hljs-built_in">echo</span> 1<br>1<br>+ (( i++  ))<br>+ (( i &lt; <span class="hljs-number">3</span> ))<br>+ <span class="hljs-built_in">echo</span> 2<br>2<br>+ (( i++  ))<br>+ (( i &lt; <span class="hljs-number">3</span> ))<br></code></pre></td></tr></table></figure>
+
+<p>有时我们值需要 debug 脚本的一部分。这种情况下，使用 set 命令会很方便。这个命令可以启用或禁用选项。使用-启用选项，+禁用选项：</p>
+<p><strong>💻 “示例源码”：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 开启 debug</span><br><span class="hljs-built_in">set</span> -x<br><span class="hljs-keyword">for</span> (( i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; i++ )); <span class="hljs-keyword">do</span><br>  <span class="hljs-built_in">printf</span> <span class="hljs-variable">$&#123;i&#125;</span><br><span class="hljs-keyword">done</span><br><span class="hljs-comment"># 关闭 debug</span><br><span class="hljs-built_in">set</span> +x<br><span class="hljs-comment">#  Output:</span><br><span class="hljs-comment">#  + (( i = 0 ))</span><br><span class="hljs-comment">#  + (( i &lt; 3 ))</span><br><span class="hljs-comment">#  + printf 0</span><br><span class="hljs-comment">#  0+ (( i++  ))</span><br><span class="hljs-comment">#  + (( i &lt; 3 ))</span><br><span class="hljs-comment">#  + printf 1</span><br><span class="hljs-comment">#  1+ (( i++  ))</span><br><span class="hljs-comment">#  + (( i &lt; 3 ))</span><br><span class="hljs-comment">#  + printf 2</span><br><span class="hljs-comment">#  2+ (( i++  ))</span><br><span class="hljs-comment">#  + (( i &lt; 3 ))</span><br><span class="hljs-comment">#  + set +x</span><br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> &#123;1..5&#125;; <span class="hljs-keyword">do</span> <span class="hljs-built_in">printf</span> <span class="hljs-variable">$&#123;i&#125;</span>; <span class="hljs-keyword">done</span><br><span class="hljs-built_in">printf</span> <span class="hljs-string">&quot;\n&quot;</span><br><span class="hljs-comment">#  Output: 12345</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="往期精彩文章"><a href="#往期精彩文章" class="headerlink" title="往期精彩文章"></a>往期精彩文章</h3><blockquote>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0xFe5m1DQ0ucT2_266hsrA">Oracle 一键巡检自动生成 Word 报告</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/mp/appmsgalbum?__biz=Mzg5MzcwNzQ0MQ==&action=getalbum&album_id=3497774649285296131#wechat_redirect">Oracle 一键安装合集</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/gv6t97FFyMsd6e4GH1HAwQ">Oracle一键安装脚本的 21 个疑问与解答</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/4zI73auIUhwSRb7qL3UIfw">Oracle一键巡检脚本的 21 个疑问与解答</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/UL0BSMCAZrOQgCoWpDMGew">全网首发：Oracle 23ai 一键安装脚本（非 RPM）</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/T7GbpwhnMugzk7PB6hAoJQ">Oracle 19C 最新 RU 补丁 19.24 ，一键安装！</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/dT4tFMYVZ3mh49CI6V3YEA">Oracle Linux 7.9 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/cQJ6gP1bM_7m0H5-Dha4TA">RedHat 9.4(aarch64) 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/sx1E4GIvIeQXp2vGMmVr2A">openEuler 22.03 LTS SP4 一键安装 Oracle 19C RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/mUHqU5hQ9GdH2bKuClPt5A">RHEL 7.9 一键安装 Oracle 19C 19.23 RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Trt7gYkQVoL5A803WlDL6Q">Oracle DataGuard GAP 修复手册</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/DysIcb-p11j56d3YtlqpcQ">优化 Oracle：最佳实践与开发规范</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/SmncWuYAubj0tnOw35aJGA">DBA 必备：Linux 软件源配置全攻略</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/yvth1vorP3JjUp3g3vPBAQ">Linux 一键配置时钟同步全攻略</a></p>
+</blockquote>
+<hr>
+<p>感谢您的阅读，这里是 <strong>Lucifer三思而后行</strong>，欢迎<strong>点赞+关注</strong>，我会持续分享数据库知识、运维技巧。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/141211766/">https://pc-study.github.io/csdn-blog/posts/141211766/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/shell/">shell</a><a class="post-meta__tags" href="/csdn-blog/tags/bash/">bash</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/141211888/" title="一篇文章让你彻底掌握 Python"><img class="cover" src="/csdn-blog/img/covers/tech.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">一篇文章让你彻底掌握 Python</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer 三思而后行，专注于提升数据库运维效率。 目录 一篇文章让你彻底掌握 Python 解释器 注释 数据类型 操作符 - 算术运算符 比较运算符 赋值运算符 位运算符 逻辑运算符 成员运算符 身份运算符 运算符优先级 控制语句 - 条件语句 循环语句 while for</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/140794153/" title="❓关于Oracle一键巡检脚本的 21 个疑问与解答"><img class="cover" src="/csdn-blog/images/c3bc5d731520d2840cb79bf20eaa9f54.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">❓关于Oracle一键巡检脚本的 21 个疑问与解答</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 疑问和解答 往期精彩文章推荐 前言 前段时间发布了一篇❓关于Oracle一键安装脚本的 21 个疑问与解答，大家反响很好，帮助解答了不少疑问，脚本使用起来更加得心应手。 ⭐️ 点击直达文章→：❓关于Oracle一键安装</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/121942762/" title="教你美化苹果电脑，终端不会用，Homebrew 没安装？"><img class="cover" src="/csdn-blog/images/fa06640e2402f836a9917bf87a2d0d52.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-14</div><div class="info-item-2">教你美化苹果电脑，终端不会用，Homebrew 没安装？</div></div><div class="info-2"><div class="info-item-1">前言 不会吧？不会还有人用mac没有安装Homebrew吧？ iTerm2 都不会用，还敢自称老司机？ 都说玩溜了Linux的大佬，MacOS也不在话下。作为常年使用Linux的我，刚入手mbp的时候，打开终端的我真是一言难尽，因此我开始折腾它，也算是小有心得。 因此，打算分享一波，关于如何打造Ma</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120860134/" title="Linux查看物理CPU、内存信息"><img class="cover" src="/csdn-blog/img/covers/linux.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-21</div><div class="info-item-2">Linux查看物理CPU、内存信息</div></div><div class="info-2"><div class="info-item-1">CPU 计算 公式 总核数 = 物理CPU个数 X 每颗物理CPU的核数 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数 查看 命令 查看物理CPU个数 查看每个物理CPU中core的个数(即核数) 查看逻辑CPU的个数 查看CPU信息（型号） 查看内存 信息</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122392238/" title="三天入门 Linux 系统 - 第二天：Linux 基础命令"><img class="cover" src="/csdn-blog/img/covers/linux.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-09</div><div class="info-item-2">三天入门 Linux 系统 - 第二天：Linux 基础命令</div></div><div class="info-2"><div class="info-item-1">前言 第一天我们学习了怎么安装 Linux 系统，第二天就来学习下基础的命令，了解一些入门的简单命令使用。 👇所有学员需加入每日一练活动群👇 一、基础命令 Linux 关机/重启： 文件夹基础命令： 文件基础命令： 用户基础命令： 磁盘基础命令： 网络基础命令： 查看主机信息： 以上均为一些基础的入</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/117886814/" title="第一章【Oracle自动化部署脚本】诞生"><img class="cover" src="/csdn-blog/img/covers/linux.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-30</div><div class="info-item-2">第一章【Oracle自动化部署脚本】诞生</div></div><div class="info-2"><div class="info-item-1">作者简介 作者：LuciferLiu，中国DBA联盟(ACDU)成员。 目前从事Oracle DBA工作，曾从事 Oracle 数据库开发工作，主要服务于生产制造，汽车金融等行业。 现拥有Oracle OCP，OceanBase OBCA认证，擅长Oracle数据库运维开发，备份恢复，安装迁移，Li</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/117887517/" title="第二章【Oracle自动化部署脚本】介绍"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-14</div><div class="info-item-2">第二章【Oracle自动化部署脚本】介绍</div></div><div class="info-2"><div class="info-item-1">作者简介 作者：LuciferLiu，中国DBA联盟(ACDU)成员。 目前从事Oracle DBA工作，曾从事 Oracle 数据库开发工作，主要服务于生产制造，汽车金融等行业。 现拥有Oracle OCP，OceanBase OBCA认证，擅长Oracle数据库运维开发，备份恢复，安装迁移，Li</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122703627/" title="虚拟机玩转 Veritas NetBackup（NBU）之 Linux 配置 NBU 客户端"><img class="cover" src="/csdn-blog/images/0a3e3d2b0972b03571a12e0c109c7332.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-26</div><div class="info-item-2">虚拟机玩转 Veritas NetBackup（NBU）之 Linux 配置 NBU 客户端</div></div><div class="info-2"><div class="info-item-1">前言 NBU 的使用需要在客户端 安装配置 ，否则无法使用，NBU 客户端支持 Linux、Window 以及 AIX 三个平台，安装过程都比较简单，本文介绍下如何在 Linux 下配置 NBU 客户端。 一、上传并解压客户端 安装包 首先下载 Linux 的 NBU 客户端软件： NetBacku</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E8%AE%A9%E4%BD%A0%E5%BD%BB%E5%BA%95%E6%8E%8C%E6%8F%A1-Shell"><span class="toc-number">2.</span> <span class="toc-text">一篇文章让你彻底掌握 Shell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">3.</span> <span class="toc-text">简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-shell"><span class="toc-number">3.1.</span> <span class="toc-text">什么是 shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-shell-%E8%84%9A%E6%9C%AC"><span class="toc-number">3.2.</span> <span class="toc-text">什么是 shell 脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Shell-%E7%8E%AF%E5%A2%83"><span class="toc-number">3.3.</span> <span class="toc-text">Shell 环境</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%87%E5%AE%9A%E8%84%9A%E6%9C%AC%E8%A7%A3%E9%87%8A%E5%99%A8"><span class="toc-number">3.3.1.</span> <span class="toc-text">指定脚本解释器</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.4.</span> <span class="toc-text">模式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%A4%E4%BA%92%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.4.1.</span> <span class="toc-text">交互模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%9E%E4%BA%A4%E4%BA%92%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.4.2.</span> <span class="toc-text">非交互模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="toc-number">3.5.</span> <span class="toc-text">基本语法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%87%8A%E5%99%A8"><span class="toc-number">3.5.1.</span> <span class="toc-text">解释器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B3%A8%E9%87%8A"><span class="toc-number">3.5.2.</span> <span class="toc-text">注释</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#echo"><span class="toc-number">3.5.3.</span> <span class="toc-text">echo</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#printf"><span class="toc-number">3.5.4.</span> <span class="toc-text">printf</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#printf-%E7%9A%84%E8%BD%AC%E4%B9%89%E7%AC%A6"><span class="toc-number">3.5.4.1.</span> <span class="toc-text">printf 的转义符</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%98%E9%87%8F"><span class="toc-number">3.6.</span> <span class="toc-text">变量</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E5%91%BD%E5%90%8D%E5%8E%9F%E5%88%99"><span class="toc-number">3.6.1.</span> <span class="toc-text">变量命名原则</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A3%B0%E6%98%8E%E5%8F%98%E9%87%8F"><span class="toc-number">3.6.2.</span> <span class="toc-text">声明变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%AA%E8%AF%BB%E5%8F%98%E9%87%8F"><span class="toc-number">3.6.3.</span> <span class="toc-text">只读变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E5%8F%98%E9%87%8F"><span class="toc-number">3.6.4.</span> <span class="toc-text">删除变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E7%B1%BB%E5%9E%8B"><span class="toc-number">3.6.5.</span> <span class="toc-text">变量类型</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">3.7.</span> <span class="toc-text">字符串</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%95%E5%BC%95%E5%8F%B7%E5%92%8C%E5%8F%8C%E5%BC%95%E5%8F%B7"><span class="toc-number">3.7.1.</span> <span class="toc-text">单引号和双引号</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8B%BC%E6%8E%A5%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">3.7.2.</span> <span class="toc-text">拼接字符串</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%95%BF%E5%BA%A6"><span class="toc-number">3.7.3.</span> <span class="toc-text">获取字符串长度</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%AA%E5%8F%96%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">3.7.4.</span> <span class="toc-text">截取子字符串</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E6%89%BE%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">3.8.</span> <span class="toc-text">查找子字符串</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84"><span class="toc-number">3.9.</span> <span class="toc-text">数组</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%95%B0%E7%BB%84"><span class="toc-number">3.9.1.</span> <span class="toc-text">创建数组</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E6%95%B0%E7%BB%84%E5%85%83%E7%B4%A0"><span class="toc-number">3.9.2.</span> <span class="toc-text">访问数组元素</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E6%95%B0%E7%BB%84%E7%9A%84%E5%8D%95%E4%B8%AA%E5%85%83%E7%B4%A0"><span class="toc-number">3.9.2.1.</span> <span class="toc-text">访问数组的单个元素</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E6%95%B0%E7%BB%84%E7%9A%84%E6%89%80%E6%9C%89%E5%85%83%E7%B4%A0"><span class="toc-number">3.9.2.2.</span> <span class="toc-text">访问数组的所有元素</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E6%95%B0%E7%BB%84%E7%9A%84%E9%83%A8%E5%88%86%E5%85%83%E7%B4%A0"><span class="toc-number">3.9.2.3.</span> <span class="toc-text">访问数组的部分元素</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E6%95%B0%E7%BB%84%E9%95%BF%E5%BA%A6"><span class="toc-number">3.9.3.</span> <span class="toc-text">访问数组长度</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%91%E6%95%B0%E7%BB%84%E4%B8%AD%E6%B7%BB%E5%8A%A0%E5%85%83%E7%B4%A0"><span class="toc-number">3.9.4.</span> <span class="toc-text">向数组中添加元素</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%8E%E6%95%B0%E7%BB%84%E4%B8%AD%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0"><span class="toc-number">3.9.5.</span> <span class="toc-text">从数组中删除元素</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">3.10.</span> <span class="toc-text">运算符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%97%E6%9C%AF%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">3.10.1.</span> <span class="toc-text">算术运算符</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%EF%BC%9A%E6%9D%A1%E4%BB%B6%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%A6%81%E6%94%BE%E5%9C%A8%E6%96%B9%E6%8B%AC%E5%8F%B7%E4%B9%8B%E9%97%B4%EF%BC%8C%E5%B9%B6%E4%B8%94%E8%A6%81%E6%9C%89%E7%A9%BA%E6%A0%BC%EF%BC%8C%E4%BE%8B%E5%A6%82-x"><span class="toc-number">4.</span> <span class="toc-text">注意：条件表达式要放在方括号之间，并且要有空格，例如: [x</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">4.1.</span> <span class="toc-text">关系运算符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%83%E5%B0%94%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">4.2.</span> <span class="toc-text">布尔运算符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">4.3.</span> <span class="toc-text">逻辑运算符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">4.4.</span> <span class="toc-text">字符串运算符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E6%B5%8B%E8%AF%95%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">4.5.</span> <span class="toc-text">文件测试运算符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E8%AF%AD%E5%8F%A5"><span class="toc-number">4.6.</span> <span class="toc-text">控制语句</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E8%AF%AD%E5%8F%A5"><span class="toc-number">4.6.1.</span> <span class="toc-text">条件语句</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#if"><span class="toc-number">4.6.1.1.</span> <span class="toc-text">if</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#case"><span class="toc-number">4.6.1.2.</span> <span class="toc-text">case</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E8%AF%AD%E5%8F%A5"><span class="toc-number">4.6.2.</span> <span class="toc-text">循环语句</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#for-%E5%BE%AA%E7%8E%AF"><span class="toc-number">4.6.2.1.</span> <span class="toc-text">for 循环</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#while-%E5%BE%AA%E7%8E%AF"><span class="toc-number">4.6.2.2.</span> <span class="toc-text">while 循环</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#until-%E5%BE%AA%E7%8E%AF"><span class="toc-number">4.6.2.3.</span> <span class="toc-text">until 循环</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#select-%E5%BE%AA%E7%8E%AF"><span class="toc-number">4.6.2.4.</span> <span class="toc-text">select 循环</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#break-%E5%92%8C-continue"><span class="toc-number">4.6.2.5.</span> <span class="toc-text">break 和 continue</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%BD%E6%95%B0"><span class="toc-number">4.7.</span> <span class="toc-text">函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%8D%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="toc-number">4.7.1.</span> <span class="toc-text">位置参数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E5%A4%84%E7%90%86%E5%8F%82%E6%95%B0"><span class="toc-number">4.7.2.</span> <span class="toc-text">函数处理参数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Shell-%E6%89%A9%E5%B1%95"><span class="toc-number">4.8.</span> <span class="toc-text">Shell 扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%A7%E6%8B%AC%E5%8F%B7%E6%89%A9%E5%B1%95"><span class="toc-number">4.8.1.</span> <span class="toc-text">大括号扩展</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E7%BD%AE%E6%8D%A2"><span class="toc-number">4.8.2.</span> <span class="toc-text">命令置换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%97%E6%95%B0%E6%89%A9%E5%B1%95"><span class="toc-number">4.8.3.</span> <span class="toc-text">算数扩展</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%95%E5%BC%95%E5%8F%B7%E5%92%8C%E5%8F%8C%E5%BC%95%E5%8F%B7-1"><span class="toc-number">4.8.4.</span> <span class="toc-text">单引号和双引号</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%81%E5%92%8C%E9%87%8D%E5%AE%9A%E5%90%91"><span class="toc-number">4.9.</span> <span class="toc-text">流和重定向</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E3%80%81%E8%BE%93%E5%87%BA%E6%B5%81"><span class="toc-number">4.9.1.</span> <span class="toc-text">输入、输出流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%8D%E5%AE%9A%E5%90%91"><span class="toc-number">4.9.2.</span> <span class="toc-text">重定向</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#dev-null-%E6%96%87%E4%BB%B6"><span class="toc-number">4.9.3.</span> <span class="toc-text">&#x2F;dev&#x2F;null 文件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Debug"><span class="toc-number">4.10.</span> <span class="toc-text">Debug</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%80%E6%9C%9F%E7%B2%BE%E5%BD%A9%E6%96%87%E7%AB%A0"><span class="toc-number">4.11.</span> <span class="toc-text">往期精彩文章</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

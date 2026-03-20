@@ -1,0 +1,460 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Oracle 替代方案？GBase 8s 集群架构一览 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群可以添加微信：Lucifer-0622">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Oracle 替代方案？GBase 8s 集群架构一览">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/144269980/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群可以添加微信：Lucifer-0622">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/b1cc916aaceb337e29c865a600632cca.webp">
+<meta property="article:published_time" content="2024-12-05T08:24:39.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.182Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="架构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/b1cc916aaceb337e29c865a600632cca.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Oracle 替代方案？GBase 8s 集群架构一览","url":"https://pc-study.github.io/csdn-blog/posts/144269980/","image":"https://pc-study.github.io/csdn-blog/images/b1cc916aaceb337e29c865a600632cca.webp","datePublished":"2024-12-05T08:24:39.000Z","dateModified":"2026-03-20T12:25:39.182Z","description":"大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群可以添加微信：Lucifer-0622","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/144269980/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/144269980/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Oracle 替代方案？GBase 8s 集群架构一览',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/b1cc916aaceb337e29c865a600632cca.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">Oracle 替代方案？GBase 8s 集群架构一览</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Oracle 替代方案？GBase 8s 集群架构一览<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-12-05-144269980.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-05T08:24:39.000Z" title="发表于 2024-12-05 16:24:39">2024-12-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.182Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/">Oracle 数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">5.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>16分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，分享一些学习国产数据库路上的知识和经验。</p>
+</blockquote>
+<h2 id="社群交流"><a href="#社群交流" class="headerlink" title="社群交流"></a>社群交流</h2><p>为了给大家提供一些技术交流的平台，目前已成立的技术交流群：</p>
+<ul>
+<li>Oracle 数据库交流群</li>
+<li>国产数据库交流群</li>
+<li>Linux 技术交流群</li>
+<li>ChatGPT 4o 免费体验群</li>
+</ul>
+<p>需要进群可以添加微信：<strong>Lucifer-0622</strong>，备注对应的群名即可。</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>南大通用 GBase 8s 集群模式共分为三种：</p>
+<ul>
+<li><strong>SSC</strong>：基于共享存储的高可用集群</li>
+<li><strong>HAC</strong>：一主一备的同城灾备集群</li>
+<li><strong>RHAC</strong>：一主多备的远程容灾集群</li>
+</ul>
+<p>大胆猜测一下 GBase 8s 集群和 Oracle 的对标关系：</p>
+<ul>
+<li>SSC 对标 Oracle RAC</li>
+<li>HAC 对标 Oracle ADG</li>
+<li>RHAC 对标 Oracle ADG + Far Sync</li>
+</ul>
+<p>本文简单介绍三种集群的架构以及原理，这三种集群模式可以共同构建两地三中心的使用场景。</p>
+<h2 id="SSC-集群"><a href="#SSC-集群" class="headerlink" title="SSC 集群"></a>SSC 集群</h2><p><strong>GBase 8s 共享存储高可用集群（SSC）</strong>，采用共享磁盘方式实现节点高可用，数据仅存储一份，有效利用硬件资源，避免数据重复存储问题。</p>
+<p><strong>SSC 集群有以下特性：</strong></p>
+<ul>
+<li><strong>高可用性</strong>：节点间关系对等，备节点下线对集群无影响，主节点下线故障自动切换到备节点，切换过程和选主过程由连接管理器（CM）实现；</li>
+<li><strong>扩展性</strong>：可以在一定范围内随业务需要而扩展；</li>
+<li><strong>高性能</strong>：集群中任何节点都能响应用户请求，能够更高的支持高并发业务；</li>
+<li><strong>部署简单</strong>：可以非常容易地配置多个 SSC，支持负载均衡。</li>
+</ul>
+<p>集群为主控对等管理模式，查询时访问本地缓存，无网络开销，线性扩展性良好，集群节点数最多可达 128 个，所有节点均可读写。当主控节点失效时，辅助节点可以升级为主控节点，保障系统的高可用。SSC 集群操作简单、成本低无需额外硬件支持。</p>
+<p><img src="/csdn-blog/images/b1cc916aaceb337e29c865a600632cca.webp" alt="Oracle 替代方案？GBase 8s 集群架构一览" loading='lazy'></p>
+<p><strong>如上图，在共享存储集群中：</strong></p>
+<ul>
+<li>PRIMARY 为主节点，SSC 为辅节点；</li>
+<li>PRIMARY 节点与 SSC 节点共享磁盘阵列，数据库 chunk 文件放置于并发裸设备或并行文件系统之上；</li>
+<li>连接管理器（CM）可部署在一个或多个数据节点上，建议部署在单独的应用服务器节点或服务器集群上；</li>
+</ul>
+<p>SSC 集群缓存采用各节点独立架构，各节点上数据缓存不一定相同。当主节点有数据更新时，通过传递页号的方式通知各辅助节点，辅助节点接到通知后，更新自己的数据缓存，以保障数据缓存的一致性，不存在过期的数据页。当访问缓存时，缓存全部在本地，不存在网络开销。</p>
+<p><img src="/csdn-blog/images/e7c83a09361e01b97e2da47eba716714.webp" alt="Oracle 替代方案？GBase 8s 集群架构一览 - 图2" loading='lazy'></p>
+<p>SSC 共享存储支持裸设备，也支持 NFS、GFS 等共享文件系统。此外 SSC 集群可与 HAC、RHAC 集群共同构建两地三中心的使用场景。SSC 适合大型业务系统，在仅一个存储的基础上，各节点间能够保障数据高度一致。也可用于需要高可用、高性能和负载均衡的交易系统等。</p>
+<h2 id="HAC-集群"><a href="#HAC-集群" class="headerlink" title="HAC 集群"></a>HAC 集群</h2><p><strong>HAC 为一主一辅两节点高可用集群</strong>，采用日志同步的方式来保障节点间数据的快速同步。主节点执行读写业务的同时，备节点可承担查询等读业务。HAC 具有安装简单、应用透明无感知、故障自动切换、无须额外付费等特点。为了提升性能，集群采用缓冲区内存同步，再到辅节点回放的方式。日志同步的同步模式包括：<strong>同步模式、半同步模式、异步模式</strong>。</p>
+<p><img src="/csdn-blog/images/3f5fa99aff660cddb9168de4e06b9d27.webp" alt="Oracle 替代方案？GBase 8s 集群架构一览 - 图3" loading='lazy'></p>
+<p>主服务器的逻辑日志缓冲区的内容将复制到共享内存的数据复制缓冲区并清空到磁盘。如果主服务器使用的是完全同步或接近同步方式，那么它必须接收到来自 HAC 辅助服务器的确认，然后才能完成逻辑日志清空。主服务器启动日志发送线程以将数据复制缓冲区通过网络传输到辅助服务器的日志接收线程，然后该线程会将数据写入共享内存的接收缓冲区。日志重做线程将接收缓冲区复制到恢复缓冲区。辅助服务器使用日志恢复线程来重做日志。两节点通过心跳机制发送并接收消息以监视两个服务器之间的连接。</p>
+<p>主数据库服务器可使用三种同步方式将数据复制到 HAC 辅助服务器：</p>
+<ul>
+<li><strong>完全同步方式</strong>：其中事务需要 HAC 辅助服务器上的完成确认，然后才能完成，该方式数据完整性最高，但系统性能会受到负面影响；</li>
+<li><strong>半同步方式</strong>：其中事务需要 HAC 辅助服务器上的已接收确认，然后才能完成。接近同步方式可提供比完全同步方式更优异的性能，比异步方式更优异的数据完整性。</li>
+<li><strong>异步方式</strong>：其中事务无需 HAC 辅助服务器上的已接收或已完成确认即可完成。该方式系统性能最佳，但是如果发生服务器故障，那么数据可能有丢失。</li>
+</ul>
+<h2 id="RHAC-集群"><a href="#RHAC-集群" class="headerlink" title="RHAC 集群"></a>RHAC 集群</h2><p><strong>异地容灾集群（RHAC）与同城两中心 HAC 集群架构上基本相同</strong>。不同之处是发送缓冲区与接收缓冲区之间的同步，采用了服务器多路复用器组件（SMX）技术。SMX 是支持高可用性环境中各服务器之间的多路复用网络连接的通信接口。其为数据库服务器实例之间提供可靠、高性能通信机制。</p>
+<ol>
+<li>主节点验证其已连接到备节点，那么日志发送线程将页面从磁盘或逻辑日志缓冲区复制到数据复制缓冲区。</li>
+<li>日志发送线程使用“服务器多路复用器组”（SMX） 将数据复制缓冲区发送至辅节点的日志接收线程。</li>
+<li>日志接收线程将数据写入接收缓冲区。</li>
+<li>日志重做线程将接收缓冲区复制到恢复缓冲区。</li>
+</ol>
+<p><img src="/csdn-blog/images/88cbce33e4ffefd098ccab654702f49b.webp" alt="Oracle 替代方案？GBase 8s 集群架构一览 - 图4" loading='lazy'></p>
+<p>不同于 HAC 完全同步方式或接近同步的方式，RHAC 主节点在发送下一个缓冲区之前不需要来自备节点的确认。在日志发送线程等待日志接收线程接收来自辅节点的确认之前，主节点最多可发送 32 个未确认的数据复制缓冲区。</p>
+<p>由于异地之间网络带宽、延迟和质量都较同城之间有较大差异，因此异地之间的复制难点在于稳定可靠的传输日志和事务完整性保障，也因此 RHAC 设计中采用异步高可靠传输机制。</p>
+<p>RHAC 集群最多支持 256 个辅节点，安装部署简单快捷，且无须额外付费。用户可根据需求自由添加、删除 RHAC 节点，RHAC 节点和 HAC 节点类型可相互转换。集群对带宽和网络延时要求宽松，更适合节点分布多、节点距离跨度大、对网络带宽要求相对较低的业务场景系统。与 SSC、HAC 集群结合共同构建两地三中心的解决方案。</p>
+<h3 id="GBase-8s-高可用方案及案例"><a href="#GBase-8s-高可用方案及案例" class="headerlink" title="GBase 8s 高可用方案及案例"></a>GBase 8s 高可用方案及案例</h3><p>GBase 8s 提供了丰富且成熟的高可用解决方案，包括同机房高可用方案、同城高可用方案、异地高可用方案以及两地三中心高可用方案等，适应不同业务场景的需求。</p>
+<ul>
+<li><strong>同机房高可用方案</strong>：服务器部署在同一个机房内，主要用于应对软件和硬件故障引发的问题。</li>
+<li><strong>同城高可用方案</strong>：服务器部署在相隔数十公里到几十公里的地点，通常由不同的电力来源供电，可规避部分电力故障以及火灾等局部城市灾害引发的问题。</li>
+<li><strong>异地高可用方案</strong>：针对地震、海啸等重大自然灾害，同城方案可能无法完全规避，此时需要采用异地灾备，将服务器部署在相隔几百至上千公里的不同城市，以降低自然灾害带来的风险。</li>
+</ul>
+<p>GBase 8s 的同城灾备集群能够实现 <strong>零数据丢失</strong>，异地灾备方案也可以达到 <strong>几乎零数据丢失</strong>，并支持分钟级快速切换，确保业务连续性。</p>
+<p>在实际项目中，可以根据需求灵活组合不同的集群方案，例如：</p>
+<ul>
+<li><strong>SSC + HAC</strong>：同城高可用方案。</li>
+<li><strong>HAC + RHAC</strong>：两地三中心高可用方案。</li>
+<li><strong>SSC + RHAC</strong>：两地三中心高可用方案。</li>
+<li><strong>SSC + HAC + RHAC</strong>：综合高可用方案。</li>
+</ul>
+<p>这种组合方式有效规避单一方案的局限性，实现优势互补，进一步提升系统的稳定性和容灾能力，目前已广泛应用于各行各业。</p>
+<h3 id="高可用集群部署策略"><a href="#高可用集群部署策略" class="headerlink" title="高可用集群部署策略"></a>高可用集群部署策略</h3><p>GBase 8s HAC、RHAC、SSC 高可用集群，可以根据需求进行进行组合部署。具体部署策略可参考下方内容：</p>
+<table>
+<thead>
+<tr>
+<th>灾难级别及目的</th>
+<th>方案</th>
+<th>部署策略</th>
+<th>优点</th>
+<th>要求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>在服务器故障时，保证高可用</td>
+<td>同机房</td>
+<td>部署SSC集群</td>
+<td>可用性极高；数据库始终处于同步状态，主辅节点具有相同的数据访问权限；无需更改应用程序。服务端处理失败时，客户端可自动切换至同机房主辅服务器的连接。</td>
+<td>主辅节点位于同一机房；使用共享磁盘集群，元数据冗余；主辅节点需要相同的操作系统和数据库版本；辅助节点硬件需与主节点保持一致，否则会影响数据库性能。</td>
+</tr>
+<tr>
+<td>数据中心出现故障时，保证高可用</td>
+<td>同城</td>
+<td>部署HAC集群或SSC+HAC集群</td>
+<td>可用性极高，应用程序如果不能连接到主节点，可快速访问同城辅节点。数据库异步复制，SSC集群提高了可靠性，无需更改应用程序。</td>
+<td>位于同一城市，无法提供档数据及自然灾害灾备；需要数据库独立的副本，主辅节点需要相同的数据库版本和操作系统版本。</td>
+</tr>
+<tr>
+<td>城市级别灾难发生时，保证高可用</td>
+<td>两地</td>
+<td>RHAC集群</td>
+<td>可用性极高，应用程序如果不能连接到主节点，可快速访问RHAC辅节点。数据库异步复制，提升了可伸缩性无需更改应用程序。</td>
+<td>两地主中心方案需确保操作系统和硬件一致。</td>
+</tr>
+<tr>
+<td>城市级别灾难发生时，保证高可用</td>
+<td>两地三中心</td>
+<td>HAC+RHAC集群或SSC+HAC集群或SSC+HAC+RHAC集群</td>
+<td>两地三中心方案集成了组合各集群的所有优点，且能抵挡城市及灾难带来的影响，最大程度保证高可用性。</td>
+<td>两地三中心方案中的SSC和HAC集群数据库、操作系统和硬件等须保持一致。</td>
+</tr>
+</tbody></table>
+<h3 id="SSC-RHAC-高可用方案"><a href="#SSC-RHAC-高可用方案" class="headerlink" title="SSC+RHAC 高可用方案"></a>SSC+RHAC 高可用方案</h3><p>SSC+RHAC 集群为 GBase 8s 两地三中心最佳实践方案，SSC 集群集群切换后可避免数据丢失，RHAC 为完全异步集群，保证数据同步的同时，最大限度降低对主节点影响。</p>
+<p>以下是一个实际案例，展示了 GBase 8s 数据库在高并发和高可用场景中的应用。</p>
+<p><strong>项目背景</strong>：<br> A 项目中，客户提出以下要求：</p>
+<ol>
+<li><strong>数据库性能</strong>：在高并发业务压力下，数据库需支持多用户高并发访问，确保在高频访问时仍能提供准确、及时的数据访问。</li>
+<li><strong>数据库稳定性</strong>：在网络中断、主机掉电等意外情况下，数据库必须保证数据的安全性、可靠性和一致性。</li>
+<li><strong>数据库高可用</strong>：要求中心机房和灾辅机房双活，两地均能提供业务服务（业务双活），采用单点写、两点读的模式（数据读写分离）。</li>
+</ol>
+<p><strong>解决方案</strong>：<br> 在此项目中，可以设计以下架构：</p>
+<ul>
+<li><strong>中心机房</strong>：部署 SSC 集群，包含一个主节点和一个辅节点。主节点负责读写业务，辅节点负责只读业务。</li>
+<li><strong>灾辅机房</strong>：部署 RHAC 远程辅机，通过高速网络将日志数据同步到灾辅节点，以确保数据一致性。</li>
+<li><strong>连接管理器</strong>：配置 3 个连接管理器（CM）实例，组成高可用组。<ul>
+<li><code>cm2</code> 部署在 SSC 辅节点，作为最高优先级仲裁 CM。</li>
+<li>如 <code>cm2</code> 不可用，次高优先级的 <code>cm1</code> 自动提升为仲裁 CM。</li>
+<li>应用程序通过连接管理器连接，连接管理器根据读写需求分发会话到中心机房或灾辅机房，实现数据读写分离，对应用完全透明。</li>
+</ul>
+</li>
+<li><strong>高可用性</strong>：连接管理器自动监控故障（如主节点故障或网络异常），并快速切换到可用节点，实现本地和异地容灾自动切换。</li>
+</ul>
+<p><strong>效果</strong>：</p>
+<ul>
+<li>满足客户对高并发和高频访问的性能需求。</li>
+<li>在主节点出现故障时，实现分钟级自动切换，确保业务连续性。</li>
+<li>双活架构下支持中心机房和灾辅机房的读写分离，为客户提供高可靠、高稳定的数据库服务。</li>
+</ul>
+<p>以下为架构示意图：</p>
+<p><img src="/csdn-blog/images/38f95ee60874a0328d805690390d48f0.webp" alt="Oracle 替代方案？GBase 8s 集群架构一览 - 图5" loading='lazy'></p>
+<p>该项目上线之后，取得了非常不错的效果。</p>
+<h3 id="HAC-RHAC-高可用方案"><a href="#HAC-RHAC-高可用方案" class="headerlink" title="HAC+RHAC 高可用方案"></a>HAC+RHAC 高可用方案</h3><p>HAC+RHAC 集群是 GBase 8s 提供的一种成熟高可用方案，其中 HAC 节点采用同步更新，RHAC 节点采用异步更新，进一步提升了系统的高可用性。</p>
+<p>以下是一个已实施并上线的项目案例：</p>
+<p><strong>项目背景</strong><br> B 项目主要目标是国产化替代，用自主可控的国产数据库替换国外数据库。客户对系统提出了以下要求：</p>
+<ol>
+<li><strong>实时处理能力</strong>：系统需支持强大的实时数据处理能力，以满足高并发业务需求。</li>
+<li><strong>批量处理能力</strong>：需具备极强的批量处理能力，处理海量数据。</li>
+<li><strong>高稳定性</strong>：系统必须具备极高的稳定性，能够承载高压力场景。</li>
+</ol>
+<p><strong>现状与挑战</strong><br> 原系统采用 2 节点双活架构，业务并发量极高，总数据量超过 TB 级，涉及用户数超千万。</p>
+<p><strong>解决方案</strong><br> GBase 8s 提供了 HAC+RHAC 集群高可用架构，具体实现如下：</p>
+<ul>
+<li><strong>高可用集群</strong>：<ul>
+<li>在 HAC 集群中采用同步更新，确保主辅节点数据的一致性。</li>
+<li>在 RHAC 集群中采用异步更新，通过高速网络同步日志数据，提升数据备份效率。</li>
+</ul>
+</li>
+<li><strong>连接管理器配置</strong>：<ul>
+<li>配置 3 个连接管理器（CM）实例，组成高可用组。</li>
+<li><code>cm2</code> 部署于 HAC 辅节点，设置为最高优先级仲裁 CM。</li>
+<li>如 <code>cm2</code> 不可用，次高优先级的 <code>cm1</code> 自动提升为仲裁 CM。</li>
+</ul>
+</li>
+<li><strong>性能与稳定性优化</strong>：<ul>
+<li>利用 HAC 集群的同步特性保证高并发场景下的数据一致性。</li>
+<li>通过 RHAC 的异步更新机制，在高频批量数据传输中提升系统的容灾能力。</li>
+<li>系统实现读写分离，减轻单节点负载压力，保障系统平稳运行。</li>
+</ul>
+</li>
+</ul>
+<p><strong>实施效果</strong></p>
+<ul>
+<li>实现高并发场景下的实时处理，满足业务需求。</li>
+<li>提升了批量处理效率，有效支持 TB 级数据和千万级用户规模。</li>
+<li>HAC+RHAC 集群架构增强了系统的稳定性和高可用性，满足国产化替换的要求。</li>
+</ul>
+<p>以下为架构示意图：</p>
+<p><img src="/csdn-blog/images/90dd83ec46597a01362161566cc4da69.webp" alt="Oracle 替代方案？GBase 8s 集群架构一览 - 图6" loading='lazy'></p>
+<p>此项目上线也取得了非常优异的效果：此项目中，为了平滑迁移，通过采用 HAC+RHAC 三节点部署模式，通过同步+异步的数据同步模式，提升了集群灾备高可用能力，同时借助读写分离模式，HAC 辅节点分担了主节点的读负载，保证了主节点的资源利用。满足 RPO&#x3D;0，RTO&lt;60s 的高可用能力。</p>
+<h3 id="SSC-HAC-高可用方案"><a href="#SSC-HAC-高可用方案" class="headerlink" title="SSC+HAC 高可用方案"></a>SSC+HAC 高可用方案</h3><p>SSC+HAC 集群是 GBase 8s 在高可用方案中非常适合城市轨道交通项目的一种常用架构。该方案特别适用于对数据库性能要求高、并发量大、实时事务处理需求强且备份与灾备中心位于同城的项目。</p>
+<p>在 C 项目中，生产云主中心及各站点部署了 SSC+HAC 方式，实现了高可用集群功能。</p>
+<p><strong>架构优势</strong><br> SSC 和 HAC 各自的特点在该架构中得到了充分发挥：</p>
+<ul>
+<li><p><strong>SSC 集群特点</strong>：</p>
+<ol>
+<li>多节点可同时访问共享存储，通过 LSN（逻辑序列号）传输实现节点间内存同步。</li>
+<li>辅节点支持读写（写操作最终路由到主节点执行），可动态增减辅节点，最大支持 128 个节点。</li>
+<li>提供负载均衡，支持读写分离，提升集群整体性能和并发处理能力。</li>
+<li>适合高并发、高实时性的场景。</li>
+</ol>
+</li>
+<li><p><strong>HAC 集群特点</strong>：</p>
+<ol>
+<li>数据库实例级别的数据复制，辅机支持读写分离，可根据业务需求选择不同模式（完全同步、异步、折中）。</li>
+<li>提供更灵活的 RPO（恢复点目标），满足不同灾备需求。</li>
+<li>在保持数据一致性的同时，支持业务高可用和快速恢复。</li>
+</ol>
+</li>
+</ul>
+<p><strong>实施效果</strong></p>
+<ul>
+<li>系统满足了客户对高性能、高并发和实时事务处理的需求。</li>
+<li>提供了同城灾备功能，确保业务连续性和数据安全。</li>
+<li>通过灵活的架构组合，提高了资源利用率和业务处理能力。</li>
+</ul>
+<p>以下为架构示意图：</p>
+<p><img src="/csdn-blog/images/78f84dec69275d64bd22186e564bab5b.webp" alt="Oracle 替代方案？GBase 8s 集群架构一览 - 图7" loading='lazy'></p>
+<p>此案例上线至今，未出现任何异常。</p>
+<h3 id="复杂故障转移恢复策略示例"><a href="#复杂故障转移恢复策略示例" class="headerlink" title="复杂故障转移恢复策略示例"></a>复杂故障转移恢复策略示例</h3><p>此小节将介绍 GBase 8s 三种集群同时使用的情况下，逐个发生灾难时的应对策略和方法。为了展示故障的复杂性和数据库集群面对复杂故障时的高可用性，我们搭建了 SSC+HAC+RHAC 的高可用集群。示例中，我们在北京搭建了两个数据中心，在 A 数据中心通过共享盘的方式部署了 SSC 集群。在北京 B 数据中心部署 HAC 节点，在上千公里的上海部署 RHAC 节点。架构图如下所示：</p>
+<p><img src="/csdn-blog/images/15cb4425902b739fd6308968a4b89237.webp" alt="Oracle 替代方案？GBase 8s 集群架构一览 - 图8" loading='lazy'></p>
+<p>现在假设主节点发生故障，则北京 A 数据中心的某个 SSC 辅节点会升为主节点。如下图所示：</p>
+<p><img src="/csdn-blog/images/19dd81ba74ffb76af0131fbd0ae10844.webp" alt="Oracle 替代方案？GBase 8s 集群架构一览 - 图9" loading='lazy'></p>
+<p>如果发生的是区域性故障，北京 A 数据中心都不能对外提供服务，那么北京 B 数据中心的 HAC 节点会升为主节点。如果有需求，还可以将北京 B 数据中心中添加 SSC 集群。如下图所示：</p>
+<p><img src="/csdn-blog/images/8c26f5f503497fbb7f4d51f1d5ebf8e4.webp" alt="Oracle 替代方案？GBase 8s 集群架构一览 - 图10" loading='lazy'></p>
+<p>如果北京 B 数据中心也发生故障，且此高可以方案中发生故障的节点均无法恢复，那么远在上海的数据中心会接管应用的访问，继续对外提供服务。如下图所示：</p>
+<p><img src="/csdn-blog/images/64842a60e5ca10fd7ee3c38c795656c3.webp" alt="Oracle 替代方案？GBase 8s 集群架构一览 - 图11" loading='lazy'></p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>通过两地三中心的集群部署，GBase 8s 不仅满足了金融业务的高安全性和高可用性需求，还提供了良好的性能扩展性。在这个数据驱动的时代，GBase 8s 数据库集群技术将成为金融业务的坚实后盾。</p>
+<p><img src="/csdn-blog/images/c2884cddfccae0e33fc0b4b13b0ab97e.webp" alt="Oracle 替代方案？GBase 8s 集群架构一览 - 图12" loading='lazy'></p>
+<p>如果有遗漏或者不足的地方，欢迎评论区补充或者投稿，感谢阅读！</p>
+<h2 id="往期精彩文章"><a href="#往期精彩文章" class="headerlink" title="往期精彩文章"></a>往期精彩文章</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/gjQBBvjIFsHC1rtEjn30nw">达梦数据库安装最详细教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/hapMuAF9xg8fbdlKJpsN6A">一招教你学会达梦数据库的免密登录</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/pZIcZiICY1pUiTAWQRtUKg">一文讲透达梦数据库的大小写敏感</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/MWQeqdvIfo9D2d8_vi7BTg">效率翻倍！达梦数据库 disql 使用技巧全攻略</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/5EvUN21PZ3Oc0tDnygr7rw">达梦数据库参数配置与一键优化指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/4vl88Oj9Nal-goeoijAqWg">达梦 AWR 报告快速上手指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Yd3gkFki_OJsCfCFKf1Ttw">金仓数据库 KingbaseES V9 单机安装指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/u7HK4soHUght3p0tzHPanA">KingbaseES KSQL 免密登录的几种方式</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vdsFR2aPNp8Gys1G4qX5cQ">KingbaseES 控制文件冗余与恢复秘籍</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/xzPsgHFUxqfAOMi1NPZvjA">金仓 KingbaseES RAC 入门指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/AgGdXyKJxtv2GxWZJWf3AA">金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/zt6Jhv0liO5EsvWyc6YrOg">GBase 8a MPP 集群部署最佳实践</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/XVG7hODwoZnChzj_FT3c8g">GBase 8a GDCA 认证课后练习题大全（题库）</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/MwmvwR7sUQ6VuoftHM19mA">南大通用 GBASE 8s V8.8 数据库最全安装指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/XL2jYOPEf9x_bXW0VFE6kg">GBase 8s GDCA 认证课后练习题大全（题库）</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/oIEWt5pzK0KfhUq3GUNGCA">GBase 8s 数据库巡检报告及一键巡检脚本</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/i-L_tAF-XIIY_d4YCn0MIw">YashanDB 一键生成 AWR 报告</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/sgB3WQ6A8mGl3QaIJj5v1A">YashanDB 数据库安装部署</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/8ioXIpc9J6_XYJWt7L-RoA">YashanDB 共享集群（YAC）入门指南与技术详解</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/e68lXDDFrRjM3XU2THXjUg">基于 TencentOS 3 的 OpenTenBase 集群搭建实践</a></p>
+</blockquote>
+<hr>
+<p>「喜欢这篇文章，您的关注和赞赏是给作者最好的鼓励」</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/144269980/">https://pc-study.github.io/csdn-blog/posts/144269980/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%9E%B6%E6%9E%84/">架构</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/144443754/" title="实战篇：一步步教你搭建 GBase 8s SSC 共享集群"><img class="cover" src="/csdn-blog/images/3d0129674f40fb31483af3dc7f8790b5.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">实战篇：一步步教你搭建 GBase 8s SSC 共享集群</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群可以添加号主微信：Lucifer-0622，备注</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/144257216/" title="YashanDB 23.2 YAC 共享集群部署实战：轻松上手！"><img class="cover" src="/csdn-blog/images/070d4114b2dcac70155c94fa58da3c2f.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">YashanDB 23.2 YAC 共享集群部署实战：轻松上手！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/142649873/" title="Oracle 篇：为什么 SQL 要使用绑定变量？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-30</div><div class="info-item-2">Oracle 篇：为什么 SQL 要使用绑定变量？</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 为什么使用绑定变量？ 共享池 硬解析与软解析 查看 SQL 绑定变量的几种方式 首先获取 SQL\ID v$sql\bind\capture 方式 V$SQL 配合 dbms\sqltune.extract\bind</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122839501/" title="[译] Oracle Database 21c 中的空间管理增强功能"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-09</div><div class="info-item-2">[译] Oracle Database 21c 中的空间管理增强功能</div></div><div class="info-2"><div class="info-item-1">原文地址： 原文作者：Tim Hall 本文介绍 Oracle 数据库 21c 中的空间管理增强功能。 目录 SecureFiles 收缩 临时表空间自动收缩 撤消表空间自动收缩 SecureFiles 收缩 在以前的版本中，我们只能通过移动 lob 来释放 lob 的空间，这对于大型 lob 段可</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139179911/" title="Oracle Linux 8.9 一键安装 Oracle 11GR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">Oracle Linux 8.9 一键安装 Oracle 11GR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 8.9 一键安装 Oracle 11GR2 单机（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149113273/" title="Oracle 表空间不足？用 Shell 脚本实现自动扩容！"><img class="cover" src="/csdn-blog/images/3e0eaa46e3f81a3bf5a28bfbbb804ebe.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-04</div><div class="info-item-2">Oracle 表空间不足？用 Shell 脚本实现自动扩容！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 脚本演示 测试环境准备 部署并执行自动扩展脚本 配置定时任务 (crontab) 写在最后 前言 最近有客户反馈了一个困扰已久的问题：频繁收到表空间使用率超过 90% 的告警邮件，每次都需要手动添加数据文件来解决。客户询问：O</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119854994/" title="《零基础安装 Oracle 数据库》单机ASM系列 3️⃣ 一键快速安装 Oracle 18C 数据库"><img class="cover" src="/csdn-blog/images/7ee41c205dea5f4fcdae2c7f8c21b31f.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-22</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机ASM系列 3️⃣ 一键快速安装 Oracle 18C 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持单机集群版本一键安装了！❗️ 但不支持 Linux 6 系统安装！</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/136733343/" title="Oracle 一键巡检自动生成 Word 报告"><img class="cover" src="/csdn-blog/images/8eefcec32c9273dab177584232db7f0f.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-15</div><div class="info-item-2">Oracle 一键巡检自动生成 Word 报告</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 数据库巡检通常需要消耗大量时间和精力，包括收集数据库以及主机的相关信息。针对 Word 报告的样式调整，也是重复和费事的，所以我针对 Oracle 巡检所需检查的信息以及报告模板，写了一套自动巡检并且生成报告的脚本。巡检人员只需要执行脚本，脚本会自动生成一个完整的 Word 报告</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BE%E7%BE%A4%E4%BA%A4%E6%B5%81"><span class="toc-number">1.</span> <span class="toc-text">社群交流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSC-%E9%9B%86%E7%BE%A4"><span class="toc-number">3.</span> <span class="toc-text">SSC 集群</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HAC-%E9%9B%86%E7%BE%A4"><span class="toc-number">4.</span> <span class="toc-text">HAC 集群</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RHAC-%E9%9B%86%E7%BE%A4"><span class="toc-number">5.</span> <span class="toc-text">RHAC 集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GBase-8s-%E9%AB%98%E5%8F%AF%E7%94%A8%E6%96%B9%E6%A1%88%E5%8F%8A%E6%A1%88%E4%BE%8B"><span class="toc-number">5.1.</span> <span class="toc-text">GBase 8s 高可用方案及案例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E7%AD%96%E7%95%A5"><span class="toc-number">5.2.</span> <span class="toc-text">高可用集群部署策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SSC-RHAC-%E9%AB%98%E5%8F%AF%E7%94%A8%E6%96%B9%E6%A1%88"><span class="toc-number">5.3.</span> <span class="toc-text">SSC+RHAC 高可用方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HAC-RHAC-%E9%AB%98%E5%8F%AF%E7%94%A8%E6%96%B9%E6%A1%88"><span class="toc-number">5.4.</span> <span class="toc-text">HAC+RHAC 高可用方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SSC-HAC-%E9%AB%98%E5%8F%AF%E7%94%A8%E6%96%B9%E6%A1%88"><span class="toc-number">5.5.</span> <span class="toc-text">SSC+HAC 高可用方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E6%9D%82%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB%E6%81%A2%E5%A4%8D%E7%AD%96%E7%95%A5%E7%A4%BA%E4%BE%8B"><span class="toc-number">5.6.</span> <span class="toc-text">复杂故障转移恢复策略示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">6.</span> <span class="toc-text">写在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%80%E6%9C%9F%E7%B2%BE%E5%BD%A9%E6%96%87%E7%AB%A0"><span class="toc-number">7.</span> <span class="toc-text">往期精彩文章</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

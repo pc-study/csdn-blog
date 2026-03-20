@@ -1,0 +1,2163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Lucifer三思而后行</title>
+  
+  <subtitle>CSDN 博客备份归档</subtitle>
+  <link href="https://pc-study.github.io/csdn-blog/atom.xml" rel="self"/>
+  
+  <link href="https://pc-study.github.io/csdn-blog/"/>
+  <updated>2026-03-20T12:25:39.298Z</updated>
+  <id>https://pc-study.github.io/csdn-blog/</id>
+  
+  <author>
+    <name>Lucifer</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Oracle 直连 TiDB 可行吗？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/157245807/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/157245807/</id>
+    <published>2026-01-22T01:16:02.000Z</published>
+    <updated>2026-03-20T12:25:39.298Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习数据库路上的知识和经验。 目录 前言 环境信息 Oracle 端配置 透明网关检查 安装 unixODBC 安装 MySQL ODBC 驱动 配置 ODBC 数据源 验证 ODBC 连通性 配置 Oracle TNS 配置透明网关参数 配置监听 验证</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="tidb" scheme="https://pc-study.github.io/csdn-blog/tags/tidb/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/156853585/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/156853585/</id>
+    <published>2026-01-12T02:49:22.000Z</published>
+    <updated>2026-03-20T08:34:08.514Z</updated>
+    
+    
+    <summary type="html">华为联合云南建投物流推出的智慧物流全球样板点，搭配云链物流大模型的研发启动，近期成为行业热议焦点。从原料采购到销售服务的全流程智能化管理，让物流行业的数智化转型有了清晰的实践范本。 而这一成功案例的底层逻辑，正藏在《华为数据之道》中。对于正在数字化转型路上挣扎的企业而言，这本书绝非空泛的理论合集，而</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="大数据" scheme="https://pc-study.github.io/csdn-blog/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>看来 Oracle 还是听劝的！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/156195159/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/156195159/</id>
+    <published>2025-12-23T06:00:01.000Z</published>
+    <updated>2026-03-20T12:25:39.298Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习数据库路上的知识和经验。 @TOC 前言 自从 Oracle MOS 更新版本之后，备受吐槽，各种问题纷至沓来，我也写了两篇文章聊了聊这个事： Oracle MOS 重磅升级？嗯，什么东西！ 听说 Oracle MOS 又放大招！ 今天登陆 MOS，</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/155349073/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/155349073/</id>
+    <published>2025-11-28T03:44:50.000Z</published>
+    <updated>2026-03-20T12:25:39.298Z</updated>
+    
+    
+    <summary type="html">前言 作为一名长期奋战在一线的 DBA，我深知数据库运维工作的复杂性与挑战性。随着国产数据库的快速发展，我们在享受技术自主可控带来的安全感的同时，也面临着多款数据库并存的运维压力。不同的数据库产品意味着需要掌握不同的管理工具，这无疑增加了我们的工作负担。 最近，我在实际工作中接触到了金仓的 KSQL</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>veeam agent 纳管 Ubuntu 20.04 报错解决</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/155039369/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/155039369/</id>
+    <published>2025-11-19T14:20:46.000Z</published>
+    <updated>2026-03-20T08:34:08.514Z</updated>
+    
+    
+    <summary type="html">前言 昨天 Veeam 纳管一台 Ubuntu 20.04 时遇到了一些问题，先是提示主机需要联外网下载依赖，配置网络之后，agent 安装又失败了，报错： 本文记录一下分析过程以及解决步骤。 问题分析 首先查看主机系统版本： VBR 纳管报错，格式化内容之后如下： 联系网络管理员临时开通外网后，重</summary>
+    
+    
+    
+    <category term="Linux 运维" scheme="https://pc-study.github.io/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/"/>
+    
+    
+    <category term="linux" scheme="https://pc-study.github.io/csdn-blog/tags/linux/"/>
+    
+    <category term="运维" scheme="https://pc-study.github.io/csdn-blog/tags/%E8%BF%90%E7%BB%B4/"/>
+    
+    <category term="ubuntu" scheme="https://pc-study.github.io/csdn-blog/tags/ubuntu/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>困扰 MySQL 用户多年的问题，它只用一个插件就解决了！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/155039355/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/155039355/</id>
+    <published>2025-11-19T14:19:42.000Z</published>
+    <updated>2026-03-20T12:25:39.294Z</updated>
+    
+    
+    <summary type="html">目录 前言 MySQL 数据库 金仓数据库 加载插件 实战演示 写在最后 前言 上周有个朋友问我：“哥，我们刚从 MySQL 8.0 迁到金仓数据库的 MySQL 兼容模式，发现一个很神奇的 BUG”！ 当我在金仓数据库中新建了一个用户以及表，没有对这个用户授权该表的访问权限，但是可以在 表中查询到</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="mysql" scheme="https://pc-study.github.io/csdn-blog/tags/mysql/"/>
+    
+    <category term="金仓数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E9%87%91%E4%BB%93%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>EMCC 13.5 安装中断，如何清理 OMS 库？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/154742448/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/154742448/</id>
+    <published>2025-11-12T08:13:02.000Z</published>
+    <updated>2026-03-20T12:25:39.294Z</updated>
+    
+    
+    <summary type="html">前言 昨天安装一套 EMCC13.5，安装过程中 VNC 卡死导致安装失败，清理目录后重新执行安装，结果安装过程中报错了： 应该是 OMS 数据库在前一次安装过程中已经创建了用户以及一些对象，导致 OMS 数据库不干净了，一般建议重建 OMS 数据库，但是时间比较久，今天介绍一下另一种解决这个问题的</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>TiDB 备份与恢复整理</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/154742413/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/154742413/</id>
+    <published>2025-11-12T08:12:02.000Z</published>
+    <updated>2026-03-20T12:25:39.294Z</updated>
+    
+    
+    <summary type="html">目录 前言 备份方案 如何备份数据？ 如何管理备份数据？ 如何选择备份存储？ 如何恢复数据？ TiDB 快照备份 备份流程 恢复流程 备份文件 - 文件类型 备份文件目录结构 日志备份 PITR 日志备份文件 部署和使用 BR 通过命令行工具（推荐） 通过 SQL 语句 在 Kubernetes 环</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="tidb" scheme="https://pc-study.github.io/csdn-blog/tags/tidb/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用 BR 备份 TiDB 到 AWS S3 存储</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/154742402/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/154742402/</id>
+    <published>2025-11-12T08:11:31.000Z</published>
+    <updated>2026-03-20T12:25:39.290Z</updated>
+    
+    
+    <summary type="html">目录 前言 BR 工具 如何备份数据？ - 快照备份 日志备份 如何选择备份存储？ BR 安装配置 BR 备份部署 日志备份脚本 快照备份脚本 问题总结 网络限制 S3 权限 日志备份重复运行 快照备份中断 写在最后 前言 手里有几套 TiDB 集群数据库没有备份，一直在裸奔，几个备份厂商（爱数，N</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="tidb" scheme="https://pc-study.github.io/csdn-blog/tags/tidb/"/>
+    
+    <category term="aws" scheme="https://pc-study.github.io/csdn-blog/tags/aws/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用 BR 备份 TiDB 到阿里云 OSS 存储</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/154742377/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/154742377/</id>
+    <published>2025-11-12T08:10:57.000Z</published>
+    <updated>2026-03-20T12:25:39.290Z</updated>
+    
+    
+    <summary type="html">目录 前言 阿里云 OSS 日志备份 快照备份 写在最后 前言 最近好久没更新 Oracle 相关内容了，都在搞备份的东西，为啥呢？ 因为最近 Oracle 相关的内容都是很基础的，也没有遇到什么问题，所以就自然没什么内容可写了，反倒是最近几天都在研究 TiDB 备份，顺便学习了下 TiDB 的体系</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="阿里云" scheme="https://pc-study.github.io/csdn-blog/tags/%E9%98%BF%E9%87%8C%E4%BA%91/"/>
+    
+    <category term="tidb" scheme="https://pc-study.github.io/csdn-blog/tags/tidb/"/>
+    
+    <category term="云计算" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用 BR 备份 TiDB 到本地 minIO 存储</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/154742344/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/154742344/</id>
+    <published>2025-11-12T08:09:40.000Z</published>
+    <updated>2026-03-20T12:25:39.290Z</updated>
+    
+    
+    <summary type="html">前言 前面测试了 BR 备份 TiDB 到 AWS S3 和阿里云 OSS 存储，但是因为是走公网，所以备份速度感人，太慢了！最终还是放弃了，打算在本地搭建一套 minIO 存储来存储 TiDB 备份文件。 本文记录一下 minIO 存储搭建过程以及 BR 备份脚本。 搭建 minIO 存储 环境信</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="tidb" scheme="https://pc-study.github.io/csdn-blog/tags/tidb/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle ADG 配置闪回导致报表查询延时！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/154742176/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/154742176/</id>
+    <published>2025-11-12T08:05:47.000Z</published>
+    <updated>2026-03-20T08:34:08.514Z</updated>
+    
+    
+    <summary type="html">前言 今天应用反馈有一套报表库查询有延时，几十分钟没有同步数据了，但是我检查 DG 同步状态之后发现一切正常，手动触发切换日志可以正常同步数据，但是无法实时查询主库的在线重做日志。 不是 DG 配置问题，不是 standby logfile 问题，不是网络问题，能是什么问题呢？ 本文记录一下完整的分</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle RAC 再遇 MTU 坑：cssd 无法启动！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/154742146/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/154742146/</id>
+    <published>2025-11-12T08:03:14.000Z</published>
+    <updated>2026-03-20T12:25:39.290Z</updated>
+    
+    
+    <summary type="html">前言 最近部署了一套 Oracle 19C RAC 环境，安装完成后关机打包发往异地机房。上架后发现其中一个节点无法正常启动，集群卡在 cssd 资源启动阶段。心跳网络采用光纤连接，通过交换机的独立 VLAN，节点间可以正常 ping 通，但是 RAC 只能单节点运行。经过深入分析，最终定位到是 M</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>国产数据库迁移，该如何做到降本增效？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/154742080/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/154742080/</id>
+    <published>2025-11-12T08:00:56.000Z</published>
+    <updated>2026-03-20T12:25:39.286Z</updated>
+    
+    
+    <summary type="html">前言 昨天跟一个老朋友吃饭，聊起他们公司正在搞的数据库国产化迁移，他手里管着一堆库，Oracle、MySQL、SQL Server 啥都有，这一顿操作下来，头发怕是又少了几撮。 听他倒完苦水，我也把我们这边刚做完的一个从 Oracle 到金仓 KES 的项目复盘了一下，征得他同意，把一些真刀真枪的经</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="金仓" scheme="https://pc-study.github.io/csdn-blog/tags/%E9%87%91%E4%BB%93/"/>
+    
+    <category term="kingbasse" scheme="https://pc-study.github.io/csdn-blog/tags/kingbasse/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>【金仓数据库产品体验官】KingbaseES V9R1C10 Oracle 模式分区表特性</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/152344811/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/152344811/</id>
+    <published>2025-09-30T18:44:25.000Z</published>
+    <updated>2026-03-20T12:25:39.286Z</updated>
+    
+    
+    <summary type="html">前言 听说金仓 V9R1C10 兼容了很多 Oracle 的特性，正好最近在做一些分区表的数据归档，测试一下金仓的 Oracle 兼容模式的分区表功能。 范围分区表 创建一个范围分区表： 插入测试数据到不同分区： 验证分区数据分布： 查看分区数据： LIST 分区 创建一个 LIST 分区表： 插入</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="金仓" scheme="https://pc-study.github.io/csdn-blog/tags/%E9%87%91%E4%BB%93/"/>
+    
+    <category term="kingbasse" scheme="https://pc-study.github.io/csdn-blog/tags/kingbasse/"/>
+    
+    <category term="数据库平替用金仓" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B9%B3%E6%9B%BF%E7%94%A8%E9%87%91%E4%BB%93/"/>
+    
+    <category term="金仓产品体验官" scheme="https://pc-study.github.io/csdn-blog/tags/%E9%87%91%E4%BB%93%E4%BA%A7%E5%93%81%E4%BD%93%E9%AA%8C%E5%AE%98/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>【金仓数据库产品体验官】KingbaseES V9R1C10 版本安装指南</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/152234475/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/152234475/</id>
+    <published>2025-09-28T15:39:31.000Z</published>
+    <updated>2026-03-20T12:25:39.286Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 环境准备 安装包下载 安装前配置 检查操作系统版本 关闭防火墙 创建用户 创建目录 系统参数配置 资源配置 配置 RemoveIPC 配置环境变量 KES 安装 安装 ISO 挂载 配置语言环境 命令行安装</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="金仓" scheme="https://pc-study.github.io/csdn-blog/tags/%E9%87%91%E4%BB%93/"/>
+    
+    <category term="kingbasse" scheme="https://pc-study.github.io/csdn-blog/tags/kingbasse/"/>
+    
+    <category term="数据库平替用金仓" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B9%B3%E6%9B%BF%E7%94%A8%E9%87%91%E4%BB%93/"/>
+    
+    <category term="金仓产品体验官" scheme="https://pc-study.github.io/csdn-blog/tags/%E9%87%91%E4%BB%93%E4%BA%A7%E5%93%81%E4%BD%93%E9%AA%8C%E5%AE%98/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>震惊！Oracle 23ai RAC 部署竟然可以这么简单</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/151115930/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/151115930/</id>
+    <published>2025-09-02T08:15:43.000Z</published>
+    <updated>2026-03-20T08:34:08.510Z</updated>
+    
+    
+    <summary type="html">前言 在企业级数据库部署领域，Oracle RAC 一直以其复杂的安装配置流程著称。传统的手工部署方式不仅耗时长、易出错，还需要DBA具备深厚的技术功底。 今天为大家介绍一款强大的 Oracle 一键安装工具 —— OracleShellInstall，它能够将原本需要数小时的部署工作压缩到30分钟</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>TiDB v8.5.3 单机集群部署指南</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/151115914/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/151115914/</id>
+    <published>2025-09-02T08:15:06.000Z</published>
+    <updated>2026-03-20T08:34:08.510Z</updated>
+    
+    
+    <summary type="html">前言 最近在做 TiDB 的恢复演练，需要在单台 Linux 服务器上部署一套 TiDB 最小的完整拓扑的集群，本文记录一下安装过程。 环境准备 开始部署 TiDB 集群前，准备一台部署主机，确保其软件满足需求： 推荐安装 CentOS 7.3 及以上版本 运行环境可以支持互联网访问，用于下载 Ti</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="tidb" scheme="https://pc-study.github.io/csdn-blog/tags/tidb/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>TiDB 离线部署 TiUP 组件</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/151115895/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/151115895/</id>
+    <published>2025-09-02T08:14:26.000Z</published>
+    <updated>2026-03-20T08:34:08.510Z</updated>
+    
+    
+    <summary type="html">目录 前言 TiUP 安装 离线部署 准备 TiUP 离线组件包 部署离线环境 TiUP 组件 前言 tiup 镜像为部署集群或通过 tiup 执行相关工具的源，可以是本地的离线镜像（本地的一个目录）或远程镜像（官方镜像 ）。 TiUP 安装 在 TiDB 官方文档中，建议联网安装 TiUP 组件：</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="tidb" scheme="https://pc-study.github.io/csdn-blog/tags/tidb/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>好消息：Oracle 23ai 现已支持一键部署！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/151115880/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/151115880/</id>
+    <published>2025-09-02T08:13:52.000Z</published>
+    <updated>2026-03-20T12:25:39.274Z</updated>
+    
+    
+    <summary type="html">目录 前言 安装前准备 环境配置 网络信息 系统镜像挂载 安装包上传 获取安装命令 一键安装 安装后检查 写在最后 前言 最近拿到了 23ai 的本地版安装包，之前也写了一篇手动安装 Oracle 23ai RAC 的文章：装个 Oracle 23ai RAC 玩玩~，当时文章里说会尽快适配好 23</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>金仓 KingbaseES V9 一键安装脚本</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/151115857/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/151115857/</id>
+    <published>2025-09-02T08:13:07.000Z</published>
+    <updated>2026-03-20T12:25:39.274Z</updated>
+    
+    
+    <summary type="html">前言 8 月迎来第二期金仓体验官活动，本次是 MySQL 兼容深度体验。正好最近写了一个 KingbaseES V9 的一键安装脚本，支持 Oracle、MySQL、MSSQL 的兼容模式，已经开源到 Gitee。 下载地址： 为了方便体验 MySQL 兼容版，需要安装一下环境，正好记录一下一键安装</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="金仓" scheme="https://pc-study.github.io/csdn-blog/tags/%E9%87%91%E4%BB%93/"/>
+    
+    <category term="kingbasse" scheme="https://pc-study.github.io/csdn-blog/tags/kingbasse/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle 数据库与操作系统兼容性指南</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/151115817/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/151115817/</id>
+    <published>2025-09-02T08:12:27.000Z</published>
+    <updated>2026-03-20T12:25:39.270Z</updated>
+    
+    
+    <summary type="html">前言 作为一个在 Oracle 坑里摸爬滚打多年的老 DBA，最怕听到的就是&quot;这个版本能不能装在这个系统上？&quot;这种问题。昨天又有朋友来问我 Oracle 数据库和操作系统的兼容性，索性把这些年积累的官方兼容性列表整理出来，省得大家每次都要翻 MOS 文档。 温馨提示： 虽然官方说兼容，但实际生产环境</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>5200000 个文件，rm -rf 报错，如何快速清理？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/151115781/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/151115781/</id>
+    <published>2025-09-02T08:10:19.000Z</published>
+    <updated>2026-03-20T12:13:19.934Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 前言 某客户生产环境 Oracle 19c RAC 集群突发磁盘空间告警，经排查发现 Grid 审计日志占用了 30GB 磁盘空间，目录下堆积了520 万个审计文件： 审计配置保留了默认设置，导致sys用户的每项操作都生成审计记录，在长期</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>教你 Centos 如何离线安装 rlwrap 插件（内网环境）</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/151115756/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/151115756/</id>
+    <published>2025-09-02T08:09:28.000Z</published>
+    <updated>2026-03-20T12:25:39.270Z</updated>
+    
+    
+    <summary type="html">目录 前言 下载 rpm 包 downloadonly 在线镜像源下载 安装 rlwrap 插件 写在最后 前言 今天在一台数据库主机上想安装 rlwrap 插件（上下文切换，退格优化），方便运维操作，但是 rlwrap 需要前置安装 ，因为是内网环境，也不方便挂载镜像 ISO、没有 YUM 源的情</summary>
+    
+    
+    
+    <category term="Linux 运维" scheme="https://pc-study.github.io/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/"/>
+    
+    
+    <category term="linux" scheme="https://pc-study.github.io/csdn-blog/tags/linux/"/>
+    
+    <category term="运维" scheme="https://pc-study.github.io/csdn-blog/tags/%E8%BF%90%E7%BB%B4/"/>
+    
+    <category term="centos" scheme="https://pc-study.github.io/csdn-blog/tags/centos/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>装个 Oracle 23ai 本地版玩玩~</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/150394747/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/150394747/</id>
+    <published>2025-08-14T08:41:48.000Z</published>
+    <updated>2026-03-20T12:25:39.270Z</updated>
+    
+    
+    <summary type="html">前言 这个月好像好久没写文章了，最近有事一直在忙，正好昨晚有点时间，安装一个 Oracle 23ai 本地版玩玩~ 问题记录 可以先看问题，再看安装步骤，有些坑我先帮你们避一下！ 问题一 这个纯属好心干坏事，经验使然！之前 19C RAC 安装，高版本 SSH 会导致互信失败，需要人为处理 来修复，</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Kubernetes 应用部署实战：为什么需要 Kubernetes？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149816087/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149816087/</id>
+    <published>2025-07-31T15:13:25.000Z</published>
+    <updated>2026-03-20T12:25:39.270Z</updated>
+    
+    
+    <summary type="html">前言 想象一下，你开发了一个 Web 应用，需要部署到生产环境。传统方式下，你可能需要手动配置服务器、安装依赖、处理负载均衡、监控服务健康状态等等。当应用需要扩容时，又要重复这些繁琐的操作。 Kubernetes（简称 K8S）就是为了解决这些问题而诞生的容器编排平台。它可以自动化应用的部署、扩缩容</summary>
+    
+    
+    
+    <category term="技术文章" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
+    
+    
+    <category term="kubernetes" scheme="https://pc-study.github.io/csdn-blog/tags/kubernetes/"/>
+    
+    <category term="容器" scheme="https://pc-study.github.io/csdn-blog/tags/%E5%AE%B9%E5%99%A8/"/>
+    
+    <category term="云原生" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>TEM on Cloud 试用指南：值得 DBA 花时间吗？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149692386/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149692386/</id>
+    <published>2025-07-27T08:52:38.000Z</published>
+    <updated>2026-03-20T12:25:39.270Z</updated>
+    
+    
+    <summary type="html">前言 在数字化转型的浪潮中，TiDB 作为分布式数据库的佼佼者，正被越来越多的企业采用。然而，随着集群规模的扩大和业务复杂度的提升，运维管理成为了摆在 TiDBer 面前的一道难题：多集群切换繁琐、命令行操作复杂、故障排查效率低下… 为了彻底解决这些痛点，TiDB 数据库运维管理平台（TEM）应运而</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="TiDB" scheme="https://pc-study.github.io/csdn-blog/tags/TiDB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>被AI抢饭碗前，先看这本让你“一个人顶一个团队”的销售圣经</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149577201/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149577201/</id>
+    <published>2025-07-23T09:27:37.000Z</published>
+    <updated>2026-03-20T12:25:39.270Z</updated>
+    
+    
+    <summary type="html">当AI能自动生成销售话术、批量跟进客户，你还在靠线下拜访、手写跟进表拼业绩？别慌，《AI销冠》来了——这本被IBM、西门子等500强高管力荐的新作，藏着让你在AI时代不可替代的终极答案。 为什么你必须读这本书？ 销售行业正在经历「空间革命」：客户开发、需求挖掘、关系维护正从线下会议室转移到数字空间。</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="人工智能" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>重磅发布：Oracle ADG 一键自动化搭建脚本</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149573014/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149573014/</id>
+    <published>2025-07-23T07:30:03.000Z</published>
+    <updated>2026-03-20T12:25:39.266Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 前言 在 Oracle 数据库高可用架构中，Active Data Guard (ADG) 是保障数据安全和业务连续性的核心方案。然而传统 ADG 搭建涉及数十项复杂配置（监听、TNSNAMES、参数文件、密码文件、日志传输、应用服务等）</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="自动化" scheme="https://pc-study.github.io/csdn-blog/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>金仓 KEMCC 非云环境初始化与纳管指南</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149572992/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149572992/</id>
+    <published>2025-07-23T07:29:32.000Z</published>
+    <updated>2026-03-20T12:25:39.266Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 非云环境初始化 创建非云平台账号 纳管服务器 注册数据库实例 上传镜像文件 创建数据库实例 问题记录 前言 前文 从零搭建金仓运维利器：KEMCC 安装与初探 介绍了如何快速安装一套 KEMCC 管理平台，本文将演示如何初始化</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="金仓数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E9%87%91%E4%BB%93%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="Kingbase" scheme="https://pc-study.github.io/csdn-blog/tags/Kingbase/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>从零搭建金仓运维利器：KEMCC 安装与初探</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149572961/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149572961/</id>
+    <published>2025-07-23T07:29:02.000Z</published>
+    <updated>2026-03-20T12:25:39.266Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 KEMCC 介绍 环境信息 安装前检查 关闭防火墙 创建用户 创建安装目录 系统参数配置 配置系统编码 crontab 权限检查 时钟检查 JDK 版本检查 配置环境变量 KEMCC 安装 安装包解压 图形化安装 KEMCC 启</summary>
+    
+    
+    
+    <category term="Linux 运维" scheme="https://pc-study.github.io/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/"/>
+    
+    
+    <category term="运维" scheme="https://pc-study.github.io/csdn-blog/tags/%E8%BF%90%E7%BB%B4/"/>
+    
+    <category term="金仓数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E9%87%91%E4%BB%93%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="Kingbase" scheme="https://pc-study.github.io/csdn-blog/tags/Kingbase/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle 19.28 RU 升级最佳实践指南</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149572948/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149572948/</id>
+    <published>2025-07-23T07:28:30.000Z</published>
+    <updated>2026-03-20T12:25:39.266Z</updated>
+    
+    
+    <summary type="html">前言 作为关键基础设施维护的关键环节，季度补丁更新（Release Update）是保障 Oracle 数据库安全与稳定的核心任务。本文将以生产环境标准流程，详细记录 Oracle 19.3.0 单机环境升级至 19.28 RU 的完整操作，重点阐述技术风险控制与最佳实践。 补丁获取与预处理 MOS</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>昨天去看了电科金仓的发布会，有点东西！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149572926/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149572926/</id>
+    <published>2025-07-23T07:27:49.000Z</published>
+    <updated>2026-03-20T12:25:39.262Z</updated>
+    
+    
+    <summary type="html">前言 昨天（7 月 15 日），我受邀参加了电科金仓的 2025 年度发布会，主题是“融合进化 智领未来”。作为一个跟数据库打了快十年交道的 DBA，我太清楚这个领域现在有多热闹了：国产化势头猛，AI 技术天天变，老一套运维方法快顶不住了。 这次去，我带着学习的态度，真心想看看国产数据库能拿出什么新</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="金仓数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E9%87%91%E4%BB%93%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="Kingbase" scheme="https://pc-study.github.io/csdn-blog/tags/Kingbase/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>90% 的运维都不知道：top 命令还能这样用！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149572905/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149572905/</id>
+    <published>2025-07-23T07:26:54.000Z</published>
+    <updated>2026-03-20T08:34:08.506Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 概述 是 Linux 系统中最常用的实时系统监控命令之一，能够动态显示系统中正在运行的进程信息，包括 CPU 使用率、内存占用、系统负载等关键性能指标。 基本语法 界面说明 系统信息区域（前 5 行） 第一行：系统时间和负载 ：当前时间</summary>
+    
+    
+    
+    <category term="Linux 运维" scheme="https://pc-study.github.io/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/"/>
+    
+    
+    <category term="linux" scheme="https://pc-study.github.io/csdn-blog/tags/linux/"/>
+    
+    <category term="运维" scheme="https://pc-study.github.io/csdn-blog/tags/%E8%BF%90%E7%BB%B4/"/>
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SSH 一键互信配置脚本 V2.0 使用指南</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149572886/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149572886/</id>
+    <published>2025-07-23T07:26:24.000Z</published>
+    <updated>2026-03-20T12:25:39.262Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 本次升级亮点 使用场景 脚本使用 参数详解 使用案例 - 案例 1：Oracle RAC 集群互信配置 案例 2：非标准 SSH 端口配置 案例 3：Kubernetes 集群节点互信 案例 4：调试模式排查问题 案例 5：混</summary>
+    
+    
+    
+    <category term="Linux 运维" scheme="https://pc-study.github.io/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/"/>
+    
+    
+    <category term="运维" scheme="https://pc-study.github.io/csdn-blog/tags/%E8%BF%90%E7%BB%B4/"/>
+    
+    <category term="ssh" scheme="https://pc-study.github.io/csdn-blog/tags/ssh/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>7个故事，学会人工智能时代必懂的算法常识</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149325799/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149325799/</id>
+    <published>2025-07-14T03:00:46.000Z</published>
+    <updated>2026-03-20T12:25:39.246Z</updated>
+    
+    
+    <summary type="html">在数字化和智能化时代，“算法”一词频繁出现在公众视野，基于算法的技术已经深深融入了我们的日常生活，改变着我们的生活方式。就像每个人都该懂点物理、化学一样，算法和计算的基本概念，也正在成为现代人必备的常识。 拿起手机，你就会接触到各种技术产品。无论是社交媒体、购物平台还是搜索引擎，信息推送算法都会影响</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="人工智能" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle 数据库升级踩坑：DBLink ORA-02019 问题解决思路</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149227585/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149227585/</id>
+    <published>2025-07-09T08:31:37.000Z</published>
+    <updated>2026-03-20T12:25:39.246Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 问题复现 问题分析 源库 (9i) 新库 (19c) 问题解决 尝试一：直接 UPDATE GLOBAL&#92;NAME 表 (失败) 尝试二：使用 RENAME 命令 (成功，但有波折) 写在最后 前言 今天协助客户将 Oracl</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>自动化运维神器：SSH 一键互信脚本，免费速领！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149227554/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149227554/</id>
+    <published>2025-07-09T08:30:28.000Z</published>
+    <updated>2026-03-20T12:25:39.246Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 脚本介绍 参数详解 使用指南 - 基础命令格式 配置当前用户 配置指定用户 写在最后 前言 大家好，我又双叒叕来送福利了，这次是 SSH 一键互信脚本，贼拉好用～ 关注公众号：DBA学习之路，聊天框回复： 下载脚本。 在 Li</summary>
+    
+    
+    
+    <category term="Linux 运维" scheme="https://pc-study.github.io/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/"/>
+    
+    
+    <category term="运维" scheme="https://pc-study.github.io/csdn-blog/tags/%E8%BF%90%E7%BB%B4/"/>
+    
+    <category term="ssh" scheme="https://pc-study.github.io/csdn-blog/tags/ssh/"/>
+    
+    <category term="自动化" scheme="https://pc-study.github.io/csdn-blog/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>智能对话与大模型入门指南</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149216973/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149216973/</id>
+    <published>2025-07-09T02:02:24.000Z</published>
+    <updated>2026-03-20T12:25:39.246Z</updated>
+    
+    
+    <summary type="html">前言 人工智能浪潮席卷全球，深刻改变着人类的生产生活方式。其中，智能对话系统作为人机交互的核心纽带，已广泛应用于智能客服、虚拟助手、智能搜索等领域，极大提升了服务效率和用户体验。同时，大语言模型（LLM） 的爆发式发展，更是为人工智能赋予了前所未有的理解和生成能力，开启了通用人工智能（AGI）探索的</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="人工智能" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle 表空间不足？用 Shell 脚本实现自动扩容！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149113273/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149113273/</id>
+    <published>2025-07-04T03:15:00.000Z</published>
+    <updated>2026-03-20T12:25:39.246Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 脚本演示 测试环境准备 部署并执行自动扩展脚本 配置定时任务 (crontab) 写在最后 前言 最近有客户反馈了一个困扰已久的问题：频繁收到表空间使用率超过 90% 的告警邮件，每次都需要手动添加数据文件来解决。客户询问：O</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SQLark V3.5 重磅升级！你的 AI 小百灵来了~</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149087654/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149087654/</id>
+    <published>2025-07-03T01:47:25.000Z</published>
+    <updated>2026-03-20T12:25:39.246Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 SQLark V3.5 新版亮点 AI 小百灵测评 代码解释 代码生成 优化 SQL 达梦知识检索 写在最后 前言 在数据库工具这个领域，SQLark 的迭代速度真的让我十分佩服，从 2023 年 5 月正式发布以来，几乎每</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="人工智能" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle EMCC 13.5 集群安装部署指南</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/149087635/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/149087635/</id>
+    <published>2025-07-03T01:46:45.000Z</published>
+    <updated>2026-03-20T12:25:39.242Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 第一阶段：OMR 集群部署 - 1.1 Oracle RAC 环境准备 1.2 数据库版本验证 1.3 EMCC 专用数据库优化 第二阶段：ACFS 集群文件系统构建 - 2.1 存储层配置 配置 multipath 多路径</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>统治编程世界！AI时代，Python已是编程语言独一档</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148737645/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148737645/</id>
+    <published>2025-06-18T04:45:32.000Z</published>
+    <updated>2026-03-20T12:25:39.242Z</updated>
+    
+    
+    <summary type="html">2025年5月，Python与第二名 C++ 之间的市场份额差距首次超过了 15%，创造了TIOBE榜单历史。 这意味着 Python 不再只是“热门”，而是遥遥领先，成为编程世界统治级别的语言。从现实情况来看，Python 在数据科学、自动化测试等确实已形成压倒性优势。 随着AI浪潮的到来，Pyt</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="python" scheme="https://pc-study.github.io/csdn-blog/tags/python/"/>
+    
+    <category term="开发语言" scheme="https://pc-study.github.io/csdn-blog/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/"/>
+    
+    <category term="人工智能" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>别再手动安装 Oracle 数据库了，一行命令搞定！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148654934/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148654934/</id>
+    <published>2025-06-14T08:53:57.000Z</published>
+    <updated>2026-03-20T12:13:19.270Z</updated>
+    
+    
+    <summary type="html">🔥 前言 还在为 Oracle 数据库繁琐的安装过程头疼吗？全程零干预 的一键安装脚本来了！只需一个命令，8 分钟 自动完成 Oracle 11GR2 的安装、配置和优化！无论你是 DBA 新手还是运维老手，这个脚本将彻底解放你的双手！ ⭐️ 添加微信，立即订阅脚本： 为什么你必须拥有它？ ✅ 全程</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>夸克AI高效学习法，打造你的个性化学习引擎</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148619922/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148619922/</id>
+    <published>2025-06-12T14:17:52.000Z</published>
+    <updated>2026-03-20T12:25:39.242Z</updated>
+    
+    
+    <summary type="html">高考落幕，千万考生卸下重担，却立刻面临人生第一次重大抉择——志愿填报。无数院校、海量专业、庞杂信息如同迷雾，让考生与家长深陷焦虑漩涡。一个选择，或许就决定着未来四年乃至一生的方向。面对这场无声的战役，《夸克 AI 高效学习法》如同一盏明灯，其核心武器“夸克AI志愿填报系统”，正为学子们开辟出一条通往</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="人工智能" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+    <category term="大数据" scheme="https://pc-study.github.io/csdn-blog/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+    
+    <category term="学习" scheme="https://pc-study.github.io/csdn-blog/tags/%E5%AD%A6%E4%B9%A0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>我用 AI 写了个 Oracle expdp 脚本生成器，群友直呼好用！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148561707/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148561707/</id>
+    <published>2025-06-10T07:28:57.000Z</published>
+    <updated>2026-03-20T12:25:39.242Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 DeepSeek 一键生成 Oracle expdp 脚本生成工具 下载 Oracle expdp 脚本生成工具 前言 今天群里有位兄弟问：有没有一键生成 Oracle expdp 命令脚本的工具？我试着用 DeepSeek</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Linux 系统如何挂载安装镜像 ISO，看我！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148558781/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148558781/</id>
+    <published>2025-06-10T05:22:19.000Z</published>
+    <updated>2026-03-20T12:25:39.242Z</updated>
+    
+    
+    <summary type="html">一般 Linux 系统会安装在虚拟机或者实体机上，根据安装方式的原因，有两种方式进行挂载 ISO。 目录 CD/DVD 驱动器挂载 物理层面连接 ISO 主机层面挂载 ISO 手工上传镜像挂载 物理层面上传 ISO 主机层面挂载 ISO CD/DVD 驱动器挂载 物理层面连接 ISO 不管是使用虚拟</summary>
+    
+    
+    
+    <category term="Linux 运维" scheme="https://pc-study.github.io/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/"/>
+    
+    
+    <category term="linux" scheme="https://pc-study.github.io/csdn-blog/tags/linux/"/>
+    
+    <category term="运维" scheme="https://pc-study.github.io/csdn-blog/tags/%E8%BF%90%E7%BB%B4/"/>
+    
+    <category term="服务器" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>手把手教你安装 Linux 操作系统</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148558773/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148558773/</id>
+    <published>2025-06-10T05:21:45.000Z</published>
+    <updated>2026-03-20T12:25:39.242Z</updated>
+    
+    
+    <summary type="html">前言 对于很多没有接触过 Linux 操作系统的用户来说，系统的安装过程可能会感到陌生和复杂。为了让大家更好地理解和掌握 Linux 的安装过程，本文将以 Oracle Linux 8 为例，详细讲解安装过程中的每一步操作。需要注意的是，虽然本教程以 Oracle Linux 为例，但其他 Linu</summary>
+    
+    
+    
+    <category term="Linux 运维" scheme="https://pc-study.github.io/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/"/>
+    
+    
+    <category term="linux" scheme="https://pc-study.github.io/csdn-blog/tags/linux/"/>
+    
+    <category term="运维" scheme="https://pc-study.github.io/csdn-blog/tags/%E8%BF%90%E7%BB%B4/"/>
+    
+    <category term="服务器" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>海量 Vastbase G100 V2.2.15 安装部署手册</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148558763/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148558763/</id>
+    <published>2025-06-10T05:21:05.000Z</published>
+    <updated>2026-03-20T12:25:39.238Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 介绍 环境准备 安装前配置 检查操作系统版本 关闭防火墙 关闭 selinux 安装依赖 时区配置 配置 RemoveIPC 关闭透明大页 系统参数配置 修改资源限制 创建用户 创建目录 解压安装包 VastBase 安装 i</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="linux" scheme="https://pc-study.github.io/csdn-blog/tags/linux/"/>
+    
+    <category term="vastbase" scheme="https://pc-study.github.io/csdn-blog/tags/vastbase/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>DeepSeek源码深度解析 × 华为仓颉语言编程精粹——从MoE架构到全场景开发生态</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148027409/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148027409/</id>
+    <published>2025-06-09T06:06:20.000Z</published>
+    <updated>2026-03-20T12:25:39.234Z</updated>
+    
+    
+    <summary type="html">前言 在人工智能技术飞速发展的今天，深度学习与大模型技术已成为推动行业变革的核心驱动力，而高效、灵活的开发工具与编程语言则为技术创新提供了重要支撑。本书以两大前沿技术领域为核心，系统性地呈现了两部深度技术著作的精华：一是聚焦于开源大模型DeepSeek的架构解析与实战应用，二是深入探索华为自研仓颉语</summary>
+    
+    
+    
+    <category term="技术文章" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
+    
+    
+    <category term="华为" scheme="https://pc-study.github.io/csdn-blog/tags/%E5%8D%8E%E4%B8%BA/"/>
+    
+    <category term="架构" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%9E%B6%E6%9E%84/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>硬件工程师的电源修炼手册：DC/DC设计全链路突破</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148080033/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148080033/</id>
+    <published>2025-06-09T06:05:47.000Z</published>
+    <updated>2026-03-20T12:25:39.234Z</updated>
+    
+    
+    <summary type="html">前言 电源作为电子系统的&quot;心脏&quot;，其设计能力直接决定着硬件产品的可靠性与效能。本书凝聚三位资深专家在军工、通信、汽车电子等领域的二十年工程经验，以DC/DC电源为切入点，构建了从器件特性到系统优化的完整知识体系。不同于传统教材的抽象理论堆砌，我们独创&quot;问题驱动&quot;的写作模式：通过典型故障案例反推设计要</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="人工智能" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>零基础玩转大模型：从理论到实战的AI速成教程</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148170556/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148170556/</id>
+    <published>2025-06-09T06:05:01.000Z</published>
+    <updated>2026-03-20T12:25:39.234Z</updated>
+    
+    
+    <summary type="html">前言 在人工智能技术迅猛发展的今天，大模型技术正以前所未有的速度重塑各行各业的创新范式；而在建筑与工程领域，BIM（建筑信息模型）技术的普及与深化应用，已成为提升设计效率、优化施工流程的重要驱动力。为满足技术学习与实践的双重需求，本书以两册并行的形式呈现——《人工智能大模型导论》与《Revit+Na</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="人工智能" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>DBA 必看：Oracle 许可合规性检查终极指南</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148435505/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148435505/</id>
+    <published>2025-06-04T13:42:39.000Z</published>
+    <updated>2026-03-20T12:25:39.230Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 数据库版本确认 组件安装状态检查 查看已安装组件 功能使用情况监控 DBA&#92;FEATURE&#92;USAGE&#92;STATISTICS MMON 的采样机制解析 组件使用分析 Oracle Text Oracle Workspace M</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>EMCC 13c 报错 “Metrics Global Cache Blocks Lost is at XXX“ 解决</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148435490/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148435490/</id>
+    <published>2025-06-04T13:41:34.000Z</published>
+    <updated>2026-03-20T12:25:39.230Z</updated>
+    
+    
+    <summary type="html">前言 最近用 EMCC 13c 纳管了一套 Oracle RAC，纳管数据库后前端显示报错信息： 本文分享一下解决方案，安装 EMCC 可参考： 《Oracle Linux 9 安装 EMCC 13.5：避坑细节与实战经验汇总！》 《EMCC 13.5 完整安装详细版》 《实战篇：Oracle EM</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>追忆萨师煊教授：我国数据库学科的拓荒人与奠基者</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148435384/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148435384/</id>
+    <published>2025-06-04T13:36:52.000Z</published>
+    <updated>2026-03-20T12:25:39.230Z</updated>
+    
+    
+    <summary type="html">萨家大院，坐落于福州市朱紫坊片区，是国家级文物保护单位，近代著名海军将领萨镇冰、抗日海军将领“中山舰”舰长萨师俊等名人都曾经在这里居住过，也是我国数据库学科奠基人萨师煊教授的祖宅。近日，光明日报记者敲开萨家大院大红漆门，领略这座名宅与众不同的风采。 1978年，中国人民大学经济信息管理系创建人萨师煊</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>生成式AI第一课：零基础图解Transformer与大模型实战</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148309185/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148309185/</id>
+    <published>2025-05-29T06:13:37.000Z</published>
+    <updated>2026-03-20T12:25:39.230Z</updated>
+    
+    
+    <summary type="html">一本让开发者与 AI 从业者翘首以盼的 LLM 入门与实战指南——《图解大模型：生成式 AI 原理与实战》重磅上市！ 本书由 Jay Alammar 与 Maarten Grootendorst 联袂创作，两位在大模型与自然语言处理领域具有广泛影响力的专家，内容融合广受欢迎的图解系列精华，一经推出便</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="人工智能" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+    <category term="大模型" scheme="https://pc-study.github.io/csdn-blog/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/"/>
+    
+    <category term="生成式AI" scheme="https://pc-study.github.io/csdn-blog/tags/%E7%94%9F%E6%88%90%E5%BC%8FAI/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle Linux 9 安装 EMCC 13.5：避坑细节与实战经验汇总！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148293355/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148293355/</id>
+    <published>2025-05-28T14:56:47.000Z</published>
+    <updated>2026-03-20T12:25:39.230Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 安装前准备 主机信息 硬件要求 EMCC 需要开放端口 建议补丁 安装包上传 数据库安装 Oracle 19C 一键安装 数据库修改参数 EMCC 安装准备 emcc 依赖包安装 配置 net.ipv4.ip&#92;local&#92;por</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="linux" scheme="https://pc-study.github.io/csdn-blog/tags/linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>红帽 RHEL 10 正式发布，这些亮点你必须知道！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148232762/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148232762/</id>
+    <published>2025-05-26T08:04:14.000Z</published>
+    <updated>2026-03-20T12:25:39.226Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 颠覆性革新 1、安装程序全面重构 2、镜像构建器升级 3、重要功能调整 4、软件生态调整 5、生成式 AI Oracle 全系支持：一键部署实战 写在最后 前言 2025 年 5 月 13 日，Red Hat Enterpris</summary>
+    
+    
+    
+    <category term="多媒体处理" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+    <category term="红帽" scheme="https://pc-study.github.io/csdn-blog/tags/%E7%BA%A2%E5%B8%BD/"/>
+    
+    <category term="rhel10" scheme="https://pc-study.github.io/csdn-blog/tags/rhel10/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>飞书知识问答深度测评：企业AI应用落地的“范本级”产品</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148158495/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148158495/</id>
+    <published>2025-05-23T02:42:26.000Z</published>
+    <updated>2026-03-20T12:25:39.226Z</updated>
+    
+    
+    <summary type="html">前言 当 AI 逐渐从技术前沿走向日常办公，我们最常听到的一个词是“效率提升”。但真正能做到降本增效、让企业员工切实受益的 AI 产品，仍属少数。尤其是在组织内部知识管理这一块，大多数企业仍停留在“搜索靠关键词、记录靠记忆、协作靠问人”的阶段，信息重复、碎片化、沉没的现象普遍存在。 飞书推出的“知识</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="人工智能" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+    <category term="飞书" scheme="https://pc-study.github.io/csdn-blog/tags/%E9%A3%9E%E4%B9%A6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>DeepSeek使用秘笈！从入门到精通的100个实用技巧</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148157721/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148157721/</id>
+    <published>2025-05-23T02:21:07.000Z</published>
+    <updated>2026-03-20T12:25:39.226Z</updated>
+    
+    
+    <summary type="html">为什么别人使用DeepSeek的效果惊艳无比，而你自己获得的答案总是不尽如人意？如果真是如此，可能你需要认真思考，自己是不是真的会使用DeepSeek。 《DeepSeek使用秘笈：从入门到精通的100个实用技巧》能指引你充分挖掘DeepSeek潜能、正确掌握DeepSeek使用方法、快速获得Dee</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="人工智能" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>深入解析分布式数据库TiDB：原理、优化与架构实践</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148073832/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148073832/</id>
+    <published>2025-05-19T12:44:31.000Z</published>
+    <updated>2026-03-20T12:25:39.226Z</updated>
+    
+    
+    <summary type="html">前言 在云计算与大数据时代，传统单机数据库面临三大挑战：海量数据存储、高并发访问和实时分析需求。MySQL 分库分表方案复杂、NoSQL 缺乏 ACID 支持、MPP 数仓难以处理 OLTP… 在这样的背景下，TiDB 应运而生。作为一款开源的分布式 NewSQL 数据库，TiDB 完美融合了关系型</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="分布式" scheme="https://pc-study.github.io/csdn-blog/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+    <category term="tidb" scheme="https://pc-study.github.io/csdn-blog/tags/tidb/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>人工智能时代，还需要学编程吗？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148073561/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148073561/</id>
+    <published>2025-05-19T12:12:23.000Z</published>
+    <updated>2026-03-20T12:25:39.226Z</updated>
+    
+    
+    <summary type="html">DeepSeek的大爆发，貌似更是让程序员的失业危机近在咫尺。AI工具的崛起，的确对传统编程岗位产生了冲击，尤其是那些重复性、规律性强的基础编程工作。但程序员的工作并非仅有这些，还包括大量的创造性劳动。在解决复杂任务的过程中，程序员往往要根据实际需求对算法和程序进行优化。在很多现实场景中，AI确实能</summary>
+    
+    
+    
+    <category term="大数据 &amp; AI" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"/>
+    
+    
+    <category term="人工智能" scheme="https://pc-study.github.io/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>重磅！Oracle 巡检神器来了，一键搞定！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148027534/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148027534/</id>
+    <published>2025-05-17T05:40:39.000Z</published>
+    <updated>2026-03-20T12:25:39.226Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 Oracle 数据库巡检 Word 报告生成 macOS 系统 Windows 运行程序 报告展示 写在最后 前言 距离正式发布 Oracle 一键巡检生成 Word 报告 有一年多了，期间很多朋友使用后反馈了一些问题： 源码部</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>OGG 报错 OGG-02028，一个奇葩的 BUG！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148027528/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148027528/</id>
+    <published>2025-05-17T05:39:59.000Z</published>
+    <updated>2026-03-20T12:25:39.222Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 重现问题 设置闪回参数 添加抽取进程 问题描述 解决方案 写在最后 前言 这俩天在测试 OGG 21.17 微服务版本，源端是 Oracle 19C（未安装补丁），在源端配置抽取进程后，进程启动后没多久，就会报错停止，报错内容如</summary>
+    
+    
+    
+    <category term="多媒体处理" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86/"/>
+    
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+    <category term="bug" scheme="https://pc-study.github.io/csdn-blog/tags/bug/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>亲测有效！OGG 创建抽取进程报错 OGG-08241，如何解决？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148027519/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148027519/</id>
+    <published>2025-05-17T05:39:23.000Z</published>
+    <updated>2026-03-20T12:25:39.222Z</updated>
+    
+    
+    <summary type="html">前言 今天在测试 OGG 一个功能的时候，需要重新初始化 oggca，所以重装了一下 OGG。重建完之后重新添加抽取进程报错，一直无法添加成功： 经过一翻分析，找到了解决方案，本文记录一下解决过程。 问题描述 OGG 重装之前，没有清理原先抽取进程，重装后，抽取进程重建失败！ 原因是因为添加抽取进程</summary>
+    
+    
+    
+    <category term="多媒体处理" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86/"/>
+    
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>OGG 更新表频繁导致进程中断，见鬼了？非也！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148027514/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148027514/</id>
+    <published>2025-05-17T05:38:53.000Z</published>
+    <updated>2026-03-20T12:25:39.222Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 问题描述 问题分析 解决方案 后续 前言 最近几周一直遇到一个 OGG 问题，有一张表已更新就会中断 OGG 同步进程，本文记录一下分析过程以及解决方案。 问题描述 昨天下午，客户说 OGG 又停了（OGG 版本是 19.1.0</summary>
+    
+    
+    
+    <category term="多媒体处理" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86/"/>
+    
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>OGGMA 21c 微服务 (MySQL) 安装避坑指南</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/148027506/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/148027506/</id>
+    <published>2025-05-17T05:38:22.000Z</published>
+    <updated>2026-03-20T12:25:39.218Z</updated>
+    
+    
+    <summary type="html">前言 这两天在写 100 天实战课程 的 OGG 微服务课程： 在 Oracle Linux 8.10 上安装 OGGMA 21c MySQL 遇到了一点问题，分享给大家一起避坑！ 环境信息 环境信息： 主机版本 主机名 实例名 MySQL 版本 IP 地址 数据库字符集 Goldengate 版本</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="mysql" scheme="https://pc-study.github.io/csdn-blog/tags/mysql/"/>
+    
+    <category term="adb" scheme="https://pc-study.github.io/csdn-blog/tags/adb/"/>
+    
+    <category term="微服务" scheme="https://pc-study.github.io/csdn-blog/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Debian 12.10 root 登录失败，两步解决！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/147409038/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/147409038/</id>
+    <published>2025-04-22T01:38:09.000Z</published>
+    <updated>2026-03-20T12:25:39.218Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 前言 今天看到 debian 正式发布 12.10，安装完成后发现无法登录 root 用户： 这里我一开始怀疑是 root 密码错了，所以改了一下 root 密码，忘记 root 密码如何修改？ 修改 root 密码 重启主机： 第一时间按</summary>
+    
+    
+    
+    <category term="Linux 运维" scheme="https://pc-study.github.io/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/"/>
+    
+    
+    <category term="运维" scheme="https://pc-study.github.io/csdn-blog/tags/%E8%BF%90%E7%BB%B4/"/>
+    
+    <category term="debian" scheme="https://pc-study.github.io/csdn-blog/tags/debian/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle 数据库安装只需 5 分钟？不服不行！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/147409010/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/147409010/</id>
+    <published>2025-04-22T01:37:28.000Z</published>
+    <updated>2026-03-20T08:34:08.498Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 前言 前几天看到 Debian 出了 12.10 版本，今天周末手痒就用脚本测了一把一键安装 Oracle，没想到安装很顺利，只花了 5 分钟左右。至于为什么要选 ARM 版本，是因为我的电脑是 ARM 芯片，所以只能安装 ARM 版本的操</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle RAC 触发 BUG，crsd 无限重启！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/147408994/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/147408994/</id>
+    <published>2025-04-22T01:36:54.000Z</published>
+    <updated>2026-03-20T12:25:39.214Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题分析 解决问题 更新 OPatch 解压补丁 安装补丁 前言 今天检查一套 Oracle RAC 12.2.0.1 数据库，检查集群状态时，发现集群命令一直夯着没反应： 经过一顿分析，终于解决问题，比较简</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+    <category term="bug" scheme="https://pc-study.github.io/csdn-blog/tags/bug/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>ORA 600 [qkaQknLTPruneKaf:1] BUG 分析与处理</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/147408966/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/147408966/</id>
+    <published>2025-04-22T01:36:23.000Z</published>
+    <updated>2026-03-20T12:25:39.214Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 问题描述 问题分析 问题解决 写在最后 前言 今天检查一套 Oracle 12.1 单机数据库发现 alert 日志报错 ORA-600 [qkaQknLTPruneKaf:1]，本文记录一下处理过程。 问题描述 日常检查数据库</summary>
+    
+    
+    
+    <category term="技术文章" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
+    
+    
+    <category term="bug" scheme="https://pc-study.github.io/csdn-blog/tags/bug/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>避坑指南｜Oracle RAC 补丁安装踩坑实录，你中招几个？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/147408947/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/147408947/</id>
+    <published>2025-04-22T01:35:51.000Z</published>
+    <updated>2026-03-20T12:25:39.214Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 下载补丁 安装过程 检查 OPatch 坑一 更新 OPatch 解压 24396050 补丁包 安装前检查 坑二 坑三 安装补丁 写在最后 前言 上篇文章 《Oracle RAC 触发 BUG，crsd 无限重启！》 中提到通</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle DBA 高效运维指南：高频实用 SQL 大全</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/147408907/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/147408907/</id>
+    <published>2025-04-22T01:34:42.000Z</published>
+    <updated>2026-03-20T08:34:08.494Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 Top SQL 表空间使用率 RMAN 备份 DataGuard 等待事件 行级锁 在线日志切换 用户信息 ASM 磁盘组 DBLink 数据文件收缩 AWR 写在最后 前言 作为一名 Oracle DBA，在日常数据库运维工作</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="运维" scheme="https://pc-study.github.io/csdn-blog/tags/%E8%BF%90%E7%BB%B4/"/>
+    
+    <category term="dba" scheme="https://pc-study.github.io/csdn-blog/tags/dba/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>别再手动搭建 Oracle ADG 了！这个脚本让你效率翻倍</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/147408850/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/147408850/</id>
+    <published>2025-04-22T01:33:12.000Z</published>
+    <updated>2026-03-20T12:25:39.214Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 环境信息 Oracle 一键安装 主库环境 备库环境 ADG 快速搭建 主库开启归档和强制日志 主库增加 standby redo 日志 配置 hosts 配置 TNS DBCA 搭建 ADG 主库设置 ADG 参数 备库设置</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>【纯干货】Oracle 19C RU 19.27 发布，如何快速升级和安装？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/147408828/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/147408828/</id>
+    <published>2025-04-22T01:32:33.000Z</published>
+    <updated>2026-03-20T12:25:39.210Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 介绍 19.27 RU 补丁安装 环境准备 README 升级 OPatch 冲突检查 补丁升级 一键安装补丁 写在最后 前言 前几天 19.27 补丁发布了，一直没时间安装测试，今天正好有空，测试一下。 介绍 Oracle 1</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle RAC 一键安装翻车？手把手教你如何排错！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/147408807/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/147408807/</id>
+    <published>2025-04-22T01:32:02.000Z</published>
+    <updated>2026-03-20T12:25:39.210Z</updated>
+    
+    
+    <summary type="html">前言 今天 Oracle 一键安装脚本群有个朋友使用过程中安装失败，需要帮忙分析： 这里记录一下分析过程以及解决过程~ 问题分析 为了方便分析，我在脚本内置了日志模块，安装遇到问题只需要把日志发出来即可快速分析问题，通过日志可以发现： 可以看到这里集群状态有问题，大概率是 root.sh 执行有问题</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>【KWDB创作者计划】_KaiwuDB 2.1.0 单节点裸机部署</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/147016494/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/147016494/</id>
+    <published>2025-04-05T13:57:36.000Z</published>
+    <updated>2026-03-20T12:25:39.210Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 KWDB 介绍 安装准备 环境信息 配置要求 操作系统 软件依赖 端口要求 安装包下载 部署 KWDB 简单实用 连接数据库 创建数据库 创建用户 创建时序表 前言 今天无意间在墨天轮看到一个征文活动 征文大赛 「码」上数据库—</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="kwdb" scheme="https://pc-study.github.io/csdn-blog/tags/kwdb/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle RAC ASM 磁盘组满了，无法扩容怎么在线处理？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/146367499/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/146367499/</id>
+    <published>2025-03-19T04:54:59.000Z</published>
+    <updated>2026-03-20T12:25:39.206Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题分析 处理过程 关闭自动扩展 重建临时表空间 重建 REDO 文件 写在最后 前言 上周给客户巡检的时候，发现有一套 Oracle RAC 11GR2 数据库的 ASM 磁盘使用率 99.9% 了，来不及</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle 如何修改 db_unique_name？强迫症福音！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/146302237/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/146302237/</id>
+    <published>2025-03-16T13:49:02.000Z</published>
+    <updated>2026-03-20T08:34:08.494Z</updated>
+    
+    
+    <summary type="html">前言 Oracle 数据库有 db&#92;name 和 db&#92;unique&#92;name 的区别，在搭建 DG 的时候，要求主备的 db&#92;unique&#92;name 必须不一致，所以我们通过 DG 的方式迁移数据库后，通过切换后新的主库 db&#92;unique&#92;name 会与原主库不一致。 这时候，如果想修改 db&#92;</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>数据泵导入报错 ORA-39405 提示时区要升级，怎么办？看这篇！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/146155632/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/146155632/</id>
+    <published>2025-03-10T07:22:22.000Z</published>
+    <updated>2026-03-20T12:25:39.206Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题分析 解决方案 安装时区补丁 升级时区 写在最后 前言 最近遇到好几次数据泵导入报错 ORA-39405 的问题，需要升级时区，本文正好记录一下解决过程。 问题分析 两套 19C 数据库，补丁版本不一致，</summary>
+    
+    
+    
+    <category term="多媒体处理" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86/"/>
+    
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>阿里龙蜥 Anolis 23.2 一键安装 Oracle 19C</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/146155597/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/146155597/</id>
+    <published>2025-03-10T07:22:04.000Z</published>
+    <updated>2026-03-20T08:34:08.494Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 前言 Oracle 一键安装脚本，演示 龙蜥 Anolis 23.2 一键安装 Oracle 19C 单机（全程无需人工干预）。 脚本下载：Oracle一键安装脚本 作者微信：Lucifer-0622 安装准备 系统组安装好操作系</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>华为欧拉 openEuler 24.09 一键安装 Oracle 19C</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/146025470/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/146025470/</id>
+    <published>2025-03-04T11:59:09.000Z</published>
+    <updated>2026-03-20T08:34:08.494Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 前言 Oracle 一键安装脚本，演示 openEuler 24.09 一键安装 Oracle 19C 单机过程（全程无需人工干预）。 脚本下载：Oracle一键安装脚本 作者微信：Lucifer-0622 安装准备 系统组安装好</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>华为欧拉 openEuler 24.09 一键安装 Oracle 11GR2</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/146025445/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/146025445/</id>
+    <published>2025-03-04T11:58:14.000Z</published>
+    <updated>2026-03-20T08:34:08.494Z</updated>
+    
+    
+    <summary type="html">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 前言 Oracle 一键安装脚本，演示 openEuler 24.09 一键安装 Oracle 11GR2 单机过程（全程无需人工干预）。 脚本下载：Oracle一键安装脚本 作者微信：Lucifer-0622 安装准备 系统组安</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>什么，oracle 主机用户被删了？原来是虚惊一场！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/146025423/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/146025423/</id>
+    <published>2025-03-04T11:57:43.000Z</published>
+    <updated>2026-03-20T12:25:39.206Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题分析 解决方案 重建家目录 恢复环境变量 恢复互信 恢复计划任务 写在最后 前言 今天突然有个客户找我，说 家目录不见了： 好家伙，我咋一看猜测是 oracle 用户被删了，这是个大动作啊，赶忙连上远程看</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>金仓 KES V9 主备集群一键在线扩容 - 命令行方式</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/146025407/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/146025407/</id>
+    <published>2025-03-04T11:57:11.000Z</published>
+    <updated>2026-03-20T12:25:39.206Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 前置准备 集群扩容 配置 install.conf（单机） SSH 免密配置（单机） 扩容前准备 执行扩容（单机） 检查集群 前言 记得在金仓公众号看到过一篇文章：重生之我在甲方做DBA，从单机到集群，</summary>
+    
+    
+    
+    <category term="多媒体处理" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86/"/>
+    
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle 19C RAC 实例异常崩溃报错 ORA-00600 [kfmdPriRegRclient04]，一波三折！</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/146025398/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/146025398/</id>
+    <published>2025-03-04T11:56:40.000Z</published>
+    <updated>2026-03-20T12:25:39.206Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题描述 问题解决 补丁下载 补丁安装 后续分析 修改 MTU 写在最后 前言 前文 Oracle 19C RAC 集群起不来了，ora.storage 的锅？ 说到集群起不来，分析完之后发现不是集群不是实例</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle 修改数据库字符集大法 - DMU 工具</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/146025385/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/146025385/</id>
+    <published>2025-03-04T11:56:05.000Z</published>
+    <updated>2026-03-20T12:25:39.202Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 DMU 工具 DMU 配置 启动 DMU 工具 DMU 转换字符集 创建测试数据 连接数据库 安装存储库 扫描数据库 解决转换问题 转换字符集 收尾工作 写在最后 参考文档 前言 上篇说到 甩锅篇：Oracl</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle 19C RAC 集群起不来了，ora.storage 的锅？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145762783/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145762783/</id>
+    <published>2025-02-20T12:40:55.000Z</published>
+    <updated>2026-03-20T08:34:08.490Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题分析 解决方案 写在最后 前言 半夜 11 点多接到电话，说有一个客户的生产库宕了一个节点，需要紧急恢复一下。赶紧下床打开电脑，一顿操作连上了客户的数据库主机，是一套 19C（19.22） RAC 2 节</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>老张的国产数据库历险记：从怀疑金仓数据库到真香的心路历程</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145739382/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145739382/</id>
+    <published>2025-02-19T13:33:12.000Z</published>
+    <updated>2026-03-20T08:34:08.490Z</updated>
+    
+    
+    <summary type="html">&quot;你猜怎么着？我们那套SQLServer系统，居然真的成功迁移到国产数据库上了！&quot;前几个月的凌晨两点，老张突然给我发来语音，声音里充满了兴奋。 我揉着眼睛看了眼窗外漆黑的夜色：“你们领导终于决定换掉那台十几年老旧服务器了？” “比那还让人惊讶！上周五领导突然说要搞数据库国产化，刚开始我有点担心——你</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="kingbase" scheme="https://pc-study.github.io/csdn-blog/tags/kingbase/"/>
+    
+    <category term="电科金仓" scheme="https://pc-study.github.io/csdn-blog/tags/%E7%94%B5%E7%A7%91%E9%87%91%E4%BB%93/"/>
+    
+    <category term="SQLserver" scheme="https://pc-study.github.io/csdn-blog/tags/SQLserver/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>甩锅篇：Oracle 数据库特殊字符 ™ 乱码问题</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145697149/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145697149/</id>
+    <published>2025-02-18T01:12:46.000Z</published>
+    <updated>2026-03-20T12:25:39.202Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题描述 环境准备 问题复现 写在最后 前言 今天有个朋友说他们有套 Oracle 19C 数据库，数据库字符集为 ，应用系统查询数据时，有个特殊字符 ™ 有时候正常显示，有时候又会显示乱码，非常诡异，开发硬</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>一文掌握 Oracle OPatch 实用技巧</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145697128/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145697128/</id>
+    <published>2025-02-18T01:12:14.000Z</published>
+    <updated>2026-03-20T12:25:39.202Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 OPatch 更新 OPatch 下载 OPatch 备份 OPatch 更新 OPatch OPatch 常用命令 OPatch 常见问题 写在最后 前言 OPatch 是什么？ 对于 Oracle DBA</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>金仓 KES RWC（读写分离集群）静默安装部署指南</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145697112/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145697112/</id>
+    <published>2025-02-18T01:11:40.000Z</published>
+    <updated>2026-03-20T12:25:39.202Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 KingbaseRWC 介绍 环境准备 安装前配置 检查操作系统版本（所有节点） 配置 /etc/hosts（所有节点） 关闭防火墙（所有节点） 禁用 selinux（所有节点） 创建主机用户（所有节点） 创</summary>
+    
+    
+    
+    <category term="多媒体处理" scheme="https://pc-study.github.io/csdn-blog/categories/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86/"/>
+    
+    
+    <category term="ffmpeg" scheme="https://pc-study.github.io/csdn-blog/tags/ffmpeg/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>金仓 KES 性能优化工具 KWR 入门</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145697091/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145697091/</id>
+    <published>2025-02-18T01:11:02.000Z</published>
+    <updated>2026-03-20T12:25:39.202Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 KWR 介绍 开启 KWR 使用 KWR 查看 KWR 报告 写在最后 前言 数据库性能是应用系统高效运行的基石，因此性能调优至关重要。比如在 Oracle 数据库中，DBAers 通常使用 AWR、ASH、ADDM</summary>
+    
+    
+    
+    <category term="技术文章" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
+    
+    
+    <category term="性能优化" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle Alert 日志频繁告警 12170 TNS-12535/TNS-00505，我看看怎么个事儿？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145697072/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145697072/</id>
+    <published>2025-02-18T01:10:31.000Z</published>
+    <updated>2026-03-20T08:34:08.490Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 问题描述 问题重现 解决方案 调整防火墙 调整 Oracle 参数 治标不治本 写在最后 前言 节后巡检一套 Oracle 11GR2 的库，发现 alert 日志很大，于是看看 alert 日志里都记录了啥？好家伙，</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle 修改 sys 密码无效，啥情况？</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145697062/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145697062/</id>
+    <published>2025-02-18T01:09:57.000Z</published>
+    <updated>2026-03-20T12:25:39.198Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 问题描述 问题分析与解决 写在最后 前言 今天初八，开工大吉！祝大家新年快乐，发大财！ 问题描述 一大早就有个客户找，说有个 Oracle 数据库，修改了 sys 密码，怎么都无法登录，一直报错： 使用客户端工具连接报</summary>
+    
+    
+    
+    <category term="技术文章" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
+    
+    
+    <category term="开发语言" scheme="https://pc-study.github.io/csdn-blog/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/"/>
+    
+    <category term="javascript" scheme="https://pc-study.github.io/csdn-blog/tags/javascript/"/>
+    
+    <category term="ecmascript" scheme="https://pc-study.github.io/csdn-blog/tags/ecmascript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>实战篇：JS kgl get object wait 等待事件分析</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145697041/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145697041/</id>
+    <published>2025-02-18T01:09:24.000Z</published>
+    <updated>2026-03-20T12:25:39.198Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 AWR 报告 探索 BUG 解决方案 下载 oneoff 补丁 更新 OPatch 安装 oneoff 补丁 写在最后 前言 今天给客户巡检数据库时发现有一套 19C RAC CDB 数据库，AWR 报告中 等待事件比</summary>
+    
+    
+    
+    <category term="技术文章" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
+    
+    
+    <category term="开发语言" scheme="https://pc-study.github.io/csdn-blog/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/"/>
+    
+    <category term="javascript" scheme="https://pc-study.github.io/csdn-blog/tags/javascript/"/>
+    
+    <category term="ecmascript" scheme="https://pc-study.github.io/csdn-blog/tags/ecmascript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>GBase 8c GDCA 认证课后练习题大全（题库）</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145697019/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145697019/</id>
+    <published>2025-02-18T01:08:43.000Z</published>
+    <updated>2026-03-20T12:25:39.198Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 单选题 多选题 判断题 写在最后 往期精彩文章 前言 2025 年第一场 GBase 培训：培训预告 2025元月 GBase 8c 认证培训班开始报名啦~，到今天为止，培训课程已经学习完成，我总结了每节课的课后练习题</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>RHEL 7 安装 Oracle 12CR1 RAC 数据库</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145575628/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145575628/</id>
+    <published>2025-02-11T08:59:27.000Z</published>
+    <updated>2026-03-20T12:25:39.198Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 整体规划 系统规划 网络规划 存储规划 内存规划 环境信息 系统安装 网络配置（rac01&amp;rac02） 配置本地软件源（rac01&amp;rac02） hosts文件配置（rac01&amp;rac02） 防火墙配置（r</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>学习 MySQL 需要知道的 28 个小技巧</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145545997/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145545997/</id>
+    <published>2025-02-10T03:18:43.000Z</published>
+    <updated>2026-03-20T12:25:39.198Z</updated>
+    
+    
+    <summary type="html">前言 随着信息技术的不断发展以及互联网行业的高速增长，作为开源数据库的MySQL得到了广泛的应用和发展。目前MySQL已成为关系型数据库领域中非常重要的一员。 无论是运维、开发、测试，还是架构师，数据库技术都是一个 ，那么，一直说学习数据库、学 ，到底是要学习它的哪些东西呢？ 一、如何快速掌握 My</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="mysql" scheme="https://pc-study.github.io/csdn-blog/tags/mysql/"/>
+    
+    <category term="学习" scheme="https://pc-study.github.io/csdn-blog/tags/%E5%AD%A6%E4%B9%A0/"/>
+    
+    <category term="adb" scheme="https://pc-study.github.io/csdn-blog/tags/adb/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>实战篇：enq: TM - contention 等待事件分析</title>
+    <link href="https://pc-study.github.io/csdn-blog/posts/145164664/"/>
+    <id>https://pc-study.github.io/csdn-blog/posts/145164664/</id>
+    <published>2025-01-15T09:26:23.000Z</published>
+    <updated>2026-03-20T12:25:39.194Z</updated>
+    
+    
+    <summary type="html">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 问题分析 enq: TM - contention 问题排查 外键索引缺失检查 并行 DML 检查 付费群咨询 写在最后 前言 今天收到应用反馈：在 发生了一起卡顿，持续 15 秒，到 结束，需要帮忙排查下原因。 先介</summary>
+    
+    
+    
+    <category term="Oracle 数据库" scheme="https://pc-study.github.io/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="oracle" scheme="https://pc-study.github.io/csdn-blog/tags/oracle/"/>
+    
+    <category term="数据库" scheme="https://pc-study.github.io/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+</feed>

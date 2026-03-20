@@ -1,0 +1,672 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>V4 Reduce Transportable Tablespace Downtime using Cross Platform Incremental Backup (Doc ID 2471245. | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="APPLIES TO Oracle Database Cloud Schema Service - Version N&#x2F;A and later Oracle Cloud Infrastructure - Database Service - Version N&#x2F;A and later Oracle">
+<meta property="og:type" content="article">
+<meta property="og:title" content="V4 Reduce Transportable Tablespace Downtime using Cross Platform Incremental Backup (Doc ID 2471245.">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/121997326/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="APPLIES TO Oracle Database Cloud Schema Service - Version N&#x2F;A and later Oracle Cloud Infrastructure - Database Service - Version N&#x2F;A and later Oracle">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/oracle.svg">
+<meta property="article:published_time" content="2021-12-17T07:22:54.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:13:19.790Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="XTTS">
+<meta property="article:tag" content="oracle">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/oracle.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"V4 Reduce Transportable Tablespace Downtime using Cross Platform Incremental Backup (Doc ID 2471245.","url":"https://pc-study.github.io/csdn-blog/posts/121997326/","image":"https://pc-study.github.io/csdn-blog/img/covers/oracle.svg","datePublished":"2021-12-17T07:22:54.000Z","dateModified":"2026-03-20T12:13:19.790Z","description":"APPLIES TO Oracle Database Cloud Schema Service - Version N/A and later Oracle Cloud Infrastructure - Database Service - Version N/A and later Oracle","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/121997326/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/121997326/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'V4 Reduce Transportable Tablespace Downtime using Cross Platform Incremental Backup (Doc ID 2471245.',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/oracle.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">V4 Reduce Transportable Tablespace Downtime using Cross Platform Incremental Backup (Doc ID 2471245.</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">V4 Reduce Transportable Tablespace Downtime using Cross Platform Incremental Backup (Doc ID 2471245.<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-12-17-121997326.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-12-17T07:22:54.000Z" title="发表于 2021-12-17 15:22:54">2021-12-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:13:19.790Z" title="更新于 2026-03-20 20:13:19">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/">Oracle 数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">5.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>35分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:13:19&quot;}" hidden></div><h2 id="APPLIES-TO"><a href="#APPLIES-TO" class="headerlink" title="APPLIES TO"></a>APPLIES TO</h2><p>Oracle Database Cloud Schema Service - Version N&#x2F;A and later<br> Oracle Cloud Infrastructure - Database Service - Version N&#x2F;A and later<br> Oracle Database Cloud Exadata Service - Version N&#x2F;A and later<br> Oracle Database Backup Service - Version N&#x2F;A and later<br> Gen 1 Exadata Cloud at Customer (Oracle Exadata Database Cloud Machine) - Version N&#x2F;A and later<br> Linux x86-64<br> Updated 09-Nov-2018 – Version 4</p>
+<h2 id="PURPOSE"><a href="#PURPOSE" class="headerlink" title="PURPOSE"></a>PURPOSE</h2><p>This article covers the steps needed to use V4 Cross Platform Transportable Tablespaces (XTTS) with RMAN incremental backups to migrate data between systems that have different endian formats, with the least amount of application down time.</p>
+<p>The first step will be to copy a full backup from the source to the destination. Then, by using a series of incremental backups, each smaller than the last, the data at the destination system can be brought nearly current with the source system, before any downtime is required. This procedure requires down time only during the final incremental backup, and the<br>meta<br>-data export&#x2F;import.</p>
+<p>This document describes the V4 procedures for Cross Platform Incremental Backup which can be used with 11.2.0.3 and higher.  This new procedure is simplified version of previous XTTs versions.  This version has the following differences:</p>
+<ul>
+<li>this procedure uses simplified commands.  One command (–backup) for the source and one command (–restore) for the destination.</li>
+<li>this procedure works for multi-tenant environment, including transporting tablespace from non-CDB to CDB or visa versa.  TTS restrictions may apply.</li>
+<li>this procedure requires only one file to be copied between the source’s and destination’s $TMPDIR (res.txt).</li>
+<li>this procedure will automatically resolve added datafiles with no additional intervention.</li>
+<li>this procedure allows for multiple incremental backups taken off the source without running the recovery.  After which, recovery will be of all the incremental backups in the destination at once.</li>
+</ul>
+<p>NOTE:  There are a reported issues with multiple incremental backup recovery and large number of datafiles.  The recover command creation may cause backups to not be found (ORA-19625) and&#x2F;or the recovery attempts to<br>apply<br> the backups in the wrong order resulting in:</p>
+<p>ORA-19638: file &#x2F;<br>&#x2F; is not current enough to apply this incremental backup</p>
+<p> ORA-19642: start SCN of incremental backup is</p>
+<p> ORA-19641: backup datafile checkpoint is SCN time MM&#x2F;DD&#x2F;YYYY HH:MM:SS</p>
+<p> ORA-19640: datafile checkpoint is SCN time MM&#x2F;DD&#x2F;YYYY HH:MM:SS</p>
+<p>Review the following for details and workaround:<br> V4 XTTs: Restore Returns Errors (ORA-19625 or ORA-19641) With Large Number of Datafiles (<a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=2471245.1&id=2689397.1">Note 2689397.1</a>)</p>
+<p>The earlier versions of this procedure are still available in:</p>
+<p>11G -<br>Reduce<br> Transportable Tablespace Downtime using Cross Platform Incremental Backup (<a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=2471245.1&id=1389592.1">Note 1389592.1</a>)<br> 12C - Reduce Transportable Tablespace Downtime using Cross Platform Incremental Backup (<a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=2471245.1&id=2005729.1">Note 2005729.1</a>)</p>
+<p>The Cross Platform Incremental Backup feature does not affect the amount of time it takes to perform other actions for XTTS, such as metadata export and import.  Hence, databases that have very large amounts of metadata (DDL) will see limited benefit from Cross Platform Incremental Backup because migration in these environments is typically dominated by metadata operations, not datafile transfer and conversion.</p>
+<p><strong>NOTE:  Only those database objects that are physically located in the tablespace(s) being transported will be copied to the destination system.   Other objects,  such as users, pl&#x2F;sql objects, sequences, views etc., located in the SYSTEM tablespace will not be transported.  You will need to pre-create the users and copy such objects to the destination system, possibly using data pump.</strong></p>
+<p><strong>The following may help:</strong></p>
+<p><strong><a target="_blank" rel="noopener" href="https://www.oracle.com/assets/full-transportable-wp-12c-1973971.pdf">Oracle Database 12c: Full Transportable Export&#x2F;Import</a></strong></p>
+<p><strong>and&#x2F;or</strong></p>
+<p><strong><a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/database/features/availability/maa-wp-11g-platformmigrationtts-129269.pdf">MAA paper Platform Migration Using Transportable Tablespaces: Oracle Database.</a></strong></p>
+<p>The high-level steps for Cross Platform Incremental Backup are:</p>
+<ol>
+<li><p>Initial setup</p>
+</li>
+<li><p>Prepare phase (source data remains online)</p>
+<ol>
+<li>Backup (level&#x3D;0) of tablespaces to be transported</li>
+<li>Transfer backup and other necessary setup files to destination system</li>
+<li>Restore datafiles on destination system endian format</li>
+</ol>
+</li>
+<li><p>Roll Forward phase (source data remains online - Repeat this phase as many times as necessary to catch destination datafile copies up to source database)</p>
+<ol>
+<li>Create incremental backup on source system</li>
+<li>Transfer incremental backup and other necessary setup files to destination system</li>
+<li>Convert incremental backup to destination system endian format and apply the backup to the destination datafile copies</li>
+<li>Repeat steps until ready to transport the tablespace.</li>
+</ol>
+</li>
+</ol>
+<p>NOTE:  In Version 4, added files will automatically be added in the destination with no additional intervention required.  I.e., if a datafile is added to the tablespace OR a new tablespace name is added to the xtt.properties file.</p>
+<ol start="4">
+<li>Transport phase (source data is READ ONLY)<ol>
+<li>Alter the tablespaces in the source database to READ ONLY</li>
+<li>Repeat the Roll Forward phase one final time<ul>
+<li>This step makes destination datafile copies consistent with source database and generates necessary export.</li>
+<li>Time for this step is significantly shorter than traditional XTTS method when dealing with large data because the incremental backup size is smaller.</li>
+</ul>
+</li>
+<li>Import metadata of objects in the tablespaces into destination database using Data Pump</li>
+<li>Alter the tablespaces in the destination database to READ WRITE</li>
+</ol>
+</li>
+</ol>
+<h2 id="SCOPE"><a href="#SCOPE" class="headerlink" title="SCOPE"></a>SCOPE</h2><p>The source system may be any platform provided the prerequisites referenced and listed below for both platform and database are met.</p>
+<p>If you are migrating from a little endian platform to Oracle Linux, then the migration method that should receive first consideration is Data Guard.  See <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=2471245.1&id=413484.1">Note 413484.1</a> for details about heterogeneous platform support for Data Guard between your current little endian platform and Oracle Linux.</p>
+<h2 id="DETAILS"><a href="#DETAILS" class="headerlink" title="DETAILS"></a>DETAILS</h2><p><strong>NOTE:  Before proceeding with this procedure, review the following notes to understand all the restrictions and issues associated with the transportable tablespace feature (TTS). All such restrictions&#x2F;limitations of TTS apply</strong>.</p>
+<p>Transportable Tablespace (<br>TTS<br>) Restrictions and Limitations: Details, Reference, and Version Where Applicable (<a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=2471245.1&id=1454872.1">Note 1454872.1</a>)<br> Primary Note for Transportable Tablespaces (TTS) – Common Questions and Issues (<a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=2471245.1&id=1166564.1">Note 1166564.1</a>)</p>
+<p><strong>Overview</strong></p>
+<p>This document provides a procedural example of transporting two tablespaces called TS1 and TS2 from an Oracle Solaris SPARC system to Oracle Linux, incorporating Oracle’s Cross Platform Incremental Backup capability to reduce downtime.</p>
+<p>After performing the initial setup, moving the data is performed as follows:</p>
+<ul>
+<li>Prepare<br> During the prepare phase, a level &#x3D;0 backup of the tablespaces’ datafiles is taken on the source.  The backups are transferred to the destination, datafiles are restored and converted to the destination endian format.</li>
+<li>Roll Forward<br> During the roll forward phase, the datafiles restored during the prepare phase are rolled forward using incremental backups taken from the source database.  By performing this phase multiple times, each successive incremental backup becomes smaller and faster to apply, allowing the data at the destination system to be brought almost current with the source system.  The application being migrated is fully accessible during the Roll Forward phase.</li>
+<li>Transport<br> During the transport phase, the tablespaces being transported are put into READ ONLY mode, a final incremental backup is taken from the source database, backups are transferred to destination and applied to the destination datafiles.  At this point, the destination datafile copies consistent with source database and the application being migrated cannot receive any further updates.  The tablespaces then are TTS-exported from the source database and TTS-imported into the destination database.  Finally, the tablespaces are made READ WRITE for full access on the destination database.</li>
+</ul>
+<p><em><strong>Cross Platform Incremental Backup Supporting Scripts</strong></em></p>
+<p>The Cross Platform Incremental Backup core functionality was delivered in Oracle Database 11.2.0.3 and later.  Some of the features in the prior versions (such as using DBMS_FILE_TRANSFER) are not available in this Version 4.  If you need such functionality, use the standard procedure for 11g outlined in <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=2471245.1&id=1389592.1">Note 1389592.1</a>. The procedures outlined in this note applies to both Oracle 11.2.0.3 and later , 12c and higher.  See the Requirements and Recommendations section for details. In addition, a set of supporting scripts in the file rman_xttconvert_VER4.zip is attached to this document that are used to manage the procedure required to perform XTTS with Cross Platform Incremental Backup using Version 4.</p>
+<p>The two primary supporting scripts files are the following:</p>
+<ul>
+<li>Perl script xttdriver.pl script that is run to perform the main steps of the XTTS with Cross Platform Incremental Backup procedure.</li>
+<li>Parameter file xtt.properties: the file which stores site-specific configuration.</li>
+</ul>
+<p><em><strong>Prerequisites</strong></em></p>
+<p>The following prerequisites must be met before starting this procedure:</p>
+<ul>
+<li><p>The limitations and considerations for transportable tablespaces must still be followed.  They are defined in the following manuals:</p>
+<ul>
+<li>Oracle Database Administrator’s Guide</li>
+<li>Oracle Database Utilities</li>
+</ul>
+</li>
+<li><p>In addition to the limitations and considerations for transportable tablespaces, the following conditions must be met:</p>
+<ul>
+<li>The current version does NOT support Windows as either source or destination.</li>
+<li>The source database’s COMPATIBLE parameter must not be greater than the destination database’s COMPATIBLE parameter.</li>
+<li>The source database must be in ARCHIVELOG mode.</li>
+<li>RMAN on the source system must <strong>not</strong> have DEVICE TYPE DISK configured with COMPRESSED.</li>
+<li>RMAN on the source system must <strong>not</strong> have BACKUP TYPE TO COPY.  The source must have BACKUP TYPE TO BACKUPSET.</li>
+<li>RMAN on the source system must <strong>not</strong> have default channel configured to type SBT.   I.e., this procedure can only be used with DISK channels.</li>
+<li>RMAN on the source system must **not **have ANY channel configuration limitations.  For example, MAXSETSIZE, MAXPIECESIZE, etc.</li>
+<li>The set of tablespaces being moved must all be online, and contain no offline data files.  Tablespaces must be READ WRITE.</li>
+<li>Tablespaces that are READ ONLY may be moved with the normal XTTS method.  There is no need to incorporate Cross Platform Incremental Backups to move tablespaces that are always READ ONLY.</li>
+<li>Although preferred destination system is Linux (either 64-bit Oracle Linux or a certified version of RedHat Linux), this procedure can be used with other Unix based operating systems. However, any non-Linux operating system must be running 12.1.0.1 or higher in both destination and source.</li>
+<li>The Oracle version of source must be lower or equal to destination.  Therefore, this procedure can be used as an upgrade method.  <strong>Transportable tablespace restrictions WILL apply.</strong></li>
+<li>Minimum version for source and destination is 11.2.0.3.</li>
+<li>ASM can only be used for final location of datafiles in destination, backups cannot be placed on ASM with this version.</li>
+<li>The backup location of destination <strong>MUST</strong> be a device with read&#x2F;write privileges.  I.e., cannot be a READONLY device.  This can cause ORA-19624 on the backupset conversion.</li>
+<li>The source and target database must use a compatible character set and national character set.</li>
+</ul>
+</li>
+<li><p>All steps in this procedure are run as the oracle user that is a member of the OSDBA group. OS authentication is used to connect to both the source and destination databases.</p>
+</li>
+<li><p>Although NOT recommended, a standby database can be used for ONLY the backup portion of this procedure.    This must be done under the direction of Oracle support.</p>
+</li>
+<li><p>A Snapshot Standby database is NOT supported for this procedure.</p>
+</li>
+</ul>
+<p>Whole Database Migration</p>
+<p>If Cross Platform Incremental Backups will be used to reduce downtime for a whole database migration, then the steps in this document can be combined with the XTTS guidance provided in the <a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/database/features/availability/maa-wp-11g-platformmigrationtts-129269.pdf">MAA paper Platform Migration Using Transportable Tablespaces: Oracle Database</a>.</p>
+<p><em><strong>Troubleshooting</strong></em></p>
+<p>Debug mode enables additional screen output and causes all RMAN executions to be performed with the debug command line option.  To enable debug mode, set the environment variable XTTDEBUG&#x3D;1 before running xttdriver.pl OR<br> run xttdriver.pl with the –debug flag.  This flag allows for 3 levels, -d [1&#x2F;2&#x2F;3] with 3 generating the most information.</p>
+<p>As it is recommended to run these steps in debug, so necessary information is available for diagnosis, the commands listed will include the debug option.</p>
+<p><em><strong>Known Issues</strong></em></p>
+<ol>
+<li>If your source database is running 12c or higher, un-comment the <strong>usermantransport</strong> parameter in the xtt.properties.  This parameter should only be used for an 12c and higher source.  <br> i.e.,:<br> usermantransport&#x3D;1    &lt;&#x3D;&#x3D; remove the ‘#’</li>
+<li>If using ASM in both source and destination, see XTTS Creates Alias on Destination when Source and Destination use ASM (<a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=2471245.1&id=2351123.1">Note 2351123.1</a>)</li>
+<li>If using ASM for datafiles, an error deleting file system file using ASMCMD can be ignored.  (<a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/BugDisplay?parent=DOCUMENT&sourceId=2471245.1&id=29268792">Bug 29268792</a>, currently open)</li>
+<li>The existence of a GLOGIN.sql, in either source or destination, can cause syntax errors.</li>
+<li>For other known issues, see other issues within Known Issues for Cross Platform Transportable Tablespaces XTTS <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=2471245.1&id=2311677.1">Document 2311677.1</a>.</li>
+<li>You cannot use this procedure for a TDE tablespace.</li>
+<li>This procedure has only been tested with English language.</li>
+<li>Be aware of open <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/BugDisplay?parent=DOCUMENT&sourceId=2471245.1&id=30777480">bug 30777480</a> which can cause an issue if the CDB’s undo datafile id (file#) is the same as the datafile id (file#) belonging to a tablespaces being transported. <br> You will receive an error RMAN-20201 ‘datafile not found in the recovery catalog’ on the undo datafile number.</li>
+<li>Incremental backup creation parallelism is defined by RMAN configuration for DEVICE TYPE DISK PARALLELISM.</li>
+<li>If the target database character set is not compatible with source database character set the following error may occur at tablespace plug-in (phase 5):</li>
+</ol>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">ORA<span class="hljs-number">-39123</span>: Data Pump transportable <span class="hljs-keyword">tablespace</span> job aborted  <br>ORA<span class="hljs-number">-19736</span>: can <span class="hljs-keyword">not</span> plug a <span class="hljs-keyword">tablespace</span> <span class="hljs-keyword">into</span> a <span class="hljs-keyword">database</span> <span class="hljs-keyword">using</span> a different <span class="hljs-type">national</span> <span class="hljs-type">character</span> <span class="hljs-keyword">set</span><br><br>AI写代码<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>V4 Transport Tablespaces with Reduced Downtime using Cross Platform Incremental Backup</strong></p>
+<p>The XTTS with Cross Platform Incremental Backups procedure is divided into the following phases:</p>
+<ul>
+<li>Phase 1 - Initial Setup phase</li>
+<li>Phase 2 - Prepare phase</li>
+<li>Phase 3 - Roll Forward phase</li>
+<li>Phase 4 - Transport Phase: Import Metadata</li>
+<li>Phase 5 - Validate the Transported Data</li>
+<li>Phase 6 - Cleanup</li>
+</ul>
+<p><em><strong>Conventions Used in This Document</strong></em></p>
+<ul>
+<li>All command examples use bash shell syntax.</li>
+<li>Commands prefaced by the shell prompt string [oracle@source]$ indicate commands run as the oracle user on the source system.</li>
+<li>Commands prefaced by the shell prompt string [oracle@dest]$ indicate commands run as the oracle user on the destination system.</li>
+</ul>
+<p><strong>Phase 1 - Initial Setup</strong></p>
+<p>Perform the following steps to configure the environment to use Cross Platform Incremental Backups:</p>
+<p><strong>Step 1.1 - Install the destination database software and create the destination database</strong></p>
+<ul>
+<li>Install the desired Oracle Database software on the destination system that will run the destination database.</li>
+<li>Identify (or create) a database on the destination system to transport the tablespace(s) into and create the schema users required for the tablespace transport.  I.e., users who own the objects within the tablespaces being transported.</li>
+</ul>
+<blockquote>
+<p>Per generic TTS requirement, ensure that the schema users required for the tablespace transport exist in the destination database.</p>
+</blockquote>
+<p><strong>Step 1.2 - Identify tablespaces to be transported</strong></p>
+<ul>
+<li>Identify the tablespace(s) in the source database that will be transported. Tablespaces TS1 and TS2 will be used in the examples in this document.  As indicated above, the limitations and considerations for transportable tablespaces must still be followed.</li>
+</ul>
+<p><strong>Step 1.3 - Install xttconvert scripts on the source system</strong></p>
+<ul>
+<li>On the source system, as the oracle software owner, download and extract the supporting scripts attached as rman_xttconvert_VER4.zip to this document.</li>
+</ul>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs stata">[oracle@source]$ <span class="hljs-keyword">pwd</span>  <br>/home/oracle/xtt  <br>  <br>[oracle@source]$ unzip rman_xttconvert_VER4.<span class="hljs-keyword">zip</span>  <br>Archive: rman_xttconvert\_v3.<span class="hljs-keyword">zip</span>  <br>inflating: xtt.properties  <br>inflating: xttcnvrtbkupdest.sql  <br>inflating: xttdbopen.sql  <br>inflating: xttdriver.<span class="hljs-keyword">pl</span>  <br>inflating: xttprep.tmpl  <br>extracting: xttstartupnomount.sql<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Step 1.4 - Create necessary directories</strong></p>
+<ol>
+<li><p>On source:</p>
+<ul>
+<li>Location of backups as defined by src_scratch_location parameter in the xtt.properties file.</li>
+</ul>
+</li>
+<li><p>On destination:</p>
+<ul>
+<li>Location of backups as defined by the dest_scratch_location parameter in the xtt.properties file.</li>
+<li>Location for datafiles on destination, as defined by dest_datafile_location parameter in the xtt.properties file.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Step 1.5 - Configure xtt.properties on the source system</strong></p>
+<p>Edit the <code>xtt.properties</code> file on the source system with your site-specific configuration.For more information about the parameters in the xtt.properties file, refer to the <em>Description of Parameters in Configuration File xtt.properties</em> section in the Appendix below.   For this procedure, only the following parameters are mandatory.  Others are optional and&#x2F;or available for use.</p>
+<ul>
+<li>tablespaces</li>
+<li>platformid</li>
+<li>src_scratch_location</li>
+<li>dest_scratch_location</li>
+<li>dest_datafile_location</li>
+<li>usermantransport&#x3D;1 -<strong>It is recommended this be set if the source database is running 12c or higher.</strong> This causes new 12c (and higher) functionality to be used when this parameter is set.</li>
+</ul>
+<p><strong>Step 1.6 - Copy xttconvert scripts and xtt.properties to the destination system&lt;</strong></p>
+<p>As the oracle software owner copy all xttconvert scripts and the modified xtt.properties file to the destination system.</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs elixir">[oracle<span class="hljs-variable">@source</span>]<span class="hljs-variable">$ </span>scp -r /home/oracle/xtt oracle<span class="hljs-variable">@dest</span><span class="hljs-symbol">:/home/oracle/xtt</span><br><br><span class="hljs-title class_">AI</span>写代码bash<br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Step 1.7 - Set TMPDIR environment variable</strong></p>
+<p>In the shell environment on both source and destination systems, set environment variable TMPDIR to the location where the supporting scripts exist.  Use this shell to run the Perl script xttdriver.pl as shown in the steps below.  If TMPDIR is not set, output files are created in and input files are expected to be in &#x2F;tmp.</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs routeros">[oracle@source]$ <span class="hljs-built_in">export</span> <span class="hljs-attribute">TMPDIR</span>=/home/oracle/xtt  <br>  <br>[oracle@dest]$ <span class="hljs-built_in">export</span> <span class="hljs-attribute">TMPDIR</span>=/home/oracle/xtt<br><br>AI写代码bash<br><br>* 1<br>* 2<br>* 3<br></code></pre></td></tr></table></figure>
+
+<p><strong>Phase 2 - Prepare Phase</strong></p>
+<p>During the Prepare phase, datafiles of the tablespaces to be transported are backed up on source, backups transferred to the destination system and restored by the xttdriver.pl script.</p>
+<p>NOTE: For large number of files, if you wish to use dbms_file_transfer you will not be able to use V4, you will have to use 11G - Reduce Transportable Tablespace Downtime using Cross Platform Incremental Backup (Note 1389592.1). It has been found to be the fastest method for transferring datafiles to destination. This method can be used by ALL Oracle version migrations wanting to use dbms_file_transfer.</p>
+<p><strong>Step 2.1 - Run the backup on the source system</strong></p>
+<p>On the source system, logged in as the oracle user with the environment (ORACLE_HOME and ORACLE_SID environment variables) pointing to the source database, run the backup as follows:</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">[<span class="hljs-keyword">oracle@source]$ </span>$<span class="hljs-keyword">ORACLE_HOME/perl/bin/perl </span>xttdriver.pl --<span class="hljs-keyword">backup </span>--<span class="hljs-built_in">debug</span> <span class="hljs-number">3</span><br><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Step 2.2 - Transfer the following files to the destination system:</strong></p>
+<ul>
+<li>Backups created from source <em>src_scratch_location t</em>o destination <em>dest_scratch_location</em></li>
+<li>The res.txt file from source 𝑇𝑀𝑃𝐷𝐼𝑅𝑡𝑜𝑑𝑒𝑠𝑡𝑖𝑛𝑎𝑡𝑖𝑜𝑛TMPDIRtodestinationTMPDIR to destination TMPDIR:</li>
+</ul>
+<p>In the example below, scp is used to transfer the level&#x3D;0 backup created by the previous step from the source system to the destination system.</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs elixir">[oracle<span class="hljs-variable">@source</span>]<span class="hljs-variable">$ </span>scp /src_scratch_location/* oracle<span class="hljs-variable">@dest</span><span class="hljs-symbol">:/dest_scratch</span>  <br>[oracle<span class="hljs-variable">@source</span>]<span class="hljs-variable">$ </span>scp res.txt oracle<span class="hljs-variable">@dest</span><span class="hljs-symbol">:/home/oracle/xtt</span><br><br><span class="hljs-title class_">AI</span>写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Step 2.3 - Restore the datafiles on the destination system</strong></p>
+<p>On the destination system, logged in as the oracle user with the environment (ORACLE_HOME and ORACLE_SID environment variables) pointing to the destination database, run the restore as follows:</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">[<span class="hljs-keyword">oracle@dest]$ </span>$<span class="hljs-keyword">ORACLE_HOME/perl/bin/perl </span>xttdriver.pl --restore --<span class="hljs-built_in">debug</span> <span class="hljs-number">3</span><br><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>Datafiles will be placed on the destination system in the defined <em>dest_datafile_location.</em></p>
+<p><strong>Phase 3 - Roll Forward Phase</strong></p>
+<p>During this phase an incremental backup is created from the source database, transferred to the destination system, converted to the destination system endian format, then applied to the converted destination datafile copies to roll them forward.  This phase may be run multiple times. Each successive incremental backup should take less time than the prior incremental backup, and will bring the destination datafile copies more current with the source database.  The data being transported (source) is fully accessible during this phase.</p>
+<p>NOTE:  Multiple backups can be executed against the source without applying them to the destination.  The backup files and the res.txt must be copied before the ‘–restore’ is executed at the destination.</p>
+<p><strong>NOTE:  The script will shutdown and startup, in NOMOUNT, the destination database before the –restore.</strong></p>
+<p><strong>Step 3.1 - Create an incremental backup of the tablespaces being transported on the source system</strong></p>
+<p>On the source system, logged in as the oracle user with the environment (ORACLE_HOME and ORACLE_SID environment variables) pointing to the source database, run the create incremental step as follows:</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">[<span class="hljs-keyword">oracle@source]$ </span>$<span class="hljs-keyword">ORACLE_HOME/perl/bin/perl </span>xttdriver.pl --<span class="hljs-keyword">backup </span>--<span class="hljs-built_in">debug</span> <span class="hljs-number">3</span><br><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>This step will create an incremental backup for all tablespaces listed in xtt.properties.</p>
+<p><strong>Step 3.2 - Transfer incremental backups and res.txt to the destination system</strong></p>
+<p>Transfer the incremental backup(s) (between src_scratch_location and dest_scratch_location) and the res.txt (between the $TMPDIRs) from the source to the destination.  The list of incremental backup files from current backup can be<br> found in the incrbackups.txt file on the source system.</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ruby">[oracle<span class="hljs-variable">@source</span>]<span class="hljs-variable">$ </span>scp <span class="hljs-string">`cat incrbackups.txt`</span> oracle<span class="hljs-variable">@dest</span><span class="hljs-symbol">:/dest_scratch_location</span>  <br>[oracle<span class="hljs-variable">@source</span>]<span class="hljs-variable">$ </span>scp res.txt oracle<span class="hljs-variable">@dest</span><span class="hljs-symbol">:/home/oracle/xtt</span><br><br><span class="hljs-variable constant_">AI</span>写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p>If the src_scratch_location on the source system and the dest_scratch_location on the destination system refer to the same NFS storage location, then the backups do not need to be copied as they are available in the expected location on the destination system.</p>
+<p>However, the res.txt file MUST be copied after the LAST incremental backup before it can be applied on destination (step 3.3).</p>
+<p><strong>Step 3.3 - Apply the incremental backup to the datafile copies on the destination system</strong></p>
+<p>On the destination system, logged in as the oracle user with the environment (ORACLE_HOME and ORACLE_SID environment variables) pointing to the destination database, run the roll forward datafiles step as follows:</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">[<span class="hljs-keyword">oracle@dest]$ </span>$<span class="hljs-keyword">ORACLE_HOME/perl/bin/perl </span>xttdriver.pl --restore --<span class="hljs-built_in">debug</span> <span class="hljs-number">3</span><br><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>The roll forward step connects to destination database and applies the incremental backups on the tablespaces’ datafiles for each tablespace being transported.</p>
+<p>NOTE:  Although multiple backups can be executed against the source without being applied on the destination, the res.txt must be copied after the last backup and before the ‘–restore’ is executed at the destination.</p>
+<p><strong>Step 3.4 - Repeat the roll forward phase 3 (3.1 - 3.3) or proceed to phase 4, final incremental backup</strong></p>
+<p>At this point there are two choices:</p>
+<ul>
+<li>1.If you need to bring the files at the destination database closer in sync with the production system, then repeat the Roll Forward phase, starting with step 3.1.</li>
+<li>2.If the files at the destination database are as close as desired to the source database, then proceed to the Transport phase.</li>
+</ul>
+<p><strong>Phase 4 - Final Incremental Backup  – If you are running 12c or higher, this step can be replaced by Phase 4 in <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=2471245.1&id=2005729.1">Note 2005729.1</a>:</strong></p>
+<p>During this phase the source data is made READ ONLY and the destination datafiles are made consistent with the source database by creating and applying a final incremental backup. After the destination datafiles are made consistent, the normal transportable tablespace steps are performed to export object metadata from the source database and import it into the destination database.  The data being transported is accessible only in READ ONLY mode until the end of this phase.</p>
+<p><strong>Step 4.1 - Alter source tablespace(s) to READ ONLY in the source database</strong></p>
+<p>On the source system, logged in as the oracle user with the environment (ORACLE_HOME and ORACLE_SID environment variables) pointing to the source database, alter the tablespaces being transported to READ ONLY.</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">system</span>@source/prod <span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">alter</span> <span class="hljs-keyword">tablespace</span> TS1 <span class="hljs-keyword">read</span> <span class="hljs-keyword">only</span>;  <br> <br><span class="hljs-keyword">Tablespace</span> altered.  <br><br><span class="hljs-keyword">system</span>@source/prod <span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">alter</span> <span class="hljs-keyword">tablespace</span> TS2 <span class="hljs-keyword">read</span> <span class="hljs-keyword">only</span>;  <br><br><span class="hljs-keyword">Tablespace</span> altered.<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br>* <span class="hljs-number">6</span><br>* <span class="hljs-number">7</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Step 4.2 - Create the final incremental backup of the tablespaces being transported on the source system:</strong></p>
+<p>On the source system, logged in as the oracle user with the environment (ORACLE_HOME and ORACLE_SID environment variables) pointing to the source database, run the backup as follows:</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">[<span class="hljs-keyword">oracle@source]$ </span>$<span class="hljs-keyword">ORACLE_HOME/perl/bin/perl </span>xttdriver.pl --<span class="hljs-keyword">backup </span>--<span class="hljs-built_in">debug</span> <span class="hljs-number">3</span><br><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>NOTE:  As the tablespaces are in READ ONLY mode, the following warning received can be ignored:</strong></p>
+<p><strong>####################################################################</strong><br> <strong>Warning:</strong><br> <strong>——</strong><br> <strong>Warnings found in executing &#x2F;home&#x2F;oracle&#x2F;convert_source&#x2F;backup_Nov9_Fri_09_08_26_213&#x2F;&#x2F;xttpreparenextiter.sql</strong><br> <strong>####################################################################</strong><br> <strong>Prepare newscn for Tablespaces: ‘SECOND’</strong><br> <strong>DECLARE</strong>*<br> <strong>ERROR at line 1:</strong><br> <strong>ORA-20001: TABLESPACE(S) IS READONLY OR,</strong><br> <strong>OFFLINE JUST CONVERT, COPY</strong><br> <strong>ORA-06512: at line 284</strong></p>
+<p><strong>Step 4.3- Transfer incremental backups and res.txt to the destination system</strong></p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs elixir">[oracle<span class="hljs-variable">@source</span>]<span class="hljs-variable">$ </span>scp <span class="hljs-string">&#x27;cat incrbackups.txt&#x27;</span> oracle<span class="hljs-variable">@dest</span><span class="hljs-symbol">:/dest_scratch_location</span>  <br>[oracle<span class="hljs-variable">@source</span>]<span class="hljs-variable">$ </span>scp res.txt oracle<span class="hljs-variable">@dest</span><span class="hljs-symbol">:/home/oracle/xtt</span><br><br><span class="hljs-title class_">AI</span>写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Step 4.4 - Apply last incremental backup to destination datafiles</strong></p>
+<p>The final incremental backup must be applied to the destination datafiles:</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">[<span class="hljs-keyword">oracle@dest]$ </span>$<span class="hljs-keyword">ORACLE_HOME/perl/bin/perl </span>xttdriver.pl --restore --<span class="hljs-built_in">debug</span> <span class="hljs-number">3</span><br><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>This step will apply the last incremental backup to the datafiles on the destination.</p>
+<p><strong>Phase 5 - Transport Phase:  Import Object Metadata into Destination Database</strong></p>
+<p>NOTE: Be sure the destination database has the necessary objects to allow the import to succeed. This includes pre-creating the owners of the tables in the tablespace being plugged in. See information on Transportable Tablespace and the guidance provided in the <a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/database/features/availability/maa-wp-11g-platformmigrationtts-129269.pdf" title="http:&#x2F;&#x2F;www.oracle.com&#x2F;technetwork&#x2F;database&#x2F;features&#x2F;availability&#x2F;maa-wp-11g-platformmigrationtts-129269.pdf">MAA paper Platform Migration Using Transportable Tablespaces: Oracle Database 11g</a>.</p>
+<p>During this phase, you need an export of the metadata of the tablespaces from the source and plug in the tablespace(s) into the destination.</p>
+<p><strong>NOTE:  This would be skipped if you are running 12c or higher and chose to use “Phase 4 “in <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=2471245.1&id=2005729.1">Note 2005729.1</a>.</strong></p>
+<p><strong>There are two options, running manually or running across sqlnet:</strong></p>
+<p><strong>OPTION #1.  Manually running export and import command.</strong></p>
+<p><strong>Option1.A:  Run datapump export on source database:</strong></p>
+<p>Perform the tablespace transport by running transportable mode Data Pump export on the source database to export the object metadata being transported into a dump file.  The below example assumes a directory (DATA_PUMP_DIR) already exists in the source.  For example:</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs gams">[oracle@source]<span class="hljs-symbol">$</span> cat <span class="hljs-built_in">exp</span>.par  <br>  <br>dumpfile=xttdump.dmp  <br>directory=DATA_PUMP_DIR  <br>exclude=statistics  <br>transport_tablespaces=TS1,TS2  <br>transport_full_check=y  <br>logfile=tts_export.<span class="hljs-built_in">log</span>   <br>  <br>[oracle@source]<span class="hljs-symbol">$</span> expdp <span class="hljs-keyword">system</span>/manager parfile=<span class="hljs-built_in">exp</span>.par<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br></code></pre></td></tr></table></figure>
+
+<p>Refer to the following manuals for details:</p>
+<ul>
+<li>Oracle Database Administrator’s Guide</li>
+<li>Oracle Database Utilities</li>
+</ul>
+<p><strong>Option1.B:  Transfer the export file to destination directory used by datapump</strong></p>
+<p><strong>Option1.C:  Run datapump import on destination to plug in the tablespaces.  For example:</strong></p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs gams">[oracle@dest]<span class="hljs-symbol">$</span> cat manual_imp.par  <br>dumpfile= xttdump.dmp  <br>directory=DATAPUMP  <br>transport_datafiles=<span class="hljs-string">&#x27;/dest_datafile_location/TS1.dbf&#x27;</span>,<span class="hljs-string">&#x27;/dest_datafile_location/TS2.dbf&#x27;</span>  <br>logfile=tts_import.<span class="hljs-built_in">log</span>  <br>  <br>[oracle@dest]<span class="hljs-symbol">$</span> impdp <span class="hljs-keyword">system</span>/oracle parfile=manual_imp.par<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br></code></pre></td></tr></table></figure>
+
+<p>**OPTION #2.  Import across sqlnet. **</p>
+<p><strong>Option2.A:  Create datapump directory and grant privilege:</strong></p>
+<p>Datapump will look for the export file in the specified directory.  Either copy the ‘.dmp’ file in your existing data pump directory or create a new directory pointing to the  or copy the ‘.dmp’ in an existing datapump directory</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs livescript">SYS@DESTDB&gt; create directory dpump<span class="hljs-string">\_tts</span> <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;/home/oracle/destination/convert&#x27;</span>;<br><br>AI写代码sql<br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>The directory must be granted to use who will do the import:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">SYS@DESTDB&gt; <span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">READ</span>, <span class="hljs-keyword">WRITE</span> <span class="hljs-keyword">ON</span> DIRECTORY dpump\_tts <span class="hljs-keyword">TO</span> <span class="hljs-keyword">system</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Option2.B:  Generate new xttplugin.txt for network import</strong></p>
+<p>On the destination system, logged in as the oracle user with the environment (ORACLE_HOME and ORACLE_SID environment variables) pointing to the destination database, run the generate Data Pump TTS command step as follows:</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs crystal">[oracle<span class="hljs-variable">@dest</span>]<span class="hljs-variable">$ </span><span class="hljs-variable">$ORACLE_HOME</span>/perl/bin/perl xttdriver.pl -e<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>This will generate a sample Data Pump network_link transportable import command in the file <code>xttplugin.txt</code> with the transportable tablespaces parameters TRANSPORT_TABLESPACES and TRANSPORT_DATAFILES correctly set. In addition, a datapump export file will also be created.</p>
+<p>NOTE:  This command will overwrite the previous xttplugin.txt which is needed by Step5A.</p>
+<p><strong>Option2.C:  Create a database link on destination database:</strong></p>
+<p>Connecting to the destination database, create a database link connecting to the source database. For example:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SQL</span>@dest&gt; <span class="hljs-keyword">create</span> <span class="hljs-built_in">public</span> <span class="hljs-keyword">database</span> link ttslink <span class="hljs-keyword">connect</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">system</span> identified <span class="hljs-keyword">by</span> &lt;<span class="hljs-keyword">password</span>&gt; <span class="hljs-keyword">using</span> <span class="hljs-string">&#x27;&lt;tns_to_source&gt;&#x27;</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>Verify the database link can properly access the source system:</p>
+<p>SQL@dest&gt; select name from v$database@ttslink;</p>
+<h6 id="Option2-D-Modify-and-execute-Impdp-command"><a href="#Option2-D-Modify-and-execute-Impdp-command" class="headerlink" title="Option2.D:   Modify and execute Impdp command:"></a>Option2.D:   Modify and execute Impdp command:</h6><p>A separate export or dump file is not required.  To perform the tablespace transport with this command, then you must edit the import command file xttplugin.txt (generated in step 5B.1) and replace import parameters DIRECTORY, LOGFILE, and NETWORK_LINK with site-specific values.</p>
+<p>The following is an example network mode transportable import command:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs routeros">[oracle@dest]$ impdp <span class="hljs-attribute">directory</span>=DATA_PUMP_DIR <span class="hljs-attribute">logfile</span>=tts_imp.log <span class="hljs-attribute">network_link</span>=ttslink \  <br>transport_full\<span class="hljs-attribute">_check</span>=<span class="hljs-literal">no</span> \ <br><span class="hljs-attribute">transport_tablespaces</span>=TS1,TS2 \  <br><span class="hljs-attribute">transport_datafiles</span>=<span class="hljs-string">&#x27;+DATA/prod/datafile/ts1.285.771686721&#x27;</span>, \  <br><span class="hljs-string">&#x27;+DATA/prod/datafile/ts2.286.771686723&#x27;</span>, \  <br><span class="hljs-string">&#x27;+DATA/prod/datafile/ts2.287.771686743&#x27;</span> <br><br>AI写代码bash<br><br>* 1<br>* 2<br>* 3<br>* 4<br>* 5<br>* 6<br></code></pre></td></tr></table></figure>
+
+<p>NOTE:  Per generic TTS requirement, database users that own objects being transported must exist in the destination database before performing the transportable import.</p>
+<p>Resources:</p>
+<ul>
+<li><em><a target="_blank" rel="noopener" href="http://docs.oracle.com/cd/E11882_01/server.112/e25494/tspaces013.htm#ADMIN11401">Oracle Database Administrator’s Guide</a></em></li>
+<li><em><a target="_blank" rel="noopener" href="http://docs.oracle.com/cd/E11882_01/server.112/e22490/dp_export.htm#i1007524">Oracle Database Utilities</a></em></li>
+</ul>
+<p><strong>Phase 6 - Validate the Transported Data</strong></p>
+<p><strong>Step 6.1 Check tablespaces for corruption</strong></p>
+<p>At this step, the transported data is READ ONLY in the destination database.  Perform application specific validation to verify the transported data.</p>
+<p>Also, run RMAN to check for physical and logical block corruption by running VALIDATE TABLESPACE as follows:</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs smali">RMAN&gt; validate tablespace TS1, TS2<span class="hljs-built_in"> check </span>logical;<br><br>AI写代码bash<br><br>* 1<br></code></pre></td></tr></table></figure>
+
+<p><strong>Step 6.2 - Alter the tablespace(s) READ WRITE in the destination database</strong></p>
+<p>The final step is to make the destination tablespace(s) READ WRITE in the destination database.</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">system</span>@dest/prod <span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">alter</span> <span class="hljs-keyword">tablespace</span> TS1 <span class="hljs-keyword">read</span> <span class="hljs-keyword">write</span>;  <br><br><span class="hljs-keyword">Tablespace</span> altered.  <br><br><span class="hljs-keyword">system</span>@dest/prod <span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">alter</span> <span class="hljs-keyword">tablespace</span> TS2 <span class="hljs-keyword">read</span> <span class="hljs-keyword">write</span>;  <br> <br><span class="hljs-keyword">Tablespace</span> altered.<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br>* <span class="hljs-number">6</span><br>* <span class="hljs-number">7</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Phase 7 - Cleanup</strong></p>
+<p>If a separate incremental convert home and instance were created for the migration, then the instance may be shutdown and the software removed.</p>
+<p>Files created by this process are no longer required and may now be removed.  They include the following:</p>
+<ul>
+<li>src_scratch_location location on the source system</li>
+<li>dest_scratch_location location on the destination system</li>
+<li>$TMPDIR location in both source and destination systems</li>
+</ul>
+<hr>
+<p><strong>Appendix</strong></p>
+<p><strong>Description of Perl Script xttdriver.pl Options</strong></p>
+<p>The following table describes the options available for the main supporting script xttdriver.pl.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Option</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>--backup</code></td>
+<td>Creates a level 0 or level 1 backup of the datafiles belonging to the selected tablespaces. These backups will be written into the location pointed to by the xtt.properties variable “src_scratch_location”. These backups need to be copied over to the destination to the location pointed to by the variable “dest_scratch_location”.</td>
+</tr>
+<tr>
+<td><code>--restore</code></td>
+<td>Restores and converts the datafiles from the backups copied to the location “dest_scratch_location” in destination. The restored files will be placed in the path defined by the variable “dest_datafile_location”.</td>
+</tr>
+<tr>
+<td><code>-e</code></td>
+<td>Generates Data Pump TTS command step which can be executed on the destination system. This command is executed on the source and the command file created can be transfered to the destination for execution.This step creates the template of a Data Pump Import command that uses a network_link to import metadata of objects that are in the tablespaces being transported.It should be executed on the source and the resulting file transferred to the destination.</td>
+</tr>
+<tr>
+<td><code>--debug</code></td>
+<td>Enables debug mode for xttdriver.pl and RMAN commands it executes. Debug mode can also be enabled by setting environment variable XTTDEBUG&#x3D;1. Debug allows for 1,2,3 levels of debug. I.e., xttdriver.pl -debug 3</td>
+</tr>
+</tbody></table>
+<p><strong>Description of Parameters in Configuration File xtt.properties</strong></p>
+<p>The following table describes the parameters used by xttdriver.pl which must be defined in the xtt.properties file that are needed for this 12c  or higher procedure.  Other parameters may exist which are needed for backward compatibility.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example Setting</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>tablespaces</td>
+<td>Comma-separated list of tablespaces to transport from source database to destination database. Must be a single line, any subsequent lines will not be read.</td>
+<td>tablespaces&#x3D;TS1,TS2</td>
+</tr>
+<tr>
+<td>platformid</td>
+<td>Source database platform id, obtained from V$DATABASE.PLATFORM_ID.</td>
+<td>platformid&#x3D;13</td>
+</tr>
+<tr>
+<td>dest_datafile_location</td>
+<td>Directory object in the destination database that defines where the destination datafiles will be created.</td>
+<td>dest_datafile_location&#x3D;&#x2F;u01&#x2F;oradata&#x2F;V122i.e.:dest_datafile_location&#x3D;+DATA</td>
+</tr>
+<tr>
+<td>src_scratch_location</td>
+<td>Location on the source system where backups are created.This location must have sufficient free space to hold the level&#x3D;0 backup of the tablespace datafiles and all subsequent incremental backups created for one iteration through the process documented above.This location may be an NFS-mounted filesystem that is shared with the destination system, in which case it should reference the same NFS location as the dest_scratch_location parameter for the destination system.</td>
+<td>src_scratch_location&#x3D;&#x2F;stage_source</td>
+</tr>
+<tr>
+<td>dest_scratch_location</td>
+<td>Location on the destination system where backups are placed by the user when they are transferred manually from the source system.This location must have sufficient free space to hold level&#x3D;0 backup and all subsequent incremental backups transferred from the source.This location may be a DBFS-mounted filesystem.This location may be an NFS-mounted filesystem that is shared with the source system, in which case it should reference the same NFS location as the src_scratch_location parameters for the source system.  See <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=2471245.1&id=359515.1">Note 359515.1</a> for mount option guidelines.</td>
+<td>dest_scratch_location&#x3D;&#x2F;stage_dest</td>
+</tr>
+<tr>
+<td>asm_home</td>
+<td>ORACLE_HOME for the ASM instance that runs on the destination system.</td>
+<td>asm_home&#x3D;&#x2F;u01&#x2F;app&#x2F;12.2.0.1&#x2F;grid</td>
+</tr>
+<tr>
+<td>asm_sid</td>
+<td>ORACLE_SID for the ASM instance that runs on the destination system.</td>
+<td>asm_sid&#x3D;+ASM1</td>
+</tr>
+<tr>
+<td>parallel</td>
+<td>Defines the degree of parallelism used in copying (prepare phase), converting.Incremental backup creation parallelism is defined by RMAN configuration for DEVICE TYPE DISK PARALLELISM.</td>
+<td>parallel&#x3D;3</td>
+</tr>
+<tr>
+<td>srcconnstr</td>
+<td>In CDB environment, specifies connect string of the source pluggable database.</td>
+<td>srcconnstr&#x3D;sys&#x2F;passwd@sourc_cdb_PDB1</td>
+</tr>
+<tr>
+<td>destconnstr</td>
+<td>In CDB environment, specifies connect string of the destination pluggable database.</td>
+<td>destconnstr&#x3D;sys&#x2F;passwd@dest_cdb_PDB1</td>
+</tr>
+<tr>
+<td>usermantransport</td>
+<td><strong>It is recommended this be set if the source database is running 12c or higher.</strong> This causes new 12c (and higher) functionality to be used when this parameter is set.  Note, this must be set to the same value between source and destination.  So if source is running 11g, it must be set on the destination regardless of the destination version.</td>
+<td>usermantransport&#x3D;1</td>
+</tr>
+</tbody></table>
+<p><strong>Change History</strong></p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>rman_xttconvert_VER4.zip released</td>
+<td>29-Nov-2018</td>
+</tr>
+</tbody></table>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/121997326/">https://pc-study.github.io/csdn-blog/posts/121997326/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/XTTS/">XTTS</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/122011588/" title="Oracle 从入门到精通系列 - 交流社区"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Oracle 从入门到精通系列 - 交流社区</div></div><div class="info-2"><div class="info-item-1">交流专区 ->返回总目录返回总目录<-</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121981461/" title="December 2021 Apache Log4j Vulnerabilities on Oracle Products and Services(Doc ID 2827611.1)"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">December 2021 Apache Log4j Vulnerabilities on Oracle Products and Services(Doc ID 2827611.1)</div></div><div class="info-2"><div class="info-item-1">In this Document PURPOSE SCOPE DETAILS Applicability of these vulnerabilities to Oracle cloud environments Applicability of Security Alert CVE-2021-45</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/139430428/" title="华为欧拉 EulerOS V2.0 SP5 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-04</div><div class="info-item-2">华为欧拉 EulerOS V2.0 SP5 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示华为欧拉 EulerOS V2.0 SP5 一键安装 Oracle 19C 单机版过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145697128/" title="一文掌握 Oracle OPatch 实用技巧"><img class="cover" src="/csdn-blog/images/0e5055ff7722d7e6e2a06ce17656caec.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-18</div><div class="info-item-2">一文掌握 Oracle OPatch 实用技巧</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 OPatch 更新 OPatch 下载 OPatch 备份 OPatch 更新 OPatch OPatch 常用命令 OPatch 常见问题 写在最后 前言 OPatch 是什么？ 对于 Oracle DBA</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145010492/" title="基础篇：数据库 SQL 入门教程"><img class="cover" src="/csdn-blog/images/151ce3dd95c108f1ff4e8eeffec661da.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-08</div><div class="info-item-2">基础篇：数据库 SQL 入门教程</div></div><div class="info-2"><div class="info-item-1">目录 📚 前言 🌴 SQL 介绍 🌼 什么是 SQL 🌀 SQL 的类型 🌵 学习 SQL 的作用 🍄 数据库是什么 🐥 SQL 基础语言学习 🐤 CREATE TABLE – 创建表 🐑 INSERT – 插入数据 🐼 SELECT – 查询数据 🐫 DISTINCT – 去除重复值 🐸 WHER</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/117474325/" title="实战篇：生产库升级，容灾库 Oracle DataGuard 如何升级？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-11-23</div><div class="info-item-2">实战篇：生产库升级，容灾库 Oracle DataGuard 如何升级？</div></div><div class="info-2"><div class="info-item-1">前言 随着 Oracle 数据库的普遍应用，DataGuard 这个成员基本成为了数据库容灾环境的标配！ 一、介绍 当需要升级 Oracle 数据库的同时，也需要考虑同时升级 DataGuard 数据库版本，那么如何快捷安全的升级？ 推荐方案： 升级至NON-CDB模式： 首先关闭 ADG 同步，升</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/140147859/" title="华为欧拉 openEuler 22.03 LTS SP3(aarch64) 一键安装 Oracle 19C ARM 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-03</div><div class="info-item-2">华为欧拉 openEuler 22.03 LTS SP3(aarch64) 一键安装 Oracle 19C ARM 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示华为欧拉 openEuler 22.03 LTS SP3(aarch64) 一键安装 Oracle 19C 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、系统组安装好操作系统（支持最小化安装） 2、网络组配置</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120212358/" title="Oracle SQL 语句：查看 redo log 每小时切换次数"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-09</div><div class="info-item-2">Oracle SQL 语句：查看 redo log 每小时切换次数</div></div><div class="info-2"><div class="info-item-1">有时候，通过查看在线重做日志 redo log 每小时的切换次数，可以查看故障发生的时间点！ SQL 语句如下： 本次分享到此结束啦~ 如果觉得文章对你有帮助，点赞、收藏、关注、评论，一键四连支持，你的支持就是我创作最大的动力。 ❤️ 技术 交流可以 关注公众号：Lucifer三思而后行 ❤️</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#APPLIES-TO"><span class="toc-number">1.</span> <span class="toc-text">APPLIES TO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PURPOSE"><span class="toc-number">2.</span> <span class="toc-text">PURPOSE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SCOPE"><span class="toc-number">3.</span> <span class="toc-text">SCOPE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DETAILS"><span class="toc-number">4.</span> <span class="toc-text">DETAILS</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#Option2-D-Modify-and-execute-Impdp-command"><span class="toc-number">4.1.</span> <span class="toc-text">Option2.D:   Modify and execute Impdp command:</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

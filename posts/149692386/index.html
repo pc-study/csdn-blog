@@ -1,0 +1,330 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>TEM on Cloud 试用指南：值得 DBA 花时间吗？ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="前言 在数字化转型的浪潮中，TiDB 作为分布式数据库的佼佼者，正被越来越多的企业采用。然而，随着集群规模的扩大和业务复杂度的提升，运维管理成为了摆在 TiDBer 面前的一道难题：多集群切换繁琐、命令行操作复杂、故障排查效率低下… 为了彻底解决这些痛点，TiDB 数据库运维管理平台（TEM）应运而">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TEM on Cloud 试用指南：值得 DBA 花时间吗？">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/149692386/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="前言 在数字化转型的浪潮中，TiDB 作为分布式数据库的佼佼者，正被越来越多的企业采用。然而，随着集群规模的扩大和业务复杂度的提升，运维管理成为了摆在 TiDBer 面前的一道难题：多集群切换繁琐、命令行操作复杂、故障排查效率低下… 为了彻底解决这些痛点，TiDB 数据库运维管理平台（TEM）应运而">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/a5377456af6a07cd8afbb776de157893.webp">
+<meta property="article:published_time" content="2025-07-27T08:52:38.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.270Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="TiDB">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/a5377456af6a07cd8afbb776de157893.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"TEM on Cloud 试用指南：值得 DBA 花时间吗？","url":"https://pc-study.github.io/csdn-blog/posts/149692386/","image":"https://pc-study.github.io/csdn-blog/images/a5377456af6a07cd8afbb776de157893.webp","datePublished":"2025-07-27T08:52:38.000Z","dateModified":"2026-03-20T12:25:39.270Z","description":"前言 在数字化转型的浪潮中，TiDB 作为分布式数据库的佼佼者，正被越来越多的企业采用。然而，随着集群规模的扩大和业务复杂度的提升，运维管理成为了摆在 TiDBer 面前的一道难题：多集群切换繁琐、命令行操作复杂、故障排查效率低下… 为了彻底解决这些痛点，TiDB 数据库运维管理平台（TEM）应运而","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/149692386/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/149692386/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'TEM on Cloud 试用指南：值得 DBA 花时间吗？',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/a5377456af6a07cd8afbb776de157893.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">TEM on Cloud 试用指南：值得 DBA 花时间吗？</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">TEM on Cloud 试用指南：值得 DBA 花时间吗？<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-07-27-149692386.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-27T08:52:38.000Z" title="发表于 2025-07-27 16:52:38">2025-07-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.270Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>4分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在数字化转型的浪潮中，TiDB 作为分布式数据库的佼佼者，正被越来越多的企业采用。然而，随着集群规模的扩大和业务复杂度的提升，运维管理成为了摆在 TiDBer 面前的一道难题：多集群切换繁琐、命令行操作复杂、故障排查效率低下…</p>
+<p>为了彻底解决这些痛点，TiDB 数据库运维管理平台（TEM）应运而生。这款一站式管理平台将复杂的运维操作简化为可视化的白屏操作，让企业级 TiDB 集群管理变得前所未有的简单。</p>
+<blockquote>
+<p>TEM 试用报名进群获取链接：<strong><a target="_blank" rel="noopener" href="https://forms.pingcap.com/f/tem-trial-use-event">https://forms.pingcap.com/f/tem-trial-use-event</a></strong></p>
+</blockquote>
+<p><strong>7 月 25 日 - 9 月 1 日</strong>，TEM on Cloud 试用活动正式启动！无论你是已经在云上部署了多套 TiDB 的资深用户，还是正在调研云端数据库解决方案的新手，这都是一个绝佳的体验机会。参与试用并提供反馈，不仅能获得丰富的 TiDB 周边礼品，还有机会获得 PCTA&#x2F;PCTP&#x2F;PCSD 考试兑换券等超值奖励。</p>
+<p><img src="/csdn-blog/images/a5377456af6a07cd8afbb776de157893.webp" alt="TEM on Cloud 试用指南：值得 DBA 花时间吗？" loading='lazy'></p>
+<p>让我们一起探索 TEM 的强大功能，共同打造更优秀的 TiDB 生态！</p>
+<h2 id="TEM-产品介绍"><a href="#TEM-产品介绍" class="headerlink" title="TEM 产品介绍"></a>TEM 产品介绍</h2><h3 id="核心价值"><a href="#核心价值" class="headerlink" title="核心价值"></a>核心价值</h3><p>平凯数据库企业级运维管理平台（TEM）是专为 TiDB 打造的全生命周期管理平台，支持平凯数据库 v7.1 及 TiDB 社区版 v6.5 以上版本。通过统一的 Web 界面，用户可以轻松完成：</p>
+<p><strong>核心功能模块：</strong></p>
+<ul>
+<li>🚀 <strong>集群管理</strong>：部署&#x2F;纳管&#x2F;升级一键完成；</li>
+<li>⚙️ <strong>配置优化</strong>：参数配置智能推荐；</li>
+<li>📈 <strong>弹性扩容</strong>：节点扩缩容秒级响应；</li>
+<li>📊 <strong>全面监控</strong>：实时监控告警，故障预警；</li>
+<li>💾 <strong>备份策略</strong>：自动化备份，数据安全无忧；</li>
+<li>🔧 <strong>智能诊断</strong>：故障自愈与性能优化；</li>
+<li>📅 <strong>任务调度</strong>：定时任务自动执行；</li>
+<li>📈 <strong>资源可视</strong>：CPU、内存、磁盘 I&#x2F;O 实时监控；</li>
+</ul>
+<p><img src="/csdn-blog/images/7ddd5fa6d396fc417813b70e821f7088.webp" alt="TEM on Cloud 试用指南：值得 DBA 花时间吗？ - 图2" loading='lazy'></p>
+<h3 id="DBA-工作流程的重构"><a href="#DBA-工作流程的重构" class="headerlink" title="DBA 工作流程的重构"></a>DBA 工作流程的重构</h3><p>传统 DBA 工作流程在 TEM 平台下的变化：</p>
+<p><strong>变更管理流程</strong></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs">传统流程：需求分析 → 方案设计 → 手动执行 → 结果验证<br>TEM 流程：需求分析 → 平台配置 → 自动执行 → 结果确认<br></code></pre></td></tr></table></figure>
+
+<p><strong>故障处理流程</strong></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs">传统流程：告警接收 → 手动排查 → 问题定位 → 手动恢复<br>TEM 流程：智能告警 → 自动诊断 → 问题预测 → 自动修复<br></code></pre></td></tr></table></figure>
+
+<p><strong>容量规划流程</strong></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs">传统流程：资源监控 → 趋势分析 → 容量评估 → 扩容执行<br>TEM 流程：智能监控 → 自动预测 → 弹性扩容 → 成本优化<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/3f2294f7fcd25a3d26c24f31821156ca.webp" alt="TEM on Cloud 试用指南：值得 DBA 花时间吗？ - 图3" loading='lazy'></p>
+<h2 id="TEM-快速部署指南"><a href="#TEM-快速部署指南" class="headerlink" title="TEM 快速部署指南"></a>TEM 快速部署指南</h2><h3 id="部署准备"><a href="#部署准备" class="headerlink" title="部署准备"></a>部署准备</h3><p>官方提供了详细的部署教程：</p>
+<blockquote>
+<p>TEM on 腾讯云安装 + 试用指南：<a target="_blank" rel="noopener" href="https://tidb.net/blog/3cb0dabf">https://tidb.net/blog/3cb0dabf</a></p>
+</blockquote>
+<h3 id="关键配置步骤"><a href="#关键配置步骤" class="headerlink" title="关键配置步骤"></a>关键配置步骤</h3><p><strong>1. 获取试用资格</strong></p>
+<ul>
+<li>TEM 试用报名进群获取链接：<strong><a target="_blank" rel="noopener" href="https://forms.pingcap.com/f/tem-trial-use-event">https://forms.pingcap.com/f/tem-trial-use-event</a></strong></li>
+</ul>
+<p><strong>2. 服务器配置建议</strong></p>
+<ul>
+<li><strong>推荐区域</strong>：广州七区（资源充足）；</li>
+<li><strong>网络配置</strong>：开启公网 IP，配置安全组放行 32000 端口；</li>
+<li><strong>主机配置</strong>：中控机和集群主机使用内网 IP；</li>
+</ul>
+<p><strong>3. 集群部署规范</strong></p>
+<ul>
+<li><strong>组件配置</strong>：推荐 <code>2C2G</code> 配置；</li>
+<li><strong>最小部署</strong>：<code>1PD + 1TiDB + 1TiKV + 1Prometheus + 1Grafana</code>；</li>
+<li><strong>版本要求</strong>：TiDB v6.5+ 且通过 TiUP 管理；</li>
+</ul>
+<p><strong>4. 安全组配置</strong></p>
+<ul>
+<li>确保 32000 端口在安全组中放行，以便访问 TEM 管理界面。</li>
+</ul>
+<h3 id="部署效果展示"><a href="#部署效果展示" class="headerlink" title="部署效果展示"></a>部署效果展示</h3><p>部署完成后，可通过 <code>http://公网IP:32000/</code> 访问 TEM 管理界面：</p>
+<p><img src="/csdn-blog/images/9e8ef7d9a3067406661ea9b7a6f2ebc7.webp" alt="TEM on Cloud 试用指南：值得 DBA 花时间吗？ - 图4" loading='lazy'></p>
+<p><img src="/csdn-blog/images/7076110f67e33c9447072a90b7ae55a3.webp" alt="TEM on Cloud 试用指南：值得 DBA 花时间吗？ - 图5" loading='lazy'></p>
+<h2 id="使用体验与总结"><a href="#使用体验与总结" class="headerlink" title="使用体验与总结"></a>使用体验与总结</h2><h3 id="产品亮点"><a href="#产品亮点" class="headerlink" title="产品亮点"></a>产品亮点</h3><p>经过实际体验，TEM 展现出了以下优势：</p>
+<p><strong>用户体验</strong></p>
+<ul>
+<li>界面设计简洁直观，操作流程丝滑流畅；</li>
+<li>从命令行到可视化的完美转变；</li>
+<li>学习成本低，上手即用；</li>
+</ul>
+<p><strong>功能完整性</strong></p>
+<ul>
+<li>涵盖 TiDB 运维全生命周期；</li>
+<li>监控告警体系完善；</li>
+<li>自动化程度高，减少人工干预；</li>
+</ul>
+<p><strong>技术先进性</strong></p>
+<ul>
+<li>基于云原生架构设计；</li>
+<li>支持多集群统一管理；</li>
+<li>故障自愈能力强；</li>
+</ul>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>作为一个 DBA，我认为 TEM 代表了数据库运维管理的发展方向。它不是简单的工具升级，而是运维理念和工作模式的根本性变革。</p>
+<p><img src="/csdn-blog/images/eb1cf25b9afec62a0d4573b2a393f2e4.webp" alt="TEM on Cloud 试用指南：值得 DBA 花时间吗？ - 图6" loading='lazy'></p>
+<p><strong>核心价值判断</strong></p>
+<ol>
+<li><strong>技术先进性</strong>：基于云原生理念的架构设计，符合技术发展趋势；</li>
+<li><strong>实用性</strong>：解决了分布式数据库运维的实际痛点，提升了工作效率；</li>
+<li><strong>可扩展性</strong>：平台化架构为未来功能扩展提供了良好基础；</li>
+</ol>
+<p><strong>实施建议</strong></p>
+<ol>
+<li><strong>渐进式采用</strong>：从非核心环境开始，逐步扩大使用范围；</li>
+<li><strong>团队培训</strong>：投资团队技能升级，适应新的工作模式；</li>
+<li><strong>流程重构</strong>：基于平台能力重新设计运维流程和规范；</li>
+</ol>
+<p>随着 AI 和机器学习技术的发展，我预期 TEM 这类平台将会集成更多智能化功能：</p>
+<ul>
+<li>基于历史数据的容量预测和自动扩容；</li>
+<li>智能 SQL 优化建议和自动索引推荐；</li>
+<li>故障预测和自动修复能力；</li>
+<li>成本优化和资源调度算法；</li>
+</ul>
+<p>对于正在考虑技术升级的 DBA 团队，建议积极参与 TEM 试用活动，这不仅是对新技术的评估，更是对未来运维模式的探索和准备。</p>
+<p>毕竟，技术的进步不会等待我们，我们只有主动拥抱变化，才能在职业发展中保持竞争优势。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/149692386/">https://pc-study.github.io/csdn-blog/posts/149692386/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/TiDB/">TiDB</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/149816087/" title="Kubernetes 应用部署实战：为什么需要 Kubernetes？"><img class="cover" src="/csdn-blog/images/324d14c5fb223964868ebc6a450ebc7b.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Kubernetes 应用部署实战：为什么需要 Kubernetes？</div></div><div class="info-2"><div class="info-item-1">前言 想象一下，你开发了一个 Web 应用，需要部署到生产环境。传统方式下，你可能需要手动配置服务器、安装依赖、处理负载均衡、监控服务健康状态等等。当应用需要扩容时，又要重复这些繁琐的操作。 Kubernetes（简称 K8S）就是为了解决这些问题而诞生的容器编排平台。它可以自动化应用的部署、扩缩容</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149577201/" title="被AI抢饭碗前，先看这本让你“一个人顶一个团队”的销售圣经"><img class="cover" src="/csdn-blog/images/3d8150a00d92d1a03e3d3446c0fdd6f7.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">被AI抢饭碗前，先看这本让你“一个人顶一个团队”的销售圣经</div></div><div class="info-2"><div class="info-item-1">当AI能自动生成销售话术、批量跟进客户，你还在靠线下拜访、手写跟进表拼业绩？别慌，《AI销冠》来了——这本被IBM、西门子等500强高管力荐的新作，藏着让你在AI时代不可替代的终极答案。 为什么你必须读这本书？ 销售行业正在经历「空间革命」：客户开发、需求挖掘、关系维护正从线下会议室转移到数字空间。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/155039355/" title="困扰 MySQL 用户多年的问题，它只用一个插件就解决了！"><img class="cover" src="/csdn-blog/images/1d5de2aeb7154eb14814781917382294.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-19</div><div class="info-item-2">困扰 MySQL 用户多年的问题，它只用一个插件就解决了！</div></div><div class="info-2"><div class="info-item-1">目录 前言 MySQL 数据库 金仓数据库 加载插件 实战演示 写在最后 前言 上周有个朋友问我：“哥，我们刚从 MySQL 8.0 迁到金仓数据库的 MySQL 兼容模式，发现一个很神奇的 BUG”！ 当我在金仓数据库中新建了一个用户以及表，没有对这个用户授权该表的访问权限，但是可以在 表中查询到</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/144090175/" title="开源免费！SQLE：简单易用的 SQL 质量治理平台"><img class="cover" src="/csdn-blog/images/ad7fcb46accc1f29618f6af0488671bb.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-11-27</div><div class="info-item-2">开源免费！SQLE：简单易用的 SQL 质量治理平台</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 社群交流 前言 介绍 产品特性 使用场景 下载方式 在线试用 本地安装 写在最后 往期精彩文章 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139371504/" title="华为欧拉 openEuler 23.09 一键安装 Oracle 12CR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-01</div><div class="info-item-2">华为欧拉 openEuler 23.09 一键安装 Oracle 12CR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 openEuler 23.09 一键安装 Oracle 12CR2 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/147408807/" title="Oracle RAC 一键安装翻车？手把手教你如何排错！"><img class="cover" src="/csdn-blog/images/9d78cb4fc4a322f65b9b7cca4c03d1b7.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-22</div><div class="info-item-2">Oracle RAC 一键安装翻车？手把手教你如何排错！</div></div><div class="info-2"><div class="info-item-1">前言 今天 Oracle 一键安装脚本群有个朋友使用过程中安装失败，需要帮忙分析： 这里记录一下分析过程以及解决过程~ 问题分析 为了方便分析，我在脚本内置了日志模块，安装遇到问题只需要把日志发出来即可快速分析问题，通过日志可以发现： 可以看到这里集群状态有问题，大概率是 root.sh 执行有问题</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142649802/" title="Oracle 数据库启动过程之 mount 详解"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-30</div><div class="info-item-2">Oracle 数据库启动过程之 mount 详解</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 mount 阶段 控制文件 Checkpoint 分析 10046 分析 控制文件内容 - immediate trace name CONTROLF backup controlfile to trace 总结 往期</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139180127/" title="Oracle Linux 8.9 一键安装 Oracle 21C RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">Oracle Linux 8.9 一键安装 Oracle 21C RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 8.9 一键安装 Oracle 21C RAC（21.13）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TEM-%E4%BA%A7%E5%93%81%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.</span> <span class="toc-text">TEM 产品介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E4%BB%B7%E5%80%BC"><span class="toc-number">2.1.</span> <span class="toc-text">核心价值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DBA-%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B%E7%9A%84%E9%87%8D%E6%9E%84"><span class="toc-number">2.2.</span> <span class="toc-text">DBA 工作流程的重构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TEM-%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97"><span class="toc-number">3.</span> <span class="toc-text">TEM 快速部署指南</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2%E5%87%86%E5%A4%87"><span class="toc-number">3.1.</span> <span class="toc-text">部署准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E9%85%8D%E7%BD%AE%E6%AD%A5%E9%AA%A4"><span class="toc-number">3.2.</span> <span class="toc-text">关键配置步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2%E6%95%88%E6%9E%9C%E5%B1%95%E7%A4%BA"><span class="toc-number">3.3.</span> <span class="toc-text">部署效果展示</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E4%BD%93%E9%AA%8C%E4%B8%8E%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">使用体验与总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%A7%E5%93%81%E4%BA%AE%E7%82%B9"><span class="toc-number">4.1.</span> <span class="toc-text">产品亮点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">5.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

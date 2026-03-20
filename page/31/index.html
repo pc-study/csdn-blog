@@ -1,0 +1,368 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Lucifer三思而后行 - CSDN 博客备份归档</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="528 篇原创技术文章 | Oracle · 数据库 · Linux · 运维">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Lucifer三思而后行">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/page/31/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="528 篇原创技术文章 | Oracle · 数据库 · Linux · 运维">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/avatar.jpg">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="DBA">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Oracle">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="运维">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/avatar.jpg"><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/page/31/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Lucifer三思而后行',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page fixed" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/jerryc127/CDN@m2/img/default.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="site-info"><h1 id="site-title">Lucifer三思而后行</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="post_cover left"><a href="/csdn-blog/posts/123635262/" title="比SQL还好用，又一门国产数据库语言诞生了"><img class="post-bg" src="/csdn-blog/img/covers/tech.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="比SQL还好用，又一门国产数据库语言诞生了" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/csdn-blog/posts/123635262/" title="比SQL还好用，又一门国产数据库语言诞生了">比SQL还好用，又一门国产数据库语言诞生了</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-03-22T01:00:00.000Z" title="发表于 2022-03-22 09:00:00">2022-03-22</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/SQL/">SQL</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/SPL/">SPL</a></span></div><div class="content">前言 自 SQL 语言出现之后，一直是一门很受欢迎的语言；那么问题来了，发展了这么多年，有没有比 SQL 好用的语言呢？答案是肯定的，SPL 应时而生。 数据库语言的目标 要说清这个目标，先要理解数据库是做什么的。 数据库这个软件，名字中有个“库”字，会让人觉得它主要是为了存储的。其实不然，数据库实</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/csdn-blog/posts/123637987/" title="大数据生态圈如何入门？"><img class="post-bg" src="/csdn-blog/images/d831398d329330292db1d0f000c2ae5b.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="大数据生态圈如何入门？" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/csdn-blog/posts/123637987/" title="大数据生态圈如何入门？">大数据生态圈如何入门？</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-03-21T08:12:51.000Z" title="发表于 2022-03-21 16:12:51">2022-03-21</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/">大数据 &amp; AI</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a></span></div><div class="content">大数据平台架构 大数据技术已经被应用到各行各业，涉及人们生活的方方面面。大数据技术大大提高了数据存储和计算能力，从而为企业快速决策提供了数据支撑，能够助力企业改进业务流程、控制成本、提高产品质量，应用大数据技术为企业核心竞争力的提升打下了坚实的基础。 大数据技术在企业项目开发中主要涉及数据采集、数据</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/csdn-blog/posts/123560637/" title="“东数西算”国家工程全面启动，你想知道的全在这儿"><img class="post-bg" src="/csdn-blog/images/4379af945c63d524badd8f6c35cdfded.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="“东数西算”国家工程全面启动，你想知道的全在这儿" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/csdn-blog/posts/123560637/" title="“东数西算”国家工程全面启动，你想知道的全在这儿">“东数西算”国家工程全面启动，你想知道的全在这儿</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-03-18T02:42:17.000Z" title="发表于 2022-03-18 10:42:17">2022-03-18</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/">大数据 &amp; AI</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/big-data/">big data</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">人工智能</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E7%89%A9%E8%81%94%E7%BD%91/">物联网</a></span></div><div class="content">导读 日前，国家发改委、中央网信办、工信部和国家能源局联合印发通知，同意在京津冀、长三角、粤港澳大湾区、成渝、内蒙古、贵州、甘肃、宁夏等8地启动建设国家算力枢纽节点，并规划了10个国家数据中心集群。至此，全国一体化大数据中心体系完成总体布局设计，“东数西算”工程正式全面启动。 来源：文章来源于网络</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/csdn-blog/posts/123417865/" title="国内云市场，腾讯云、阿里云、华为云，谁能更胜一筹呢？"><img class="post-bg" src="/csdn-blog/images/d7914fc6ffe7e04c695c7964ed5adec4.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="国内云市场，腾讯云、阿里云、华为云，谁能更胜一筹呢？" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/csdn-blog/posts/123417865/" title="国内云市场，腾讯云、阿里云、华为云，谁能更胜一筹呢？">国内云市场，腾讯云、阿里云、华为云，谁能更胜一筹呢？</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-03-11T02:13:26.000Z" title="发表于 2022-03-11 10:13:26">2022-03-11</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E9%98%BF%E9%87%8C%E4%BA%91/">阿里云</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E8%85%BE%E8%AE%AF%E4%BA%91/">腾讯云</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E5%8D%8E%E4%B8%BA%E4%BA%91/">华为云</a></span></div><div class="content">首先说一下通用云平台整体架构设计，包括IaaS基础服务、数据服务、应用服务、云管理平台以及在此基础上构建的运营、运维、多云管理等能力。为了确保产品质量和运行的稳定性，整体架构应遵循以下几点选择原则（分先后侧重排序）： 安全性、可靠性、稳定性、先进性、可扩展性、开放性、标准化，其中安全性需要遵循行业安</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/csdn-blog/posts/123064282/" title="Python 零基础入门必看，这些知识点你都掌握了吗？"><img class="post-bg" src="/csdn-blog/images/faa7e015851afbda44fedf55021f1af5.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Python 零基础入门必看，这些知识点你都掌握了吗？" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/csdn-blog/posts/123064282/" title="Python 零基础入门必看，这些知识点你都掌握了吗？">Python 零基础入门必看，这些知识点你都掌握了吗？</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-02-25T06:16:20.000Z" title="发表于 2022-02-25 14:16:20">2022-02-25</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/python/">python</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">开发语言</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E5%90%8E%E7%AB%AF/">后端</a></span></div><div class="content">导读 Python 作为当今最受欢迎的编程语言之一，几乎各个领域都会涉及到，所以学习 Python 自然刻不容缓！作为一个没有接触过 Python 的小白，一开始要想的不是如何使用以及各种高深莫测的玩法，从最基础的了解以及构建环境才是正道。 点我跳转文末 抽奖领书，价值 99 元，新出版的 《Pyt</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/csdn-blog/posts/122975104/" title="阿里云 CentOS7.9 搭建 Hexo 个人博客教程"><img class="post-bg" src="/csdn-blog/images/9051e5d148e1abd6a0bea2dffa1429bc.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="阿里云 CentOS7.9 搭建 Hexo 个人博客教程" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/csdn-blog/posts/122975104/" title="阿里云 CentOS7.9 搭建 Hexo 个人博客教程">阿里云 CentOS7.9 搭建 Hexo 个人博客教程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-02-22T06:48:15.000Z" title="发表于 2022-02-22 14:48:15">2022-02-22</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E9%98%BF%E9%87%8C%E4%BA%91/">阿里云</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/git/">git</a></span></div><div class="content">前言 最近买了个阿里云服务器，于是打算搭建一个个人博客网站，使用的是 Hexo，下面是搭建的过程。 搭建过程 本次个人博客大致的搭建步骤如下： 购买阿里云服务器 配置阿里云服务器 服务端安装 Nodejs 服务端安装 Git 服务端安装 Nginx 客户端安装 Hexo 客户端配置免密登录 服务端创</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/csdn-blog/posts/123063938/" title="手把手教你绘制数据治理实施路线图"><img class="post-bg" src="/csdn-blog/images/1e27ed78abc90c8292b657ecf7fb2b14.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="手把手教你绘制数据治理实施路线图" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/csdn-blog/posts/123063938/" title="手把手教你绘制数据治理实施路线图">手把手教你绘制数据治理实施路线图</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-02-22T03:10:15.000Z" title="发表于 2022-02-22 11:10:15">2022-02-22</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/">大数据 &amp; AI</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/big-data/">big data</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/">数据仓库</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">人工智能</a></span></div><div class="content">导读 很多企业知道数据治理很重要，但是却不清楚如何做好数据治理。有的企业开展数据治理是“摸着石头过河”，还有一部分企业是"想过河但是不知道该摸哪一块石头”。 数据治理成熟度评估为企业提供了一个数据治理的切入点，通过发现企业数据治理中存在的问题，找到与业界领先企业的差距，绘制出符合企业现状和需求的数据</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/csdn-blog/posts/122839501/" title="[译] Oracle Database 21c 中的空间管理增强功能"><img class="post-bg" src="/csdn-blog/img/covers/database.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="[译] Oracle Database 21c 中的空间管理增强功能" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/csdn-blog/posts/122839501/" title="[译] Oracle Database 21c 中的空间管理增强功能">[译] Oracle Database 21c 中的空间管理增强功能</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-02-09T04:37:21.000Z" title="发表于 2022-02-09 12:37:21">2022-02-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/database/">database</a></span></div><div class="content">原文地址： 原文作者：Tim Hall 本文介绍 Oracle 数据库 21c 中的空间管理增强功能。 目录 SecureFiles 收缩 临时表空间自动收缩 撤消表空间自动收缩 SecureFiles 收缩 在以前的版本中，我们只能通过移动 lob 来释放 lob 的空间，这对于大型 lob 段可</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/csdn-blog/posts/122819219/" title="[译] Data Guard：Oracle Database 21c 中的 PREPARE DATABASE FOR DATA GUARD 命令"><img class="post-bg" src="/csdn-blog/img/covers/database.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="[译] Data Guard：Oracle Database 21c 中的 PREPARE DATABASE FOR DATA GUARD 命令" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/csdn-blog/posts/122819219/" title="[译] Data Guard：Oracle Database 21c 中的 PREPARE DATABASE FOR DATA GUARD 命令">[译] Data Guard：Oracle Database 21c 中的 PREPARE DATABASE FOR DATA GUARD 命令</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-02-08T02:25:21.000Z" title="发表于 2022-02-08 10:25:21">2022-02-08</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/database/">database</a></span></div><div class="content">原文地址： 原文作者：Tim Hall 在 Oracle 数据库 21c 中配置 Data Guard 时，使用 命令可以简化主数据库的设置。 目录 介绍 PREPARE DATABASE FOR DATA GUARD 介绍 在配置 Data Guard 之前，主数据库的准备需要执行许多步骤。对于一</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/csdn-blog/posts/122717375/" title="[译] Oracle Database 21c 中的 Attention 日志"><img class="post-bg" src="/csdn-blog/img/covers/database.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="[译] Oracle Database 21c 中的 Attention 日志" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/csdn-blog/posts/122717375/" title="[译] Oracle Database 21c 中的 Attention 日志">[译] Oracle Database 21c 中的 Attention 日志</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-01-27T06:38:55.000Z" title="发表于 2022-01-27 14:38:55">2022-01-27</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/database/">database</a></span></div><div class="content">原文地址： 原文作者：Tim Hall 多年来，数据库的告警日志变得非常庞大，很难从海量的告警 信息 中找到重要的日志内容。Attention 日志是 Oracle 21c 中引入的 JSON 格式文件，用于捕获关键事件，使系统诊断更加容易。 目录 Attention 日志位置 Attention</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/csdn-blog/posts/122703627/" title="虚拟机玩转 Veritas NetBackup（NBU）之 Linux 配置 NBU 客户端"><img class="post-bg" src="/csdn-blog/images/0a3e3d2b0972b03571a12e0c109c7332.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="虚拟机玩转 Veritas NetBackup（NBU）之 Linux 配置 NBU 客户端" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/csdn-blog/posts/122703627/" title="虚拟机玩转 Veritas NetBackup（NBU）之 Linux 配置 NBU 客户端">虚拟机玩转 Veritas NetBackup（NBU）之 Linux 配置 NBU 客户端</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-01-26T13:01:55.000Z" title="发表于 2022-01-26 21:01:55">2022-01-26</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/">Linux 运维</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/linux/">linux</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/%E8%BF%90%E7%BB%B4/">运维</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/bash/">bash</a></span></div><div class="content">前言 NBU 的使用需要在客户端 安装配置 ，否则无法使用，NBU 客户端支持 Linux、Window 以及 AIX 三个平台，安装过程都比较简单，本文介绍下如何在 Linux 下配置 NBU 客户端。 一、上传并解压客户端 安装包 首先下载 Linux 的 NBU 客户端软件： NetBacku</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/csdn-blog/posts/122705749/" title="虚拟机玩转 Veritas NetBackup（NBU）之 Windows 配置 NBU 客户端"><img class="post-bg" src="/csdn-blog/images/e5f4ac339663bb44125ceb280af17deb.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="虚拟机玩转 Veritas NetBackup（NBU）之 Windows 配置 NBU 客户端" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/csdn-blog/posts/122705749/" title="虚拟机玩转 Veritas NetBackup（NBU）之 Windows 配置 NBU 客户端">虚拟机玩转 Veritas NetBackup（NBU）之 Windows 配置 NBU 客户端</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-01-26T13:01:24.000Z" title="发表于 2022-01-26 21:01:24">2022-01-26</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/csdn-blog/categories/%E5%B7%A5%E5%85%B7%E4%B8%8E%E6%95%88%E7%8E%87/">工具与效率</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/linux/">linux</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/windows/">windows</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/csdn-blog/tags/java/">java</a></span></div><div class="content">前言 NBU 的使用需要在客户端安装配置，否则无法使用，NBU 客户端支持 Linux、Window 以及 AIX 三个平台，安装过程都比较简单，本文介绍下如何在 Windows 下配置 NBU 客户端。 一、上传并解压客户端安装包 首先下载 Windows 的 NBU 客户端软件： NetBack</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/csdn-blog/page/30/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/csdn-blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/csdn-blog/page/30/#content-inner">30</a><span class="page-number current">31</span><a class="page-number" href="/csdn-blog/page/32/#content-inner">32</a><span class="space">&hellip;</span><a class="page-number" href="/csdn-blog/page/44/#content-inner">44</a><a class="extend next" rel="next" href="/csdn-blog/page/32/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分类</span>
+            
+          </div>
+          <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/"><span class="card-category-list-name">Linux 运维</span><span class="card-category-list-count">52</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="card-category-list-name">Oracle 数据库</span><span class="card-category-list-count">277</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/csdn-blog/categories/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86/"><span class="card-category-list-name">多媒体处理</span><span class="card-category-list-count">9</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/"><span class="card-category-list-name">大数据 & AI</span><span class="card-category-list-count">16</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/csdn-blog/categories/%E5%B7%A5%E5%85%B7%E4%B8%8E%E6%95%88%E7%8E%87/"><span class="card-category-list-name">工具与效率</span><span class="card-category-list-count">6</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"><span class="card-category-list-name">技术文章</span><span class="card-category-list-count">34</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="card-category-list-name">数据库</span><span class="card-category-list-count">134</span></a></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/csdn-blog/tags/%E6%97%A0%E4%BA%BA%E5%80%BC%E5%AE%88/" style="font-size: 1.19em; color: rgb(57, 85, 162);">无人值守</a><a href="/csdn-blog/tags/shell%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85/" style="font-size: 1.15em; color: rgb(94, 50, 82);">shell一键安装</a><a href="/csdn-blog/tags/oracle/" style="font-size: 1.45em; color: rgb(113, 106, 117);">oracle</a><a href="/csdn-blog/tags/11GR2/" style="font-size: 1.15em; color: rgb(154, 106, 53);">11GR2</a><a href="/csdn-blog/tags/orale/" style="font-size: 1.15em; color: rgb(163, 154, 119);">orale</a><a href="/csdn-blog/tags/12CR2/" style="font-size: 1.15em; color: rgb(50, 53, 136);">12CR2</a><a href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 1.41em; color: rgb(130, 96, 180);">数据库</a><a href="/csdn-blog/tags/Oracle-18C/" style="font-size: 1.15em; color: rgb(169, 160, 93);">Oracle 18C</a><a href="/csdn-blog/tags/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/" style="font-size: 1.22em; color: rgb(172, 50, 66);">安装部署</a><a href="/csdn-blog/tags/CDB/" style="font-size: 1.19em; color: rgb(50, 81, 100);">CDB</a><a href="/csdn-blog/tags/PDB/" style="font-size: 1.19em; color: rgb(151, 179, 106);">PDB</a><a href="/csdn-blog/tags/Oracle-19C/" style="font-size: 1.15em; color: rgb(61, 94, 50);">Oracle 19C</a><a href="/csdn-blog/tags/Oracle-11GR2/" style="font-size: 1.15em; color: rgb(99, 50, 93);">Oracle 11GR2</a><a href="/csdn-blog/tags/HA/" style="font-size: 1.15em; color: rgb(171, 50, 50);">HA</a><a href="/csdn-blog/tags/ASM/" style="font-size: 1.15em; color: rgb(123, 93, 180);">ASM</a><a href="/csdn-blog/tags/linux/" style="font-size: 1.38em; color: rgb(65, 64, 106);">linux</a><a href="/csdn-blog/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 1.34em; color: rgb(122, 127, 141);">运维</a><a href="/csdn-blog/tags/shell/" style="font-size: 1.22em; color: rgb(50, 200, 183);">shell</a><a href="/csdn-blog/tags/%E6%96%B0%E6%98%9F%E8%AE%A1%E5%88%92/" style="font-size: 1.26em; color: rgb(200, 50, 84);">新星计划</a><a href="/csdn-blog/tags/%E5%88%86%E5%8C%BA%E8%A1%A8/" style="font-size: 1.19em; color: rgb(200, 114, 83);">分区表</a><a href="/csdn-blog/tags/%E5%8D%87%E7%BA%A7/" style="font-size: 1.15em; color: rgb(50, 165, 76);">升级</a><a href="/csdn-blog/tags/dataguard/" style="font-size: 1.19em; color: rgb(136, 132, 50);">dataguard</a><a href="/csdn-blog/tags/gap/" style="font-size: 1.15em; color: rgb(186, 50, 115);">gap</a><a href="/csdn-blog/tags/%E5%9C%A8%E7%BA%BF%E9%87%8D%E5%AE%9A%E4%B9%89/" style="font-size: 1.15em; color: rgb(104, 114, 154);">在线重定义</a><a href="/csdn-blog/tags/vagrant/" style="font-size: 1.3em; color: rgb(193, 50, 198);">vagrant</a><a href="/csdn-blog/tags/%E6%95%85%E9%9A%9C%E5%A4%84%E7%90%86/" style="font-size: 1.15em; color: rgb(50, 112, 81);">故障处理</a><a href="/csdn-blog/tags/shareplex/" style="font-size: 1.15em; color: rgb(158, 50, 50);">shareplex</a><a href="/csdn-blog/tags/CBL-Mariner/" style="font-size: 1.15em; color: rgb(50, 50, 144);">CBL-Mariner</a><a href="/csdn-blog/tags/macos/" style="font-size: 1.19em; color: rgb(125, 97, 175);">macos</a><a href="/csdn-blog/tags/docker/" style="font-size: 1.15em; color: rgb(50, 149, 50);">docker</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>归档</span>
+      <a class="card-more-btn" href="/csdn-blog/archives/"
+            title="查看更多">
+            <i class="fas fa-angle-right"></i>
+          </a>
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/csdn-blog/archives/2026/01/">
+            <span class="card-archive-list-date">
+              2026年01月
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/csdn-blog/archives/2025/12/">
+            <span class="card-archive-list-date">
+              2025年12月
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/csdn-blog/archives/2025/11/">
+            <span class="card-archive-list-date">
+              2025年11月
+            </span>
+            <span class="card-archive-list-count">11</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/csdn-blog/archives/2025/09/">
+            <span class="card-archive-list-date">
+              2025年09月
+            </span>
+            <span class="card-archive-list-count">10</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/csdn-blog/archives/2025/08/">
+            <span class="card-archive-list-date">
+              2025年08月
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/csdn-blog/archives/2025/07/">
+            <span class="card-archive-list-date">
+              2025年07月
+            </span>
+            <span class="card-archive-list-count">17</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/csdn-blog/archives/2025/06/">
+            <span class="card-archive-list-date">
+              2025年06月
+            </span>
+            <span class="card-archive-list-count">13</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/csdn-blog/archives/2025/05/">
+            <span class="card-archive-list-date">
+              2025年05月
+            </span>
+            <span class="card-archive-list-count">12</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">528</div></div><div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="runtimeshow" data-publishDate="2021-05-07T00:00:00.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">1314.4k</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-03-20T15:25:47.884Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
+  init: str => {
+    window.typed = new Typed('#subtitle', Object.assign({
+      strings: str,
+      startDelay: 300,
+      typeSpeed: 150,
+      loop: true,
+      backSpeed: 50,
+    }, {"typeSpeed":50,"backSpeed":30,"loop":true}))
+  },
+  run: subtitleType => {
+    if (true) {
+      if (typeof Typed === 'function') {
+        subtitleType()
+      } else {
+        btf.getScript('https://cdn.jsdelivr.net/npm/typed.js@3.0.0/dist/typed.umd.min.js').then(subtitleType)
+      }
+    } else {
+      subtitleType()
+    }
+  },
+  processSubtitle: (content, extraContents = []) => {
+    if (true) {
+      const sub = ["Oracle · 数据库 · Linux · 运维","528 篇原创技术文章","三思而后行，知行合一"].slice()
+
+      if (extraContents.length > 0) {
+        sub.unshift(...extraContents)
+      }
+
+      if (typeof content === 'string') {
+        sub.unshift(content)
+      } else if (Array.isArray(content)) {
+        sub.unshift(...content)
+      }
+
+      sub.length > 0 && typedJSFn.init(sub)
+    } else {
+      document.getElementById('subtitle').textContent = typeof content === 'string' ? content :
+        (Array.isArray(content) && content.length > 0 ? content[0] : '')
+    }
+  }
+}
+btf.addGlobalFn('pjaxSendOnce', () => { typed.destroy() }, 'typedDestroy')
+</script><script>function subtitleType () {
+  typedJSFn.processSubtitle(["Oracle · 数据库 · Linux · 运维","528 篇原创技术文章","三思而后行，知行合一"])
+}
+typedJSFn.run(subtitleType)</script></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

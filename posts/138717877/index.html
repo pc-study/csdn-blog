@@ -1,0 +1,690 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Oracle 一键安装脚本实操合集，持续更新中！！！ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="文章目录 前言 第五代版本正式上线 脚本兼容性列表 目前脚本已知支持的 Oracle 版本 目前脚本已知支持列表组合 实操合集 RedHat&#x2F;Centos&#x2F;OracleLinux 6 RedHat&#x2F;Centos&#x2F;OracleLinux 7 Centos&#x2F;RedHat&#x2F;OracleLinux Roky">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Oracle 一键安装脚本实操合集，持续更新中！！！">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/138717877/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="文章目录 前言 第五代版本正式上线 脚本兼容性列表 目前脚本已知支持的 Oracle 版本 目前脚本已知支持列表组合 实操合集 RedHat&#x2F;Centos&#x2F;OracleLinux 6 RedHat&#x2F;Centos&#x2F;OracleLinux 7 Centos&#x2F;RedHat&#x2F;OracleLinux Roky">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/oracle.svg">
+<meta property="article:published_time" content="2024-05-11T07:59:38.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.334Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/oracle.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Oracle 一键安装脚本实操合集，持续更新中！！！","url":"https://pc-study.github.io/csdn-blog/posts/138717877/","image":"https://pc-study.github.io/csdn-blog/img/covers/oracle.svg","datePublished":"2024-05-11T07:59:38.000Z","dateModified":"2026-03-20T08:34:08.334Z","description":"文章目录 前言 第五代版本正式上线 脚本兼容性列表 目前脚本已知支持的 Oracle 版本 目前脚本已知支持列表组合 实操合集 RedHat/Centos/OracleLinux 6 RedHat/Centos/OracleLinux 7 Centos/RedHat/OracleLinux Roky","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/138717877/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/138717877/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Oracle 一键安装脚本实操合集，持续更新中！！！',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/oracle.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">Oracle 一键安装脚本实操合集，持续更新中！！！</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Oracle 一键安装脚本实操合集，持续更新中！！！<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-05-11-138717877.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-05-11T07:59:38.000Z" title="发表于 2024-05-11 15:59:38">2024-05-11</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.334Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/">Oracle 数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>12分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><h4 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><ul>
+<li><a href="#_7">第五代版本正式上线</a></li>
+</ul>
+</li>
+<li><a href="#_18">脚本兼容性列表</a></li>
+<li><ul>
+<li><a href="#_Oracle__42">目前脚本已知支持的 Oracle 版本</a></li>
+<li><a href="#_49">目前脚本已知支持列表组合</a></li>
+</ul>
+</li>
+<li><a href="#_77">实操合集</a></li>
+<li><ul>
+<li><a href="#RedHatCentosOracleLinux_6_79">RedHat&#x2F;Centos&#x2F;OracleLinux 6</a></li>
+<li><a href="#RedHatCentosOracleLinux_7_91">RedHat&#x2F;Centos&#x2F;OracleLinux 7</a></li>
+<li><a href="#CentosRedHatOracleLinux_108">Centos&#x2F;RedHat&#x2F;OracleLinux</a></li>
+<li><a href="#RokyLinux_125">RokyLinux</a></li>
+<li><a href="#RedhatOracleLinux_133">Redhat&#x2F;OracleLinux</a></li>
+<li><a href="#_openEuler_138">华为欧拉 openEuler</a></li>
+<li><a href="#_NeoKylin_V7_172">中标麒麟 NeoKylin V7</a></li>
+<li><a href="#_Kylin_V10_SP3_179">银河麒麟 Kylin V10 SP3</a></li>
+<li><a href="#_Anolis_79_191">阿里龙蜥 Anolis 7.9</a></li>
+<li><a href="#_Anolis_88_202">阿里龙蜥 Anolis 8.8</a></li>
+<li><a href="#_UOS_V20_208">统信 UOS V20</a></li>
+<li><a href="#SUSE_12_SP5_226">SUSE 12 SP5</a></li>
+<li><a href="#SUSE_15_SP5_232">SUSE 15 SP5</a></li>
+<li><a href="#Debian_238">Debian</a></li>
+<li><a href="#Ubuntu_246">Ubuntu</a></li>
+<li><a href="#NingOS_252">NingOS</a></li>
+<li><a href="#OpenCloudOS_256">OpenCloudOS</a></li>
+<li><a href="#AlmaLinux_260">AlmaLinux</a></li>
+<li><a href="#_263">中科方德</a></li>
+<li><a href="#_asianux_267">红旗 asianux</a></li>
+<li><a href="#Fedora_39_271">Fedora 39</a></li>
+<li><a href="#_274">其他</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p><strong>⭐️ 本脚本一次订阅，永久维护更新！！！需要订阅请添加微信号：<code>Lucifer-0622</code></strong></p>
+</blockquote>
+<h3 id="第五代版本正式上线"><a href="#第五代版本正式上线" class="headerlink" title="第五代版本正式上线"></a>第五代版本正式上线</h3><ul>
+<li><strong>适配 99% 主流 Linux 操作系统以及版本，一网打尽</strong>，具体可参考：<a target="_blank" rel="noopener" href="https://github.com/DBAutoTask/OracleShellInstall/issues/12">目前脚本已支持操作系统 #12</a></li>
+<li>减少绝大多数安装校验，例如必须要安装补丁才能安装等，目前基本支持所有版本基础版安装，非必须安装补丁（包括 11GR2 在 rhel8&#x2F;9 等安装）</li>
+<li>去除 <code>-iso</code> 参数，新增参数：<code>-lrp</code> 和 <code>-lnp</code>，可参考：<a target="_blank" rel="noopener" href="https://github.com/DBAutoTask/OracleShellInstall/issues/6">脚本配置软件源逻辑更新以及 ISO 挂载教程 #6</a></li>
+<li>重写软件源配置部分和软件安装部分</li>
+<li>重写操作系统适配部分</li>
+<li>去除密码复杂度校验，支持复杂密码</li>
+<li>重写在线重做日志逻辑，更加智能化</li>
+<li>优化互信逻辑，保证互信成功概率提高</li>
+<li>优化脚本逻辑，删除复杂冗余代码，执行速度更快</li>
+</ul>
+<h2 id="脚本兼容性列表"><a href="#脚本兼容性列表" class="headerlink" title="脚本兼容性列表"></a>脚本兼容性列表</h2><p>目前脚本已支持操作系统（已安装验证）：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developers.redhat.com/products/rhel/download">RedHat 6&#x2F;7&#x2F;8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://yum.oracle.com/oracle-linux-isos.html">OracleLinux 6&#x2F;7&#x2F;8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/centos/">Centos 6&#x2F;7&#x2F;8 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://rockylinux.org/download">Rocky Linux 8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://almalinux.org/get-almalinux">AlmaLinux 8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.suse.com/download/sles/">SUSE 12&#x2F;15 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/openeuler/">华为欧拉 openEuler 20~24 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://tools.mindspore.cn/productrepo/iso/euleros/x86_64/">华为欧拉 EulerOS V2 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://openanolis.cn/download">阿里龙蜥 openAnolis 7&#x2F;8 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://sx.ygwid.cn:4431/">银河麒麟 Kylin V10 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://sx.ygwid.cn:4431/">中标麒麟 NeoKylin V7 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://cdimage-download.chinauos.com/">统信 UOS V20 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.h3c.com/cn/Service/Document_Software/Software_Download/Server/Catalog/system/system/NingOS/">NingOS</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.opencloudos.tech/ospages/downloadISO">OpenCloudOS 7&#x2F;8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/debian-cd/">Debian 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/deepin-cd/">Deepin 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/">Ubuntu 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/">ArchLinux</a></li>
+<li><a target="_blank" rel="noopener" href="https://fedoraproject.org/zh-Hans/server/download/">Fedora 13~39 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://bbs.chinaredflag.cn/?download2.htm">红旗 asianux</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.nfschina.com/index.php?catid=24">中科方德</a></li>
+</ul>
+<h3 id="目前脚本已知支持的-Oracle-版本"><a href="#目前脚本已知支持的-Oracle-版本" class="headerlink" title="目前脚本已知支持的 Oracle 版本"></a>目前脚本已知支持的 Oracle 版本</h3><figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs mathematica"><span class="hljs-number">11</span><span class="hljs-variable">GR2</span><br><span class="hljs-number">12</span><span class="hljs-variable">CR2</span><br><span class="hljs-number">19</span><span class="hljs-built_in">C</span><br><span class="hljs-number">21</span><span class="hljs-built_in">C</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="目前脚本已知支持列表组合"><a href="#目前脚本已知支持列表组合" class="headerlink" title="目前脚本已知支持列表组合"></a>目前脚本已知支持列表组合</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>11GR2</th>
+<th>12CR2</th>
+<th>19C</th>
+<th>21C</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Centos 6 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Centos 7&#x2F;8 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Redhat 6 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>RedHat 7&#x2F;8&#x2F;9 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>OracleLinux 6 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>OracleLinux 7&#x2F;8&#x2F;9 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>RockyLinux 8&#x2F;9 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>AlmaLinux 8&#x2F;9 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>SUSE 12&#x2F;15 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>华为欧拉 openEuler 20~24 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>华为欧拉 EulerOS V2 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>阿里龙蜥 Anolis 7&#x2F;8 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>银河麒麟 Kylin V10 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>中标麒麟 NeoKylin V7 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>统信 UOS V20 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>OpenCloudOS 7&#x2F;8&#x2F;9 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Debian 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Deepin 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Ubuntu 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Fedora 13~39 全系</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>ArchLinux</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>红旗 asianux</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>中科方德</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>NingOS</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+</tbody></table>
+<h2 id="实操合集"><a href="#实操合集" class="headerlink" title="实操合集"></a>实操合集</h2><p><strong>注意，以下实操文档均由作者亲自测试验证可行，未列出的并非脚本不支持，只是还未测试兼容性，等待测试后会持续更新！！！</strong></p>
+<h3 id="RedHat-Centos-OracleLinux-6"><a href="#RedHat-Centos-OracleLinux-6" class="headerlink" title="RedHat&#x2F;Centos&#x2F;OracleLinux 6"></a>RedHat&#x2F;Centos&#x2F;OracleLinux 6</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793905982145368064">Oracle Linux 6.10 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793906147014561792">Oracle Linux 6.10 一键安装 Oracle 11GR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793906602780217344">Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793906816815550464">Oracle Linux 6.10 一键安装 Oracle 12CR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793907072823283712">Oracle Linux 6.10 一键安装 Oracle 12CR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793907312532459520">Oracle Linux 6.10 一键安装 Oracle 12CR2 RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1780125753588420608">Centos 7.9 一键安装 Oracle 12CR2（240116）单机 PDB</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802971206927867904">RedHat 6.10 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802970780069355520">RedHat 6.10 一键安装 Oracle 11GR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802971374104436736">RedHat 6.10 一键安装 Oracle 12CR2 单机</a></li>
+</ul>
+<h3 id="RedHat-Centos-OracleLinux-7"><a href="#RedHat-Centos-OracleLinux-7" class="headerlink" title="RedHat&#x2F;Centos&#x2F;OracleLinux 7"></a>RedHat&#x2F;Centos&#x2F;OracleLinux 7</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1780126269282291712">Centos 7.9 一键安装 Oracle 12CR2（240116）单机 NON-CDB 多实例</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793914360695427072">Oracle Linux 7.9 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793914562089127936">Oracle Linux 7.9 一键安装 Oracle 12CR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1783040588504977408">Oracle Linux 7.9 一键安装 Oracle 19C 单机（19.22）</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1783041124776611840">Oracle Linux 7.9 一键安装 Oracle 21C（21.14）单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802973775511248896">RedHat 7.9 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793915540619743232">RedHat 7.9 一键安装 Oracle 11GR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793915831289712640">RedHat 7.9 一键安装 Oracle 11GR2 RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802973513615216640">RedHat 7.9 一键安装 Oracle 12CR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793915997920514048">RedHat 7.9 一键安装 Oracle 12C 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793917155330822144">RedHat 7.9 一键安装 Oracle 12CR2 RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793917518913556480">RedHat 7.9 一键安装 Oracle 19C 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793920116656246784">RedHat 7.9 一键安装 Oracle 19C RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793926285512232960">RedHat 7.9 一键安装 Oracle 21C 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793926470929829888">RedHat 7.9 一键安装 Oracle 21C RAC</a></li>
+</ul>
+<h3 id="Centos-RedHat-OracleLinux"><a href="#Centos-RedHat-OracleLinux" class="headerlink" title="Centos&#x2F;RedHat&#x2F;OracleLinux"></a>Centos&#x2F;RedHat&#x2F;OracleLinux</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793935213155913728">Oracle Linux 8.9 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793935437593120768">Oracle Linux 8.9 一键安装 Oracle 11GR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1775440580130181120">Oracle Linux 8.8 一键安装 Oracle 11GR2 RAC（231017）</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793935629566414848">Oracle Linux 8.9 一键安装 Oracle 12CR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793935871946346496">Oracle Linux 8.9 一键安装 Oracle 12CR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793936038271979520">Oracle Linux 8.9 一键安装 Oracle 12CR2 RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793936251111936000">Oracle Linux 8.9 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793936447476158464">Oracle Linux 8.9 一键安装 Oracle 19C 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1780107297712312320">Oracle Linux 8.9 一键安装 Oracle 19C RAC（19.22）</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793936618667184128">Oracle Linux 8.9 一键安装 Oracle 21C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793936819758387200">Oracle Linux 8.9 一键安装 Oracle 21C 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793936998859362304">Oracle Linux 8.9 一键安装 Oracle 21C RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802974836133793792">RedHat 8.9 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802974574446972928">RedHat 8.9 一键安装 Oracle 11GR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802975427685343232">RedHat 8.9 一键安装 Oracle 12CR2 单机</a></li>
+</ul>
+<h3 id="RokyLinux"><a href="#RokyLinux" class="headerlink" title="RokyLinux"></a>RokyLinux</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1783028205124407296">Rocky Linux 8.9 一键安装 Oracle 11GR2（231017）单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1783028470599192576">Rocky Linux 8.9 一键安装 Oracle 11GR2（231017）单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1783028742196645888">Rocky Linux 8.9 一键安装 Oracle 12CR2（220118）单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1783028879615135744">Rocky Linux 8.9 一键安装 Oracle 12CR2 单机 ASM（231017）</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1783030084206661632">Rocky Linux 8.9 一键安装 Oracle 19C（19.22）单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1783030261734264832">Rocky Linux 8.9 一键安装 Oracle 21C（21.14）单机</a></li>
+</ul>
+<h3 id="Redhat-OracleLinux"><a href="#Redhat-OracleLinux" class="headerlink" title="Redhat&#x2F;OracleLinux"></a>Redhat&#x2F;OracleLinux</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1801521277945057280">RedHat 9.3 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802555406249185280">RedHat 9.3 一键安装 Oracle 11GR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793908393215856640">RedHat 9.3 一键安装 Oracle 19C 单机</a></li>
+</ul>
+<h3 id="华为欧拉-openEuler"><a href="#华为欧拉-openEuler" class="headerlink" title="华为欧拉 openEuler"></a>华为欧拉 openEuler</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1797802338438156288">华为欧拉 EulerOS V2.0 SP5 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1797802943315513344">华为欧拉 EulerOS V2.0 SP5 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1798217938012540928">华为欧拉 EulerOS V2.0 SP9 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1798226009048813568">华为欧拉 EulerOS V2.0 SP9 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1790259228505624576">华为欧拉 openEuler 20.03 LTS SP4 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1790282518884339712">华为欧拉 openEuler 20.03 LTS SP4 一键安装 Oracle 12CR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802976639168110592">华为欧拉 openEuler 20.03 LTS SP4 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802978228654137344">华为欧拉 openEuler 22.03 LTS 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802978002220945408">华为欧拉 openEuler 22.03 LTS 一键安装 Oracle 12CR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802977575714250752">华为欧拉 openEuler 22.03 LTS 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1769591803778535424">华为欧拉 openEuler 22.03 LTS SP3（华为欧拉）一键安装 Oracle 11G（231017）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1777194208734023680">华为欧拉 openEuler 22.03 LTS SP3（华为欧拉）一键安装 Oracle 11GR2 单机 ASM（231017）</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1775333967880851456">华为欧拉 openEuler 22.03 LTS SP3（华为欧拉）一键安装 Oracle 11GR2 RAC（231017）</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1772864352247451648">华为欧拉 openEuler 22.03 LTS SP3（华为欧拉）一键安装 Oracle 12CR2（220118）数据库</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793927984923086848">华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 12CR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793928166137991168">华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 12CR2 RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1769539674624823296">华为欧拉 openEuler 22.03 LTS SP3（华为欧拉）一键安装 Oracle 19C（19.22） 数据库</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793928424351928320">华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 19C 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1770329115010338816">华为欧拉 openEuler 22.03 LTS SP3（华为欧拉）一键安装 Oracle 19C RAC（19.22） 数据库</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793928644552888320">华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 21C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793928896764268544">华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 21C 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793929070127943680">华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 21C RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1795379669730136064">华为欧拉 openEuler 23.09 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1797252790082424832">华为欧拉 openEuler 23.09 一键安装 Oracle 11GR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1796749511502155776">华为欧拉 openEuler 23.09 一键安装 Oracle 12CR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1797253140105990144">华为欧拉 openEuler 23.09 一键安装 Oracle 12CR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1788099172318646272">华为欧拉 openEuler 23.09 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802979108816248832">华为欧拉 openEuler 23.09 一键安装 Oracle 19C 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1788135687241404416">华为欧拉 openEuler 23.09 一键安装 Oracle 21C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1797457412151660544">华为欧拉 openEuler 23.09 一键安装 Oracle 21C 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1798960607357128704">华为欧拉 openEuler 24.03 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1798960934320410624">华为欧拉 openEuler 24.03 一键安装 Oracle 19C 单机</a></li>
+</ul>
+<h3 id="中标麒麟-NeoKylin-V7"><a href="#中标麒麟-NeoKylin-V7" class="headerlink" title="中标麒麟 NeoKylin V7"></a>中标麒麟 NeoKylin V7</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1788034069762215936">中标麒麟 NeoKylin V7 一键安装 Oracle 11GR2（231017）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1788049381332701184">中标麒麟 NeoKylin V7 一键安装 Oracle 12CR2（240116）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793908806362681344">中标麒麟 NeoKylin V7 一键安装 Oracle 12CR2 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1788065065177534464">中标麒麟 NeoKylin V7 一键安装 Oracle 19C（19.23）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1788071636108906496">中标麒麟 NeoKylin V7 一键安装 Oracle 21C（21.14）单机版</a></li>
+</ul>
+<h3 id="银河麒麟-Kylin-V10-SP3"><a href="#银河麒麟-Kylin-V10-SP3" class="headerlink" title="银河麒麟 Kylin V10 SP3"></a>银河麒麟 Kylin V10 SP3</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1762008192972820480">银河麒麟 Kylin V10 SP3 一键安装 Oracle 11GR2（231017）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1777195134348791808">银河麒麟 Kylin V10 SP3 一键安装 Oracle 11GR2 单机 ASM（231017）</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793909705512914944">银河麒麟 Kylin V10 SP3 一键安装 Oracle 11GR2 RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1773265001669824512">银河麒麟 Kylin V10 SP3 一键安装 Oracle 12CR2（220118）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793909960702758912">银河麒麟 Kylin V10 SP3 一键安装 Oracle 12CR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793910233696915456">银河麒麟 Kylin V10 SP3 一键安装 Oracle 12CR2 RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1761982554933587968">银河麒麟 Kylin V10 SP3 一键安装 Oracle 19C 19.22 单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793910481097936896">银河麒麟 Kylin V10 SP3 一键安装 Oracle 19C 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793910774132985856">银河麒麟 Kylin V10 SP3 一键安装 Oracle 19C RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793910943792582656">银河麒麟 Kylin V10 SP3 一键安装 Oracle 21C 单机</a></li>
+</ul>
+<h3 id="阿里龙蜥-Anolis-7-9"><a href="#阿里龙蜥-Anolis-7-9" class="headerlink" title="阿里龙蜥 Anolis 7.9"></a>阿里龙蜥 Anolis 7.9</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1772081728022188032">阿里龙蜥 Anolis 7.9 一键安装 Oracle 11GR2（231017）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793930803591843840">阿里龙蜥 Anolis 7.9 一键安装 Oracle 11GR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793930996185387008">阿里龙蜥 Anolis 7.9 一键安装 Oracle 11GR2 RAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1772845918450159616">阿里龙蜥 Anolis 7.9 一键安装 Oracle 12CR2（220118）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793931203413872640">阿里龙蜥 Anolis 7.9 一键安装 Oracle 12CR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1772105823525900288">阿里龙蜥 Anolis 7.9 一键安装 Oracle 19C（19.22）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793931404605739008">阿里龙蜥 Anolis 7.9 一键安装 Oracle 19C 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793931632868659200">阿里龙蜥 Anolis 7.9 一键安装 Oracle 21C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793931827177672704">阿里龙蜥 Anolis 7.9 一键安装 Oracle 21C 单机 ASM</a></li>
+</ul>
+<h3 id="阿里龙蜥-Anolis-8-8"><a href="#阿里龙蜥-Anolis-8-8" class="headerlink" title="阿里龙蜥 Anolis 8.8"></a>阿里龙蜥 Anolis 8.8</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1772131084879368192">阿里龙蜥 Anolis 8.8 一键安装 Oracle 11GR2（231017）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1772858229067943936">阿里龙蜥 Anolis 8.8 一键安装 Oracle 12CR2（220118）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1772107172300820480">阿里龙蜥 Anolis 8.8 一键安装 Oracle 19C（19.22）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793929929884766208">阿里龙蜥 Anolis 8.8 一键安装 Oracle 21C 单机</a></li>
+</ul>
+<h3 id="统信-UOS-V20"><a href="#统信-UOS-V20" class="headerlink" title="统信 UOS V20"></a>统信 UOS V20</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1773552274713972736">统信 UOS V20 1060(a) 一键安装 Oracle 11GR2（231017）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1773270182230855680">统信 UOS V20 1060(a) 一键安装 Oracle 12CR2（220118）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1773564096011669504">统信 UOS V20 1060(a) 一键安装 Oracle 19C（19.22）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793911355459325952">统信 UOS V20 1060(a) 一键安装 Oracle 21C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793904413970599936">统信 UOS V20 1070(a) 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802981700972122112">统信 UOS V20 1070(a) 一键安装 Oracle 11GR2 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1794067752356499456">统信 UOS V20 1070(a) 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802981973908066304">统信 UOS V20 1070(a) 一键安装 Oracle 19C 单机 ASM</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802982213939191808">统信 UOS V20 1001© 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802982817210634240">统信 UOS V20 1001© 一键安装 Oracle 12CR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802982999268089856">统信 UOS V20 1001© 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802983271830740992">统信 UOS V20 1050(d) 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802983534524194816">统信 UOS V20 1050(d) 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802983914390228992">统信 UOS V20 1070(e) 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802984177263534080">统信 UOS V20 1070(e) 一键安装 Oracle 12CR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802984371195568128">统信 UOS V20 1070(e) 一键安装 Oracle 19C 单机</a></li>
+</ul>
+<h3 id="SUSE-12-SP5"><a href="#SUSE-12-SP5" class="headerlink" title="SUSE 12 SP5"></a>SUSE 12 SP5</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793913032371425280">SUSE 12 SP5 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793913331848925184">SUSE 12 SP5 一键安装 Oracle 12CR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793913538661666816">SUSE 12 SP5 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793913756317192192">SUSE 12 SP5 一键安装 Oracle 21C 单机</a></li>
+</ul>
+<h3 id="SUSE-15-SP5"><a href="#SUSE-15-SP5" class="headerlink" title="SUSE 15 SP5"></a>SUSE 15 SP5</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1773547168497995776">SUSE 15 SP5 一键安装 Oracle 11GR2（231017）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1772860821603979264">SUSE 15 SP5 一键安装 Oracle 12CR2（220118）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1772452639086809088">SUSE 15 SP5 一键安装 Oracle 19C（19.22）单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1793912152419536896">SUSE 15 SP5 一键安装 Oracle 21C 单机</a></li>
+</ul>
+<h3 id="Debian"><a href="#Debian" class="headerlink" title="Debian"></a>Debian</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802986709222756352">Debian 8 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802986945965547520">Debian 8 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1800364511256989696">Debian 10 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1800364805253042176">Debian 10 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1798254412749164544">Debian 12.5 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1800363910775263232">Debian 12.5 一键安装 Oracle 19C 单机</a></li>
+</ul>
+<h3 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802989256016728064">Ubuntu 14.04 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802989449265090560">Ubuntu 14.04 一键安装 Oracle 19C 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802989641758478336">Ubuntu 22.04 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802989841113243648">Ubuntu 22.04 一键安装 Oracle 19C 单机</a></li>
+</ul>
+<h3 id="NingOS"><a href="#NingOS" class="headerlink" title="NingOS"></a>NingOS</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802987948953657344">NingOS V3 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802988134820548608">NingOS V3 一键安装 Oracle 19C 单机</a></li>
+</ul>
+<h3 id="OpenCloudOS"><a href="#OpenCloudOS" class="headerlink" title="OpenCloudOS"></a>OpenCloudOS</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802988347576115200">OpenCloudOS 8.8 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802988513608142848">OpenCloudOS 8.8 一键安装 Oracle 19C 单机</a></li>
+</ul>
+<h3 id="AlmaLinux"><a href="#AlmaLinux" class="headerlink" title="AlmaLinux"></a>AlmaLinux</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802987710444560384">AlmaLinux 8.10 一键安装 Oracle 11GR2 单机</a></li>
+</ul>
+<h3 id="中科方德"><a href="#中科方德" class="headerlink" title="中科方德"></a>中科方德</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802987276800167936">中科方德 NFSChina 4.0一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802987487937236992">中科方德 NFSChina 4.0一键安装 Oracle 19C 单机</a></li>
+</ul>
+<h3 id="红旗-asianux"><a href="#红旗-asianux" class="headerlink" title="红旗 asianux"></a>红旗 asianux</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802988734878650368">Asianux 8 一键安装 Oracle 11GR2 单机</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1802988958702985216">Asianux 8 一键安装 Oracle 19C 单机</a></li>
+</ul>
+<h3 id="Fedora-39"><a href="#Fedora-39" class="headerlink" title="Fedora 39"></a>Fedora 39</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1780125152361123840">Fedora 39（需联网）一键安装 Oracle 19C（19.22）单机版</a></li>
+</ul>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/627155">Redhat 8.4 一键安装 Oracle 11GR2 单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1767103571552702464">11GR2 rac 2节点一键安装演示</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/626761">11GR2 rac 5节点一键安装演示</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1722500845915430912">Redhat 9.3 一键安装 Oracle 19C 19.21 单机版</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1767425920041848832">19C 19.22 RAC 2节点一键安装演示</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/138717877/">https://pc-study.github.io/csdn-blog/posts/138717877/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/138719905/" title="Oracle Linux 6.10 一键安装 Oracle 11GR2（231017）单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Oracle Linux 6.10 一键安装 Oracle 11GR2（231017）单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 6.10 一键安装 Oracle 11GR2 单机（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/138160663/" title="Rocky Linux 8.9 一键安装 Oracle 21C（21.14）单机"><img class="cover" src="/csdn-blog/img/covers/linux.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Rocky Linux 8.9 一键安装 Oracle 21C（21.14）单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Rocky Linux 8.9 一键安装 Oracle 21C 单机（全程无需人工干预）。（脚本包括 ORALCE PSU/OJVM 等补丁自动安装） ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 脚本第三代支持 N 节点一键安装，不限制节点数！</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/137148431/" title="统信 UOS V20 一键安装 Oracle 11GR2（231017）单机版"><img class="cover" src="/csdn-blog/images/87af3621169c7361697aaa9c5a516bff.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-29</div><div class="info-item-2">统信 UOS V20 一键安装 Oracle 11GR2（231017）单机版</div></div><div class="info-2"><div class="info-item-1">Oracle 一键安装脚本，演示 统信 UOS V20 一键安装 Oracle 11GR2（231017）单机版过程（全程无需人工干预）：（脚本包括 ORALCE PSU/OJVM 等补丁自动安装） ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 脚本第三代支持 N 节点一键安装，不限制节</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120236014/" title="Oracle 查询表空间使用率 SQL 语句"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-11</div><div class="info-item-2">Oracle 查询表空间使用率 SQL 语句</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库的表空间如果使用超过100%，会导致数据库无法使用，因此需要及时扩展！ 通过 sql 查询 当前数据库所有表空间的使用率： 本次分享到此结束啦~ 如果觉得文章对你有帮助，点赞、收藏、关注、评论，一键四连支持，你的支持就是我创作最大的动力。 ❤️ 技术 交流可以 关注公众号：Luc</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119842873/" title="《零基础安装 Oracle 数据库》单机系列 ① 一键快速安装 Oracle 11GR2 数据库"><img class="cover" src="/csdn-blog/images/644c43399983590f415749804cc0f3b4.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-21</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机系列 ① 一键快速安装 Oracle 11GR2 数据库</div></div><div class="info-2"><div class="info-item-1">目录 前言 安装 下载项目 安装软件 下载 Oracle 安装包 安装 编辑 vagrant.yml 文件 开始安装 使用方式 连接主机 关闭主机 开启主机 销毁主机 写在最后 前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + she</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119854975/" title="《零基础安装 Oracle 数据库》单机ASM系列 2️⃣ 一键快速安装 Oracle 12CR2 数据库"><img class="cover" src="/csdn-blog/images/7ee41c205dea5f4fcdae2c7f8c21b31f.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-22</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机ASM系列 2️⃣ 一键快速安装 Oracle 12CR2 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持单机集群版本一键安装了！❗️ 但不支持 Linux 6 系统安装！</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121886633/" title="[译] 多租户：Oracle Database 19c 中的 DBCA PDB 远程克隆"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-12</div><div class="info-item-2">[译] 多租户：Oracle Database 19c 中的 DBCA PDB 远程克隆</div></div><div class="info-2"><div class="info-item-1">Oracle Database 12c 第 2 版 (12.2) 引入了使用该 命令执行远程可插拔数据库 (PDB) 热克隆的功能。在 Oracle 19c 中，可以使用数据库配置助手 (DBCA) 执行可插拔数据库 (PDB) 的远程克隆。 一、先决条件 连接到远程 CDB 并准备克隆： 在远程数</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/147408807/" title="Oracle RAC 一键安装翻车？手把手教你如何排错！"><img class="cover" src="/csdn-blog/images/9d78cb4fc4a322f65b9b7cca4c03d1b7.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-22</div><div class="info-item-2">Oracle RAC 一键安装翻车？手把手教你如何排错！</div></div><div class="info-2"><div class="info-item-1">前言 今天 Oracle 一键安装脚本群有个朋友使用过程中安装失败，需要帮忙分析： 这里记录一下分析过程以及解决过程~ 问题分析 为了方便分析，我在脚本内置了日志模块，安装遇到问题只需要把日志发出来即可快速分析问题，通过日志可以发现： 可以看到这里集群状态有问题，大概率是 root.sh 执行有问题</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E4%BB%A3%E7%89%88%E6%9C%AC%E6%AD%A3%E5%BC%8F%E4%B8%8A%E7%BA%BF"><span class="toc-number">2.1.</span> <span class="toc-text">第五代版本正式上线</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%84%9A%E6%9C%AC%E5%85%BC%E5%AE%B9%E6%80%A7%E5%88%97%E8%A1%A8"><span class="toc-number">3.</span> <span class="toc-text">脚本兼容性列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%89%8D%E8%84%9A%E6%9C%AC%E5%B7%B2%E7%9F%A5%E6%94%AF%E6%8C%81%E7%9A%84-Oracle-%E7%89%88%E6%9C%AC"><span class="toc-number">3.1.</span> <span class="toc-text">目前脚本已知支持的 Oracle 版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%89%8D%E8%84%9A%E6%9C%AC%E5%B7%B2%E7%9F%A5%E6%94%AF%E6%8C%81%E5%88%97%E8%A1%A8%E7%BB%84%E5%90%88"><span class="toc-number">3.2.</span> <span class="toc-text">目前脚本已知支持列表组合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E6%93%8D%E5%90%88%E9%9B%86"><span class="toc-number">4.</span> <span class="toc-text">实操合集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RedHat-Centos-OracleLinux-6"><span class="toc-number">4.1.</span> <span class="toc-text">RedHat&#x2F;Centos&#x2F;OracleLinux 6</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RedHat-Centos-OracleLinux-7"><span class="toc-number">4.2.</span> <span class="toc-text">RedHat&#x2F;Centos&#x2F;OracleLinux 7</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Centos-RedHat-OracleLinux"><span class="toc-number">4.3.</span> <span class="toc-text">Centos&#x2F;RedHat&#x2F;OracleLinux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RokyLinux"><span class="toc-number">4.4.</span> <span class="toc-text">RokyLinux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redhat-OracleLinux"><span class="toc-number">4.5.</span> <span class="toc-text">Redhat&#x2F;OracleLinux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8E%E4%B8%BA%E6%AC%A7%E6%8B%89-openEuler"><span class="toc-number">4.6.</span> <span class="toc-text">华为欧拉 openEuler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%A0%87%E9%BA%92%E9%BA%9F-NeoKylin-V7"><span class="toc-number">4.7.</span> <span class="toc-text">中标麒麟 NeoKylin V7</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%B6%E6%B2%B3%E9%BA%92%E9%BA%9F-Kylin-V10-SP3"><span class="toc-number">4.8.</span> <span class="toc-text">银河麒麟 Kylin V10 SP3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%BF%E9%87%8C%E9%BE%99%E8%9C%A5-Anolis-7-9"><span class="toc-number">4.9.</span> <span class="toc-text">阿里龙蜥 Anolis 7.9</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%BF%E9%87%8C%E9%BE%99%E8%9C%A5-Anolis-8-8"><span class="toc-number">4.10.</span> <span class="toc-text">阿里龙蜥 Anolis 8.8</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9F%E4%BF%A1-UOS-V20"><span class="toc-number">4.11.</span> <span class="toc-text">统信 UOS V20</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SUSE-12-SP5"><span class="toc-number">4.12.</span> <span class="toc-text">SUSE 12 SP5</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SUSE-15-SP5"><span class="toc-number">4.13.</span> <span class="toc-text">SUSE 15 SP5</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Debian"><span class="toc-number">4.14.</span> <span class="toc-text">Debian</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Ubuntu"><span class="toc-number">4.15.</span> <span class="toc-text">Ubuntu</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NingOS"><span class="toc-number">4.16.</span> <span class="toc-text">NingOS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OpenCloudOS"><span class="toc-number">4.17.</span> <span class="toc-text">OpenCloudOS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AlmaLinux"><span class="toc-number">4.18.</span> <span class="toc-text">AlmaLinux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E7%A7%91%E6%96%B9%E5%BE%B7"><span class="toc-number">4.19.</span> <span class="toc-text">中科方德</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%A2%E6%97%97-asianux"><span class="toc-number">4.20.</span> <span class="toc-text">红旗 asianux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fedora-39"><span class="toc-number">4.21.</span> <span class="toc-text">Fedora 39</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-number">4.22.</span> <span class="toc-text">其他</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>KingbaseES KSQL 免密登录的几种方式 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 KSQL 连接数据库 常规连接方式 免密连接方式 alias 方式 环境变量方式 kbpass 文件方式 最佳免密方式 alias + kbpass 环境变量 + kbpass 总结 后记 前言 经常使">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KingbaseES KSQL 免密登录的几种方式">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/142948929/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 KSQL 连接数据库 常规连接方式 免密连接方式 alias 方式 环境变量方式 kbpass 文件方式 最佳免密方式 alias + kbpass 环境变量 + kbpass 总结 后记 前言 经常使">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg">
+<meta property="article:published_time" content="2024-10-15T05:17:02.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.442Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="kingbase">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"KingbaseES KSQL 免密登录的几种方式","url":"https://pc-study.github.io/csdn-blog/posts/142948929/","image":"https://pc-study.github.io/csdn-blog/img/covers/database.svg","datePublished":"2024-10-15T05:17:02.000Z","dateModified":"2026-03-20T08:34:08.442Z","description":"大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 KSQL 连接数据库 常规连接方式 免密连接方式 alias 方式 环境变量方式 kbpass 文件方式 最佳免密方式 alias + kbpass 环境变量 + kbpass 总结 后记 前言 经常使","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/142948929/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/142948929/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'KingbaseES KSQL 免密登录的几种方式',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/database.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">KingbaseES KSQL 免密登录的几种方式</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">KingbaseES KSQL 免密登录的几种方式<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-10-15-142948929.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-10-15T05:17:02.000Z" title="发表于 2024-10-15 13:17:02">2024-10-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.442Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，分享一些学习国产数据库路上的知识和经验。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_5">前言</a></li>
+<li><a href="#_12">介绍</a></li>
+<li><a href="#KSQL__83">KSQL 连接数据库</a></li>
+<li><ul>
+<li><a href="#_84">常规连接方式</a></li>
+</ul>
+</li>
+<li><a href="#_111">免密连接方式</a></li>
+<li><ul>
+<li><a href="#alias__112">alias 方式</a></li>
+<li><a href="#_131">环境变量方式</a></li>
+<li><a href="#kbpass__152">kbpass 文件方式</a></li>
+</ul>
+</li>
+<li><a href="#_181">最佳免密方式</a></li>
+<li><ul>
+<li><a href="#alias__kbpass_182">alias + kbpass</a></li>
+<li><a href="#__kbpass_226">环境变量 + kbpass</a></li>
+</ul>
+</li>
+<li><a href="#_282">总结</a></li>
+<li><a href="#_285">后记</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>经常使用 Oracle 数据库的 DBA 对 sqlplus 命令肯定不陌生，而在 KingbaseES 数据库中，对应的工具就是 KSQL。</p>
+<p>熟悉我文章的朋友可能知道，我在使用 sqlplus 工具时，经常使用 <code>sas</code> 来快速连接 Oracle 数据库，其实就是使用 <code>alias</code> 别名的方式创建了一个快捷方式，虽然是一个小技巧，但是对数据库维护来说十分便捷。</p>
+<p>在接触使用 KingbaseES 时，自然也想着研究一下 KSQL 有没有类似的快捷方式使用，经过仔细研究发现，KSQL 实现的方式比 Oracle 多多了，本文就介绍一下 KSQL 免密登录的几种方式，以及我总结的最佳免密配置方式。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>KingbaseES KSQL 工具面向的是所有使用 KingbaseES 的用户，主要是数据库管理员人员。KSQL 是 KingbaseES 数据库的一个组件，在安装 KingbaseES 数据库时，默认会安装 KSQL。</p>
+<p>KSQL 工具很容易使用，没接触过的建议查看 ksql 帮助命令来大致了解一下如何使用：</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig">[<span class="hljs-string">kingbase</span>@<span class="hljs-string">kes</span>:/<span class="hljs-string">home</span>/<span class="hljs-string">kingbase</span>]$ <span class="hljs-string">ksql</span> <span class="hljs-built_in">--help</span><br><span class="hljs-string">ksql</span>是<span class="hljs-string">Kingbase</span> 的交互式客户端工具。<br>使用方法:<br>  <span class="hljs-string">ksql</span> [选项]... [数据库名称 [用户名称]]<br>通用选项:<br>  -<span class="hljs-string">c</span>, <span class="hljs-built_in">--command=命令</span>       执行单一命令(<span class="hljs-string">SQL</span>或内部指令)然后结束<br>  -<span class="hljs-string">d</span>, <span class="hljs-built_in">--dbname=DBNAME</span>      指定要连接的数据库 (默认：<span class="hljs-string">&quot;kingbase&quot;</span>)<br>  -<span class="hljs-string">f</span>, <span class="hljs-built_in">--file=文件名</span>        从文件中执行命令然后退出<br>  -<span class="hljs-string">l</span>, <span class="hljs-built_in">--list</span>               列出所有可用的数据库,然后退出<br>  -<span class="hljs-string">v</span>, <span class="hljs-built_in">--set=,</span> <span class="hljs-built_in">--variable=NAME=VALUE</span><br>                           设置<span class="hljs-string">ksql</span>变量<span class="hljs-string">NAME</span>为<span class="hljs-string">VALUE</span><br>                           (例如，-<span class="hljs-string">v</span> <span class="hljs-string">ON_ERROR_STOP</span>=<span class="hljs-string">1</span>)<br>  -<span class="hljs-string">V</span>，<span class="hljs-built_in">--version</span>            输出版本信息，然后退出<br>  -<span class="hljs-string">X</span>, <span class="hljs-built_in">--no-ksqlrc</span>          不读取启动文档(~/.<span class="hljs-string">ksqlrc</span>)<br>  -<span class="hljs-string">1</span> (<span class="hljs-string">&quot;one&quot;</span>), <span class="hljs-built_in">--single-transaction</span><br>                           作为一个单一事务来执行命令文件(如果是非交互型的)<br>  -?, <span class="hljs-built_in">--help[=options]</span>     显示此帮助，然后退出<br>      <span class="hljs-built_in">--help=commands</span>      列出反斜线命令，然后退出<br>      <span class="hljs-built_in">--help=variables</span>     列出特殊变量，然后退出<br><br>输入和输出选项:<br>  -<span class="hljs-string">a</span>, <span class="hljs-built_in">--echo-all</span>           显示所有来自于脚本的输入<br>  -<span class="hljs-string">b</span>, <span class="hljs-built_in">--echo-errors</span>        回显失败的命令<br>  -<span class="hljs-string">e</span>, <span class="hljs-built_in">--echo-queries</span>       显示发送给服务器的命令<br>  -<span class="hljs-string">E</span>, <span class="hljs-built_in">--echo-hidden</span>        显示内部命令产生的查询<br>  -<span class="hljs-string">L</span>, <span class="hljs-built_in">--log-file=文件名</span>    将会话日志写入文件<br>  -<span class="hljs-string">M</span>, <span class="hljs-built_in">--enable-client-encryption</span><br>                           启用使用客户端加密功能<br>  -<span class="hljs-string">n</span>, <span class="hljs-built_in">--no-readline</span>        禁用增强命令行编辑功能(<span class="hljs-string">readline</span>)<br>  -<span class="hljs-string">o</span>，<span class="hljs-built_in">--outPut=FILENAME</span>    将查询结果发送到<span class="hljs-string">file</span>(<span class="hljs-string">or</span> |<span class="hljs-string">pipe</span>)<br>  -<span class="hljs-string">q</span>，<span class="hljs-built_in">--quiet</span>              静静地运行(没有消息，只有查询输出)<br>  -<span class="hljs-string">s</span>, <span class="hljs-built_in">--single-step</span>        单步模式 (确认每个查询)<br>  -<span class="hljs-string">S</span>, <span class="hljs-built_in">--single-line</span>        单行模式 (一行就是一条 <span class="hljs-string">SQL</span> 命令)<br><br>输出格式选项 :<br>  -<span class="hljs-string">A</span>，<span class="hljs-built_in">--no-align</span>           不对齐表输出模式<br>      <span class="hljs-built_in">--csv</span>                <span class="hljs-string">CSV</span>(逗号分隔值)表输出模式<br>   -<span class="hljs-string">F</span>, <span class="hljs-built_in">--field-separator=STRING</span><br>                            用于未对齐输出的字段分隔符(默认值:<span class="hljs-string">&quot;|&quot;</span>)<br>  -<span class="hljs-string">H</span>，<span class="hljs-built_in">--html</span>               <span class="hljs-string">HTML</span>表输出模式<br>  -<span class="hljs-string">P</span>, <span class="hljs-built_in">--pset=变量[=参数]</span>   设置将变量打印到参数的选项(查阅 \<span class="hljs-string">pset</span> 命令)<br>   -<span class="hljs-string">R</span>, <span class="hljs-built_in">--record-separator=STRING</span><br>                            记录分隔符用于未对齐输出(默认:<span class="hljs-string">newline</span>)<br>  -<span class="hljs-string">t</span>, <span class="hljs-built_in">--tuples-only</span>        只打印记录<span class="hljs-string">i</span><br>  -<span class="hljs-string">T</span>, <span class="hljs-built_in">--table-attr=文本</span>    设定 <span class="hljs-string">HTML</span> 表格标记属性（例如,宽度,边界)<br>  -<span class="hljs-string">x</span>，<span class="hljs-built_in">--expanded</span>           打开扩展表<span class="hljs-string">outPut</span><br>   -<span class="hljs-string">z</span>, <span class="hljs-built_in">--field-separator-zero</span><br>                            将未对齐输出的字段分隔符设置为零字节<br>  -<span class="hljs-string">0</span>, <span class="hljs-built_in">--record-separator-zero</span><br>                            将未对齐输出的记录分隔符设置为零字节<br><br>联接选项:<br>  -<span class="hljs-string">h</span>, <span class="hljs-built_in">--host=主机名</span>        数据库服务器主机或<span class="hljs-string">socket</span>目录(默认：<span class="hljs-string">&quot;本地接口&quot;</span>)<br>  -<span class="hljs-string">p</span>, <span class="hljs-built_in">--port=端口</span>          数据库服务器的端口(默认：<span class="hljs-string">&quot;54321&quot;</span>)<br> -<span class="hljs-string">U</span>，<span class="hljs-built_in">--username=USERNAME</span>  数据库用户名(默认:<span class="hljs-string">&quot;kingbase&quot;</span>)<br>  -<span class="hljs-string">w</span>, <span class="hljs-built_in">--no-password</span>        永远不提示输入口令<br>  -<span class="hljs-string">W</span>, <span class="hljs-built_in">--password</span>           强制口令提示 (自动)<br> -<span class="hljs-string">C</span>，<span class="hljs-built_in">--client-cert-path</span>       <span class="hljs-string">cert-authentication</span>文件路径<br> -<span class="hljs-string">k</span>，<span class="hljs-built_in">--client-certkey-path</span>    证书认证私钥文件路径<br>  -<span class="hljs-string">K</span>, <span class="hljs-built_in">--client-certpin-path</span>    读取私钥文件的加密<span class="hljs-string">pin</span>码文件路径<br><br>更多信息，请在<span class="hljs-string">ksql</span>中输入 <span class="hljs-string">&quot;\?&quot;</span>（用于内部命令），<br>或者参考<span class="hljs-string">Kingbase</span> <span class="hljs-string">ES</span>文档中的<span class="hljs-string">ksql</span>章节。<br></code></pre></td></tr></table></figure>
+
+<p>这里只是简单介绍以下 KSQL 工具。</p>
+<h2 id="KSQL-连接数据库"><a href="#KSQL-连接数据库" class="headerlink" title="KSQL 连接数据库"></a>KSQL 连接数据库</h2><h3 id="常规连接方式"><a href="#常规连接方式" class="headerlink" title="常规连接方式"></a>常规连接方式</h3><p>想要使用 KSQL 连接数据库，首先得知道数据库的名称，主机名，数据库用户以及数据库的端口号：</p>
+<ul>
+<li><code>-d</code>：要连接的数据库名称，默认为 kingbase</li>
+<li><code>-h</code>：数据库服务器主机名，默认为本地接口</li>
+<li><code>-p</code>：数据库服务器的端口，默认为 54321</li>
+<li><code>-U</code>：数据库用户名，默认为 kingbase</li>
+<li><code>-w</code>：永远不提示输入口令</li>
+</ul>
+<p>连接数据库：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 使用全参数指定方式连接，这种方式比较繁琐，但是规范</span><br>[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/home/kingbase</span>]<span class="hljs-variable">$ </span>ksql -d kingbase -h kes -p <span class="hljs-number">54321</span> -U system<br>用户 system 的口令：<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br>kingbase=<span class="hljs-comment">#</span><br></code></pre></td></tr></table></figure>
+
+<p>为了更快捷的连接数据库，可以尝试不指定参数名称来连接，忽略参数，自动填充默认值：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs elixir">[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/home/kingbase</span>]<span class="hljs-variable">$ </span>ksql kingbase system<br>用户 system 的口令：<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br>kingbase=<span class="hljs-comment">#</span><br></code></pre></td></tr></table></figure>
+
+<p>有默认值的选项可以不用指定，当不指定参数选项时，第一个被接收到的值将被解释为数据库名称（如果已经给出数据库名称，就解释为用户名）。不指定主机名，则默认连接当前主机上的数据库。</p>
+<h2 id="免密连接方式"><a href="#免密连接方式" class="headerlink" title="免密连接方式"></a>免密连接方式</h2><h3 id="alias-方式"><a href="#alias-方式" class="headerlink" title="alias 方式"></a>alias 方式</h3><p>这里参照我在 oracle 数据库的习惯，第一个想到的是使用别名的方式，实现起来最简单快捷：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 配置别名 ksql</span><br>cat&lt;&lt;-<span class="hljs-title class_">EOF</span>&gt;&gt;~/.bash_profile<br><span class="hljs-keyword">alias</span> ksql=<span class="hljs-string">&#x27;ksql -d kingbase -h kes -p 54321 -U system&#x27;</span><br><span class="hljs-title class_">EOF</span><br><br>source .bash_profile<br><br><span class="hljs-comment">## 直接使用 ksql 连接数据库</span><br>[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/home/kingbase</span>]<span class="hljs-variable">$ </span>ksql<br>用户 system 的口令：<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br>kingbase=<span class="hljs-comment">#</span><br></code></pre></td></tr></table></figure>
+
+<p>但是，测试下来我感觉这种方式有点鸡肋，因为需要手动输入数据库用户密码，ksql 不支持明文指定密码的选项，好像没有类似 <code>/ as sysdba</code> 类似的本地认证登录方式（有可能支持，但是我不知道，知道的朋友可以留言告知，谢谢）。</p>
+<h3 id="环境变量方式"><a href="#环境变量方式" class="headerlink" title="环境变量方式"></a>环境变量方式</h3><p>在查阅官方文档之后发现，可以通过环境变量的方式，将 KINGBASE_DATABASE、 KINGBASE_HOST、KINGBASE_PORT、KINGBASE_USER 以及 KINGBASE_PASSWORD 设置为适当的值来实现免密登录：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs routeros">cat&lt;&lt;-EOF&gt;&gt;~/.bash_profile<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_HOST</span>=kes<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_PORT</span>=54321<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_DATABASE</span>=kingbase<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_USER</span>=system<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_PASSWORD</span>=kingbase<br>EOF<br><br>source ~/.bash_profile<br><br><span class="hljs-comment">## 此时只需要直接执行 ksql 就可以连接数据库</span><br>[kingbase@kes:/home/kingbase]$ ksql<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br><span class="hljs-attribute">kingbase</span>=#<br></code></pre></td></tr></table></figure>
+
+<p>这个方式完全实现了我的需求，但是明文密码存放在环境变量配置文件中，比较容易被人看到，不太安全。</p>
+<h3 id="kbpass-文件方式"><a href="#kbpass-文件方式" class="headerlink" title="kbpass 文件方式"></a>kbpass 文件方式</h3><p>除了环境变量方式，官方提供了 <code>~/.kbpass</code> 文件来避免输入密码的方式，也很方便， kbpass 文件内容格式如下：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">hostname:port:<span class="hljs-keyword">database</span>:username:<span class="hljs-keyword">password</span><br></code></pre></td></tr></table></figure>
+
+<p>需要注意的几点：</p>
+<ul>
+<li>1、当密码包含冒号 <code>:</code> 时，必须用反斜杠 <code>\:</code> 进行转义</li>
+<li>2、字符 <code>*</code> 可以匹配任何字段中的任何值（密码除外）</li>
+<li>3、在 Unix 系统上，口令文件上的权限必须不允许所有人或组内访问（即权限为 0600），如果权限没有这么严格，该文件将被忽略。</li>
+</ul>
+<p>配置 kbpass 文件免密登录：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 创建 kbpass 文件</span><br>cat&lt;&lt;-<span class="hljs-title class_">EOF</span>&gt;~/.kbpass<br><span class="hljs-symbol">kes:</span><span class="hljs-number">54321</span><span class="hljs-symbol">:kingbase</span><span class="hljs-symbol">:system</span><span class="hljs-symbol">:kingbase</span><br><span class="hljs-title class_">EOF</span><br><br><span class="hljs-comment">## 授权文件 600 权限，仅用于 kingbase 用户访问</span><br><span class="hljs-comment">## 警告: 口令文件&quot;/home/kingbase/.kbpass&quot;的访问权限过大; 权限应设置为 u=rw (0600)或更少</span><br>chmod <span class="hljs-number">600</span> ~/.kbpass<br><br><span class="hljs-comment">## 使用 kbpass 需要严格指定参数选项信息，否则无法匹配 kbpass 文件中的密码</span><br>[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/home/kingbase</span>]<span class="hljs-variable">$ </span>ksql -h kes -p <span class="hljs-number">54321</span> -d kingbase -U system<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br>kingbase=<span class="hljs-comment">#</span><br></code></pre></td></tr></table></figure>
+
+<p>这种方式虽然不需要明文显示密码，并且能不需要输入密码连接数据库，但是需要严格指定数据库信息，也不太方便。</p>
+<h2 id="最佳免密方式"><a href="#最佳免密方式" class="headerlink" title="最佳免密方式"></a>最佳免密方式</h2><h3 id="alias-kbpass"><a href="#alias-kbpass" class="headerlink" title="alias + kbpass"></a>alias + kbpass</h3><p>使用别名的好处就是配置比较方便快捷：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 配置别名</span><br><span class="hljs-built_in">cat</span>&lt;&lt;-<span class="hljs-string">EOF&gt;&gt;~/.bash_profile</span><br><span class="hljs-string">alias ksql=&#x27;ksql -d kingbase -h kes -p 54321 -U system&#x27;</span><br><span class="hljs-string">EOF</span><br><br><span class="hljs-built_in">source</span> .bash_profile<br><br><span class="hljs-comment">## 配置 kbpass 文件</span><br><span class="hljs-built_in">cat</span>&lt;&lt;-<span class="hljs-string">EOF&gt;~/.kbpass</span><br><span class="hljs-string">kes:54321:kingbase:system:kingbase</span><br><span class="hljs-string">EOF</span><br><br><span class="hljs-built_in">chmod</span> 600 ~/.kbpass<br><br><span class="hljs-comment">## 免密连接</span><br>[kingbase@kes:/home/kingbase]$ ksql<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br>kingbase=#<br></code></pre></td></tr></table></figure>
+
+<p>如果有多个数据库实例，只需要创建多个别名，然后在 kbpass 文件中加上对应数据库行即可，例如：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 配置连接 test 库</span><br>cat&lt;&lt;-<span class="hljs-title class_">EOF</span>&gt;&gt;~/.bash_profile<br><span class="hljs-keyword">alias</span> ksql1=<span class="hljs-string">&#x27;ksql -d test -h kes -p 54321 -U system&#x27;</span><br><span class="hljs-title class_">EOF</span><br><br>source .bash_profile<br><br><span class="hljs-comment">## kbpass 文件新增一行配置</span><br>cat&lt;&lt;-<span class="hljs-title class_">EOF</span>&gt;&gt;~/.kbpass<br><span class="hljs-symbol">kes:</span><span class="hljs-number">54321</span><span class="hljs-symbol">:test</span><span class="hljs-symbol">:system</span><span class="hljs-symbol">:kingbase</span><br><span class="hljs-title class_">EOF</span><br><br><span class="hljs-comment">## 免密连接 test 库</span><br>[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/home/kingbase</span>]<span class="hljs-variable">$ </span>ksql1<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br>test=<span class="hljs-comment">#</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="环境变量-kbpass"><a href="#环境变量-kbpass" class="headerlink" title="环境变量 + kbpass"></a>环境变量 + kbpass</h3><p>使用环境变量的方式：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment">## 创建一个数据库名称命名的 .kingbase 环境变量文件，这样方便多个数据库进行切换</span><br>cp .bash_profile .kingbase<br><br><span class="hljs-comment">## 增加对应环境变量的配置信息，不需要加密码变量</span><br>cat&lt;&lt;-EOF&gt;&gt;~/.kingbase<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_HOST</span>=kes<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_PORT</span>=54321<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_DATABASE</span>=kingbase<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_USER</span>=system<br>EOF<br><br>source ~/.kingbase<br><br><span class="hljs-comment">## 配置 kbpass 文件</span><br>cat&lt;&lt;-EOF&gt;~/.kbpass<br>kes:54321:kingbase:system:kingbase<br>EOF<br><br>chmod 600 ~/.kbpass<br><br><span class="hljs-comment">## 免密连接</span><br>[kingbase@kes:/home/kingbase]$ ksql<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br><span class="hljs-attribute">kingbase</span>=#<br></code></pre></td></tr></table></figure>
+
+<p>如果有多个数据库实例，只需要创建多个环境变量文件，然后在 kbpass 文件中加上对应数据库行即可，例如：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment">## 创建一个数据库名称命名的 .test 环境变量文件</span><br>cp .bash_profile .test<br><br><span class="hljs-comment">## 增加对应环境变量的配置信息，不需要加密码变量</span><br>cat&lt;&lt;-EOF&gt;&gt;~/.test<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_HOST</span>=kes<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_PORT</span>=54321<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_DATABASE</span>=test<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_USER</span>=system<br>EOF<br><br>source ~/.test<br><br><span class="hljs-comment">## kbpass 文件新增一行配置</span><br>cat&lt;&lt;-EOF&gt;&gt;~/.kbpass<br>kes:54321:test:system:kingbase<br>EOF<br><br><span class="hljs-comment">## 免密连接 test 库</span><br>[kingbase@kes:/home/kingbase]$ ksql<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br><span class="hljs-attribute">test</span>=#<br></code></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文介绍了 KSQL 连接 KingbaseES 数据库的多种方式，通过以上测试以及对安全性的要求，建议大家可以使用 <code>alias 或环境变量 + kbpass</code> 的方式来配置免密登录，配置简单，使用便捷。</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>后来，群友提供了一个官方本地认证的免密方式，配置比较简单。</p>
+<p>修改 &#x2F;data&#x2F;sys_hba.conf 配置文件：</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs oxygene"># <span class="hljs-keyword">TYPE</span>  DATABASE        USER            ADDRESS                 <span class="hljs-keyword">METHOD</span><br><br># &quot;<span class="hljs-title function_">local</span>&quot; <span class="hljs-title function_">is</span> <span class="hljs-title function_">for</span> <span class="hljs-title function_">Unix</span> <span class="hljs-title function_">domain</span> <span class="hljs-title function_">socket</span> <span class="hljs-title function_">connections</span> <span class="hljs-title function_">only</span><br><span class="hljs-title function_">local</span>   <span class="hljs-title function_">all</span>             <span class="hljs-title function_">all</span>                                     <span class="hljs-title function_">scram</span>-<span class="hljs-title function_">sha</span>-256<br></code></pre></td></tr></table></figure>
+
+<p>将 local 认证方式 scram-sha-256 修改为 trust 即可：</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs oxygene"># <span class="hljs-keyword">TYPE</span>  DATABASE        USER            ADDRESS                 <span class="hljs-keyword">METHOD</span><br><br># &quot;<span class="hljs-title function_">local</span>&quot; <span class="hljs-title function_">is</span> <span class="hljs-title function_">for</span> <span class="hljs-title function_">Unix</span> <span class="hljs-title function_">domain</span> <span class="hljs-title function_">socket</span> <span class="hljs-title function_">connections</span> <span class="hljs-title function_">only</span><br><span class="hljs-title function_">local</span>   <span class="hljs-title function_">all</span>             <span class="hljs-title function_">all</span>                                     <span class="hljs-title function_">trust</span><br></code></pre></td></tr></table></figure>
+
+<p>重启数据库生效：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">sys_ctl restart</span><br></code></pre></td></tr></table></figure>
+
+<p>本地免密连接：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs awk">[kingbase@kes:<span class="hljs-regexp">/home/</span>kingbase]$ ksql -U sso test -p <span class="hljs-number">54321</span><br>ksql (V8.<span class="hljs-number">0</span>)<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br>test=&gt; <span class="hljs-keyword">exit</span><br></code></pre></td></tr></table></figure>
+
+<p>如果遇到无法免密登录的情况：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs elixir">[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/home/kingbase</span>]<span class="hljs-variable">$ </span>ksql -U sso test -p <span class="hljs-number">54321</span><br>用户 sso 的口令：<br><span class="hljs-symbol">ksql:</span> 错误: 无法连接到服务器：<span class="hljs-symbol">fe_sendauth:</span> no password supplied<br></code></pre></td></tr></table></figure>
+
+<p>可能是因为配置了以下环境变量：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_HOST</span>=kes<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_PORT</span>=54321<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_DATABASE</span>=test<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KINGBASE_USER</span>=system<br></code></pre></td></tr></table></figure>
+
+<p>注释之后，退出重登 kingbase 主机用户即可：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs awk">[kingbase@kes:<span class="hljs-regexp">/home/</span>kingbase]$ <span class="hljs-keyword">exit</span><br>注销<br>[root@kes ~]<span class="hljs-comment"># su - kingbase</span><br>上一次登录： 六 <span class="hljs-number">10</span>月 <span class="hljs-number">12</span> <span class="hljs-number">10</span>:<span class="hljs-number">29</span>:<span class="hljs-number">19</span> CST <span class="hljs-number">2024</span> pts/<span class="hljs-number">0</span> 上<br>[kingbase@kes:<span class="hljs-regexp">/home/</span>kingbase]$ ksql -U sso test -p <span class="hljs-number">54321</span><br>ksql (V8.<span class="hljs-number">0</span>)<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br>test=&gt; <span class="hljs-keyword">exit</span><br></code></pre></td></tr></table></figure>
+
+<p>所以，看起来最佳免密方式为：sys_hba.conf + alias</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">alias</span> ksystem=<span class="hljs-string">&#x27;ksql test system&#x27;</span><br><span class="hljs-built_in">alias</span> ksso=<span class="hljs-string">&#x27;ksql test sso&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>别名连接：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs elixir">[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/home/kingbase</span>]<span class="hljs-variable">$ </span>ksystem <br>ksql (<span class="hljs-title class_">V8</span>.<span class="hljs-number">0</span>)<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br>test=<span class="hljs-comment"># \conninfo</span><br>以用户 <span class="hljs-string">&quot;system&quot;</span> 的身份，通过套接字<span class="hljs-string">&quot;/tmp&quot;</span>在端口<span class="hljs-string">&quot;54321&quot;</span>连接到数据库 <span class="hljs-string">&quot;test&quot;</span><br>test=<span class="hljs-comment"># \q</span><br>[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/home/kingbase</span>]<span class="hljs-variable">$ </span>ksso<br>ksql (<span class="hljs-title class_">V8</span>.<span class="hljs-number">0</span>)<br>输入 <span class="hljs-string">&quot;help&quot;</span> 来获取帮助信息.<br><br>test=&gt; \conninfo <br>以用户 <span class="hljs-string">&quot;sso&quot;</span> 的身份，通过套接字<span class="hljs-string">&quot;/tmp&quot;</span>在端口<span class="hljs-string">&quot;54321&quot;</span>连接到数据库 <span class="hljs-string">&quot;test&quot;</span><br>test=&gt; \q<br></code></pre></td></tr></table></figure>
+
+<p>后续补充就到这了。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/142948929/">https://pc-study.github.io/csdn-blog/posts/142948929/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/kingbase/">kingbase</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/142949036/" title="金仓数据库 KingbaseES V9 单机安装指南"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">金仓数据库 KingbaseES V9 单机安装指南</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 环境准备 安装包下载 安装前配置 检查操作系统版本 关闭防火墙 创建用户 创建目录 系统参数配置 资源配置 配置 RemoveIPC 检查 /tmp 目录 配置环境变量 KES 安装 安装 ISO 挂载</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142948866/" title="KingbaseES 控制文件冗余与恢复秘籍"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">KingbaseES 控制文件冗余与恢复秘籍</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 控制文件介绍 控制文件冗余 控制文件恢复 模拟破坏控制文件 control\file\copy 方式（简单推荐） sys\resetwal 方式 - 参数 -l 参数 -x 参数 -m 参数 -O 参数 -g</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/145739382/" title="老张的国产数据库历险记：从怀疑金仓数据库到真香的心路历程"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-19</div><div class="info-item-2">老张的国产数据库历险记：从怀疑金仓数据库到真香的心路历程</div></div><div class="info-2"><div class="info-item-1">"你猜怎么着？我们那套SQLServer系统，居然真的成功迁移到国产数据库上了！"前几个月的凌晨两点，老张突然给我发来语音，声音里充满了兴奋。 我揉着眼睛看了眼窗外漆黑的夜色：“你们领导终于决定换掉那台十几年老旧服务器了？” “比那还让人惊讶！上周五领导突然说要搞数据库国产化，刚开始我有点担心——你</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142949036/" title="金仓数据库 KingbaseES V9 单机安装指南"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-15</div><div class="info-item-2">金仓数据库 KingbaseES V9 单机安装指南</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 环境准备 安装包下载 安装前配置 检查操作系统版本 关闭防火墙 创建用户 创建目录 系统参数配置 资源配置 配置 RemoveIPC 检查 /tmp 目录 配置环境变量 KES 安装 安装 ISO 挂载</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KSQL-%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">4.</span> <span class="toc-text">KSQL 连接数据库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%84%E8%BF%9E%E6%8E%A5%E6%96%B9%E5%BC%8F"><span class="toc-number">4.1.</span> <span class="toc-text">常规连接方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%8D%E5%AF%86%E8%BF%9E%E6%8E%A5%E6%96%B9%E5%BC%8F"><span class="toc-number">5.</span> <span class="toc-text">免密连接方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#alias-%E6%96%B9%E5%BC%8F"><span class="toc-number">5.1.</span> <span class="toc-text">alias 方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%96%B9%E5%BC%8F"><span class="toc-number">5.2.</span> <span class="toc-text">环境变量方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kbpass-%E6%96%87%E4%BB%B6%E6%96%B9%E5%BC%8F"><span class="toc-number">5.3.</span> <span class="toc-text">kbpass 文件方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E4%BD%B3%E5%85%8D%E5%AF%86%E6%96%B9%E5%BC%8F"><span class="toc-number">6.</span> <span class="toc-text">最佳免密方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#alias-kbpass"><span class="toc-number">6.1.</span> <span class="toc-text">alias + kbpass</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F-kbpass"><span class="toc-number">6.2.</span> <span class="toc-text">环境变量 + kbpass</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E8%AE%B0"><span class="toc-number">8.</span> <span class="toc-text">后记</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

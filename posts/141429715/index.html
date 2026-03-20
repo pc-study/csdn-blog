@@ -1,0 +1,378 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Oracle RAC 集群启动顺序 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 Oracle 11GR2 RAC 集群启动顺序 官方文档 11GR2 12CR2 18C 19C 21C 23ai 往期精彩文章推荐 前言 前几天使用脚本在 RockyLinux 9.4 安装 Oracle 11GR2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Oracle RAC 集群启动顺序">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/141429715/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 Oracle 11GR2 RAC 集群启动顺序 官方文档 11GR2 12CR2 18C 19C 21C 23ai 往期精彩文章推荐 前言 前几天使用脚本在 RockyLinux 9.4 安装 Oracle 11GR2">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/ff1d85231d99fc674cd3c1395f2da9dc.webp">
+<meta property="article:published_time" content="2024-08-22T07:35:32.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.138Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/ff1d85231d99fc674cd3c1395f2da9dc.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Oracle RAC 集群启动顺序","url":"https://pc-study.github.io/csdn-blog/posts/141429715/","image":"https://pc-study.github.io/csdn-blog/images/ff1d85231d99fc674cd3c1395f2da9dc.webp","datePublished":"2024-08-22T07:35:32.000Z","dateModified":"2026-03-20T12:25:39.138Z","description":"大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 Oracle 11GR2 RAC 集群启动顺序 官方文档 11GR2 12CR2 18C 19C 21C 23ai 往期精彩文章推荐 前言 前几天使用脚本在 RockyLinux 9.4 安装 Oracle 11GR2","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/141429715/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/141429715/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Oracle RAC 集群启动顺序',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/ff1d85231d99fc674cd3c1395f2da9dc.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">Oracle RAC 集群启动顺序</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Oracle RAC 集群启动顺序<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-08-22-141429715.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-22T07:35:32.000Z" title="发表于 2024-08-22 15:35:32">2024-08-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.138Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/">Oracle 数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><blockquote>
+<p>大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#Oracle_11GR2_RAC__9">Oracle 11GR2 RAC 集群启动顺序</a></li>
+<li><a href="#_120">官方文档</a></li>
+<li><ul>
+<li><a href="#11GR2_122">11GR2</a></li>
+<li><a href="#12CR2_127">12CR2</a></li>
+<li><a href="#18C_132">18C</a></li>
+<li><a href="#19C_137">19C</a></li>
+<li><a href="#21C_142">21C</a></li>
+<li><a href="#23ai_147">23ai</a></li>
+</ul>
+</li>
+<li><a href="#_154">往期精彩文章推荐</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前几天使用脚本在 RockyLinux 9.4 安装 Oracle 11GR2 RAC，安装完之后发现集群无法正常启动，后经过分析发现原来是因为 RHEL9 版本默认安装移除了 <code>initscripts</code> 软件包，需要人为手动安装，在 RHEL8 之前是默认安装的。</p>
+<p>在分析问题的过程中，顺便对 Oracle RAC 集群启动顺序进行了更深入的了解，下面简单整理了一下，分享给大家一起看看，本文主要是以 11GR2 为例。</p>
+<h2 id="Oracle-11GR2-RAC-集群启动顺序"><a href="#Oracle-11GR2-RAC-集群启动顺序" class="headerlink" title="Oracle 11GR2 RAC 集群启动顺序"></a>Oracle 11GR2 RAC 集群启动顺序</h2><p><strong>参考文档：</strong> <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2225748.1">11GR2 Clusterware 和 Grid Home – 你需要知道的事 (Doc ID 2225748.1)</a></p>
+<p><strong>11GR2 Clusterware 的一些关键特性：</strong></p>
+<ul>
+<li>在安装运行 11GR2 的 Real Application Clusters 数据库之前需要先安装 11GR2 Clusterware。</li>
+<li>GRID HOME 包括 Oracle Clusterware 和 ASM。ASM 不能够放在另外单独的 HOME 下。</li>
+<li>11GR2 Clusterware 可以安装为 Standalone 模式（以来支持 ASM）或者 Oracle Restart 模式（单节点）。此时 Clusterware 是完整版 Clusterware 的子集。</li>
+<li>11GR2 Clusterware 可以独立运行，也可以运行在第三方 Clusterware 之上。关于支持矩阵请参考文档 Note: 184875.1 “How To Check The Certification Matrix for Real Application Clusters”</li>
+<li>GRID HOME 和 RAC&#x2F;DB HOME 必须安装在不同的路径下。</li>
+<li>11GR2 Clusterware 的 OCR 和 voting 文件必须是共享的，它们可以放在 ASM 里或者集群文件系统中。</li>
+<li>OCR 每4个小时自动备份一次，备份文件放在 <code>&lt;GRID_HOME&gt;/cdata/&lt;clustername&gt;/</code> 目录下，并且可以使用 ocrconfig 工具恢复。</li>
+<li>每次配置改变时，voting file 会被备份到 OCR 中，并且可以使用 crsctl 工具恢复。</li>
+<li>11GR2 Clusterware 需要最少一个私有网络（为了节点间的通信）和最少一个公共网络（为了和集群外通信）。多个虚拟 IP 需要注册到 DNS 中，包括 node VIPs (每个节点一个), SCAN VIPs (3个)。这可以通过网络管理员手工操作来完成也可以使用 GNS (Grid Naming Service) 来完成。(注意 GNS 也需要一个自己的 VIP)。</li>
+<li>客户端通过 SCAN (Single Client Access Name)来访问数据库。关于 SCAN 的更多信息请参照 Note: 887522.1</li>
+<li>集群安装后期，root.sh 会启动 clusterware。关于如何处理 root.sh 的相关问题，请参照 Note: 1053970.1</li>
+<li>每个节点只允许运行一套集群相关的后台进程。</li>
+<li>在 Unix 下，clusterware 是由 init.ohasd 脚本启动的。而 init.ohasd 脚本以 respawn 模式定义在 &#x2F;etc&#x2F;inittab 中。</li>
+<li>如果某个节点被认定为不健康，那么它会被从集群中驱逐（或者重启），以此来维持整个集群的健康。关于更多信息，请参照文档 Note: 1050693.1 “Troubleshooting 11.2 Clusterware Node Evictions (Reboots)”</li>
+<li>可以使用第三方时间同步软件（比如 NTP）来保持节点间的时间同步，也可以不使用第三方时间同步软件，而由 CTSS 来同步节点间时间，关于更多信息，请参照文档 Note: 1054006.1</li>
+<li>如果要安装低版本的数据库软件，那么需要在集群中 pin 住节点，否则会碰到 ORA-29702 错误。 更多信息请参照文档 Note 946332.1 以及 Note:948456.1。</li>
+<li>可以通过启动节点，或者执行”crsctl start crs”来启动集群。也可以执行”crsctl start cluster”来在所有的节点上启动集群。注意 crsctl 在 &lt;GRID_HOME&gt; 目录，注意 crsctl start cluster 仅在 ohasd 运行的时候才可以工作。</li>
+<li>可以通过关闭节点，或者执行”crsctl stop crs”来关闭 clusterware。或者执行””crsctl stop cluster”来关闭所有节点上的 clusterware。注意 crsctl 在 &lt;GRID_HOME&gt; 目录。</li>
+<li>手工杀掉（kill）集群的进程是不支持的。</li>
+<li>实例现在在 <code>crsctl stat res -t</code> 的输出中是 .db 资源的一部分，在 11GR2 上，没有单独的 .inst 资源。</li>
+</ul>
+<p><strong>下面的图片清晰的列出了各个层级：</strong></p>
+<p><img src="/csdn-blog/images/ff1d85231d99fc674cd3c1395f2da9dc.webp" alt="Oracle RAC 集群启动顺序" loading='lazy'></p>
+<p>关于启动顺序的简述：<strong>INIT</strong> 启动 <code>init.ohasd</code> (以 respawn 参数)，而 init.ohasd 启动 <code>OHASD</code> 进程（Oracle High Availability Services Daemon），而 OHASD 又启动其它 4 个进程。</p>
+<p><strong>第一层：OHASD 启动：</strong></p>
+<ul>
+<li><strong>cssdagent</strong> - 负责启动 CSSD 的 Agent。</li>
+<li><strong>cssdmonitor</strong> - 监控 CSSD 以及节点健康（和 cssdagent 一起）。</li>
+<li><strong>orarootagent</strong> - 负责启动所有 root 用户下的 ohasd 资源 的 Agent。</li>
+<li><strong>oraagent</strong> - 负责启动所有 oracle 用户下的 ohasd 资源的 Agent。</li>
+</ul>
+<p><strong>第二层：OHASD rootagent 启动：</strong></p>
+<ul>
+<li>CRSD - 管理集群资源的主要后台进程。</li>
+<li>CTSSD - Cluster Time Synchronization Services Daemon</li>
+<li>Diskmon</li>
+<li>ACFS （ASM Cluster File System）驱动</li>
+</ul>
+<p><strong>第二层：OHASD oraagent 启动：</strong></p>
+<ul>
+<li>MDNSD - 用来实现 DNS 查询</li>
+<li>GIPCD - 用来做节点间通信</li>
+<li>GPNPD - Grid Plug &amp; Play Profile Daemon</li>
+<li>EVMD - Event Monitor Daemon</li>
+<li>ASM - ASM 资源</li>
+</ul>
+<p><strong>第三层：CRSD 启动：</strong></p>
+<ul>
+<li>orarootagent - 负责启动所有 root 用户下的 crsd 资源的 Agent。</li>
+<li>oraagent - 负责启动所有 oracle 用户下的 crsd 资源的 Agent。</li>
+</ul>
+<p><strong>第四层：CRSD rootagent 启动：</strong></p>
+<ul>
+<li>Network resource - 监控公共网络</li>
+<li>SCAN VIP(s) - Single Client Access Name Virtual IPs</li>
+<li>Node VIPs - 每个节点1个</li>
+<li>ACFS Registery - 挂载 ASM Cluster File System</li>
+<li>GNS VIP (optional) - VIP for GNS</li>
+</ul>
+<p><strong>第四层：CRSD oraagent 启动：</strong></p>
+<ul>
+<li>ASM Resouce - ASM 资源</li>
+<li>Diskgroup - 用来管理&#x2F;监控 ASM 磁盘组</li>
+<li>DB Resource - 用来管理&#x2F;监控数据库和实例</li>
+<li>SCAN Listener - SCAN 监听，监听在 SCAN VIP 上</li>
+<li>Listener - 节点监听，监听在 Node VIP 上</li>
+<li>Services - 用来管理&#x2F;监控 services</li>
+<li>ONS - Oracle Notification Service</li>
+<li>eONS - 加强版 Oracle Notification Service</li>
+<li>GSD - 为了向下兼容 9i</li>
+<li>GNS (optional) - Grid Naming Service - 处理域名解析</li>
+</ul>
+<p><strong>重要日志的路径</strong></p>
+<p><strong>11GR2 Clusterware</strong> 后台进程日志都放在 <code>&lt;GRID_HOME&gt;/log/&lt;nodename&gt;</code>。 <code>&lt;GRID_HOME&gt;/log/&lt;nodename&gt;</code> 下的结构：</p>
+<ul>
+<li><code>alert&lt;NODENAME&gt;.log</code>（📢 注意：对于 clusterware 的问题，可以先检查这个文件）</li>
+<li>.&#x2F;admin:</li>
+<li>.&#x2F;agent:</li>
+<li>.&#x2F;agent&#x2F;crsd:</li>
+<li>.&#x2F;agent&#x2F;crsd&#x2F;oraagent_oracle:</li>
+<li>.&#x2F;agent&#x2F;crsd&#x2F;ora_oc4j_type_oracle:</li>
+<li>.&#x2F;agent&#x2F;crsd&#x2F;orarootagent_root:</li>
+<li>.&#x2F;agent&#x2F;ohasd:</li>
+<li>.&#x2F;agent&#x2F;ohasd&#x2F;oraagent_oracle:</li>
+<li>.&#x2F;agent&#x2F;ohasd&#x2F;oracssdagent_root:</li>
+<li>.&#x2F;agent&#x2F;ohasd&#x2F;oracssdmonitor_root:</li>
+<li>.&#x2F;agent&#x2F;ohasd&#x2F;orarootagent_root:</li>
+<li>.&#x2F;client:</li>
+<li>.&#x2F;crsd:</li>
+<li>.&#x2F;cssd:</li>
+<li>.&#x2F;ctssd:</li>
+<li>.&#x2F;diskmon:</li>
+<li>.&#x2F;evmd:</li>
+<li>.&#x2F;gipcd:</li>
+<li>.&#x2F;gnsd:</li>
+<li>.&#x2F;gpnpd:</li>
+<li>.&#x2F;mdnsd:</li>
+<li>.&#x2F;ohasd:</li>
+<li>.&#x2F;racg:</li>
+<li>.&#x2F;racg&#x2F;racgeut:</li>
+<li>.&#x2F;racg&#x2F;racgevtf:</li>
+<li>.&#x2F;racg&#x2F;racgmain:</li>
+<li>.&#x2F;srvm:</li>
+</ul>
+<p><code>&lt;GRID_HOME&gt;</code> 和 <code>$ORACLE_BASE</code> 目录下的 <strong>cfgtoollogs</strong> 目录存放了一些其它的重要日志。比如 <code>rootcrs.pl</code> 以及其它配置工具，比如 ASMCA 等等。</p>
+<p>ASM 日志存放在 <code>$ORACLE_BASE/diag/asm/+asm/&lt;ASM Instance Name&gt;/trace</code>。</p>
+<p><code>&lt;GRID_HOME&gt;/bin</code> 目录下的 diagcollection.pl 可以自动收集重要的日志。以 root 用户执行它。</p>
+<h2 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h2><p>以下列出官方文档中关于 <code>Cluster Startup</code> 的示例图：</p>
+<h3 id="11GR2"><a href="#11GR2" class="headerlink" title="11GR2"></a>11GR2</h3><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/cd/E11882_01/rac.112/e41959/intro.htm#BABIDEFI">Figure 1-2 Cluster Startup</a></p>
+<p><img src="/csdn-blog/images/7ccd6a37d0d99a5b209214caf6d02e77.webp" alt="Oracle RAC 集群启动顺序 - 图2" loading='lazy'></p>
+<h3 id="12CR2"><a href="#12CR2" class="headerlink" title="12CR2"></a>12CR2</h3><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/12.2/cwadd/introduction-to-oracle-clusterware.html#GUID-10B78E53-2047-46DE-A9E0-6EA15117D373__BABIDEFI">Figure 1-2 Cluster Startup</a></p>
+<p><img src="/csdn-blog/images/dd0575071ce3c280501a1f647f60572e.webp" alt="Oracle RAC 集群启动顺序 - 图3" loading='lazy'></p>
+<h3 id="18C"><a href="#18C" class="headerlink" title="18C"></a>18C</h3><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/18/cwadd/introduction-to-oracle-clusterware.html#GUID-10B78E53-2047-46DE-A9E0-6EA15117D373__BABIDEFI">Figure 1-2 Cluster Startup</a></p>
+<p><img src="/csdn-blog/images/d09ec65ee42c53afe1ba0134907fbc5e.webp" alt="Oracle RAC 集群启动顺序 - 图4" loading='lazy'></p>
+<h3 id="19C"><a href="#19C" class="headerlink" title="19C"></a>19C</h3><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/19/cwadd/introduction-to-oracle-clusterware.html#GUID-10B78E53-2047-46DE-A9E0-6EA15117D373__BABIDEFI">Figure 1-2 Cluster Startup</a></p>
+<p><img src="/csdn-blog/images/15918e37910a21a897dc1242b8544c61.webp" alt="Oracle RAC 集群启动顺序 - 图5" loading='lazy'></p>
+<h3 id="21C"><a href="#21C" class="headerlink" title="21C"></a>21C</h3><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/21/cwadd/introduction-to-oracle-clusterware.html#GUID-10B78E53-2047-46DE-A9E0-6EA15117D373__BABIDEFI">Figure 1-1 Cluster Startup</a></p>
+<p><img src="/csdn-blog/images/269c53d95e4ee84387a60b68b238cc77.webp" alt="Oracle RAC 集群启动顺序 - 图6" loading='lazy'></p>
+<h3 id="23ai"><a href="#23ai" class="headerlink" title="23ai"></a>23ai</h3><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/23/cwadd/introduction-to-oracle-clusterware.html#GUID-10B78E53-2047-46DE-A9E0-6EA15117D373__BABIDEFI">Figure 1-1 Cluster Startup</a></p>
+<p><img src="/csdn-blog/images/6c0ee918c4ff4991d7c0a6d6a56f44c0.webp" alt="Oracle RAC 集群启动顺序 - 图7" loading='lazy'></p>
+<hr>
+<h2 id="往期精彩文章推荐"><a href="#往期精彩文章推荐" class="headerlink" title="往期精彩文章推荐"></a>往期精彩文章推荐</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0W-53x2eGIY9uaX_RQrI2g">Oracle 监控 EMCC 13.5 安装部署超详细教程</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/GmSqHJiBToncvcpFAJUZbw">一篇文章让你彻底掌握 Shell</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0xFe5m1DQ0ucT2_266hsrA">Oracle 一键巡检自动生成 Word 报告</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/gv6t97FFyMsd6e4GH1HAwQ">Oracle一键安装脚本的 21 个疑问与解答</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/4zI73auIUhwSRb7qL3UIfw">Oracle一键巡检脚本的 21 个疑问与解答</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/UL0BSMCAZrOQgCoWpDMGew">全网首发：Oracle 23ai 一键安装脚本</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/T7GbpwhnMugzk7PB6hAoJQ">Oracle 19C 最新 RU 补丁 19.24 ，一键安装！</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/uicyzHfgS2TwleocXJEIrA">Oracle Linux 6 一键安装 Oracle 11GR2 RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/dT4tFMYVZ3mh49CI6V3YEA">Oracle Linux 7.9 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/FHXYiZBPn3XpKOM6ZqlU1A">Oracle Linux 8.9 一键安装 Oracle 19C RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/cTuTUE-oaO-tKZ72F2WjAA">Oracle Linux 9.4(aarch64) 一键安装 Oracle 19C</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/uJwEPOG22fhQcC6cTLfN1Q">openEuler 20.03 LTS SP4 一键安装 Oracle 19C</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/sx1E4GIvIeQXp2vGMmVr2A">openEuler 22.03 LTS SP4 一键安装 Oracle 19C RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/mUHqU5hQ9GdH2bKuClPt5A">RHEL 7.9 一键安装 Oracle 19C 19.23 RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/fnuHKotjj_S8_0EfUkWI4Q">Redhat 8.4 一键安装 Oracle 11GR2</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/cQJ6gP1bM_7m0H5-Dha4TA">RedHat 9.4(aarch64) 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/bJtBpzyG_NAhU-0vov1WmQ">龙蜥 Anolis 7.9 一键安装 Oracle 19C 19.23</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/_4-anPhn9wThtdAqqHIH5w">龙蜥 Anolis OS 8.8 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/N2J9JxZ7l9elG1L1NV7ynA">SUSE 15 SP5 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/SSmLvx2wDzhzsQY6f5Q5Rg">统信 UOS V20 1070(a) 一键安装 Oracle 11GR2</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0-q9mLR48abGUbZUODj7xw">Ubuntu 22.04 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Y6fFi3Nth0NA5HGq2LjubQ">Ubuntu 14.04 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/EVNaKhH53YN885gk_Ik_Xg">银河麒麟 Kylin V10 SP3 一键安装 Oracle 19C</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/IZ_VYoDOxzSLzsQo8aJTIw">银河麒麟 Kylin V10 SP3 一键安装 Oracle 11GR2 RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Trt7gYkQVoL5A803WlDL6Q">Oracle DataGuard GAP 修复手册</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/DysIcb-p11j56d3YtlqpcQ">优化 Oracle：最佳实践与开发规范</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/SmncWuYAubj0tnOw35aJGA">DBA 必备：Linux 软件源配置全攻略</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/yvth1vorP3JjUp3g3vPBAQ">Linux 一键配置时钟同步全攻略</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/xjYZmGcwshbJBICcr0xvBw">Starwind 配置 ISCSI 共享存储</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/JMMzOa6dN6ytAUkcy7I2jQ">SUSE 15 SP3 安装 Oracle 19C RAC 数据库</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/KEobA1FAx4Uod3uBGkJ9-A">达梦 8 数据库安装手册</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/KlP4IM4O7sHVvSNJ9rNXEA">Oracle 12CR2 RAC 安装避坑宝典</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vNZbH5QsiSWrdtJcqP2MWg">Linux7 安装 Oracle 19C RAC 详细图文教程</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/mA5MPcykF-eytChoUAhwnA">Oracle ADG 搭建 RAC to Single 详细教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Trt7gYkQVoL5A803WlDL6Q">Oracle DataGuard GAP 修复手册</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/NYQ8TPMktc6u8jMtnI_Gpg">Oracle 分区表之在线重定义</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ebpMdmozKOR6XZSMKsG2DQ">AutoUpgrade 快速升级 Oracle 数据库</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vLtJ2zH_TnyQxKyVddzMRg">Oracle 数据库巡检命令手册</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0w66O5Ugx-TX7e_trE5ZBQ">Oracle 数据坏块的 N 种修复方式</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/92mBTibjSGNywnwOYIFuqg">数据库 SQL 开发入门教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/UwVlWxEUBE4OEq4a91dyfg">超全 Linux 基础命令总结</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/-gTiGVWFZV0tkw0yZyI2bQ">VMware 虚拟机安装 Linux 系统</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/dHSaDSrUqxFG9E2dMuTmxg">Linux 安装 MySQL 详细教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/KaxEN6qxLDJWb7paOvcffw">教你玩转 SQLPLUS，工作效率提升 200%</a></p>
+</blockquote>
+<hr>
+<p>感谢您的阅读，这里是 <strong>Lucifer三思而后行</strong>，欢迎 <strong>点赞+关注</strong>，我会持续分享数据库知识、运维技巧。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/141429715/">https://pc-study.github.io/csdn-blog/posts/141429715/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/141429730/" title="达梦数据库 DM8 一键安装脚本教程（脚本免费）"><img class="cover" src="/csdn-blog/images/d94f4725ff71822a1a94d58d07d95c7e.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">达梦数据库 DM8 一键安装脚本教程（脚本免费）</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 脚本下载 达梦数据库下载 系统安装 一键安装 安装前准备 安装命令 往期精彩文章推荐 前言 最近在学习 zCloud 平台，其中有纳管达梦数据库的功能，于是打算安装一套达梦 DM8 数据库进行测试。想起之前和朋友（达梦</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/141211888/" title="一篇文章让你彻底掌握 Python"><img class="cover" src="/csdn-blog/img/covers/tech.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">一篇文章让你彻底掌握 Python</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer 三思而后行，专注于提升数据库运维效率。 目录 一篇文章让你彻底掌握 Python 解释器 注释 数据类型 操作符 - 算术运算符 比较运算符 赋值运算符 位运算符 逻辑运算符 成员运算符 身份运算符 运算符优先级 控制语句 - 条件语句 循环语句 while for</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/119854975/" title="《零基础安装 Oracle 数据库》单机ASM系列 2️⃣ 一键快速安装 Oracle 12CR2 数据库"><img class="cover" src="/csdn-blog/images/7ee41c205dea5f4fcdae2c7f8c21b31f.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-22</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机ASM系列 2️⃣ 一键快速安装 Oracle 12CR2 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持单机集群版本一键安装了！❗️ 但不支持 Linux 6 系统安装！</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/136869742/" title="EMCC 13.5 完整安装详细版"><img class="cover" src="/csdn-blog/images/f515489e40c9015f8d5d91e81db3c921.png" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-20</div><div class="info-item-2">EMCC 13.5 完整安装详细版</div></div><div class="info-2"><div class="info-item-1">参考文档： Cloud Control Basic Installation Guide 13.5 Overview of the Enterprise Manager Proactive Patch Program (Doc ID 822485.1) Enterprise Manager Clou</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/138720075/" title="Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-11</div><div class="info-item-2">Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 IS</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/125830413/" title="RAC：Oracle 12CR2 数据库一键安装"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-17</div><div class="info-item-2">RAC：Oracle 12CR2 数据库一键安装</div></div><div class="info-2"><div class="info-item-1">前言 本文将演示如何使用脚本一键安装 Oracle 12CR2 RAC 2 节点数据库的全过程。 安装前准备 在生产环境中，Linux 操作系统和网络一般不是由 DBA 来配置，为了更贴合生产使用，本脚本仅用于安装 Oracle 数据库，请提前安装好 Linux 操作系统。 环境信息 主机版本 主机</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/143719232/" title="SQLark：高效、便捷的数据生成利器！"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-11-12</div><div class="info-item-2">SQLark：高效、便捷的数据生成利器！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122013350/" title="Oracle 从入门到精通系列 - 资料下载"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-18</div><div class="info-item-2">Oracle 从入门到精通系列 - 资料下载</div></div><div class="info-2"><div class="info-item-1">Oracle 从入门到精通系列 - 资料下载 资料下载 一、Oracle官方文档 二、Oracle安装包 三、Linux安装包 四、软件工具 五、其他文档 资料 下载 ->返回总目录返回总目录<-</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oracle-11GR2-RAC-%E9%9B%86%E7%BE%A4%E5%90%AF%E5%8A%A8%E9%A1%BA%E5%BA%8F"><span class="toc-number">3.</span> <span class="toc-text">Oracle 11GR2 RAC 集群启动顺序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"><span class="toc-number">4.</span> <span class="toc-text">官方文档</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11GR2"><span class="toc-number">4.1.</span> <span class="toc-text">11GR2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12CR2"><span class="toc-number">4.2.</span> <span class="toc-text">12CR2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18C"><span class="toc-number">4.3.</span> <span class="toc-text">18C</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19C"><span class="toc-number">4.4.</span> <span class="toc-text">19C</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21C"><span class="toc-number">4.5.</span> <span class="toc-text">21C</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23ai"><span class="toc-number">4.6.</span> <span class="toc-text">23ai</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%80%E6%9C%9F%E7%B2%BE%E5%BD%A9%E6%96%87%E7%AB%A0%E6%8E%A8%E8%8D%90"><span class="toc-number">5.</span> <span class="toc-text">往期精彩文章推荐</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

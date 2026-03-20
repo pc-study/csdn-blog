@@ -1,0 +1,871 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>基础篇：数据库 SQL 入门教程 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 ❤️ 前些天发现了一个通俗易懂，风趣幽默的 人工智能学习网站！👈🏻 免费学习 目录 📚 前言 🌴 SQL 介绍 🌼 什么是 SQL 🌀 SQL 的类型 🌵 学习 SQL 的作用 🍄 数据库是什么 🐥 SQL 基础语言学习 🐤 CR">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基础篇：数据库 SQL 入门教程">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/120070003/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 ❤️ 前些天发现了一个通俗易懂，风趣幽默的 人工智能学习网站！👈🏻 免费学习 目录 📚 前言 🌴 SQL 介绍 🌼 什么是 SQL 🌀 SQL 的类型 🌵 学习 SQL 的作用 🍄 数据库是什么 🐥 SQL 基础语言学习 🐤 CR">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/151ce3dd95c108f1ff4e8eeffec661da.webp">
+<meta property="article:published_time" content="2021-09-12T00:09:31.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.262Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="sql">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/151ce3dd95c108f1ff4e8eeffec661da.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"基础篇：数据库 SQL 入门教程","url":"https://pc-study.github.io/csdn-blog/posts/120070003/","image":"https://pc-study.github.io/csdn-blog/images/151ce3dd95c108f1ff4e8eeffec661da.webp","datePublished":"2021-09-12T00:09:31.000Z","dateModified":"2026-03-20T12:25:38.262Z","description":"大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 ❤️ 前些天发现了一个通俗易懂，风趣幽默的 人工智能学习网站！👈🏻 免费学习 目录 📚 前言 🌴 SQL 介绍 🌼 什么是 SQL 🌀 SQL 的类型 🌵 学习 SQL 的作用 🍄 数据库是什么 🐥 SQL 基础语言学习 🐤 CR","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/120070003/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/120070003/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '基础篇：数据库 SQL 入门教程',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/151ce3dd95c108f1ff4e8eeffec661da.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">基础篇：数据库 SQL 入门教程</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">基础篇：数据库 SQL 入门教程<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-09-12-120070003.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-09-12T00:09:31.000Z" title="发表于 2021-09-12 08:09:31">2021-09-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.262Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>29分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><blockquote>
+<p>大家好，这里是 <strong>Lucifer三思而后行</strong>，专注于提升数据库运维效率。<br> <a target="_blank" rel="noopener" href="https://captainbed.vip/">❤️ 前些天发现了一个通俗易懂，风趣幽默的 <strong>人工智能学习网站</strong>！👈🏻 免费学习</a></p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#__4">📚 前言</a></li>
+<li><a href="#_SQL__13">🌴 SQL 介绍</a></li>
+<li><ul>
+<li><a href="#__SQL_14">🌼 什么是 SQL</a></li>
+<li><a href="#_SQL__23">🌀 SQL 的类型</a></li>
+<li><a href="#__SQL__28">🌵 学习 SQL 的作用</a></li>
+<li><a href="#__42">🍄 数据库是什么</a></li>
+</ul>
+</li>
+<li><a href="#_SQL__57">🐥 SQL 基础语言学习</a></li>
+<li><ul>
+<li><a href="#_CREATE_TABLE___73">🐤 CREATE TABLE – 创建表</a></li>
+<li><a href="#_INSERT___116">🐑 INSERT – 插入数据</a></li>
+<li><a href="#_SELECT___143">🐼 SELECT – 查询数据</a></li>
+<li><a href="#_DISTINCT___170">🐫 DISTINCT – 去除重复值</a></li>
+<li><a href="#_WHERE___193">🐸 WHERE – 条件过滤</a></li>
+<li><a href="#_AND__OR___222">🐹 AND &amp; OR – 运算符</a></li>
+<li><a href="#_ORDER_BY___269">🐰 ORDER BY – 排序</a></li>
+<li><a href="#_UPDATE___298">🐱 UPDATE – 更新数据</a></li>
+<li><a href="#_DELETE___319">🐨 DELETE – 删除数据</a></li>
+<li><a href="#_TRUNCATE_TABLE___342">🐵 TRUNCATE TABLE – 清除表数据</a></li>
+<li><a href="#_DROP_TABLE___357">🐯 DROP TABLE – 删除表</a></li>
+</ul>
+</li>
+<li><a href="#_SQL__372">🚀 SQL 高级言语学习</a></li>
+<li><ul>
+<li><a href="#_LIKE___373">🚢 LIKE – 查找类似值</a></li>
+<li><a href="#_IN___413">🚤 IN – 锁定多个值</a></li>
+<li><a href="#_BETWEEN___427">⛵️ BETWEEN – 选取区间数据</a></li>
+<li><a href="#_AS___450">🚂 AS – 别名</a></li>
+<li><a href="#_JOIN___479">🚁 JOIN – 多表关联</a></li>
+<li><a href="#_UNION___533">🚜 UNION – 合并结果集</a></li>
+<li><a href="#_NOT_NULL___582">🚌 NOT NULL – 非空</a></li>
+<li><a href="#_VIEW___614">🚐 VIEW – 视图</a></li>
+</ul>
+</li>
+<li><a href="#_SQL__660">🎯 SQL 常用函数学习</a></li>
+<li><ul>
+<li><a href="#_AVG___669">🍔 AVG – 平均值</a></li>
+<li><a href="#_COUNT___688">🍕 COUNT – 汇总行数</a></li>
+<li><a href="#_MAX___719">🍘 MAX – 最大值</a></li>
+<li><a href="#_MIN___733">🍢 MIN – 最小值</a></li>
+<li><a href="#_SUM___746">🍰 SUM – 求和</a></li>
+<li><a href="#_GROUP_BY___758">🍪 GROUP BY – 分组</a></li>
+<li><a href="#_HAVING___780">🍭 HAVING – 句尾连接</a></li>
+<li><a href="#_UCASEUPPER___801">🍷 UCASE&#x2F;UPPER – 大写</a></li>
+<li><a href="#_LCASELOWER___815">🍶 LCASE&#x2F;LOWER – 小写</a></li>
+<li><a href="#_LENLENGTH___829">👛 LEN&#x2F;LENGTH – 获取长度</a></li>
+<li><a href="#_ROUND___844">🍗 ROUND – 数值取舍</a></li>
+<li><a href="#_NOWSYSDATE___868">🍞 NOW&#x2F;SYSDATE – 当前时间</a></li>
+</ul>
+</li>
+<li><a href="#__883">🍺 写在最后</a></li>
+<li><a href="#_894">往期精彩文章推荐</a></li>
+</ul>
+<h2 id="📚-前言"><a href="#📚-前言" class="headerlink" title="📚 前言"></a>📚 前言</h2><p>SQL语言有40多年的历史，从它被应用至今几乎无处不在。我们消费的每一笔支付记录，收集的每一条用户信息，发出去的每一条消息，都会使用数据库或与其相关的产品来存储，而操纵数据库的语言正是 SQL ！<br> <img src="/csdn-blog/images/151ce3dd95c108f1ff4e8eeffec661da.webp" alt="基础篇：数据库 SQL 入门教程" loading='lazy'><br> SQL 对于现在的互联网公司生产研发等岗位几乎是一个必备技能，如果不会 SQL 的话，可能什么都做不了。你可以把 SQL 当做是一种工具，利用它可以帮助你完成你的工作，创造价值。</p>
+<p><strong><img src="/csdn-blog/images/0478555753002083b8b124e824e319e3.gif" alt="基础篇：数据库 SQL 入门教程 - 图2" loading='lazy'><br> 文章结尾有 SQL 小测验哦！看看你能得几分？</strong></p>
+<p><strong>⭐️ <a href="#jump_100">点我跳转到 SQL 测验！</a></strong></p>
+<h2 id="🌴-SQL-介绍"><a href="#🌴-SQL-介绍" class="headerlink" title="🌴 SQL 介绍"></a>🌴 SQL 介绍</h2><h3 id="🌼-什么是-SQL"><a href="#🌼-什么是-SQL" class="headerlink" title="🌼 什么是 SQL"></a>🌼 什么是 SQL</h3><p>SQL 是用于访问和处理数据库的标准的计算机语言。</p>
+<ul>
+<li>SQL 指结构化查询语言</li>
+<li>SQL 使我们有能力访问数据库</li>
+<li>SQL 是一种 ANSI 的标准计算机语言</li>
+</ul>
+<p><img src="/csdn-blog/images/70812ce089f38c5c21e3549671283123.webp" alt="基础篇：数据库 SQL 入门教程 - 图3" loading='lazy'><br> SQL 可与数据库程序协同工作，比如 MS Access、DB2、Informix、MS SQL Server、<br>Oracle<br>、Sybase 以及其他数据库系统。但是由于各种各样的数据库出现，导致很多不同版本的 SQL 语言，为了与 ANSI 标准相兼容，它们必须以相似的方式共同地来支持一些主要的关键词（比如 SELECT、UPDATE、DELETE、<br>INSERT<br>、WHERE 等等），这些就是我们要学习的SQL基础。</p>
+<h3 id="🌀-SQL-的类型"><a href="#🌀-SQL-的类型" class="headerlink" title="🌀 SQL 的类型"></a>🌀 SQL 的类型</h3><p>可以把 SQL 分为两个部分：数据操作语言 (DML) 和 数据定义语言 (DDL)。</p>
+<ul>
+<li>数据查询语言（DQL: Data Query Language）</li>
+<li>数据操纵语言（DML：Data Manipulation Language）</li>
+</ul>
+<h3 id="🌵-学习-SQL-的作用"><a href="#🌵-学习-SQL-的作用" class="headerlink" title="🌵 学习 SQL 的作用"></a>🌵 学习 SQL 的作用</h3><p>SQL 是一门 ANSI 的标准计算机语言，用来访问和操作数据库系统。SQL 语句用于取回和更新数据库中的数据。</p>
+<ul>
+<li>SQL 面向数据库执行查询</li>
+<li>SQL 可从数据库取回数据</li>
+<li>SQL 可在数据库中插入新的记录</li>
+<li>SQL 可更新数据库中的数据</li>
+<li>SQL 可从数据库删除记录</li>
+<li>SQL 可创建新数据库</li>
+<li>SQL 可在数据库中创建新表</li>
+<li>SQL 可在数据库中创建存储过程</li>
+<li>SQL 可在数据库中创建视图</li>
+<li>SQL 可以设置表、存储过程和视图的权限</li>
+</ul>
+<h3 id="🍄-数据库是什么"><a href="#🍄-数据库是什么" class="headerlink" title="🍄 数据库是什么"></a>🍄 数据库是什么</h3><p><strong>顾名思义，你可以理解为数据库是用来存放数据的一个容器。</strong></p>
+<p>打个比方，每个人家里都会有冰箱，冰箱是用来干什么的？冰箱是用来存放食物的地方。<br> <img src="/csdn-blog/images/37c8fd82fdc1c47d68795f4784874beb.webp" alt="基础篇：数据库 SQL 入门教程 - 图4" loading='lazy'><br> 同样的，数据库是存放数据的地方。正是因为有了数据库后，我们可以直接查找数据。例如你每天使用余额宝查看自己的账户收益，就是从数据库读取数据后给你的。</p>
+<p><strong>最常见的数据库类型是关系型数据库管理系统（RDBMS）：</strong></p>
+<p>RDBMS 是 SQL 的基础，同样也是所有现代数据库系统的基础，比如 MS SQL Server, IBM DB2, Oracle, MySQL 以及<br>Microsoft<br> Access等等。<br> <img src="/csdn-blog/images/b8052ee6e73d9a6cc2a3f28f68c67459.webp" alt="基础篇：数据库 SQL 入门教程 - 图5" loading='lazy'><br> <code>RDBMS</code> 中的数据存储在被称为表（tables）的数据库对象中。<code>表</code> 是相关的数据项的集合，它由列和行组成。</p>
+<p>由于本文主要讲解 SQL 基础，因此对数据库不做过多解释，只需要大概了解即可。<strong>咱们直接开始学习SQL！</strong></p>
+<h2 id="🐥-SQL-基础语言学习"><a href="#🐥-SQL-基础语言学习" class="headerlink" title="🐥 SQL 基础语言学习"></a>🐥 SQL 基础语言学习</h2><p>在了解 SQL 基础语句使用之前，我们先讲一下 <code>表</code> 是什么？</p>
+<p>一个数据库通常包含一个或多个表。每个表由一个名字标识（例如“客户”或者“订单”）。表包含带有数据的记录(行)。</p>
+<p><strong>下面的例子是一个名为 “Persons” 的表：</strong></p>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>LastName</th>
+<th>FirstName</th>
+<th>Address</th>
+<th>City</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Adams</td>
+<td>John</td>
+<td>Oxford Street</td>
+<td>London</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bush</td>
+<td>George</td>
+<td>Fifth Avenue</td>
+<td>New York</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Carter</td>
+<td>Thomas</td>
+<td>Changan Street</td>
+<td>Beijing</td>
+</tr>
+</tbody></table>
+<p>上面的表包含三条记录（每一条对应一个人）和五个列（Id、姓、名、地址和城市）。</p>
+<p><strong>有表才能查询，那么如何创建这样一个表？</strong></p>
+<h3 id="🐤-CREATE-TABLE-–-创建表"><a href="#🐤-CREATE-TABLE-–-创建表" class="headerlink" title="🐤 CREATE TABLE – 创建表"></a>🐤 CREATE TABLE – 创建表</h3><p>CREATE TABLE 语句用于创建数据库中的表。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs gams">CREATE <span class="hljs-keyword">TABLE</span> 表名称<br>(<br>列名称<span class="hljs-number">1</span> 数据类型,<br>列名称<span class="hljs-number">2</span> 数据类型,<br>列名称<span class="hljs-number">3</span> 数据类型,<br>....<br>);<br><br>运行项目并下载源码sql<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br></code></pre></td></tr></table></figure>
+
+<p>数据类型（data_type）规定了列可容纳何种数据类型。下面的<br>表格<br>包含了SQL中最常用的数据类型：</p>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>integer(size),int(size),smallint(size),tinyint(size)</td>
+<td>仅容纳整数、在括号内规定数字的最大位数</td>
+</tr>
+<tr>
+<td>decimal(size,d),numeric(size,d)</td>
+<td>容纳带有小数的数字、“size” 规定数字的最大位数、“d” 规定小数点右侧的最大位数</td>
+</tr>
+<tr>
+<td>char(size)</td>
+<td>容纳固定长度的字符串（可容纳字母、数字以及特殊字符）、在括号中规定字符串的长度</td>
+</tr>
+<tr>
+<td>varchar(size)</td>
+<td>容纳可变长度的字符串（可容纳字母、数字以及特殊的字符）、在括号中规定字符串的最大长度</td>
+</tr>
+<tr>
+<td>date(yyyymmdd)</td>
+<td>容纳日期</td>
+</tr>
+</tbody></table>
+<p><strong>实例：</strong></p>
+<p>本例演示如何创建名为 “Persons” 的表。</p>
+<p>该表包含 5 个列，列名分别是：“Id_P”、“LastName”、“FirstName”、“Address” 以及 “City”：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs gams">CREATE <span class="hljs-keyword">TABLE</span> Persons<br>(<br>Id_P int,<br>LastName varchar(<span class="hljs-number">255</span>),<br>FirstName varchar(<span class="hljs-number">255</span>),<br>Address varchar(<span class="hljs-number">255</span>),<br>City varchar(<span class="hljs-number">255</span>)<br>);<br><br>运行项目并下载源码sql<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br></code></pre></td></tr></table></figure>
+
+<p>Id_P 列的数据类型是 int，包含整数。其余 4 列的数据类型是 varchar，最大长度为 255 个字符。<br> <img src="/csdn-blog/images/569290866817fec8246fccb69f7ae883.webp" alt="基础篇：数据库 SQL 入门教程 - 图6" loading='lazy'><br> <img src="/csdn-blog/images/8644fdf1c40acc4cb1c2e9353ba19952.webp" alt="基础篇：数据库 SQL 入门教程 - 图7" loading='lazy'><br> <strong>空的 “Persons” 表类似这样：</strong><br> <img src="/csdn-blog/images/149ce765bebb19b0574efa9a49d85ff2.webp" alt="基础篇：数据库 SQL 入门教程 - 图8" loading='lazy'><br> 可使用 INSERT INTO 语句向空表写入数据。</p>
+<h3 id="🐑-INSERT-–-插入数据"><a href="#🐑-INSERT-–-插入数据" class="headerlink" title="🐑 INSERT – 插入数据"></a>🐑 INSERT – 插入数据</h3><p>INSERT INTO 语句用于向表格中插入新的行。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs n1ql"><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> 表名称 <span class="hljs-keyword">VALUES</span> (值<span class="hljs-number">1</span>, 值<span class="hljs-number">2</span>,....);<br><br>运行项目并下载源码sql<br><br>* 1<br></code></pre></td></tr></table></figure>
+
+<p>我们也可以指定所要插入数据的列：</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs lasso">INSERT <span class="hljs-keyword">INTO</span> table_name (列<span class="hljs-number">1</span>, 列<span class="hljs-number">2</span>,<span class="hljs-params">...</span>) VALUES (值<span class="hljs-number">1</span>, 值<span class="hljs-number">2</span>,<span class="hljs-params">...</span>.);<br><br>运行项目并下载源码sql<br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>本例演示 “Persons” 表插入记录的两种方式：</p>
+<p><strong>1、插入新的行</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;Gates&#x27;</span>, <span class="hljs-string">&#x27;Bill&#x27;</span>, <span class="hljs-string">&#x27;Xuanwumen 10&#x27;</span>, <span class="hljs-string">&#x27;Beijing&#x27;</span>);<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>2、在指定的列中插入数据</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons (LastName, Address) <span class="hljs-keyword">VALUES</span> (<span class="hljs-string">&#x27;Wilson&#x27;</span>, <span class="hljs-string">&#x27;Champs-Elysees&#x27;</span>);<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/65a42f746f863059d466820f3ed43518.webp" alt="基础篇：数据库 SQL 入门教程 - 图9" loading='lazy'><br> <strong>插入成功后，数据如下：</strong><br> <img src="/csdn-blog/images/86652a4296693ef8a8b77f7669b2aa42.webp" alt="基础篇：数据库 SQL 入门教程 - 图10" loading='lazy'><br> 这个数据插入之后，是通过 <code>SELECT</code> 语句进行查询出来的，别急马上讲！</p>
+<h3 id="🐼-SELECT-–-查询数据"><a href="#🐼-SELECT-–-查询数据" class="headerlink" title="🐼 SELECT – 查询数据"></a>🐼 SELECT – 查询数据</h3><p>SELECT 语句用于从表中选取数据，结果被存储在一个结果表中（称为结果集）。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> 表名称;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>我们也可以指定所要查询数据的列：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> 列名称 <span class="hljs-keyword">FROM</span> 表名称;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>📢 注意：</strong> SQL 语句对大小写不敏感，SELECT 等效于 select。</p>
+<p><strong>实例：</strong></p>
+<p><strong>SQL SELECT * 实例：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> Persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/f3adb82be4a06d0cdb350ae58f273f02.webp" alt="基础篇：数据库 SQL 入门教程 - 图11" loading='lazy'><br> <strong>📢 注意：</strong> 星号（*）是选取所有列的快捷方式。</p>
+<p>如需获取名为 “LastName” 和 “FirstName” 的列的内容（从名为 “Persons” 的数据库表），请使用类似这样的 SELECT 语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> LastName,FirstName <span class="hljs-keyword">FROM</span> Persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/5965b0f7121b18f5d91d4a1229e5dbb2.webp" alt="基础篇：数据库 SQL 入门教程 - 图12" loading='lazy'></p>
+<h3 id="🐫-DISTINCT-–-去除重复值"><a href="#🐫-DISTINCT-–-去除重复值" class="headerlink" title="🐫 DISTINCT – 去除重复值"></a>🐫 DISTINCT – 去除重复值</h3><p>如果一张表中有多行重复数据，如何去重显示呢？可以了解下 <code>DISTINCT</code> 。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">DISTINCT</span> 列名称 <span class="hljs-keyword">FROM</span> 表名称;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>如果要从 “LASTNAME” 列中选取所有的值，我们需要使用 <code>SELECT</code> 语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> LASTNAME <span class="hljs-keyword">FROM</span> Persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/85775797066bf9c0f1c7822b598a7176.webp" alt="基础篇：数据库 SQL 入门教程 - 图13" loading='lazy'><br> 可以发现，在结果集中，Wilson 被列出了多次。</p>
+<p>如需从 “LASTNAME” 列中仅选取唯一不同的值，我们需要使用 SELECT DISTINCT 语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">DISTINCT</span> LASTNAME <span class="hljs-keyword">FROM</span> Persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/7596a0f3f1ca13761948d167ef9e24da.webp" alt="基础篇：数据库 SQL 入门教程 - 图14" loading='lazy'><br> 通过上述查询，结果集中只显示了一列 Wilson，显然已经去除了重复列。</p>
+<h3 id="🐸-WHERE-–-条件过滤"><a href="#🐸-WHERE-–-条件过滤" class="headerlink" title="🐸 WHERE – 条件过滤"></a>🐸 WHERE – 条件过滤</h3><p>如果需要从表中选取指定的数据，可将 WHERE 子句添加到 SELECT 语句。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> 列名称 <span class="hljs-keyword">FROM</span> 表名称 <span class="hljs-keyword">WHERE</span> 列 运算符 值;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>下面的运算符可在 WHERE 子句中使用：</p>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&#x3D;</td>
+<td>等于</td>
+</tr>
+<tr>
+<td>&lt;&gt;</td>
+<td>不等于</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>大于</td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>小于</td>
+</tr>
+<tr>
+<td>&gt;&#x3D;</td>
+<td>大于等于</td>
+</tr>
+<tr>
+<td>&lt;&#x3D;</td>
+<td>小于等于</td>
+</tr>
+<tr>
+<td>BETWEEN</td>
+<td>在某个范围内</td>
+</tr>
+<tr>
+<td>LIKE</td>
+<td>搜索某种模式</td>
+</tr>
+</tbody></table>
+<p><strong>📢 注意：</strong> 在某些版本的 SQL 中，操作符 &lt;&gt; 可以写为 !&#x3D;。</p>
+<p><strong>实例：</strong></p>
+<p>如果只希望选取居住在城市 “Beijing” 中的人，我们需要向 SELECT 语句添加 WHERE 子句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">WHERE</span> City<span class="hljs-operator">=</span><span class="hljs-string">&#x27;Beijing&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/b5cc16f7a7ec682e09b831cf241a9d4b.webp" alt="基础篇：数据库 SQL 入门教程 - 图15" loading='lazy'><br> <strong>📢 注意：</strong> SQL 使用单引号来环绕文本值（大部分数据库系统也接受双引号）。如果是数值，请不要使用引号。</p>
+<h3 id="🐹-AND-OR-–-运算符"><a href="#🐹-AND-OR-–-运算符" class="headerlink" title="🐹 AND &amp; OR – 运算符"></a>🐹 AND &amp; OR – 运算符</h3><p>AND 和 OR 可在 WHERE 子语句中把两个或多个条件结合起来。</p>
+<ul>
+<li>如果第一个条件和第二个条件都成立，则 AND 运算符显示一条记录。</li>
+<li>如果第一个条件和第二个条件中只要有一个成立，则 OR 运算符显示一条记录。</li>
+</ul>
+<p><strong>语法：</strong></p>
+<p><strong>AND 运算符实例：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> 表名称 <span class="hljs-keyword">WHERE</span> 列 运算符 值 <span class="hljs-keyword">AND</span> 列 运算符 值;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>OR 运算符实例：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> 表名称 <span class="hljs-keyword">WHERE</span> 列 运算符 值 <span class="hljs-keyword">OR</span> 列 运算符 值;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>由于 Persons 表数据太少，因此增加几条记录：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;Adams&#x27;</span>, <span class="hljs-string">&#x27;John&#x27;</span>, <span class="hljs-string">&#x27;Oxford Street&#x27;</span>, <span class="hljs-string">&#x27;London&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;Bush&#x27;</span>, <span class="hljs-string">&#x27;George&#x27;</span>, <span class="hljs-string">&#x27;Fifth Avenue&#x27;</span>, <span class="hljs-string">&#x27;New York&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">4</span>, <span class="hljs-string">&#x27;Carter&#x27;</span>, <span class="hljs-string">&#x27;Thomas&#x27;</span>, <span class="hljs-string">&#x27;Changan Street&#x27;</span>, <span class="hljs-string">&#x27;Beijing&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">5</span>, <span class="hljs-string">&#x27;Carter&#x27;</span>, <span class="hljs-string">&#x27;William&#x27;</span>, <span class="hljs-string">&#x27;Xuanwumen 10&#x27;</span>, <span class="hljs-string">&#x27;Beijing&#x27;</span>);<br><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> Persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/bc2ed3d5bc53fc6271f00b139df775b2.webp" alt="基础篇：数据库 SQL 入门教程 - 图16" loading='lazy'><br> <strong>AND 运算符实例：</strong></p>
+<p>使用 AND 来显示所有姓为 “Carter” 并且名为 “Thomas” 的人：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">WHERE</span> FirstName=<span class="hljs-string">&#x27;Thomas&#x27;</span> <span class="hljs-keyword">AND</span> LastName=<span class="hljs-string">&#x27;Carter&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/290d9a69a1db2c3895309a358cd6e15e.webp" alt="基础篇：数据库 SQL 入门教程 - 图17" loading='lazy'><br> <strong>OR 运算符实例：</strong></p>
+<p>使用 OR 来显示所有姓为 “Carter” 或者名为 “Thomas” 的人：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">WHERE</span> firstname=<span class="hljs-string">&#x27;Thomas&#x27;</span> <span class="hljs-keyword">OR</span> lastname=<span class="hljs-string">&#x27;Carter&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/baa3a80dabdda80b1d7b7e8961f90f19.webp" alt="基础篇：数据库 SQL 入门教程 - 图18" loading='lazy'><br> <strong>结合 AND 和 OR 运算符：</strong></p>
+<p>我们也可以把 AND 和 OR 结合起来（使用圆括号来组成复杂的表达式）:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros">SELECT * <span class="hljs-keyword">FROM</span> Persons WHERE (<span class="hljs-attribute">FirstName</span>=<span class="hljs-string">&#x27;Thomas&#x27;</span> <span class="hljs-keyword">OR</span> <span class="hljs-attribute">FirstName</span>=<span class="hljs-string">&#x27;William&#x27;</span>) <span class="hljs-keyword">AND</span> <span class="hljs-attribute">LastName</span>=<span class="hljs-string">&#x27;Carter&#x27;</span>;<br><br>运行项目并下载源码sql<br><br>* 1<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/e9bca0790a35c4ba31679cbcd2ea1b49.webp" alt="基础篇：数据库 SQL 入门教程 - 图19" loading='lazy'></p>
+<h3 id="🐰-ORDER-BY-–-排序"><a href="#🐰-ORDER-BY-–-排序" class="headerlink" title="🐰 ORDER BY – 排序"></a>🐰 ORDER BY – 排序</h3><p>ORDER BY 语句用于根据指定的列对结果集进行排序，默认按照升序对记录进行排序，如果您希望按照降序对记录进行排序，可以使用 DESC 关键字。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> 表名称 <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> 列<span class="hljs-number">1</span>,列<span class="hljs-number">2</span> <span class="hljs-keyword">DESC</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>默认排序为 ASC 升序，DESC 代表降序。</p>
+<p><strong>实例：</strong></p>
+<p>以字母顺序显示 <code>LASTNAME</code> 名称：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> LASTNAME;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/4c4e7f5f8794fe283f53cd4e0c531c6d.webp" alt="基础篇：数据库 SQL 入门教程 - 图20" loading='lazy'><br> 空值（NULL）默认排序在有值行之后。</p>
+<p>以数字顺序显示<code>ID_P</code>，并以字母顺序显示 <code>LASTNAME</code> 名称：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> ID_P,LASTNAME;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/cb2a673e5808db82470b48b1f7797789.webp" alt="基础篇：数据库 SQL 入门教程 - 图21" loading='lazy'><br> 以数字降序显示<code>ID_P</code>：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> ID_P <span class="hljs-keyword">DESC</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/34efba718f61275be2ad58a08933baa1.webp" alt="基础篇：数据库 SQL 入门教程 - 图22" loading='lazy'><br> <strong>📢 注意：</strong> 在第一列中有相同的值时，第二列是以升序排列的。如果第一列中有些值为 null 时，情况也是这样的。</p>
+<h3 id="🐱-UPDATE-–-更新数据"><a href="#🐱-UPDATE-–-更新数据" class="headerlink" title="🐱 UPDATE – 更新数据"></a>🐱 UPDATE – 更新数据</h3><p>Update 语句用于修改表中的数据。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">UPDATE</span> 表名称 <span class="hljs-keyword">SET</span> 列名称 <span class="hljs-operator">=</span> 新值 <span class="hljs-keyword">WHERE</span> 列名称 <span class="hljs-operator">=</span> 某值;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p><strong>更新某一行中的一个列：</strong></p>
+<p>目前 <code>Persons</code> 表有很多字段为 <code>null</code>  的数据，可以通过 <code>UPDATE</code> 为 LASTNAME 是 “Wilson” 的人添加FIRSTNAME：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">UPDATE</span> Persons <span class="hljs-keyword">SET</span> FirstName <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Fred&#x27;</span> <span class="hljs-keyword">WHERE</span> LastName <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Wilson&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/aef13357afe67e95f969db5f6e51eac9.webp" alt="基础篇：数据库 SQL 入门教程 - 图23" loading='lazy'><br> <strong>更新某一行中的若干列：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">UPDATE</span> Persons <span class="hljs-keyword">SET</span> ID_P <span class="hljs-operator">=</span> <span class="hljs-number">6</span>,city<span class="hljs-operator">=</span> <span class="hljs-string">&#x27;London&#x27;</span> <span class="hljs-keyword">WHERE</span> LastName <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Wilson&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/a65af7bbf6088a8bb7193c739ca20aab.webp" alt="基础篇：数据库 SQL 入门教程 - 图24" loading='lazy'></p>
+<h3 id="🐨-DELETE-–-删除数据"><a href="#🐨-DELETE-–-删除数据" class="headerlink" title="🐨 DELETE – 删除数据"></a>🐨 DELETE – 删除数据</h3><p>DELETE 语句用于删除表中的行。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> 表名称 <span class="hljs-keyword">WHERE</span> 列名称 <span class="hljs-operator">=</span> 值;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p><strong>删除某行：</strong></p>
+<p>删除 <code>Persons</code> 表中 LastName 为 “Fred Wilson” 的行：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">WHERE</span> LastName <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Wilson&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/b63c2baa93df8951f938869f7419af52.webp" alt="基础篇：数据库 SQL 入门教程 - 图25" loading='lazy'><br> <strong>删除所有行：</strong></p>
+<p>可以在不删除表的情况下删除所有的行。这意味着表的结构、属性和索引都是完整的：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> <span class="hljs-built_in">table_name</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/d561ed95ff0ce496a44d62ef4ef352dd.webp" alt="基础篇：数据库 SQL 入门教程 - 图26" loading='lazy'></p>
+<h3 id="🐵-TRUNCATE-TABLE-–-清除表数据"><a href="#🐵-TRUNCATE-TABLE-–-清除表数据" class="headerlink" title="🐵 TRUNCATE TABLE – 清除表数据"></a>🐵 TRUNCATE TABLE – 清除表数据</h3><p>如果我们仅仅需要除去表内的数据，但并不删除表本身，那么我们该如何做呢？</p>
+<p>可以使用 TRUNCATE TABLE 命令（仅仅删除表格中的数据）：</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">TRUNCATE</span> <span class="hljs-keyword">TABLE</span> 表名称;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>本例演示如何删除名为 “Persons” 的表。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">TRUNCATE</span> <span class="hljs-keyword">TABLE</span> persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="🐯-DROP-TABLE-–-删除表"><a href="#🐯-DROP-TABLE-–-删除表" class="headerlink" title="🐯 DROP TABLE – 删除表"></a>🐯 DROP TABLE – 删除表</h3><p>DROP TABLE 语句用于删除表（表的结构、属性以及索引也会被删除）。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">DROP</span> <span class="hljs-keyword">TABLE</span> 表名称;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>本例演示如何删除名为 “Persons” 的表。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">drop</span> <span class="hljs-keyword">table</span> persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/2f7b22e79c8334fbbaf36fc3ca1e7452.webp" alt="基础篇：数据库 SQL 入门教程 - 图27" loading='lazy'><br> 从上图可以看出，第一次执行删除时，成功删除了表 <code>persons</code>，第二次执行删除时，报错找不到表 <code>persons</code>，说明表已经被删除了。</p>
+<h2 id="🚀-SQL-高级言语学习"><a href="#🚀-SQL-高级言语学习" class="headerlink" title="🚀 SQL 高级言语学习"></a>🚀 SQL 高级言语学习</h2><h3 id="🚢-LIKE-–-查找类似值"><a href="#🚢-LIKE-–-查找类似值" class="headerlink" title="🚢 LIKE – 查找类似值"></a>🚢 LIKE – 查找类似值</h3><p>LIKE 操作符用于在 WHERE 子句中搜索列中的指定模式。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> 列名<span class="hljs-operator">/</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> 表名称 <span class="hljs-keyword">WHERE</span> 列名称 <span class="hljs-keyword">LIKE</span> 值;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p><code>Persons</code> 表插入数据：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;Gates&#x27;</span>, <span class="hljs-string">&#x27;Bill&#x27;</span>, <span class="hljs-string">&#x27;Xuanwumen 10&#x27;</span>, <span class="hljs-string">&#x27;Beijing&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;Adams&#x27;</span>, <span class="hljs-string">&#x27;John&#x27;</span>, <span class="hljs-string">&#x27;Oxford Street&#x27;</span>, <span class="hljs-string">&#x27;London&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;Bush&#x27;</span>, <span class="hljs-string">&#x27;George&#x27;</span>, <span class="hljs-string">&#x27;Fifth Avenue&#x27;</span>, <span class="hljs-string">&#x27;New York&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">4</span>, <span class="hljs-string">&#x27;Carter&#x27;</span>, <span class="hljs-string">&#x27;Thomas&#x27;</span>, <span class="hljs-string">&#x27;Changan Street&#x27;</span>, <span class="hljs-string">&#x27;Beijing&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">5</span>, <span class="hljs-string">&#x27;Carter&#x27;</span>, <span class="hljs-string">&#x27;William&#x27;</span>, <span class="hljs-string">&#x27;Xuanwumen 10&#x27;</span>, <span class="hljs-string">&#x27;Beijing&#x27;</span>);<br><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br>* <span class="hljs-number">6</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/e89e52627018141cb814b65a910c6ab8.webp" alt="基础篇：数据库 SQL 入门教程 - 图28" loading='lazy'><br> 1、现在，我们希望从上面的 “Persons” 表中选取居住在以 “N” 开头的城市里的人：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">WHERE</span> City <span class="hljs-keyword">LIKE</span> <span class="hljs-string">&#x27;N%&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/5d82ce047a4aa27d7cb1353d441cc7a6.webp" alt="基础篇：数据库 SQL 入门教程 - 图29" loading='lazy'><br> 2、接下来，我们希望从 “Persons” 表中选取居住在以 “g” 结尾的城市里的人：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">WHERE</span> City <span class="hljs-keyword">LIKE</span> <span class="hljs-string">&#x27;%g&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/677a413da85e8d3d04c1acbf3c6ae8df.webp" alt="基础篇：数据库 SQL 入门教程 - 图30" loading='lazy'><br> 3、接下来，我们希望从 “Persons” 表中选取居住在包含 “lon” 的城市里的人：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">WHERE</span> City <span class="hljs-keyword">LIKE</span> <span class="hljs-string">&#x27;%on%&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/a4ac6ffc89b6b8e86a392aa2109edde6.webp" alt="基础篇：数据库 SQL 入门教程 - 图31" loading='lazy'><br> 4、通过使用 NOT 关键字，我们可以从 “Persons” 表中选取居住在不包含 “lon” 的城市里的人：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">WHERE</span> City <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">LIKE</span> <span class="hljs-string">&#x27;%on%&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/f505ce9cdae8c12cbd306c8b0b17cab3.webp" alt="基础篇：数据库 SQL 入门教程 - 图32" loading='lazy'><br> <strong>📢注意：</strong> “%” 可用于定义通配符（模式中缺少的字母）。</p>
+<h3 id="🚤-IN-–-锁定多个值"><a href="#🚤-IN-–-锁定多个值" class="headerlink" title="🚤 IN – 锁定多个值"></a>🚤 IN – 锁定多个值</h3><p>IN 操作符允许我们在 WHERE 子句中规定多个值。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> 列名<span class="hljs-operator">/</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> 表名称 <span class="hljs-keyword">WHERE</span> 列名称 <span class="hljs-keyword">IN</span> (值<span class="hljs-number">1</span>,值<span class="hljs-number">2</span>,值<span class="hljs-number">3</span>);<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>现在，我们希望从 <code>Persons</code> 表中选取姓氏为 Adams 和 Carter 的人：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">WHERE</span> LastName <span class="hljs-keyword">IN</span> (<span class="hljs-string">&#x27;Adams&#x27;</span>,<span class="hljs-string">&#x27;Carter&#x27;</span>);<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/5d48d9c40c727934f196ce5a30e971da.webp" alt="基础篇：数据库 SQL 入门教程 - 图33" loading='lazy'></p>
+<h3 id="⛵️-BETWEEN-–-选取区间数据"><a href="#⛵️-BETWEEN-–-选取区间数据" class="headerlink" title="⛵️ BETWEEN – 选取区间数据"></a>⛵️ BETWEEN – 选取区间数据</h3><p>操作符 BETWEEN … AND 会选取介于两个值之间的数据范围。这些值可以是数值、文本或者日期。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> 列名<span class="hljs-operator">/</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> 表名称 <span class="hljs-keyword">WHERE</span> 列名称 <span class="hljs-keyword">BETWEEN</span> 值<span class="hljs-number">1</span> <span class="hljs-keyword">AND</span> 值<span class="hljs-number">2</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>1、查询以字母顺序显示介于 “Adams”（包括）和 “Carter”（不包括）之间的人：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">WHERE</span> LastName <span class="hljs-keyword">BETWEEN</span> <span class="hljs-string">&#x27;Adams&#x27;</span> <span class="hljs-keyword">AND</span> <span class="hljs-string">&#x27;Carter&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/abf3c185b32f48cfc4d65f3c54688dec.webp" alt="基础篇：数据库 SQL 入门教程 - 图34" loading='lazy'><br> 2、查询上述结果相反的结果，可以使用 NOT：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> Persons <span class="hljs-keyword">WHERE</span> LastName <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">BETWEEN</span> <span class="hljs-string">&#x27;Adams&#x27;</span> <span class="hljs-keyword">AND</span> <span class="hljs-string">&#x27;Carter&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/ab07c99516de3575a191bf8a47f2f00a.webp" alt="基础篇：数据库 SQL 入门教程 - 图35" loading='lazy'><br> <strong>📢 注意：</strong> 不同的数据库对 BETWEEN…AND 操作符的处理方式是有差异的。</p>
+<blockquote>
+<p>某些数据库会列出介于 “Adams” 和 “Carter” 之间的人，但不包括 “Adams” 和 “Carter” ；某些数据库会列出介于 “Adams” 和 “Carter” 之间并包括 “Adams” 和 “Carter” 的人；而另一些数据库会列出介于 “Adams” 和 “Carter” 之间的人，包括 “Adams” ，但不包括 “Carter” 。</p>
+</blockquote>
+<p><strong>所以，请检查你的数据库是如何处理 BETWEEN…AND 操作符的！</strong></p>
+<h3 id="🚂-AS-–-别名"><a href="#🚂-AS-–-别名" class="headerlink" title="🚂 AS – 别名"></a>🚂 AS – 别名</h3><p>通过使用 SQL，可以为列名称和表名称指定别名（Alias），别名使查询程序更易阅读和书写。</p>
+<p><strong>语法：</strong></p>
+<p><strong>表别名：</strong></p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs n1ql"><span class="hljs-keyword">SELECT</span> 列名称/(*) <span class="hljs-keyword">FROM</span> 表名称 <span class="hljs-keyword">AS</span> 别名;<br><br>运行项目并下载源码sql<br><br>* 1<br></code></pre></td></tr></table></figure>
+
+<p><strong>列别名：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> 列名称 <span class="hljs-keyword">as</span> 别名 <span class="hljs-keyword">FROM</span> 表名称;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p><strong>使用表名称别名：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> p.LastName, p.FirstName<br><span class="hljs-keyword">FROM</span> Persons p <br><span class="hljs-keyword">WHERE</span> p.LastName=<span class="hljs-string">&#x27;Adams&#x27;</span> <span class="hljs-keyword">AND</span> p.FirstName=<span class="hljs-string">&#x27;John&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/576f3b038b13ff5336c5e2a952cf0193.webp" alt="基础篇：数据库 SQL 入门教程 - 图36" loading='lazy'><br> <strong>使用列名别名：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> LastName &quot;Family&quot;, FirstName &quot;Name&quot; <span class="hljs-keyword">FROM</span> Persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/fd67867a7ac619e88092c358d22eb3fb.webp" alt="基础篇：数据库 SQL 入门教程 - 图37" loading='lazy'><br> <strong>📢 注意：</strong> 实际应用时，这个 <code>AS</code> 可以省略，但是列别名需要加上 <code>&quot; &quot;</code>。</p>
+<h3 id="🚁-JOIN-–-多表关联"><a href="#🚁-JOIN-–-多表关联" class="headerlink" title="🚁 JOIN – 多表关联"></a>🚁 JOIN – 多表关联</h3><p><code>JOIN</code> 用于根据两个或多个表中的列之间的关系，从这些表中查询数据。</p>
+<p>有时为了得到完整的结果，我们需要从两个或更多的表中获取结果。我们就需要执行 <code>join</code>。</p>
+<p>数据库中的表可通过键将彼此联系起来。主键（Primary Key）是一个列，在这个列中的每一行的值都是唯一的。在表中，每个主键的值都是唯一的。这样做的目的是在不重复每个表中的所有数据的情况下，把表间的数据交叉捆绑在一起。<br> <img src="/csdn-blog/images/b058a7a2653e7f56249958bc15472875.webp" alt="基础篇：数据库 SQL 入门教程 - 图38" loading='lazy'><br> 如图，“Id_P” 列是 Persons 表中的的主键。这意味着没有两行能够拥有相同的 Id_P。即使两个人的姓名完全相同，Id_P 也可以区分他们。</p>
+<p><strong>❤️ 为了下面实验的继续，我们需要再创建一个表：Orders。</strong></p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs n1ql"><span class="hljs-keyword">create</span> table orders (id_o <span class="hljs-keyword">number</span>,orderno <span class="hljs-keyword">number</span>,id_p <span class="hljs-keyword">number</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> orders <span class="hljs-keyword">values</span>(<span class="hljs-number">1</span>,<span class="hljs-number">11111</span>,<span class="hljs-number">1</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> orders <span class="hljs-keyword">values</span>(<span class="hljs-number">2</span>,<span class="hljs-number">22222</span>,<span class="hljs-number">2</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> orders <span class="hljs-keyword">values</span>(<span class="hljs-number">3</span>,<span class="hljs-number">33333</span>,<span class="hljs-number">3</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> orders <span class="hljs-keyword">values</span>(<span class="hljs-number">4</span>,<span class="hljs-number">44444</span>,<span class="hljs-number">4</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> orders <span class="hljs-keyword">values</span>(<span class="hljs-number">6</span>,<span class="hljs-number">66666</span>,<span class="hljs-number">6</span>);<br><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> orders;<br><br>运行项目并下载源码sql<br><br>* 1<br>* 2<br>* 3<br>* 4<br>* 5<br>* 6<br>* 7<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/4e018d72ea7fe7124617ef60dda94f85.webp" alt="基础篇：数据库 SQL 入门教程 - 图39" loading='lazy'><br> 如图，“Id_O” 列是 Orders 表中的的主键，同时，“Orders” 表中的 “Id_P” 列用于引用 “Persons” 表中的人，而无需使用他们的确切姓名。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> persons p,orders o <span class="hljs-keyword">where</span> p.id_p<span class="hljs-operator">=</span>o.id_p;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/3318863f5bdd92888c919ee5078d053b.webp" alt="基础篇：数据库 SQL 入门教程 - 图40" loading='lazy'><br> 可以看到，“Id_P” 列把上面的两个表联系了起来。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> 列名<br><span class="hljs-keyword">from</span> 表A<br><span class="hljs-keyword">INNER</span><span class="hljs-operator">|</span><span class="hljs-keyword">LEFT</span><span class="hljs-operator">|</span><span class="hljs-keyword">RIGHT</span><span class="hljs-operator">|</span><span class="hljs-keyword">FULL</span> <span class="hljs-keyword">JOIN</span> 表B<br><span class="hljs-keyword">ON</span> 表A主键列 <span class="hljs-operator">=</span> 表B外键列;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br><span class="hljs-operator">*</span> <span class="hljs-number">2</span><br><span class="hljs-operator">*</span> <span class="hljs-number">3</span><br><span class="hljs-operator">*</span> <span class="hljs-number">4</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>不同的 SQL JOIN：</strong></p>
+<p>下面列出了您可以使用的 JOIN 类型，以及它们之间的差异。</p>
+<ul>
+<li>JOIN: 如果表中有至少一个匹配，则返回行</li>
+<li>INNER JOIN: 内部连接，返回两表中匹配的行</li>
+<li>LEFT JOIN: 即使右表中没有匹配，也从左表返回所有的行</li>
+<li>RIGHT JOIN: 即使左表中没有匹配，也从右表返回所有的行</li>
+<li>FULL JOIN: 只要其中一个表中存在匹配，就返回行</li>
+</ul>
+<p><strong>实例：</strong></p>
+<p>如果我们希望列出所有人的定购，可以使用下面的 SELECT 语句：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> p.LastName, p.FirstName, o.OrderNo<br><span class="hljs-keyword">FROM</span> Persons p<br><span class="hljs-keyword">INNER</span> <span class="hljs-keyword">JOIN</span> Orders o<br><span class="hljs-keyword">ON</span> p.Id_P = o.Id_P<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> p.LastName <span class="hljs-keyword">DESC</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/41e0db72b4588bf2567c2c4a9165add5.webp" alt="基础篇：数据库 SQL 入门教程 - 图41" loading='lazy'></p>
+<h3 id="🚜-UNION-–-合并结果集"><a href="#🚜-UNION-–-合并结果集" class="headerlink" title="🚜 UNION – 合并结果集"></a>🚜 UNION – 合并结果集</h3><p><code>UNION</code> 操作符用于合并两个或多个 SELECT 语句的结果集。</p>
+<p><strong>UNION 语法：</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">SELECT</span> 列名 <span class="hljs-selector-tag">FROM</span> 表<span class="hljs-selector-tag">A</span><br>UNION<br><span class="hljs-selector-tag">SELECT</span> 列名 <span class="hljs-selector-tag">FROM</span> 表<span class="hljs-selector-tag">B</span>;<br><br>运行项目并下载源码sql<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>📢注意：</strong> UNION 操作符默认为选取不同的值。如果查询结果需要显示重复的值，请使用 <code>UNION ALL</code>。</p>
+<p><strong>UNION ALL 语法：</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">SELECT</span> 列名 <span class="hljs-selector-tag">FROM</span> 表<span class="hljs-selector-tag">A</span><br>UNION <span class="hljs-attribute">ALL</span><br><span class="hljs-selector-tag">SELECT</span> 列名 <span class="hljs-selector-tag">FROM</span> 表<span class="hljs-selector-tag">B</span>;<br><br>运行项目并下载源码sql<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+
+<p>另外，UNION 结果集中的列名总是等于 UNION 中第一个 SELECT 语句中的列名。</p>
+<p>为了实验所需，创建 Person_b 表：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> Persons_b<br>(<br>Id_P <span class="hljs-type">int</span>,<br>LastName <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>),<br>FirstName <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>),<br>Address <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>),<br>City <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>)<br>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons_b <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;Bill&#x27;</span>, <span class="hljs-string">&#x27;Gates&#x27;</span>, <span class="hljs-string">&#x27;Xuanwumen 10&#x27;</span>, <span class="hljs-string">&#x27;Londo&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons_b <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;John&#x27;</span>, <span class="hljs-string">&#x27;Adams&#x27;</span>, <span class="hljs-string">&#x27;Oxford Street&#x27;</span>, <span class="hljs-string">&#x27;nBeijing&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons_b <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;George&#x27;</span>, <span class="hljs-string">&#x27;Bush&#x27;</span>, <span class="hljs-string">&#x27;Fifth Avenue&#x27;</span>, <span class="hljs-string">&#x27;Beijing&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons_b <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">4</span>, <span class="hljs-string">&#x27;Thomas&#x27;</span>, <span class="hljs-string">&#x27;Carter&#x27;</span>, <span class="hljs-string">&#x27;Changan Street&#x27;</span>, <span class="hljs-string">&#x27;New York&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> Persons_b <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">5</span>, <span class="hljs-string">&#x27;William&#x27;</span>, <span class="hljs-string">&#x27;Carter&#x27;</span>, <span class="hljs-string">&#x27;Xuanwumen 10&#x27;</span>, <span class="hljs-string">&#x27;Beijing&#x27;</span>);<br><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> persons_b;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br>* <span class="hljs-number">6</span><br>* <span class="hljs-number">7</span><br>* <span class="hljs-number">8</span><br>* <span class="hljs-number">9</span><br>* <span class="hljs-number">10</span><br>* <span class="hljs-number">11</span><br>* <span class="hljs-number">12</span><br>* <span class="hljs-number">13</span><br>* <span class="hljs-number">14</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/d59aeb89afe68367b567c63ed4b92efe.webp" alt="基础篇：数据库 SQL 入门教程 - 图43" loading='lazy'><br> <strong>实例：</strong></p>
+<p><strong>使用 UNION 命令：</strong></p>
+<p>列出 persons 和 persons_b 中不同的人：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> persons<br><span class="hljs-keyword">UNION</span><br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> persons_b;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br><span class="hljs-operator">*</span> <span class="hljs-number">2</span><br><span class="hljs-operator">*</span> <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/971a7275d517625a4bf6e7851a403799.webp" alt="基础篇：数据库 SQL 入门教程 - 图44" loading='lazy'><br> <strong>📢注意：</strong> UNION 内部的 SELECT 语句必须拥有相同数量的列。列也必须拥有相似的数据类型。同时，每条 SELECT 语句中的列的顺序必须相同。</p>
+<h3 id="🚌-NOT-NULL-–-非空"><a href="#🚌-NOT-NULL-–-非空" class="headerlink" title="🚌 NOT NULL – 非空"></a>🚌 NOT NULL – 非空</h3><p><code>NOT NULL</code> 约束强制列不接受 NULL 值。</p>
+<p>NOT NULL 约束强制字段始终包含值。这意味着，如果不向字段添加值，就无法插入新记录或者更新记录。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs gams">CREATE <span class="hljs-keyword">TABLE</span> 表<br>(<br>列 int NOT NULL<br>);<br><br>运行项目并下载源码sql<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br></code></pre></td></tr></table></figure>
+
+<p>如上，创建一个表，设置列值不能为空。</p>
+<p><strong>实例：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> lucifer (id number <span class="hljs-keyword">not</span> <span class="hljs-keyword">null</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> lucifer <span class="hljs-keyword">values</span> (<span class="hljs-keyword">NULL</span>);<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/31d623822f1bc011a1b963ad266c7a29.webp" alt="基础篇：数据库 SQL 入门教程 - 图45" loading='lazy'><br> <strong>📢 注意：</strong> 如果插入 <code>NULL</code> 值，则会报错 <code>ORA-01400</code> 提示无法插入！</p>
+<p><strong>⭐️ 拓展小知识：</strong><code>NOT NULL</code> 也可以用于查询条件：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> persons <span class="hljs-keyword">where</span> FirstName <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">null</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/49606eca682dc4a2c2de86dc35e82955.webp" alt="基础篇：数据库 SQL 入门教程 - 图46" loading='lazy'><br> 同理，<code>NULL</code> 也可：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> persons <span class="hljs-keyword">where</span> FirstName <span class="hljs-keyword">is</span> <span class="hljs-keyword">null</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>感兴趣的朋友，可以自己尝试一下！</p>
+<h3 id="🚐-VIEW-–-视图"><a href="#🚐-VIEW-–-视图" class="headerlink" title="🚐 VIEW – 视图"></a>🚐 VIEW – 视图</h3><p>在 SQL 中，视图是基于 SQL 语句的结果集的可视化的表。</p>
+<p>视图包含行和列，就像一个真实的表。视图中的字段就是来自一个或多个数据库中的真实的表中的字段。我们可以向视图添加 SQL 函数、WHERE 以及 JOIN 语句，我们也可以提交数据，就像这些来自于某个单一的表。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">VIEW</span> 视图名 <span class="hljs-keyword">AS</span><br><span class="hljs-keyword">SELECT</span> 列名<br><span class="hljs-keyword">FROM</span> 表名<br><span class="hljs-keyword">WHERE</span> 查询条件;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>📢 注意：</strong> 视图总是显示最近的数据。每当用户查询视图时，数据库引擎通过使用 SQL 语句来重建数据。</p>
+<p><strong>实例：</strong></p>
+<p>下面，我们将 Persons 表中住在 Beijing 的人筛选出来创建视图：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">view</span> persons_beijing <span class="hljs-keyword">as</span><br><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> persons <span class="hljs-keyword">where</span> city=<span class="hljs-string">&#x27;Beijing&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/a032591bc7a2b30f5d64fdfde07e0a8a.webp" alt="基础篇：数据库 SQL 入门教程 - 图47" loading='lazy'><br> 查询上面这个视图：<br> <img src="/csdn-blog/images/0e2913e1f0d8b372cfdcd656b14b37fb.webp" alt="基础篇：数据库 SQL 入门教程 - 图48" loading='lazy'><br> 如果需要更新视图中的列或者其他信息，无需删除，使用 <code>CREATE OR REPLACE VIEW</code> 选项：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">OR REPLACE</span> <span class="hljs-keyword">VIEW</span> 视图名 <span class="hljs-keyword">AS</span><br><span class="hljs-keyword">SELECT</span> 列名<br><span class="hljs-keyword">FROM</span> 表名<br><span class="hljs-keyword">WHERE</span> 查询条件;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>现在需要筛选出，LASTNAME 为 Gates 的记录：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">or replace</span> <span class="hljs-keyword">view</span> persons_beijing <span class="hljs-keyword">as</span><br><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> persons <span class="hljs-keyword">where</span> lastname=<span class="hljs-string">&#x27;Gates&#x27;</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/0457e6d6911de8231e723d61637084b6.webp" alt="基础篇：数据库 SQL 入门教程 - 图49" loading='lazy'><br> <img src="/csdn-blog/images/c8e426543dbf28e8932401b610619641.webp" alt="基础篇：数据库 SQL 入门教程 - 图50" loading='lazy'><br> 删除视图就比较简单，跟表差不多，使用 <code>DROP</code> 即可：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">drop</span> <span class="hljs-keyword">view</span> persons_beijing;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/02d785b6d9d5296e69d41576b8de2ada.webp" alt="基础篇：数据库 SQL 入门教程 - 图51" loading='lazy'><br> <strong>❤️ 本章要讲的高级语言就先到此为止，不宜一次性介绍太多~</strong></p>
+<h2 id="🎯-SQL-常用函数学习"><a href="#🎯-SQL-常用函数学习" class="headerlink" title="🎯 SQL 常用函数学习"></a>🎯 SQL 常用函数学习</h2><p>SQL 拥有很多可用于计数和计算的内建函数。</p>
+<p><strong>函数的使用语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">function</span>(列) <span class="hljs-keyword">FROM</span> 表;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>❤️ 下面就来看看有哪些常用的函数！</strong></p>
+<h3 id="🍔-AVG-–-平均值"><a href="#🍔-AVG-–-平均值" class="headerlink" title="🍔 AVG – 平均值"></a>🍔 AVG – 平均值</h3><p>AVG 函数返回数值列的平均值。NULL 值不包括在计算中。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">AVG</span>(列名) <span class="hljs-keyword">FROM</span> 表名;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>计算 “orderno” 字段的平均值。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">avg</span>(orderno) <span class="hljs-keyword">from</span> orders;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/91acb8f2dde47757fbe696f9458207b4.webp" alt="基础篇：数据库 SQL 入门教程 - 图52" loading='lazy'><br> 当然，也可以用在查询条件中，例如查询低于平均值的记录：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> orders <span class="hljs-keyword">where</span> orderno <span class="hljs-operator">&lt;</span> (<span class="hljs-keyword">select</span> <span class="hljs-built_in">avg</span>(orderno) <span class="hljs-keyword">from</span> orders);<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/803a1c0474b17819dd0fdbdae14fd476.webp" alt="基础篇：数据库 SQL 入门教程 - 图53" loading='lazy'></p>
+<h3 id="🍕-COUNT-–-汇总行数"><a href="#🍕-COUNT-–-汇总行数" class="headerlink" title="🍕 COUNT – 汇总行数"></a>🍕 COUNT – 汇总行数</h3><p>COUNT() 函数返回匹配指定条件的行数。</p>
+<p><strong>语法：</strong></p>
+<p><code>count()</code> 中可以有不同的语法：</p>
+<ul>
+<li>COUNT(*) ：返回表中的记录数。</li>
+<li>COUNT(DISTINCT 列名) ：返回指定列的不同值的数目。</li>
+<li>COUNT(列名) ：返回指定列的值的数目（NULL 不计入）。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> 表名;<br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">COUNT</span>(<span class="hljs-keyword">DISTINCT</span> 列名) <span class="hljs-keyword">FROM</span> 表名;<br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">COUNT</span>(列名) <span class="hljs-keyword">FROM</span> 表名;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br><span class="hljs-operator">*</span> <span class="hljs-number">2</span><br><span class="hljs-operator">*</span> <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p><strong>COUNT(*) ：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">from</span> persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/f184f4d2d089d9bdc55a6a50ec8dce39.webp" alt="基础篇：数据库 SQL 入门教程 - 图54" loading='lazy'><br> <strong>COUNT(DISTINCT 列名) ：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">count</span>(<span class="hljs-keyword">distinct</span> city) <span class="hljs-keyword">from</span> persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/fc620e839d872220c653d8633f0ef9c7.webp" alt="基础篇：数据库 SQL 入门教程 - 图55" loading='lazy'><br> <strong>COUNT(列名) ：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">count</span>(city) <span class="hljs-keyword">from</span> persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/8114da9188198dcdaad0bbc59cd62bb7.webp" alt="基础篇：数据库 SQL 入门教程 - 图56" loading='lazy'></p>
+<h3 id="🍘-MAX-–-最大值"><a href="#🍘-MAX-–-最大值" class="headerlink" title="🍘 MAX – 最大值"></a>🍘 MAX – 最大值</h3><p><code>MAX</code> 函数返回一列中的最大值。NULL 值不包括在计算中。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">MAX</span>(列名) <span class="hljs-keyword">FROM</span> 表名;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>MIN 和 MAX 也可用于文本列，以获得按字母顺序排列的最高或最低值。</p>
+<p><strong>实例：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">max</span>(orderno) <span class="hljs-keyword">from</span> orders;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/9da0842c525f7cbc099bf045950a4990.webp" alt="基础篇：数据库 SQL 入门教程 - 图57" loading='lazy'></p>
+<h3 id="🍢-MIN-–-最小值"><a href="#🍢-MIN-–-最小值" class="headerlink" title="🍢 MIN – 最小值"></a>🍢 MIN – 最小值</h3><p><code>MIN</code> 函数返回一列中的最小值。NULL 值不包括在计算中。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">MIN</span>(列名) <span class="hljs-keyword">FROM</span> 表名;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">min</span>(orderno) <span class="hljs-keyword">from</span> orders;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/925a3dd2e35b7146735f7c0793feafe3.webp" alt="基础篇：数据库 SQL 入门教程 - 图58" loading='lazy'></p>
+<h3 id="🍰-SUM-–-求和"><a href="#🍰-SUM-–-求和" class="headerlink" title="🍰 SUM – 求和"></a>🍰 SUM – 求和</h3><p><code>SUM</code> 函数返回数值列的总数（总额）。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">SUM</span>(列名) <span class="hljs-keyword">FROM</span> 表名;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">sum</span>(orderno) <span class="hljs-keyword">from</span> orders;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/cda8a96f727537f3fe91c83b56fb4c73.webp" alt="基础篇：数据库 SQL 入门教程 - 图59" loading='lazy'></p>
+<h3 id="🍪-GROUP-BY-–-分组"><a href="#🍪-GROUP-BY-–-分组" class="headerlink" title="🍪 GROUP BY – 分组"></a>🍪 GROUP BY – 分组</h3><p>GROUP BY 语句用于结合合计函数，根据一个或多个列对结果集进行分组。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> 列名A, 统计函数(列名B)<br><span class="hljs-keyword">FROM</span> 表名<br><span class="hljs-keyword">WHERE</span> 查询条件<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> 列名A;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>获取 Persons 表中住在北京的总人数，根据 LASTNAME 分组：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> lastname,count(city) <span class="hljs-keyword">from</span> persons <br><span class="hljs-keyword">where</span> city=<span class="hljs-string">&#x27;Beijing&#x27;</span> <br><span class="hljs-keyword">group</span> <span class="hljs-keyword">by</span> lastname;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/1243cf316d43b26e9abd1253013a082f.webp" alt="基础篇：数据库 SQL 入门教程 - 图60" loading='lazy'><br> 如果不加 <code>GROUP BY</code>  则会报错：<br> <img src="/csdn-blog/images/81a5cc51f6f0735063a422cd0c6e1be9.webp" alt="基础篇：数据库 SQL 入门教程 - 图61" loading='lazy'><br> 也就是常见的 <code>ORA-00937</code> 不是单组分组函数的错误。</p>
+<h3 id="🍭-HAVING-–-句尾连接"><a href="#🍭-HAVING-–-句尾连接" class="headerlink" title="🍭 HAVING – 句尾连接"></a>🍭 HAVING – 句尾连接</h3><p>在 SQL 中增加 HAVING 子句原因是，WHERE 关键字无法与合计函数一起使用。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> 列名A, 统计函数(列名B)<br><span class="hljs-keyword">FROM</span> <span class="hljs-built_in">table_name</span><br><span class="hljs-keyword">WHERE</span> 查询条件<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> 列名A<br><span class="hljs-keyword">HAVING</span> 统计函数(列名B) 查询条件;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>获取 Persons 表中住在北京的总人数大于1的 LASTNAME，根据 LASTNAME 分组：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> lastname,count(city) <span class="hljs-keyword">from</span> persons <br><span class="hljs-keyword">where</span> city=<span class="hljs-string">&#x27;Beijing&#x27;</span> <br><span class="hljs-keyword">group</span> <span class="hljs-keyword">by</span> lastname<br><span class="hljs-keyword">having</span> count(city) &gt; <span class="hljs-number">1</span>;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/62636dbc1624061c759828d824ee28db.webp" alt="基础篇：数据库 SQL 入门教程 - 图62" loading='lazy'></p>
+<h3 id="🍷-UCASE-UPPER-–-大写"><a href="#🍷-UCASE-UPPER-–-大写" class="headerlink" title="🍷 UCASE&#x2F;UPPER – 大写"></a>🍷 UCASE&#x2F;UPPER – 大写</h3><p><code>UCASE/UPPER</code> 函数把字段的值转换为大写。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">upper</span>(列名) <span class="hljs-keyword">from</span> 表名;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>选取 “LastName” 和 “FirstName” 列的内容，然后把 “LastName” 列转换为大写：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">upper</span>(lastname),firstname <span class="hljs-keyword">from</span> persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/9d1b90dec4bb4de8d151e17daedad44c.webp" alt="基础篇：数据库 SQL 入门教程 - 图63" loading='lazy'></p>
+<h3 id="🍶-LCASE-LOWER-–-小写"><a href="#🍶-LCASE-LOWER-–-小写" class="headerlink" title="🍶 LCASE&#x2F;LOWER – 小写"></a>🍶 LCASE&#x2F;LOWER – 小写</h3><p><code>LCASE/LOWER</code> 函数把字段的值转换为小写。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">lower</span>(列名) <span class="hljs-keyword">from</span> 表名;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>选取 “LastName” 和 “FirstName” 列的内容，然后把 “LastName” 列转换为小写：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">lower</span>(lastname),firstname <span class="hljs-keyword">from</span> persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/26aae03175e7ae77d04a5b276a8b73ed.webp" alt="基础篇：数据库 SQL 入门教程 - 图64" loading='lazy'></p>
+<h3 id="👛-LEN-LENGTH-–-获取长度"><a href="#👛-LEN-LENGTH-–-获取长度" class="headerlink" title="👛 LEN&#x2F;LENGTH – 获取长度"></a>👛 LEN&#x2F;LENGTH – 获取长度</h3><p><code>LEN/LENGTH</code> 函数返回文本字段中值的长度。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> length(列名) <span class="hljs-keyword">from</span> 表名;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>获取 LASTNAME 的值字符长度：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> length(lastname),lastname <span class="hljs-keyword">from</span> persons;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/da9196df75065ed2a41fa22603c05274.webp" alt="基础篇：数据库 SQL 入门教程 - 图65" loading='lazy'></p>
+<h3 id="🍗-ROUND-–-数值取舍"><a href="#🍗-ROUND-–-数值取舍" class="headerlink" title="🍗 ROUND – 数值取舍"></a>🍗 ROUND – 数值取舍</h3><p><code>ROUND</code> 函数用于把数值字段舍入为指定的小数位数。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> round(列名,精度) <span class="hljs-keyword">from</span> 表名;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p><strong>保留2位：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> round(<span class="hljs-number">1.1314</span>,<span class="hljs-number">2</span>) <span class="hljs-keyword">from</span> dual;<br><span class="hljs-keyword">select</span> round(<span class="hljs-number">1.1351</span>,<span class="hljs-number">2</span>) <span class="hljs-keyword">from</span> dual;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/5aac38435d4ffce495450801288a9174.webp" alt="基础篇：数据库 SQL 入门教程 - 图66" loading='lazy'><br> <img src="/csdn-blog/images/a8a6ed09b08de1d249ae5df5beddd56c.webp" alt="基础篇：数据库 SQL 入门教程 - 图67" loading='lazy'><br> 📢 注意：<code>ROUND</code> 取舍是 <strong>四舍五入</strong> 的！</p>
+<p><strong>取整：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> round(<span class="hljs-number">1.1351</span>,<span class="hljs-number">0</span>) <span class="hljs-keyword">from</span> dual;<br><span class="hljs-keyword">select</span> round(<span class="hljs-number">1.56</span>,<span class="hljs-number">0</span>) <span class="hljs-keyword">from</span> dual;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/801361796a73d46b78a48ac367e5f441.webp" alt="基础篇：数据库 SQL 入门教程 - 图68" loading='lazy'></p>
+<h3 id="🍞-NOW-SYSDATE-–-当前时间"><a href="#🍞-NOW-SYSDATE-–-当前时间" class="headerlink" title="🍞 NOW&#x2F;SYSDATE – 当前时间"></a>🍞 NOW&#x2F;SYSDATE – 当前时间</h3><p><code>NOW/SYSDATE</code> 函数返回当前的日期和时间。</p>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> sysdate <span class="hljs-keyword">from</span> 表名;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>实例：</strong></p>
+<p>获取当前时间：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> sysdate <span class="hljs-keyword">from</span> dual;<br><br>运行项目并下载源码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/7e4ad2de863a47d5a5e5ffd4a5de6f14.webp" alt="基础篇：数据库 SQL 入门教程 - 图69" loading='lazy'><br> <strong>📢 注意：</strong> 如果您在使用 Sql Server 数据库，请使用 <code>getdate()</code> 函数来获得当前的日期时间。</p>
+<h2 id="🍺-写在最后"><a href="#🍺-写在最后" class="headerlink" title="🍺 写在最后"></a>🍺 写在最后</h2><p><strong>上述如果都学完了的话，可以来做个小测验：<a target="_blank" rel="noopener" href="https://www.w3school.com.cn/quiz/quiz.asp?quiz=sql">SQL 测验</a></strong>，看看掌握的怎么样！  </p>
+<p> <strong>❤️ 测验会被记分：</strong></p>
+<p>每道题的分值是 1 分。在您完成全部的20道题之后，系统会为您的测验打分，并提供您做错的题目的正确答案。其中，绿色为正确答案，而红色为错误答案。</p>
+<p><strong>☞ <a target="_blank" rel="noopener" href="https://www.w3school.com.cn/quiz/quiz.asp?quiz=sql">现在就开始测验！</a></strong> 祝您好运。</p>
+<hr>
+<h2 id="往期精彩文章推荐"><a href="#往期精彩文章推荐" class="headerlink" title="往期精彩文章推荐"></a>往期精彩文章推荐</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/GmSqHJiBToncvcpFAJUZbw">一篇文章让你彻底掌握 Shell</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0xFe5m1DQ0ucT2_266hsrA">Oracle 一键巡检自动生成 Word 报告</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/gv6t97FFyMsd6e4GH1HAwQ">Oracle一键安装脚本的 21 个疑问与解答</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/4zI73auIUhwSRb7qL3UIfw">Oracle一键巡检脚本的 21 个疑问与解答</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/UL0BSMCAZrOQgCoWpDMGew">全网首发：Oracle 23ai 一键安装脚本</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/T7GbpwhnMugzk7PB6hAoJQ">Oracle 19C 最新 RU 补丁 19.24 ，一键安装！</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/uicyzHfgS2TwleocXJEIrA">Oracle Linux 6 一键安装 Oracle 11GR2 RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/dT4tFMYVZ3mh49CI6V3YEA">Oracle Linux 7.9 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/FHXYiZBPn3XpKOM6ZqlU1A">Oracle Linux 8.9 一键安装 Oracle 19C RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/cTuTUE-oaO-tKZ72F2WjAA">Oracle Linux 9.4(aarch64) 一键安装 Oracle 19C</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/uJwEPOG22fhQcC6cTLfN1Q">openEuler 20.03 LTS SP4 一键安装 Oracle 19C</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/sx1E4GIvIeQXp2vGMmVr2A">openEuler 22.03 LTS SP4 一键安装 Oracle 19C RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/mUHqU5hQ9GdH2bKuClPt5A">RHEL 7.9 一键安装 Oracle 19C 19.23 RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/fnuHKotjj_S8_0EfUkWI4Q">Redhat 8.4 一键安装 Oracle 11GR2</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/cQJ6gP1bM_7m0H5-Dha4TA">RedHat 9.4(aarch64) 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/bJtBpzyG_NAhU-0vov1WmQ">龙蜥 Anolis 7.9 一键安装 Oracle 19C 19.23</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/_4-anPhn9wThtdAqqHIH5w">龙蜥 Anolis OS 8.8 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/N2J9JxZ7l9elG1L1NV7ynA">SUSE 15 SP5 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/SSmLvx2wDzhzsQY6f5Q5Rg">统信 UOS V20 1070(a) 一键安装 Oracle 11GR2</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0-q9mLR48abGUbZUODj7xw">Ubuntu 22.04 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Y6fFi3Nth0NA5HGq2LjubQ">Ubuntu 14.04 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/EVNaKhH53YN885gk_Ik_Xg">银河麒麟 Kylin V10 SP3 一键安装 Oracle 19C</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/IZ_VYoDOxzSLzsQo8aJTIw">银河麒麟 Kylin V10 SP3 一键安装 Oracle 11GR2 RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Trt7gYkQVoL5A803WlDL6Q">Oracle DataGuard GAP 修复手册</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/DysIcb-p11j56d3YtlqpcQ">优化 Oracle：最佳实践与开发规范</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/SmncWuYAubj0tnOw35aJGA">DBA 必备：Linux 软件源配置全攻略</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/yvth1vorP3JjUp3g3vPBAQ">Linux 一键配置时钟同步全攻略</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/xjYZmGcwshbJBICcr0xvBw">Starwind 配置 ISCSI 共享存储</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/JMMzOa6dN6ytAUkcy7I2jQ">SUSE 15 SP3 安装 Oracle 19C RAC 数据库</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/KEobA1FAx4Uod3uBGkJ9-A">达梦 8 数据库安装手册</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/KlP4IM4O7sHVvSNJ9rNXEA">Oracle 12CR2 RAC 安装避坑宝典</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vNZbH5QsiSWrdtJcqP2MWg">Linux7 安装 Oracle 19C RAC 详细图文教程</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/mA5MPcykF-eytChoUAhwnA">Oracle ADG 搭建 RAC to Single 详细教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Trt7gYkQVoL5A803WlDL6Q">Oracle DataGuard GAP 修复手册</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/NYQ8TPMktc6u8jMtnI_Gpg">Oracle 分区表之在线重定义</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ebpMdmozKOR6XZSMKsG2DQ">AutoUpgrade 快速升级 Oracle 数据库</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vLtJ2zH_TnyQxKyVddzMRg">Oracle 数据库巡检命令手册</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0w66O5Ugx-TX7e_trE5ZBQ">Oracle 数据坏块的 N 种修复方式</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/92mBTibjSGNywnwOYIFuqg">数据库 SQL 开发入门教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/UwVlWxEUBE4OEq4a91dyfg">超全 Linux 基础命令总结</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/-gTiGVWFZV0tkw0yZyI2bQ">VMware 虚拟机安装 Linux 系统</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/dHSaDSrUqxFG9E2dMuTmxg">Linux 安装 MySQL 详细教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/KaxEN6qxLDJWb7paOvcffw">教你玩转 SQLPLUS，工作效率提升 200%</a></p>
+</blockquote>
+<hr>
+<p>感谢您的阅读，这里是 <strong>Lucifer三思而后行</strong>，欢迎 <strong>点赞+关注</strong>，我会持续分享数据库知识、运维技巧。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/120070003/">https://pc-study.github.io/csdn-blog/posts/120070003/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/sql/">sql</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/120250579/" title="Linux 配置 Swap 功能"><img class="cover" src="/csdn-blog/img/covers/linux.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Linux 配置 Swap 功能</div></div><div class="info-2"><div class="info-item-1">查看 Swap： 增加 Swap 关闭 Swap： 修改 Swapiness： 本次分享到此结束啦~ 如果觉得文章对你有帮助，点赞、收藏、关注、评论，一键四连支持，你的支持就是我创作最大的动力。 ❤️ 技术 交流可以 关注公众号：Lucifer三思而后行 ❤️</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120236559/" title="Oracle 数据库迁移一键创建源库表空间 SQL语句"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Oracle 数据库迁移一键创建源库表空间 SQL语句</div></div><div class="info-2"><div class="info-item-1">⭐️ 获取需要迁移的用户可以参考：Oracle 数据泵迁移用户创建 SQL语句 首先通过来获取迁移需要的表空间名称： 📢 注意：需要排除 系统 默认创建表空间！ 通过 SQL 获取创建脚本： 📢 注意： 为目标端的数据文件目录路径！ 创建 shell 脚本来后台创建表空间： 以下为 脚本 内容： 编</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/120236191/" title="Oracle 重做日志调整 SQL语句"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-11</div><div class="info-item-2">Oracle 重做日志调整 SQL语句</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库 安装之后，重做日志默认为 3组，如果需要新增删除，可以通过以下方式！ 查询： 新增： 单机数据库： RAC集群数据库： 删除： 📢 注意：如果当前要删除的 logfile 状态不是 ，那么删除会报错，需要执行 来切换日志，直到状态为 才可以删除！ 本次分享到此结束啦~ 如果觉得</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121731916/" title="[译] Oracle Database 19c 中的自动索引 (DBMS_AUTO_INDEX)"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-05</div><div class="info-item-2">[译] Oracle Database 19c 中的自动索引 (DBMS_AUTO_INDEX)</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库 19c 引入了自动索引功能，它可以让您将一些有关索引管理的决策交给数据库。 目录 一、介绍 二、先决条件 三、配置方式 1、检查配置 2、启用/禁用自动索引 3、自动索引的表空间 4、用户级控制 5、其他配置 四、删除二级索引 五、删除自动索引 六、相关视图 一、介绍 自动索引</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122590500/" title="[译] ALTER SYSTEM CANCEL SQL : 在 Oracle Database 18c 的会话中取消 SQL 语句"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-19</div><div class="info-item-2">[译] ALTER SYSTEM CANCEL SQL : 在 Oracle Database 18c 的会话中取消 SQL 语句</div></div><div class="info-2"><div class="info-item-1">原文地址： 原文作者：Tim Hall Oracle Database 18C 引入了 命令，用于取消会话中的 SQL 语句，提供了杀死恶意会话的替代方法。 目录 语法 指定要取消的会话 语法 命令的基本语法如下所示： 如果不加 ，默认代表当前 实例 。如果 不写，则代表是在当前指定会话中运行的 S</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120236014/" title="Oracle 查询表空间使用率 SQL 语句"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-11</div><div class="info-item-2">Oracle 查询表空间使用率 SQL 语句</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库的表空间如果使用超过100%，会导致数据库无法使用，因此需要及时扩展！ 通过 sql 查询 当前数据库所有表空间的使用率： 本次分享到此结束啦~ 如果觉得文章对你有帮助，点赞、收藏、关注、评论，一键四连支持，你的支持就是我创作最大的动力。 ❤️ 技术 交流可以 关注公众号：Luc</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142649873/" title="Oracle 篇：为什么 SQL 要使用绑定变量？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-30</div><div class="info-item-2">Oracle 篇：为什么 SQL 要使用绑定变量？</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 为什么使用绑定变量？ 共享池 硬解析与软解析 查看 SQL 绑定变量的几种方式 首先获取 SQL\ID v$sql\bind\capture 方式 V$SQL 配合 dbms\sqltune.extract\bind</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120285647/" title="Oracle 无效对象查询，编译无效对象"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-14</div><div class="info-item-2">Oracle 无效对象查询，编译无效对象</div></div><div class="info-2"><div class="info-item-1">查看当前无效对象 编译无效对象： 有两种方式： 1、执行sql查询结果： 2、 脚本 编译： 本次分享到此结束啦~ 如果觉得文章对你有帮助，点赞、收藏、关注、评论，一键四连支持，你的支持就是我创作最大的动力。 ❤️ 技术 交流可以 关注公众号：Lucifer三思而后行 ❤️</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9A-%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">📚 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%B4-SQL-%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">🌴 SQL 介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8C%BC-%E4%BB%80%E4%B9%88%E6%98%AF-SQL"><span class="toc-number">3.1.</span> <span class="toc-text">🌼 什么是 SQL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8C%80-SQL-%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="toc-number">3.2.</span> <span class="toc-text">🌀 SQL 的类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8C%B5-%E5%AD%A6%E4%B9%A0-SQL-%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">3.3.</span> <span class="toc-text">🌵 学习 SQL 的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%84-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">3.4.</span> <span class="toc-text">🍄 数据库是什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%90%A5-SQL-%E5%9F%BA%E7%A1%80%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0"><span class="toc-number">4.</span> <span class="toc-text">🐥 SQL 基础语言学习</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%90%A4-CREATE-TABLE-%E2%80%93-%E5%88%9B%E5%BB%BA%E8%A1%A8"><span class="toc-number">4.1.</span> <span class="toc-text">🐤 CREATE TABLE – 创建表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%90%91-INSERT-%E2%80%93-%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">4.2.</span> <span class="toc-text">🐑 INSERT – 插入数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%90%BC-SELECT-%E2%80%93-%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE"><span class="toc-number">4.3.</span> <span class="toc-text">🐼 SELECT – 查询数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%90%AB-DISTINCT-%E2%80%93-%E5%8E%BB%E9%99%A4%E9%87%8D%E5%A4%8D%E5%80%BC"><span class="toc-number">4.4.</span> <span class="toc-text">🐫 DISTINCT – 去除重复值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%90%B8-WHERE-%E2%80%93-%E6%9D%A1%E4%BB%B6%E8%BF%87%E6%BB%A4"><span class="toc-number">4.5.</span> <span class="toc-text">🐸 WHERE – 条件过滤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%90%B9-AND-OR-%E2%80%93-%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">4.6.</span> <span class="toc-text">🐹 AND &amp; OR – 运算符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%90%B0-ORDER-BY-%E2%80%93-%E6%8E%92%E5%BA%8F"><span class="toc-number">4.7.</span> <span class="toc-text">🐰 ORDER BY – 排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%90%B1-UPDATE-%E2%80%93-%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE"><span class="toc-number">4.8.</span> <span class="toc-text">🐱 UPDATE – 更新数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%90%A8-DELETE-%E2%80%93-%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE"><span class="toc-number">4.9.</span> <span class="toc-text">🐨 DELETE – 删除数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%90%B5-TRUNCATE-TABLE-%E2%80%93-%E6%B8%85%E9%99%A4%E8%A1%A8%E6%95%B0%E6%8D%AE"><span class="toc-number">4.10.</span> <span class="toc-text">🐵 TRUNCATE TABLE – 清除表数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%90%AF-DROP-TABLE-%E2%80%93-%E5%88%A0%E9%99%A4%E8%A1%A8"><span class="toc-number">4.11.</span> <span class="toc-text">🐯 DROP TABLE – 删除表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%9A%80-SQL-%E9%AB%98%E7%BA%A7%E8%A8%80%E8%AF%AD%E5%AD%A6%E4%B9%A0"><span class="toc-number">5.</span> <span class="toc-text">🚀 SQL 高级言语学习</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9A%A2-LIKE-%E2%80%93-%E6%9F%A5%E6%89%BE%E7%B1%BB%E4%BC%BC%E5%80%BC"><span class="toc-number">5.1.</span> <span class="toc-text">🚢 LIKE – 查找类似值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9A%A4-IN-%E2%80%93-%E9%94%81%E5%AE%9A%E5%A4%9A%E4%B8%AA%E5%80%BC"><span class="toc-number">5.2.</span> <span class="toc-text">🚤 IN – 锁定多个值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9B%B5%EF%B8%8F-BETWEEN-%E2%80%93-%E9%80%89%E5%8F%96%E5%8C%BA%E9%97%B4%E6%95%B0%E6%8D%AE"><span class="toc-number">5.3.</span> <span class="toc-text">⛵️ BETWEEN – 选取区间数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9A%82-AS-%E2%80%93-%E5%88%AB%E5%90%8D"><span class="toc-number">5.4.</span> <span class="toc-text">🚂 AS – 别名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9A%81-JOIN-%E2%80%93-%E5%A4%9A%E8%A1%A8%E5%85%B3%E8%81%94"><span class="toc-number">5.5.</span> <span class="toc-text">🚁 JOIN – 多表关联</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9A%9C-UNION-%E2%80%93-%E5%90%88%E5%B9%B6%E7%BB%93%E6%9E%9C%E9%9B%86"><span class="toc-number">5.6.</span> <span class="toc-text">🚜 UNION – 合并结果集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9A%8C-NOT-NULL-%E2%80%93-%E9%9D%9E%E7%A9%BA"><span class="toc-number">5.7.</span> <span class="toc-text">🚌 NOT NULL – 非空</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9A%90-VIEW-%E2%80%93-%E8%A7%86%E5%9B%BE"><span class="toc-number">5.8.</span> <span class="toc-text">🚐 VIEW – 视图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8E%AF-SQL-%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0%E5%AD%A6%E4%B9%A0"><span class="toc-number">6.</span> <span class="toc-text">🎯 SQL 常用函数学习</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%94-AVG-%E2%80%93-%E5%B9%B3%E5%9D%87%E5%80%BC"><span class="toc-number">6.1.</span> <span class="toc-text">🍔 AVG – 平均值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%95-COUNT-%E2%80%93-%E6%B1%87%E6%80%BB%E8%A1%8C%E6%95%B0"><span class="toc-number">6.2.</span> <span class="toc-text">🍕 COUNT – 汇总行数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%98-MAX-%E2%80%93-%E6%9C%80%E5%A4%A7%E5%80%BC"><span class="toc-number">6.3.</span> <span class="toc-text">🍘 MAX – 最大值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%A2-MIN-%E2%80%93-%E6%9C%80%E5%B0%8F%E5%80%BC"><span class="toc-number">6.4.</span> <span class="toc-text">🍢 MIN – 最小值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%B0-SUM-%E2%80%93-%E6%B1%82%E5%92%8C"><span class="toc-number">6.5.</span> <span class="toc-text">🍰 SUM – 求和</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%AA-GROUP-BY-%E2%80%93-%E5%88%86%E7%BB%84"><span class="toc-number">6.6.</span> <span class="toc-text">🍪 GROUP BY – 分组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%AD-HAVING-%E2%80%93-%E5%8F%A5%E5%B0%BE%E8%BF%9E%E6%8E%A5"><span class="toc-number">6.7.</span> <span class="toc-text">🍭 HAVING – 句尾连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%B7-UCASE-UPPER-%E2%80%93-%E5%A4%A7%E5%86%99"><span class="toc-number">6.8.</span> <span class="toc-text">🍷 UCASE&#x2F;UPPER – 大写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%B6-LCASE-LOWER-%E2%80%93-%E5%B0%8F%E5%86%99"><span class="toc-number">6.9.</span> <span class="toc-text">🍶 LCASE&#x2F;LOWER – 小写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%91%9B-LEN-LENGTH-%E2%80%93-%E8%8E%B7%E5%8F%96%E9%95%BF%E5%BA%A6"><span class="toc-number">6.10.</span> <span class="toc-text">👛 LEN&#x2F;LENGTH – 获取长度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%97-ROUND-%E2%80%93-%E6%95%B0%E5%80%BC%E5%8F%96%E8%88%8D"><span class="toc-number">6.11.</span> <span class="toc-text">🍗 ROUND – 数值取舍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8D%9E-NOW-SYSDATE-%E2%80%93-%E5%BD%93%E5%89%8D%E6%97%B6%E9%97%B4"><span class="toc-number">6.12.</span> <span class="toc-text">🍞 NOW&#x2F;SYSDATE – 当前时间</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8D%BA-%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">7.</span> <span class="toc-text">🍺 写在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%80%E6%9C%9F%E7%B2%BE%E5%BD%A9%E6%96%87%E7%AB%A0%E6%8E%A8%E8%8D%90"><span class="toc-number">8.</span> <span class="toc-text">往期精彩文章推荐</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>深入解析分布式数据库TiDB：原理、优化与架构实践 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="前言 在云计算与大数据时代，传统单机数据库面临三大挑战：海量数据存储、高并发访问和实时分析需求。MySQL 分库分表方案复杂、NoSQL 缺乏 ACID 支持、MPP 数仓难以处理 OLTP… 在这样的背景下，TiDB 应运而生。作为一款开源的分布式 NewSQL 数据库，TiDB 完美融合了关系型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入解析分布式数据库TiDB：原理、优化与架构实践">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/148073832/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="前言 在云计算与大数据时代，传统单机数据库面临三大挑战：海量数据存储、高并发访问和实时分析需求。MySQL 分库分表方案复杂、NoSQL 缺乏 ACID 支持、MPP 数仓难以处理 OLTP… 在这样的背景下，TiDB 应运而生。作为一款开源的分布式 NewSQL 数据库，TiDB 完美融合了关系型">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/166270ad3c26940545adb4abe6d5e8a6.webp">
+<meta property="article:published_time" content="2025-05-19T12:44:31.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.226Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="tidb">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/166270ad3c26940545adb4abe6d5e8a6.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"深入解析分布式数据库TiDB：原理、优化与架构实践","url":"https://pc-study.github.io/csdn-blog/posts/148073832/","image":"https://pc-study.github.io/csdn-blog/images/166270ad3c26940545adb4abe6d5e8a6.webp","datePublished":"2025-05-19T12:44:31.000Z","dateModified":"2026-03-20T12:25:39.226Z","description":"前言 在云计算与大数据时代，传统单机数据库面临三大挑战：海量数据存储、高并发访问和实时分析需求。MySQL 分库分表方案复杂、NoSQL 缺乏 ACID 支持、MPP 数仓难以处理 OLTP… 在这样的背景下，TiDB 应运而生。作为一款开源的分布式 NewSQL 数据库，TiDB 完美融合了关系型","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/148073832/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/148073832/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '深入解析分布式数据库TiDB：原理、优化与架构实践',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/166270ad3c26940545adb4abe6d5e8a6.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">深入解析分布式数据库TiDB：原理、优化与架构实践</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">深入解析分布式数据库TiDB：原理、优化与架构实践<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-05-19-148073832.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-19T12:44:31.000Z" title="发表于 2025-05-19 20:44:31">2025-05-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.226Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在云计算与大数据时代，传统单机数据库面临三大挑战：海量数据存储、高并发访问和实时分析需求。MySQL 分库分表方案复杂、NoSQL 缺乏 ACID 支持、MPP 数仓难以处理 OLTP… 在这样的背景下，TiDB 应运而生。作为一款开源的分布式 NewSQL 数据库，TiDB 完美融合了关系型数据库与 NoSQL 的最佳特性。</p>
+<h2 id="核心内容架构"><a href="#核心内容架构" class="headerlink" title="核心内容架构"></a>核心内容架构</h2><h3 id="一、分布式数据库运行原理深度剖析"><a href="#一、分布式数据库运行原理深度剖析" class="headerlink" title="一、分布式数据库运行原理深度剖析"></a>一、分布式数据库运行原理深度剖析</h3><p><strong>1. TiDB架构全景图</strong></p>
+<ul>
+<li><strong>TiDB Server</strong>：无状态SQL层，负责SQL解析、分布式执行计划生成，支持MySQL协议</li>
+<li><strong>TiKV</strong>：基于Raft的分布式KV存储引擎，实现数据强一致性与水平扩展</li>
+<li><strong>PD集群</strong>：全局元数据管理大脑，负责TSO分配、负载均衡调度</li>
+<li><strong>TiFlash</strong>：列存引擎支持实时HTAP，通过异步复制与智能路由实现OLAP加速</li>
+</ul>
+<p><strong>2. 关键技术解密</strong></p>
+<ul>
+<li><strong>Raft协议</strong>：Multi-Raft机制实现Region级数据分片与故障自愈</li>
+<li><strong>分布式事务</strong>：Percolator模型保障跨节点ACID，采用乐观锁与两阶段提交</li>
+<li><strong>MVCC机制</strong>：混合逻辑时钟（HLC）实现多版本并发控制</li>
+<li><strong>Coprocessor</strong>：计算下推技术减少网络传输，提升复杂查询性能</li>
+</ul>
+<h3 id="二、性能优化实战方法论"><a href="#二、性能优化实战方法论" class="headerlink" title="二、性能优化实战方法论"></a>二、性能优化实战方法论</h3><p><strong>1. 表结构设计黄金法则</strong></p>
+<ul>
+<li>聚簇索引表 vs 非聚簇索引表：写入热点与查询性能的平衡艺术</li>
+<li>热点问题解决方案：<ul>
+<li>预分裂Region配合SHARD_ROW_ID_BITS分散写入</li>
+<li>时间序列数据采用AUTO_RANDOM主键设计</li>
+<li>利用PD监控面板定位Region读写压力</li>
+</ul>
+</li>
+</ul>
+<p><strong>2. SQL优化四步法</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-comment">-- 示例：索引合并优化</span><br><span class="hljs-keyword">EXPLAIN</span> <span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> orders <br><span class="hljs-keyword">WHERE</span> customer_id=<span class="hljs-number">1001</span> <span class="hljs-keyword">AND</span> order_date&gt;<span class="hljs-string">&#x27;2023-01-01&#x27;</span>; <br><span class="hljs-comment">/* 使用INDEX_MERGE(cust_idx, date_idx) */</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>执行计划解读</strong>：识别TableReader、IndexLookUp、HashJoin等关键算子</li>
+<li><strong>统计信息管理</strong>：动态采集+手动补全，解决数据倾斜导致的估算偏差</li>
+<li><strong>执行计划绑定</strong>：通过SQL Binding固化最优执行路径</li>
+</ul>
+<p><strong>3. 系统级调优关键指标</strong></p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>核心监控项</th>
+<th>优化方向</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TiKV</td>
+<td><code>grpc_avg</code> &gt; 50ms</td>
+<td>调整<code>raftstore.apply-pool-size</code></td>
+</tr>
+<tr>
+<td>PD</td>
+<td><code>region_heartbeat</code>延迟</td>
+<td>提升<code>region-schedule-limit</code></td>
+</tr>
+<tr>
+<td>TiDB</td>
+<td><code>expensive_query</code>告警</td>
+<td>优化<code>tidb_mem_quota_query</code>配置</td>
+</tr>
+</tbody></table>
+<h3 id="三、高可用架构设计指南"><a href="#三、高可用架构设计指南" class="headerlink" title="三、高可用架构设计指南"></a>三、高可用架构设计指南</h3><p><strong>1. 多中心部署模式对比</strong></p>
+<ul>
+<li><strong>同城三中心</strong>：Raft 5副本+Label调度，容忍单数据中心故障</li>
+<li><strong>两地三中心</strong>：异步复制+同步集群，实现跨地域容灾</li>
+<li><strong>混合云架构</strong>：TiCDC实现跨云实时同步，支持多云容灾</li>
+</ul>
+<p><strong>2. HTAP场景实践</strong></p>
+<p>异步复制</p>
+<p>智能路由</p>
+<p>OLTP事务</p>
+<p>行存TiKV</p>
+<p>OLAP分析</p>
+<p>列存TiFlash</p>
+<p>Optimizer</p>
+<p>TiKV&#x2F;TiFlash</p>
+<ul>
+<li><strong>列存加速</strong>：TiFlash通过DeltaTree引擎实现实时数据同步</li>
+<li><strong>MPP计算</strong>：利用<code>tidb_enforce_mpp</code>强制分布式并行执行</li>
+<li><strong>资源隔离</strong>：通过Resource Control限制OLAP查询资源占用</li>
+</ul>
+<p><strong>3. Serverless演进之路</strong></p>
+<ul>
+<li>动态资源池化：按负载自动扩缩计算节点</li>
+<li>存储自动分层：热数据存TiKV，冷数据归档至对象存储</li>
+<li>成本优化：基于请求单元（RU）的精细化计费模型</li>
+</ul>
+<h3 id="作者寄语"><a href="#作者寄语" class="headerlink" title="作者寄语"></a>作者寄语</h3><p>本书由 TiDB 数据库原厂课程开发者撰写，兼具权威性与系统性。内容覆盖分布式数据库核心原理、SQL 与系统级优化方法论，以及高可用架构设计实战，结合大量图表与真实案例，助力读者跨越分布式数据库学习门槛。无论是开发者、DBA 还是架构师，都能从中获得深度技术洞见。<br> <img src="/csdn-blog/images/166270ad3c26940545adb4abe6d5e8a6.webp" alt="深入解析分布式数据库TiDB：原理、优化与架构实践" loading='lazy'><br> “理解分布式数据库的本质在于把握数据分布与一致性的平衡。本书通过200+原理示意图与30+真实生产案例，帮助读者建立从理论到实践的完整知识图谱。记住：优秀的架构设计始于对原理的深刻认知，终于对场景的精准把控。”</p>
+<blockquote>
+<p><strong>延伸学习</strong>：配套官方课程【TiDB数据库管理303】与在线沙箱环境，助力读者边学边练。访问 <a target="_blank" rel="noopener" href="https://docs.pingcap.com/zh/">TiDB官方文档</a> 获取最新技术动态。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/148073832/">https://pc-study.github.io/csdn-blog/posts/148073832/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a><a class="post-meta__tags" href="/csdn-blog/tags/tidb/">tidb</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/148157721/" title="DeepSeek使用秘笈！从入门到精通的100个实用技巧"><img class="cover" src="/csdn-blog/img/covers/bigdata.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">DeepSeek使用秘笈！从入门到精通的100个实用技巧</div></div><div class="info-2"><div class="info-item-1">为什么别人使用DeepSeek的效果惊艳无比，而你自己获得的答案总是不尽如人意？如果真是如此，可能你需要认真思考，自己是不是真的会使用DeepSeek。 《DeepSeek使用秘笈：从入门到精通的100个实用技巧》能指引你充分挖掘DeepSeek潜能、正确掌握DeepSeek使用方法、快速获得Dee</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148073561/" title="人工智能时代，还需要学编程吗？"><img class="cover" src="/csdn-blog/images/42ef5c3f92700c6359c862f22345013c.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">人工智能时代，还需要学编程吗？</div></div><div class="info-2"><div class="info-item-1">DeepSeek的大爆发，貌似更是让程序员的失业危机近在咫尺。AI工具的崛起，的确对传统编程岗位产生了冲击，尤其是那些重复性、规律性强的基础编程工作。但程序员的工作并非仅有这些，还包括大量的创造性劳动。在解决复杂任务的过程中，程序员往往要根据实际需求对算法和程序进行优化。在很多现实场景中，AI确实能</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/154742413/" title="TiDB 备份与恢复整理"><img class="cover" src="/csdn-blog/images/2bb46896f408fb2cfc9f840ddc5a80ee.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-12</div><div class="info-item-2">TiDB 备份与恢复整理</div></div><div class="info-2"><div class="info-item-1">目录 前言 备份方案 如何备份数据？ 如何管理备份数据？ 如何选择备份存储？ 如何恢复数据？ TiDB 快照备份 备份流程 恢复流程 备份文件 - 文件类型 备份文件目录结构 日志备份 PITR 日志备份文件 部署和使用 BR 通过命令行工具（推荐） 通过 SQL 语句 在 Kubernetes 环</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-22</div><div class="info-item-2">Oracle 直连 TiDB 可行吗？</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习数据库路上的知识和经验。 目录 前言 环境信息 Oracle 端配置 透明网关检查 安装 unixODBC 安装 MySQL ODBC 驱动 配置 ODBC 数据源 验证 ODBC 连通性 配置 Oracle TNS 配置透明网关参数 配置监听 验证</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/154742402/" title="使用 BR 备份 TiDB 到 AWS S3 存储"><img class="cover" src="/csdn-blog/images/183733a36b20d5647e661181d13ede9d.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-12</div><div class="info-item-2">使用 BR 备份 TiDB 到 AWS S3 存储</div></div><div class="info-2"><div class="info-item-1">目录 前言 BR 工具 如何备份数据？ - 快照备份 日志备份 如何选择备份存储？ BR 安装配置 BR 备份部署 日志备份脚本 快照备份脚本 问题总结 网络限制 S3 权限 日志备份重复运行 快照备份中断 写在最后 前言 手里有几套 TiDB 集群数据库没有备份，一直在裸奔，几个备份厂商（爱数，N</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119484697/" title="产品体验官：Tapdata Cloud &amp;&amp; Oracle 数据库实时同步（详细版）"><img class="cover" src="/csdn-blog/images/dcf23a84d76bc8d2a90f438f5b10b349.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-30</div><div class="info-item-2">产品体验官：Tapdata Cloud &amp;&amp; Oracle 数据库实时同步（详细版）</div></div><div class="info-2"><div class="info-item-1">Tapdata 数据同步 🌲 前言 ☀️ 环境准备 💻 Linux 环境部署 - 1、添加 Vagrant box 2、初始化启动 Linux 主机 3、Vagrant 连接主机 🌩 Tapdata Agent 本地部署 - 1、安装 Java 环境 2、下载 Tapdata Agent 并部署 3</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139177554/" title="RedHat 7.9 一键安装 Oracle 12CR2 RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">RedHat 7.9 一键安装 Oracle 12CR2 RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 RedHat 7.9 一键安装 Oracle 12CR2 RAC（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121886633/" title="[译] 多租户：Oracle Database 19c 中的 DBCA PDB 远程克隆"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-12</div><div class="info-item-2">[译] 多租户：Oracle Database 19c 中的 DBCA PDB 远程克隆</div></div><div class="info-2"><div class="info-item-1">Oracle Database 12c 第 2 版 (12.2) 引入了使用该 命令执行远程可插拔数据库 (PDB) 热克隆的功能。在 Oracle 19c 中，可以使用数据库配置助手 (DBCA) 执行可插拔数据库 (PDB) 的远程克隆。 一、先决条件 连接到远程 CDB 并准备克隆： 在远程数</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%86%85%E5%AE%B9%E6%9E%B6%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">核心内容架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86%E6%B7%B1%E5%BA%A6%E5%89%96%E6%9E%90"><span class="toc-number">2.1.</span> <span class="toc-text">一、分布式数据库运行原理深度剖析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98%E6%96%B9%E6%B3%95%E8%AE%BA"><span class="toc-number">2.2.</span> <span class="toc-text">二、性能优化实战方法论</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%8C%87%E5%8D%97"><span class="toc-number">2.3.</span> <span class="toc-text">三、高可用架构设计指南</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E8%80%85%E5%AF%84%E8%AF%AD"><span class="toc-number">2.4.</span> <span class="toc-text">作者寄语</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

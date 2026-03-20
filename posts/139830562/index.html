@@ -1,0 +1,389 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>❓关于Oracle一键安装脚本的 21 个疑问与解答 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="文章目录 前言 疑问和解答 前言 Oracle 一键安装脚本从问世至今已经有 2 年多了，从最开始第一代开源版本到如今发展到第五代版本，虽然从第二代版本就开始闭源了。 很多人会问为什么一开始开源的，后来突然闭源了？ 这个就要从当初开源的初衷来说起了，首先就是为了让大家知道有这么个脚本，其次是让大家参">
+<meta property="og:type" content="article">
+<meta property="og:title" content="❓关于Oracle一键安装脚本的 21 个疑问与解答">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/139830562/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="文章目录 前言 疑问和解答 前言 Oracle 一键安装脚本从问世至今已经有 2 年多了，从最开始第一代开源版本到如今发展到第五代版本，虽然从第二代版本就开始闭源了。 很多人会问为什么一开始开源的，后来突然闭源了？ 这个就要从当初开源的初衷来说起了，首先就是为了让大家知道有这么个脚本，其次是让大家参">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/oracle.svg">
+<meta property="article:published_time" content="2024-06-20T05:48:56.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.406Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/oracle.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"❓关于Oracle一键安装脚本的 21 个疑问与解答","url":"https://pc-study.github.io/csdn-blog/posts/139830562/","image":"https://pc-study.github.io/csdn-blog/img/covers/oracle.svg","datePublished":"2024-06-20T05:48:56.000Z","dateModified":"2026-03-20T08:34:08.406Z","description":"文章目录 前言 疑问和解答 前言 Oracle 一键安装脚本从问世至今已经有 2 年多了，从最开始第一代开源版本到如今发展到第五代版本，虽然从第二代版本就开始闭源了。 很多人会问为什么一开始开源的，后来突然闭源了？ 这个就要从当初开源的初衷来说起了，首先就是为了让大家知道有这么个脚本，其次是让大家参","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/139830562/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/139830562/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '❓关于Oracle一键安装脚本的 21 个疑问与解答',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/oracle.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">❓关于Oracle一键安装脚本的 21 个疑问与解答</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">❓关于Oracle一键安装脚本的 21 个疑问与解答<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-06-20-139830562.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-06-20T05:48:56.000Z" title="发表于 2024-06-20 13:48:56">2024-06-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.406Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/">Oracle 数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><h4 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h4><ul>
+<li><a href="#_1">前言</a></li>
+<li><a href="#_18">疑问和解答</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Oracle 一键安装脚本从问世至今已经有 2 年多了，从最开始第一代<strong>开源版本</strong>到如今发展到<strong>第五代版本</strong>，虽然从第二代版本就开始闭源了。</p>
+<p><strong>很多人会问为什么一开始开源的，后来突然闭源了？</strong></p>
+<p>这个就要从当初开源的初衷来说起了，首先就是为了让大家知道有这么个脚本，其次是让大家参与其中进行测试与改善，便于更好的完善脚本。方便大家简单快捷的安装 Oracle 数据库，减少繁杂重复的劳动工作，并保持数据库安装的正规性和生产化。</p>
+<p>但是在开源的过程中遇到了一些很不美好的事情（<strong>闭源原因</strong>）：</p>
+<ul>
+<li>有些朋友遇到问题，完全不主动去思考如何解决，只会一味地带着错误来咨询；</li>
+<li>有些素质比较低的还会恶语相加，甚至骂人，以命令的语气要求帮他解决问题；</li>
+<li>一些网站和文章直接抄袭脚本，或者原封不动的复制引流；</li>
+<li>解决的大部分问题都并非脚本本身问题，对脚本完善没有可取之处，浪费时间；</li>
+</ul>
+<p>这个脚本从一开始只有作者一个人编写测试，精力有限；以上都不是我开源之初能预想到的问题，导致作者精神疲惫，所以决定闭源，不再分享。正式闭源了近半年的时间，有了更多的时间去测试和完善脚本，每次成功解决问题都是一件很有成就感的事。</p>
+<p>后来跟朋友聊天时，他表示你有这么好的安装脚本，你自己一个人用不觉得可惜吗？我跟他说了之前开源的情况后，他建议我可以尝试付费订阅的方式，也不需要太贵，就订一个入门价，大家都能接受的程度。这样你既能有些小收入，也能排除掉部分白嫖和零基础的人，让你有动力去继续推动完善这个脚本。经过与墨天轮教务组磨合后，于是就在墨天轮开设了一门课程：<strong><a target="_blank" rel="noopener" href="https://www.modb.pro/course/148">Oracle 数据库一键安装脚本</a></strong>，脚本也确实在向更好的方向运行，随着订阅人数的增多，各种需求的浮现，脚本功能却越来越完善，适配操作系统也越来越多，目前已经非常成熟。需要详细了解可以参考：<strong><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1773583263184031744">Oracle 一键安装脚本实操合集，持续更新中！！！</a></strong>。</p>
+<h2 id="疑问和解答"><a href="#疑问和解答" class="headerlink" title="疑问和解答"></a>疑问和解答</h2><p><strong>1、一键安装脚本是一个还是很多个脚本？我需要购买一次还是很多个脚本多次购买？需要多少钱？</strong></p>
+<p>答：<strong>只需要购买一次，永久维护更新</strong>，福利价一次订阅花费 <code>99</code> 元，<strong>需要订阅请添加好友：<code>Lucifer-0622</code></strong>，只需要一个脚本文件：<code>OracleShellInstall</code> 即可，大概有 <strong>5000</strong> 多行代码，所有安装场景都用同一个脚本来实现，一网打尽，这就是强大之处（<strong>ps：嫌贵可以别往下看了，不议价，不浪费双方时间，我们不合适</strong>）。</p>
+<p><strong>2、我看墨天轮有个课程，订阅后可以访问课程吗？</strong></p>
+<p>答：可以的，订阅之后可根据付款凭证找客服（<code>enmoedu03</code>）开通课程访问权限。</p>
+<p><strong>3、脚本订阅后如何下载？是否每次更新都需要向作者索要？</strong></p>
+<p>答：脚本目前是托管在 Github 平台的私有项目组中，为了方便作者及时更新和排错，也方便订阅用户随时下载和使用。唯一的要求就是需要订阅用户提供自己的 Github 用户名或者注册邮箱，方便作者为用户进行项目授权访问。</p>
+<p><strong>4、脚本是加密的吗？还是公开源码？</strong></p>
+<p>答：目前脚本是公开源码的，为了方便大家进行学习和排错，脚本目前没有加密的打算，公开所有源码。</p>
+<p><strong>5、脚本支持试用吗？如果脚本使用遇到问题，可以退款吗？</strong></p>
+<p>答：由于订阅后，脚本是公开源码的，不加密，所以不支持试用，更不可能支持退款。如果说使用遇到点问题就要求退款，这里不是PDD，建议别来沾边，谢谢。</p>
+<p><strong>6、脚本订阅后，是否支持售后？遇到问题如何解决呢？</strong></p>
+<p>答：支持售后，也可以帮忙解决问题。但是有一些前提条件：</p>
+<ul>
+<li>1、阅读与了解脚本使用说明</li>
+<li>2、阅读与了解参数使用说明</li>
+<li>3、阅读与了解课程或者脚本实操合集</li>
+<li>4、提供完整的安装日志（脚本会自动生成），<strong>直接提供一个报错截图的一律无视，谁也不能看着个截图就能排错。</strong></li>
+</ul>
+<p>以上条件是为了减少排错时间成本以及方便用户快速使用脚本，<strong>什么都不看就问几十个问题的</strong>，恕我无能为力吧！</p>
+<p><strong>7、如果需要远程排错或者安装部署，作者支持远程服务吗？</strong></p>
+<p>答：支持，但不免费，毕竟需要时间成本，具体按照问题难易程度。</p>
+<p><strong>8、脚本是如何安装不同的数据库的？比如数据库实例名，字符集，密码这些如何指定的？需要打开脚本编辑吗？</strong></p>
+<p>答：不需要编辑脚本文件，脚本目前设置了非常丰富的参数可供使用，只需要在运行脚本时指定参数的值即可，例如你说的数据库实例名，字符集，密码，可以按照以下方式进行指定：</p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs autohotkey">./OracleShellInstall -lf ens33 `# 主机网卡名称`\<br>-o lucifer `# 数据库名称`\<br>-ds AL32UTF8 `# 数据库字符集`\<br>-ns AL16UTF16 `# 国家字符集`\<br>-dp &#x27;Passw0rd#PST&#x27; `# sys/system 用户密码`\<br></code></pre></td></tr></table></figure>
+
+<p>通过修改以上参数的值，就可以安装不同的数据库，简单便捷，更多参数可以通过脚本内置的 <strong>help</strong> 命令来查看：<code>./OracleShellInstall -h</code>。</p>
+<p><strong>9、脚本支持哪些数据库版本安装？</strong></p>
+<p>答：目前脚本支持主流数据库版本：<code>11GR2</code>，<code>12CR2</code>，<code>19C</code>，<code>21C</code>，未来会适配 <code>23ai</code>，前提是等官方的本地安装包开放下载之后，安装时选择界面如下：</p>
+<figure class="highlight nestedtext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs nestedtext"><span class="hljs-attribute">请选择数据库版本 [11/12/19/21]</span><span class="hljs-punctuation"> :</span> <span class="hljs-string">11</span><br><br><span class="hljs-attribute">数据库版本</span><span class="hljs-punctuation">:</span> <span class="hljs-string">    11</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>10、听说脚本支持 RAC，还有哪些架构？目前 RAC 支持几个节点部署？</strong></p>
+<p>答：目前脚本支持 Oracle 数据库安装的常用三种架构：<code>单机</code>，<code>单机 ASM</code> 和 <code>RAC</code>。RAC 架构目前脚本已经实现不限制节点数量部署，目前作者测试过 5 节点部署，完全没有问题，理论上支持 N 个节点部署，安装时选择界面如下：</p>
+<figure class="highlight nestedtext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs nestedtext"><span class="hljs-attribute">请选择安装模式 [单机(si)/单机ASM(sa)/集群(rac)]</span><span class="hljs-punctuation"> :</span> <span class="hljs-string">si</span><br><br><span class="hljs-attribute">数据库安装模式</span><span class="hljs-punctuation">:</span> <span class="hljs-string">single</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>11、RAC 架构下，支持 GI 和 DB 不同版本吗？比如 19C Grid，11G DB 的情况。</strong></p>
+<p>答：支持，目前脚本已经支持 GI 和 DB 版本不同的部署场景，只需要指定参数 <code>-giv 19</code> 即可安装 19C 的 Grid，在安装时选择 11GR2 DB，已测试通过，完全没有问题的。</p>
+<p><strong>12、脚本支持安装一次创建多个数据库实例吗？</strong></p>
+<p>答：支持，在主机内存和硬盘能 cover 的住的情况下，支持一次创建 N 个数据库实例，只需要指定参数 <code>-o lucifer,lucifer1,lucifer2</code> 即可一次性创建 3 个数据库实例，资源平分。</p>
+<p><strong>13、听说脚本支持自动打补丁，是真的吗？支持安装哪些补丁？</strong></p>
+<p>答：是的，安装补丁本身就是脚本的一大亮点，支持在安装过程中自动打补丁，目前支持 Grid PSU&#x2F;RU 补丁、Oracle PSU&#x2F;RU 补丁以及 OJVM 补丁，这也是 Oracle 数据库安装最常用的 3 中补丁。脚本在安装时是否安装补丁是通过三个参数来进行控制：<code>gpa</code>，<code>opa</code>，<code>jpa</code>，通过给参数指定不同的补丁号来安装对应的补丁，例如：</p>
+<ul>
+<li><code>-gpa 35685688</code></li>
+<li><code>-opa 35574075</code></li>
+<li><code>-jpa 35685663</code></li>
+</ul>
+<p>如果零基础不了解每个补丁的含义的，可以百度或者使用以下暴力无脑方式来判断：</p>
+<ul>
+<li>1、p6880开头的，这是 OPatch 补丁，不需要指定</li>
+<li>2、最小的是 OJVM 补丁，指定 -jpa</li>
+<li>3、最大的是 Grid 补丁，指定 -gpa</li>
+<li>4、不大不小居中的是 Oracle 补丁，指定 -opa</li>
+</ul>
+<p><strong>14、脚本目前支持哪些操作系统，国产化系统支持吗？支持 AIX，HPUnix 吗？</strong></p>
+<p>答：市面上 90% 的主流操作系统都支持，可以参考目前脚本已支持操作系统（已安装验证）：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developers.redhat.com/products/rhel/download">RedHat 6&#x2F;7&#x2F;8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://yum.oracle.com/oracle-linux-isos.html">OracleLinux 6&#x2F;7&#x2F;8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/centos/">Centos 6&#x2F;7&#x2F;8 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://rockylinux.org/download">Rocky Linux 8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://almalinux.org/get-almalinux">AlmaLinux 8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.suse.com/download/sles/">SUSE 12&#x2F;15 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/openeuler/">华为欧拉 openEuler 20~24 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://tools.mindspore.cn/productrepo/iso/euleros/x86_64/">华为欧拉 EulerOS V2 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://openanolis.cn/download">阿里龙蜥 openAnolis 7&#x2F;8 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://sx.ygwid.cn:4431/">银河麒麟 Kylin V10 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://sx.ygwid.cn:4431/">中标麒麟 NeoKylin V7 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://cdimage-download.chinauos.com/">统信 UOS V20 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.h3c.com/cn/Service/Document_Software/Software_Download/Server/Catalog/system/system/NingOS/">NingOS</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.opencloudos.tech/ospages/downloadISO">OpenCloudOS 7&#x2F;8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/debian-cd/">Debian 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/deepin-cd/">Deepin 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/">Ubuntu 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/">ArchLinux</a></li>
+<li><a target="_blank" rel="noopener" href="https://fedoraproject.org/zh-Hans/server/download/">Fedora 13~39 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://bbs.chinaredflag.cn/?download2.htm">红旗 asianux</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.nfschina.com/index.php?catid=24">中科方德</a></li>
+</ul>
+<p>目前还不支持 AIX 和 HPUnix，不是一个系列的。</p>
+<p><strong>15、现在 Oracle 已经支持 ARM 了，脚本支持吗？</strong></p>
+<p>答：目前脚本已经有适配的 ARM 安装逻辑，但是目前没有 ARM 的环境进行测试，有兴趣的同学可以尝试。</p>
+<p><strong>16、如果有新的操作系统需要适配，作者会支持适配吗？</strong></p>
+<p>答：可以适配，但是需要一些前提条件，需要提供以下信息：</p>
+<ul>
+<li>安装好操作系统或者提供安装镜像</li>
+<li>操作系统包管理类型：deb 还是 rpm？</li>
+<li>操作系统架构：amd 还是 aarch</li>
+<li>是否存在 <code>/etc/os-release</code> 文件，有的话请提供内容</li>
+<li>执行 <code>ldd --version</code>，提供输出信息</li>
+<li>提供软件源配置方式，如不知道可不提供</li>
+</ul>
+<p><strong>17、很多 Oracle 数据库都是在内网环境下安装部署，脚本是否支持无网或者内网环境部署？如何内网部署？</strong></p>
+<p>答：必须支持，脚本在编写之初就是为了在内网环境下安装部署 Oracle，完全是为了适配生产环境部署所写，所以无需担心内网部署的问题。</p>
+<p>其实很多时候 Oracle 安装过程中只有在本地软件源不够全的情况下，安装依赖包时需要用到网络去安装，所以只需要保证内网环境下的软件源够全，就完全不需要连接外部网络，只需要挂载最全的 ISO 安装镜像，然后让脚本去自动配置本地软件源即可。</p>
+<p>如果你有内网软件源并已经在主机层面配置好，那就更简单了，你都可以不需要挂载 ISO 安装镜像，直接设置参数 <code>-lrp N</code>，脚本就不会去配置软件源了。</p>
+<p><strong>18、脚本在使用之前需要准备哪些条件？</strong></p>
+<p>答：相对手工安装 Oracle 来说，需要准备的条件其实少之又少，能通过脚本来完成的事情基本不需要人为来操作，大概内容如下：</p>
+<ul>
+<li>1、安装操作系统</li>
+<li>2、配置网络</li>
+<li>3、挂载本地 ISO 镜像源</li>
+<li>4、上传软件安装包（安装基础包，补丁包）</li>
+<li>5、上传一键安装脚本：OracleShellInstall</li>
+</ul>
+<p>更详细的需要根据架构分情况来讲解，都已经在脚本使用说明里写了。</p>
+<p><strong>19、想了解下，脚本在安装过程中大概有哪些步骤，可以简单描述下吗？</strong></p>
+<p>答：脚本在长达 2 年的开发和磨合下，已经非常成熟，可以说是涵盖了官方文档以及大多数生产环境部署文档的正规步骤：</p>
+<ul>
+<li>配置操作系统（关闭防火墙，关闭selinux，关闭 nsyctl，关闭Avahi-daemon，关闭RemoveIPC，关闭透明大页，关闭numa，配置Swap，配置环境变量，配置系统参数，配置用户限制 limit，配置shm目录，配置主机名和&#x2F;etc&#x2F;hosts，创建用户和组，创建安装目录与赋权，配置软件源，安装依赖包，配置多路径，配置ASM磁盘，配置大页内存等等）</li>
+<li>解压 Oracle 软件包，补丁包</li>
+<li>安装 Grid 和 Oracle 软件（Grid PSU&#x2F;RU 补丁安装，Oracle PSU&#x2F;RU 补丁安装，OJVM 补丁安装）</li>
+<li>创建 ASM 磁盘</li>
+<li>创建监听和数据库</li>
+<li>安装后优化数据库（生产环境参数最佳实践优化，增加复用重做日志组，控制文件复用，RMAN 优化，SQLNET 优化，Glogin优化，备份脚本部署，归档删除脚本部署，配置OMF，数据库开机自启配置等等）</li>
+</ul>
+<p><strong>20、脚本支持单独配置操作系统吗？只安装到 Grid 结束？只安装到 Oracle 结束？</strong></p>
+<p>答：支持，脚本通过 3 个参数来控制安装到哪一步：</p>
+<ul>
+<li><code>-m Y</code>：只配置操作系统以及解压 Oracle 安装包</li>
+<li><code>-ug Y</code>：只安装到 Grid 并打完补丁结束</li>
+<li><code>-ud Y</code>：只安装到 Oracle 并打完补丁结束</li>
+</ul>
+<p>以上每个参数都有适用的场景：</p>
+<ul>
+<li>只配置操作系统适用于图形化安装截图写文档</li>
+<li>只安装到 Grid，适用于 Grid 测试</li>
+<li>只安装到 Oracle，适用于 DataGuard 等同步软件搭建</li>
+</ul>
+<p>更多场景等待大家发现和灵活使用。</p>
+<p><strong>21、脚本支持一键搭建 DataGuard 吗？后面会考虑增加这个功能吗？</strong></p>
+<p>答：不支持，以后也没打算支持，涉及到与生产库的对接，使用脚本有一定的风险性，而且搭建 DG 是比较简单的工作，无需要使用脚本来实现，所以不打算花费时间来适配，有需要可以订阅 100 天实战，学习里面如何使用安装脚本来快速准备环境并搭建 DG：<strong><a target="_blank" rel="noopener" href="https://www.modb.pro/course/142">100天精通Oracle 实战系列</a></strong></p>
+<ul>
+<li>（第41天）DataGuard 搭建之使用 RMAN 备份</li>
+<li>（第42天）DataGuard 搭建之使用 Duplicate 复制</li>
+<li>（第43天）DataGuard 搭建之使用 DBCA 创建</li>
+<li>（第44天）DataGuard 搭建之 RAC 到单机</li>
+<li>（第45天）DataGuard 搭建之 RAC 到 RAC</li>
+<li>（第46天）DataGuard GAP 快速修复</li>
+<li>（第47天）DataGuard 玩转 DG Broker</li>
+<li>（第48天）DataGuard SwitchOver&#x2F;FailOver 切换</li>
+<li>（第49天）DataGuard 执行 RMAN 备份以及恢复演练</li>
+<li>（第50天）DataGuard 运维常用小技巧</li>
+</ul>
+<p>以上属于夹带私货，不需要可跳过。</p>
+<p>针对 Oracle 安装脚本的疑问，暂时先解惑这么多，<strong>有其他的问题可以在评论区回复！！！</strong></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/139830562/">https://pc-study.github.io/csdn-blog/posts/139830562/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/139899232/" title="统信 UOS V20 1001(c) 一键安装 Oracle 21C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">统信 UOS V20 1001(c) 一键安装 Oracle 21C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 统信 UOS V20 1001© 一键安装 Oracle 21C 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安装</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139778523/" title="Ubuntu 22.04 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/linux.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Ubuntu 22.04 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示华为 Ubuntu 22.04 一键安装 Oracle 19C 单机版过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、上传软件安装包（安装基础包，补丁包） 4</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/143719232/" title="SQLark：高效、便捷的数据生成利器！"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-11-12</div><div class="info-item-2">SQLark：高效、便捷的数据生成利器！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120257374/" title="Oracle 短时间内误删数据，如何快速找回？（UNDO）"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-12</div><div class="info-item-2">Oracle 短时间内误删数据，如何快速找回？（UNDO）</div></div><div class="info-2"><div class="info-item-1">首先，这个短时间内，通常是值 undo 段没有被覆盖，undo 保留的时间为多长呢？ 1、需要看 undo\_retention 的设置，默认为 900s，也就是 15 分钟。 2、需要看数据库的业务繁忙程度，如果1天切一个归档那种，3天前删的说不定都能用 UNDO 找回来。 好的， 科普 完了！</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145010492/" title="基础篇：数据库 SQL 入门教程"><img class="cover" src="/csdn-blog/images/151ce3dd95c108f1ff4e8eeffec661da.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-08</div><div class="info-item-2">基础篇：数据库 SQL 入门教程</div></div><div class="info-2"><div class="info-item-1">目录 📚 前言 🌴 SQL 介绍 🌼 什么是 SQL 🌀 SQL 的类型 🌵 学习 SQL 的作用 🍄 数据库是什么 🐥 SQL 基础语言学习 🐤 CREATE TABLE – 创建表 🐑 INSERT – 插入数据 🐼 SELECT – 查询数据 🐫 DISTINCT – 去除重复值 🐸 WHER</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139178972/" title="华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 12CR2 单机 ASM"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 12CR2 单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 openEuler 22.03 LTS SP3 一键安装 Oracle 12CR2 单机 ASM（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145116006/" title="2025 年宣布一件大事，Oracle 一键安装脚本开源了！"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-13</div><div class="info-item-2">2025 年宣布一件大事，Oracle 一键安装脚本开源了！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 Oracle一键安装脚本 脚本下载 环境信息 安装前准备 Centos 7.9 Redhat 8.10 脚本参数 一键安装 11GR2 19C 写在最后 前言 你没看错，就是 Oracle 数据库一键安装脚本 部分开源</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121758506/" title="Oracle 11G ADG 搭建 RAC to Single 详细教程（RMAN DUPLICATE）"><img class="cover" src="/csdn-blog/images/f1a2910123cdc227ad9f478f926d8ce6.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-06</div><div class="info-item-2">Oracle 11G ADG 搭建 RAC to Single 详细教程（RMAN DUPLICATE）</div></div><div class="info-2"><div class="info-item-1">经过交流群中朋友的多次要求，这次给大家分享一下 RAC to Single 的 ADG 搭建教程！</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%96%91%E9%97%AE%E5%92%8C%E8%A7%A3%E7%AD%94"><span class="toc-number">3.</span> <span class="toc-text">疑问和解答</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

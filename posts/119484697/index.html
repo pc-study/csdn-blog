@@ -1,0 +1,435 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>产品体验官：Tapdata Cloud &amp;&amp; Oracle 数据库实时同步（详细版） | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="Tapdata 数据同步 🌲 前言 ☀️ 环境准备 💻 Linux 环境部署 - 1、添加 Vagrant box 2、初始化启动 Linux 主机 3、Vagrant 连接主机 🌩 Tapdata Agent 本地部署 - 1、安装 Java 环境 2、下载 Tapdata Agent 并部署 3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="产品体验官：Tapdata Cloud &amp;&amp; Oracle 数据库实时同步（详细版）">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/119484697/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="Tapdata 数据同步 🌲 前言 ☀️ 环境准备 💻 Linux 环境部署 - 1、添加 Vagrant box 2、初始化启动 Linux 主机 3、Vagrant 连接主机 🌩 Tapdata Agent 本地部署 - 1、安装 Java 环境 2、下载 Tapdata Agent 并部署 3">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/dcf23a84d76bc8d2a90f438f5b10b349.webp">
+<meta property="article:published_time" content="2021-10-30T02:56:31.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.298Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="Tapdata">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/dcf23a84d76bc8d2a90f438f5b10b349.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"产品体验官：Tapdata Cloud && Oracle 数据库实时同步（详细版）","url":"https://pc-study.github.io/csdn-blog/posts/119484697/","image":"https://pc-study.github.io/csdn-blog/images/dcf23a84d76bc8d2a90f438f5b10b349.webp","datePublished":"2021-10-30T02:56:31.000Z","dateModified":"2026-03-20T12:25:38.298Z","description":"Tapdata 数据同步 🌲 前言 ☀️ 环境准备 💻 Linux 环境部署 - 1、添加 Vagrant box 2、初始化启动 Linux 主机 3、Vagrant 连接主机 🌩 Tapdata Agent 本地部署 - 1、安装 Java 环境 2、下载 Tapdata Agent 并部署 3","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/119484697/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/119484697/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '产品体验官：Tapdata Cloud && Oracle 数据库实时同步（详细版）',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/dcf23a84d76bc8d2a90f438f5b10b349.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">产品体验官：Tapdata Cloud &amp;&amp; Oracle 数据库实时同步（详细版）</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">产品体验官：Tapdata Cloud &amp;&amp; Oracle 数据库实时同步（详细版）<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-10-30-119484697.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-10-30T02:56:31.000Z" title="发表于 2021-10-30 10:56:31">2021-10-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.298Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>12分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><h4 id="Tapdata-数据同步"><a href="#Tapdata-数据同步" class="headerlink" title="Tapdata 数据同步"></a>Tapdata 数据同步</h4><ul>
+<li><a href="#__1">🌲 前言</a></li>
+<li><a href="#__10">☀️ 环境准备</a></li>
+<li><ul>
+<li><a href="#_Linux__13">💻 Linux 环境部署</a></li>
+<li><ul>
+<li><a href="#1_Vagrant_box_19">1、添加 Vagrant box</a></li>
+<li><a href="#2_Linux__21">2、初始化启动 Linux 主机</a></li>
+<li><a href="#3Vagrant__26">3、Vagrant 连接主机</a></li>
+</ul>
+</li>
+<li><a href="#_Tapdata_Agent__33">🌩 Tapdata Agent 本地部署</a></li>
+<li><ul>
+<li><a href="#1_Java__38">1、安装 Java 环境</a></li>
+<li><a href="#2_Tapdata_Agent__51">2、下载 Tapdata Agent 并部署</a></li>
+<li><a href="#3Tapdata_Agent__85">3、Tapdata Agent 管理命令</a></li>
+</ul>
+</li>
+<li><a href="#_Oracle__110">🔆 Oracle 环境部署</a></li>
+<li><ul>
+<li><a href="#1_oracle11g__112">1、部署 oracle11g 主机</a></li>
+<li><a href="#3_Shell__121">3、配置 Shell 脚本</a></li>
+<li><a href="#3_Vagrantfile__143">3、配置 Vagrantfile 脚本</a></li>
+<li><a href="#4_Oracle__182">4、启动部署 Oracle 数据库</a></li>
+<li><a href="#5Oracle_11G12C__192">5、Oracle 11G+12C 创建测试数据</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#__Oracle_11GR2__12C_208">💛 数据同步 Oracle 11GR2 –&gt; 12C</a></li>
+<li><ul>
+<li><a href="#__209">⚡️ 数据同步介绍</a></li>
+<li><a href="#_ORACLE__Tapdata_221">❤️ ORACLE 配置 Tapdata（源端+目标端）</a></li>
+<li><ul>
+<li><a href="#1_224">1、开启归档日志</a></li>
+<li><a href="#2_Supplemental_Logging_252">2、开启 Supplemental Logging</a></li>
+<li><a href="#3_271">3、创建用户账号</a></li>
+</ul>
+</li>
+<li><a href="#_Tapdata_Cloud__Oracle_11G12C_281">☀️ Tapdata Cloud 连接 Oracle 11G+12C</a></li>
+<li><ul>
+<li><a href="#1_283">1、创建连接</a></li>
+<li><a href="#2_Oracle_285">2、选择 Oracle</a></li>
+<li><a href="#3_287">3、填写关键信息</a></li>
+<li><a href="#4_291">4、测试连接</a></li>
+</ul>
+</li>
+<li><a href="#__296">🌀 创建同步任务</a></li>
+<li><ul>
+<li><a href="#1_298">1、创建任务</a></li>
+<li><a href="#2_301">2、配置任务</a></li>
+<li><a href="#3_304">3、选择同步表</a></li>
+<li><a href="#4_311">4、启动任务</a></li>
+<li><a href="#5_321">5、运行监控</a></li>
+<li><a href="#6_324">6、报错处理</a></li>
+<li><a href="#7_338">7、同步测试</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#__364">🌊 写在最后</a></li>
+</ul>
+<h2 id="🌲-前言"><a href="#🌲-前言" class="headerlink" title="🌲 前言"></a>🌲 前言</h2><p><strong>最近新接触了一个数据同步的产品：<code>Tapdata Cloud</code> 。</strong></p>
+<blockquote>
+<p>Tapdata Cloud 是由 Tapdata 提供的集数据同步、数据融合（即将上线）、数据服务（即将上线）为一体的实时数据融合服务，能够在跨云、跨地域、多类型数据源的场景下，提供毫秒级的实时数据同步服务和数据融合服务。</p>
+</blockquote>
+<p><strong>官网地址：<a target="_blank" rel="noopener" href="https://cloud.tapdata.net/">https://cloud.tapdata.net/</a></strong></p>
+<p>本文主要演示通过 Tapdata Cloud 来进行 Oracle 数据同步。ヾ(◍°∇°◍)ﾉﾞ</p>
+<h2 id="☀️-环境准备"><a href="#☀️-环境准备" class="headerlink" title="☀️ 环境准备"></a>☀️ 环境准备</h2><p>Tapdata 部署支持 <code>Windows64</code>，<code>Linux64</code>，<code>docker</code> 三种环境；本文使用 <code>Linux64</code> 环境进行同步测试。</p>
+<h3 id="💻-Linux-环境部署"><a href="#💻-Linux-环境部署" class="headerlink" title="💻 Linux 环境部署"></a>💻 Linux 环境部署</h3><p><strong>使用 Vagrant 快速部署环境，想玩的朋友可以参考：<a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/119176009">保姆级教程：Vagrant 从入门到超神玩法</a></strong></p>
+<p><strong>☀️ 顺便分享一下 Vagrant 安装 Oracle 数据库系列：</strong></p>
+<blockquote>
+<p><strong><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_50546016/category_11236959.html">Vagrant安装Oracle系列</a></strong></p>
+</blockquote>
+<h4 id="1、添加-Vagrant-box"><a href="#1、添加-Vagrant-box" class="headerlink" title="1、添加 Vagrant box"></a>1、添加 Vagrant box</h4><p>使用 Vagrant 快速部署一套 Linux 环境，主机版本 <code>Centos7.9</code>。#### 2、 初始化 启动 Linux 主机</p>
+<p>通过新添加的 box 初始化 Vagrantfile：<br> Vagrant 启动主机：<br> <img src="/csdn-blog/images/dcf23a84d76bc8d2a90f438f5b10b349.webp" alt="在这里插入图片描述" loading='lazy'></p>
+<h4 id="3、Vagrant-连接主机"><a href="#3、Vagrant-连接主机" class="headerlink" title="3、Vagrant 连接主机"></a>3、Vagrant 连接主机</h4><p>通过 <code>vagrant ssh</code> 连接已成功部署的 Centos 环境：<br> <img src="/csdn-blog/images/38cb39b5a1e9d936b9df42d64db169bc.webp" alt="在这里插入图片描述" loading='lazy'><br> 修改 root 用户密码：<br> 修改玩 root 密码后，通过 <code>su -</code><br>切换<br>到 root 用户。</p>
+<h3 id="🌩-Tapdata-Agent-本地部署"><a href="#🌩-Tapdata-Agent-本地部署" class="headerlink" title="🌩 Tapdata Agent 本地部署"></a>🌩 Tapdata Agent 本地部署</h3><p><strong>❤️ 为什么要部署 Tapdata Agent 到本地环境？❤️</strong></p>
+<blockquote>
+<p>Tapdata Agent是数据同步、数据异构、数据开发场景中的关键程序。以上场景对数据的流转有着极高的实时性要求，因此，通过下载Tapdata Agent并将其部署在你的本地环境，基于低延迟的本地网络，Tapdata Agent能够发挥最大性能以确保数据流转的实时性。</p>
+</blockquote>
+<h4 id="1、安装-Java-环境"><a href="#1、安装-Java-环境" class="headerlink" title="1、安装 Java 环境"></a>1、安装 Java 环境</h4><p>Tapdata Agent 的运行依赖本地 Java 环境，因此，在部署前你需要检查本地否已经安装java环境，例如在命令行中使用下方命令:</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-keyword">java </span>-version<br><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>如图 <code>java -version</code> 返回异常，则说明java环境可能未安装，可参考下方的命令为本地安装java环境（本提示中的openjdk版本仅用于示例）：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">yum -y <span class="hljs-keyword">install </span><span class="hljs-keyword">java-1.8.0-openjdk</span><br><span class="hljs-keyword"></span><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>在本地java环境安装完毕后，即可开始下载Tapdata Agent。</p>
+<h4 id="2、下载-Tapdata-Agent-并部署"><a href="#2、下载-Tapdata-Agent-并部署" class="headerlink" title="2、下载 Tapdata Agent 并部署"></a>2、下载 Tapdata Agent 并部署</h4><p>安装前请确认您的部署环境中已安装Java1.8版本并正确配置环境变量。</p>
+<p><strong>Tapdata Agent 下载界面：<a target="_blank" rel="noopener" href="https://cloud.tapdata.net/console/#/fastDownload">https://cloud.tapdata.net/console/#/fastDownload</a></strong><br> 下载 Tapdata Agent ，官方非常建议在一个独立、干净的文件夹内部署 <code>Tapdata Agent</code> ：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs stata">#通过wget下载Tapdata Agent至本地环境<br><span class="hljs-keyword">mkdir</span> /tapdata<br><span class="hljs-keyword">cd</span> /tapdata<br>wget <span class="hljs-string">&quot;https://resource.tapdata.net/package/feagent/dfs-1.0.4-prod/tapdata&quot;</span><br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/600ccc031b6ff54806c15a250e783715.webp" alt="在这里插入图片描述" loading='lazy'><br> 下载、部署 Tapdata Agent 无需 root 权限，只需要对部署目录具备读写权限即可，因此创建 tapdata 用户：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">groupadd tapdata<br>useradd -g tapdata tapdata<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br></code></pre></td></tr></table></figure>
+
+<p>授权用户 <code>tabpdata</code> 访问目录 <code>/tapdata</code> 权限：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">chown</span> -R tapdata:tapdata /tapdata<br><span class="hljs-built_in">chmod</span> +x /tapdata/tapdata<br><br>AI写代码bash<br><br>* 1<br>* 2<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/41364292028a1965437f4080bba4bdc7.webp" alt="在这里插入图片描述" loading='lazy'><br> 切换到 tapdata 用户，开始安装部署 tapdata ：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs gradle">su - tapdata<br>cd /tapdata<br>.<span class="hljs-regexp">/tapdata start backend --downloadUrl https:/</span><span class="hljs-regexp">/resource.tapdata.net/</span><span class="hljs-keyword">package</span><span class="hljs-regexp">/feagent/</span>dfs-<span class="hljs-number">1.0</span>.<span class="hljs-number">4</span>-prod<span class="hljs-regexp">/ --token a/</span>HZzXh5MDbwPGd8hCzZYYF0XXgDZ287oY34Sx3QAq5Z7zikkMRcI62kZHXq8RRJj6VrJcSY6ehw4iM8d8LW1YDkAXDfFv6XW<span class="hljs-regexp">/comFuRjivUKI0bU2CJbyb9YX2hukWTYG7rnIlkqV6c1QG/</span><span class="hljs-regexp">/tczPtDt4Bvjy5eqwShMLprhyrzjDysD0Zqfag0tfN0rKB8YbGn87/</span><span class="hljs-number">61</span>rWjizqFuByrG+V2RQCKmccHqWLwjAKLeMEYFUW6imRIHTrEHFQ9u5qDEDB4xza6Nz+ZeDgwNTHYQAChlL1rg+<span class="hljs-number">2</span>B6g8C55dTKdQvOTiumURSbnY3Z8IURjYOw4INb5NmhUFvlcceX6OMguQVMrKfiV2vYzpSAcFKB+<span class="hljs-number">3</span>KGJVj71tKGRxaSuZI5AINPxECZg+kgE2vUTMhFwZ9I2oPLDGntSWSnYp2MVqUnTNq446ikmUIuEsTTPhsiTcHO2/<span class="hljs-number">8</span>oniGzy4gMGvSmofZI2w==<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/d46e2b57a5fa40fec1f0afa4b32f5698.webp" alt="在这里插入图片描述" loading='lazy'><br> 待上方命令执行完毕后，出现如图所示日志则代表Agent启动成功。</p>
+<h4 id="3、Tapdata-Agent-管理命令"><a href="#3、Tapdata-Agent-管理命令" class="headerlink" title="3、Tapdata Agent 管理命令"></a>3、Tapdata Agent 管理命令</h4><p>在本地对 Tapdata Agent 进行管理，建议设置 &#x2F;tapdata 环境变量：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs routeros">cat &lt;&lt;EOF&gt;~/.bash_profile<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">TAPDATA_HOME</span>=/tapdata<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$TAPDATA_HOME</span>:$PATH<br>EOF<br><br>source ~/.bash_profile<br><br>AI写代码bash<br><br>* 1<br>* 2<br>* 3<br>* 4<br>* 5<br>* 6<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="hljs-section">#关闭 Tapdata Agent</span><br>tapdata stop<br><br><span class="hljs-section">#启动 Tapdata Agent</span><br>tapdata start <br><br><span class="hljs-section">#查看 Tapdata Agent 状态</span><br>tapdata status<br><br>AI写代码bash<br><br><span class="hljs-bullet">*</span> 1<br><span class="hljs-bullet">*</span> 2<br><span class="hljs-bullet">*</span> 3<br><span class="hljs-bullet">*</span> 4<br><span class="hljs-bullet">*</span> 5<br><span class="hljs-bullet">*</span> 6<br><span class="hljs-bullet">*</span> 7<br><span class="hljs-bullet">*</span> 8<br></code></pre></td></tr></table></figure>
+
+<p>Tapdata Agent本地目录结构及功能简介：<br> <img src="/csdn-blog/images/5e770bfc41490ce51ee4c980e2f41f8c.webp" alt="在这里插入图片描述" loading='lazy'><br> <strong>至此，Tapdata 环境准备已经完成。🎉</strong></p>
+<h3 id="🔆-Oracle-环境部署"><a href="#🔆-Oracle-环境部署" class="headerlink" title="🔆 Oracle 环境部署"></a>🔆 Oracle 环境部署</h3><p>同样使用 <code>Vagrant</code> 安装两套 Linux 主机环境，使用 <code>Oracle 一键安装脚本</code> 安装数据库：</p>
+<h4 id="1、部署-oracle11g-主机"><a href="#1、部署-oracle11g-主机" class="headerlink" title="1、部署 oracle11g 主机"></a>1、部署 oracle11g 主机</h4><p>创建安装目录并上传安装介质：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">mkdir</span> oracle11g<br><span class="hljs-keyword">mkdir</span> oracle12c<br><span class="hljs-keyword">mkdir</span> software<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/f3b9ebc19917274d719e69480ce2b00c.webp" alt="在这里插入图片描述" loading='lazy'><br> <strong>⭐️ 安装介质获取方式：<a target="_blank" rel="noopener" href="https://www.modb.pro/db/81506">Oracle安装包</a>，<a target="_blank" rel="noopener" href="https://github.com/pc-study/InstallOracleshell">Oracle一键安装脚本</a>。</strong></p>
+<h4 id="3、配置-Shell-脚本"><a href="#3、配置-Shell-脚本" class="headerlink" title="3、配置 Shell 脚本"></a>3、配置 Shell 脚本</h4><p>分别进入 <code>oracle11g</code> 和 <code>oracle12c</code> 目录下，创建 <code>scripts</code> 目录：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">mkdir scripts<br>cat &lt;&lt;EOF&gt;ora<span class="hljs-emphasis">_preinstall.sh</span><br><span class="hljs-emphasis">#change root password</span><br><span class="hljs-emphasis">echo oracle | passwd --stdin root</span><br><span class="hljs-emphasis">#change sshd_config</span><br><span class="hljs-emphasis">sed -i &#x27;s/PasswordAuthentication no/PasswordAuthentication yes/&#x27; /etc/ssh/sshd_</span>config<br>systemctl reload sshd.service<br>#mkdir software dir<br>mkdir /soft<br>#cp software to softdir<br>cp /vagrant/* /soft<br>#chmod shell script<br>chmod +x /soft/OracleShellInstall.sh<br>#install oracle database<br>cd /soft<br>./OracleShellInstall.sh -i 192.168.1.140 -installmode single -dbv 11g -iso N<br>EOF<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br><span class="hljs-bullet">* </span>3<br><span class="hljs-bullet">* </span>4<br><span class="hljs-bullet">* </span>5<br><span class="hljs-bullet">* </span>6<br><span class="hljs-bullet">* </span>7<br><span class="hljs-bullet">* </span>8<br><span class="hljs-bullet">* </span>9<br><span class="hljs-bullet">* </span>10<br><span class="hljs-bullet">* </span>11<br><span class="hljs-bullet">* </span>12<br><span class="hljs-bullet">* </span>13<br><span class="hljs-bullet">* </span>14<br><span class="hljs-bullet">* </span>15<br><span class="hljs-bullet">* </span>16<br><span class="hljs-bullet">* </span>17<br></code></pre></td></tr></table></figure>
+
+<p><strong>需要注意 <code>-dbv</code> 和 <code>-i</code> 参数，需要根据实际情况修改，12C 需要修改为对应 12c。</strong></p>
+<h4 id="3、配置-Vagrantfile-脚本"><a href="#3、配置-Vagrantfile-脚本" class="headerlink" title="3、配置 Vagrantfile 脚本"></a>3、配置 Vagrantfile 脚本</h4><p><strong>Oracle 11G：</strong></p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">cd</span> oracle11g<br><span class="hljs-keyword">cat</span> &lt;&lt;EOF&gt;Vagrantfile<br>Vagrant.configure(<span class="hljs-string">&quot;2&quot;</span>) <span class="hljs-keyword">do</span> |config|<br>  config.vm.box = <span class="hljs-string">&quot;centos79&quot;</span><br>  config.vm.provision :<span class="hljs-keyword">shell</span>, path: <span class="hljs-string">&quot;/Volumes/DBA/vagrant/oracle11g/scripts/ora_preinstall.sh&quot;</span><br>  config.vm.synced_folder <span class="hljs-string">&quot;/Volumes/DBA/vagrant/software&quot;</span>, <span class="hljs-string">&quot;/vagrant&quot;</span><br>  config.vm.network :forwarded_port, guest: 1521, host: 1521<br>  config.vm.network :forwarded_port, guest: 22, host: 22<br>  config.vm.network <span class="hljs-string">&quot;public_network&quot;</span>, ip: <span class="hljs-string">&quot;192.168.1.140&quot;</span><br>  config.vm.provider <span class="hljs-string">&quot;virtualbox&quot;</span> <span class="hljs-keyword">do</span> |vb|<br>  vb.name = <span class="hljs-string">&quot;orcl11g&quot;</span><br>  vb.<span class="hljs-keyword">memory</span> = 2048<br>  vb.cpus = 2<br>  end<br>end<br>EOF<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br><span class="hljs-comment">* 13</span><br><span class="hljs-comment">* 14</span><br><span class="hljs-comment">* 15</span><br><span class="hljs-comment">* 16</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Oracle 12C：</strong></p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">cd</span> oracle12c<br><span class="hljs-keyword">cat</span> &lt;&lt;EOF&gt;Vagrantfile<br>Vagrant.configure(<span class="hljs-string">&quot;2&quot;</span>) <span class="hljs-keyword">do</span> |config|<br>  config.vm.box = <span class="hljs-string">&quot;centos79&quot;</span><br>  config.vm.provision :<span class="hljs-keyword">shell</span>, path: <span class="hljs-string">&quot;/Volumes/DBA/vagrant/oracle12c/scripts/ora_preinstall.sh&quot;</span><br>  config.vm.synced_folder <span class="hljs-string">&quot;/Volumes/DBA/vagrant/software&quot;</span>, <span class="hljs-string">&quot;/vagrant&quot;</span><br>  config.vm.network :forwarded_port, guest: 1521, host: 1522<br>  config.vm.network :forwarded_port, guest: 22, host: 23<br>  config.vm.network <span class="hljs-string">&quot;public_network&quot;</span>, ip: <span class="hljs-string">&quot;192.168.1.150&quot;</span><br>  config.vm.provider <span class="hljs-string">&quot;virtualbox&quot;</span> <span class="hljs-keyword">do</span> |vb|<br>  vb.name = <span class="hljs-string">&quot;orcl12c&quot;</span><br>  vb.<span class="hljs-keyword">memory</span> = 2048<br>  vb.cpus = 2<br>  end<br>end<br>EOF<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br><span class="hljs-comment">* 13</span><br><span class="hljs-comment">* 14</span><br><span class="hljs-comment">* 15</span><br><span class="hljs-comment">* 16</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="4、启动部署-Oracle-数据库"><a href="#4、启动部署-Oracle-数据库" class="headerlink" title="4、启动部署 Oracle 数据库"></a>4、启动部署 Oracle 数据库</h4><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">cd</span> oracle11g<br>vagrant up --provider=virtualbox<br><span class="hljs-keyword">cd</span> oracle12c<br>vagrant up --provider=virtualbox<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="5、Oracle-11G-12C-创建测试数据"><a href="#5、Oracle-11G-12C-创建测试数据" class="headerlink" title="5、Oracle 11G+12C 创建测试数据"></a>5、Oracle 11G+12C 创建测试数据</h4><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">user</span> tapdata identified <span class="hljs-keyword">by</span> tapdata;<br><span class="hljs-keyword">grant</span> dba <span class="hljs-keyword">to</span> tapdata;<br>conn tapdata/tapdata;<br><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> tapdata (id number,<span class="hljs-type">name</span> <span class="hljs-type">varchar</span>(<span class="hljs-number">100</span>));<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> tapdata <span class="hljs-keyword">values</span> (<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;lucifer&#x27;</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> tapdata <span class="hljs-keyword">values</span> (<span class="hljs-number">2</span>,<span class="hljs-string">&#x27;lucifer1&#x27;</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> tapdata <span class="hljs-keyword">values</span> (<span class="hljs-number">3</span>,<span class="hljs-string">&#x27;lucifer2&#x27;</span>);<br><span class="hljs-keyword">commit</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br>* <span class="hljs-number">6</span><br>* <span class="hljs-number">7</span><br>* <span class="hljs-number">8</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>❤️ 想了解的朋友可参考：❤️</strong></p>
+<blockquote>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/119065005">Vagrant 一键搞定 Oracle 数据库安装</a></li>
+<li><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/118346024">我写了4000多行Shell脚本，终于实现了一键安装Oracle RAC！！！</a></li>
+</ul>
+</blockquote>
+<h2 id="💛-数据同步-Oracle-11GR2-–-12C"><a href="#💛-数据同步-Oracle-11GR2-–-12C" class="headerlink" title="💛 数据同步 Oracle 11GR2 –&gt; 12C"></a>💛 数据同步 Oracle 11GR2 –&gt; 12C</h2><h3 id="⚡️-数据同步介绍"><a href="#⚡️-数据同步介绍" class="headerlink" title="⚡️ 数据同步介绍"></a>⚡️ 数据同步介绍</h3><p><strong>工作原理：</strong>  </p>
+<blockquote>
+<p>数据同步功能是 Tapdata 数据中台的重要功能，同时也是 Tapdata 的核心优势。如上图所示，在两个数据存储节点中，Tapdata Agent 作为处理的桥梁，在用户简单设置后即可全自动的将数据从一个节点中读取（源端），并写入至另一个节点（目标端）。在整个过程中，Tapdata Agent 仅作为数据的处理层确保处理的流程符合用户的预期，Tapdata Agent 不会对用户数据做任何形式的上传、保存。</p>
+</blockquote>
+<p><strong>接入、同步、异构：</strong></p>
+<blockquote>
+<p>在数据同步功能中，Tapdata 中台支持多种数据存储的接入，其不仅支持同类型数据存储（如 MySQL 到MySQL，Oracle 到Oracle）之间的数据同步，同时也支持不同类型数据存储（如 Oracle 到 MySQL，MySQL 到 MongoDB）之间以异构方式进行数据同步。</p>
+</blockquote>
+<p><strong>任务类型：</strong></p>
+<blockquote>
+<p>基于Tapdata Agent的可配置性，其支持全量同步、全量及增量两种任务类型。用户可根据对应的数据场景选择对应的同步模式来满足需求。如全量同步适合一次性的数据迁移、异构场景，而全量及增量同步则适合实时的数据迁移、异构场景。</p>
+</blockquote>
+<p><img src="/csdn-blog/images/c5b564da128fac96a2986087a69d95a5.webp" alt="在这里插入图片描述" loading='lazy'></p>
+<h3 id="❤️-ORACLE-配置-Tapdata（源端-目标端）"><a href="#❤️-ORACLE-配置-Tapdata（源端-目标端）" class="headerlink" title="❤️ ORACLE 配置 Tapdata（源端+目标端）"></a>❤️ ORACLE 配置 Tapdata（源端+目标端）</h3><p>确保在 Tapdata 中成功添加和使用Oracle数据库，注意：Oracle 实时同步基于Oracle Redo Log，因此需要提前执行某些配置。</p>
+<h4 id="1、开启归档日志"><a href="#1、开启归档日志" class="headerlink" title="1、开启归档日志"></a>1、开启归档日志</h4><p>以具有 DBA 权限的用户身份登录数据库</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stata">sqlplus / <span class="hljs-keyword">as</span> sysdba<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br></code></pre></td></tr></table></figure>
+
+<p>查看数据库的 logging mode</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> log_mode <span class="hljs-keyword">from</span> v$<span class="hljs-keyword">database</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/ba9104cc775aa4ee73c108e48b8a9d71.webp" alt="在这里插入图片描述" loading='lazy'><br> 如果返回的结果是 NOARCHIVELOG , 继续按照以下步骤操作:</p>
+<p>关闭数据库:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">shutdown <span class="hljs-keyword">immediate</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/8a7c086465026566493873ddb8728ef9.webp" alt="在这里插入图片描述" loading='lazy'><br> 启动并挂载数据库:</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs abnf">startup mount<span class="hljs-comment">;</span><br><br>AI写代码sql<br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>开启归档模式并打开数据库:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">database</span> archivelog;<br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">database</span> <span class="hljs-keyword">open</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/d1cb2382cf69b2bb9cbb95ad8ace750b.webp" alt="在这里插入图片描述" loading='lazy'></p>
+<h4 id="2、开启-Supplemental-Logging"><a href="#2、开启-Supplemental-Logging" class="headerlink" title="2、开启 Supplemental Logging"></a>2、开启 Supplemental Logging</h4><p><strong>11G：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">database</span> <span class="hljs-keyword">add</span> supplemental <span class="hljs-keyword">log</span> data;<br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">system</span> switch logfile;<br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">DATABASE</span> <span class="hljs-keyword">ADD</span> SUPPLEMENTAL <span class="hljs-keyword">LOG</span> DATA (<span class="hljs-keyword">ALL</span>) <span class="hljs-keyword">COLUMNS</span>;<br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">DATABASE</span> <span class="hljs-keyword">ADD</span> SUPPLEMENTAL <span class="hljs-keyword">LOG</span> DATA (<span class="hljs-keyword">PRIMARY KEY</span>) <span class="hljs-keyword">COLUMNS</span>;<br><span class="hljs-keyword">SELECT</span> supplemental_log_data_min, supplemental_log_data_pk, supplemental_log_data_all <span class="hljs-keyword">FROM</span> v$<span class="hljs-keyword">database</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/d462a3c091645a51a3fa89c24e03bd03.webp" alt="在这里插入图片描述" loading='lazy'><br> <strong>12C：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">DATABASE</span> <span class="hljs-keyword">ADD</span> SUPPLEMENTAL <span class="hljs-keyword">LOG</span> DATA (<span class="hljs-keyword">ALL</span>) <span class="hljs-keyword">COLUMNS</span>;<br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">DATABASE</span> <span class="hljs-keyword">ADD</span> SUPPLEMENTAL <span class="hljs-keyword">LOG</span> DATA (<span class="hljs-keyword">PRIMARY KEY</span>) <span class="hljs-keyword">COLUMNS</span>;<br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">SYSTEM</span> SWITCH LOGFILE;<br><span class="hljs-keyword">SELECT</span> supplemental_log_data_min, supplemental_log_data_pk, supplemental_log_data_all <span class="hljs-keyword">FROM</span> v$<span class="hljs-keyword">database</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3、创建用户账号"><a href="#3、创建用户账号" class="headerlink" title="3、创建用户账号"></a>3、创建用户账号</h4><p>创建用户帐户并分配权限：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-comment">--前面已经创建，这里不再创建用户</span><br><span class="hljs-comment">--CREATE USER tapdata IDENTIFIED BY tapdata;</span><br><span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">create</span> <span class="hljs-keyword">session</span>, <span class="hljs-keyword">alter</span> <span class="hljs-keyword">session</span>, execute_catalog_role, <span class="hljs-keyword">select</span> <span class="hljs-keyword">any</span> <span class="hljs-keyword">dictionary</span>, <span class="hljs-keyword">select</span> <span class="hljs-keyword">any</span> <span class="hljs-keyword">transaction</span>, <span class="hljs-keyword">select</span> <span class="hljs-keyword">any</span> <span class="hljs-keyword">table</span>, <span class="hljs-keyword">create</span> <span class="hljs-keyword">any</span> <span class="hljs-keyword">table</span>, <span class="hljs-keyword">create</span> <span class="hljs-keyword">any</span> <span class="hljs-keyword">index</span>, unlimited <span class="hljs-keyword">tablespace</span> <span class="hljs-keyword">to</span> tapdata;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+
+<p>至此，已配置完 Oracle 11G 源端数据库。</p>
+<h3 id="☀️-Tapdata-Cloud-连接-Oracle-11G-12C"><a href="#☀️-Tapdata-Cloud-连接-Oracle-11G-12C" class="headerlink" title="☀️ Tapdata Cloud 连接 Oracle 11G+12C"></a>☀️ Tapdata Cloud 连接 Oracle 11G+12C</h3><p>首先需要打开 Tapdata Cloud 控制台。</p>
+<h4 id="1、创建连接"><a href="#1、创建连接" class="headerlink" title="1、创建连接"></a>1、创建连接</h4><p><img src="/csdn-blog/images/6755394826b17aa7ed6a08641bac8d84.webp" alt="在这里插入图片描述" loading='lazy'></p>
+<h4 id="2、选择-Oracle"><a href="#2、选择-Oracle" class="headerlink" title="2、选择 Oracle"></a>2、选择 Oracle</h4><h4 id="3、填写关键信息"><a href="#3、填写关键信息" class="headerlink" title="3、填写关键信息"></a>3、填写关键信息</h4><p>根据提示填写信息，具体可参考：<a target="_blank" rel="noopener" href="https://www.yuque.com/tapdata/cloud/chan-pin-shou-ce_lian-jie-guan-li_lian-jie-pei-zhi_oracle">Oracle 创建连接</a><br> <img src="/csdn-blog/images/04daffcbb0e0a85237691712a40e4d57.webp" alt="在这里插入图片描述" loading='lazy'><br> <strong>注意：这里的 <code>Schema</code> 值需要大写！</strong></p>
+<h4 id="4、测试连接"><a href="#4、测试连接" class="headerlink" title="4、测试连接"></a>4、测试连接</h4><p>测试连接是否成功，具体可参考：<a target="_blank" rel="noopener" href="https://www.yuque.com/tapdata/cloud/chan-pin-shou-ce_lian-jie-guan-li_lian-jie-ce-shi_oracel-de-lian-jie-ce-shi-yu-chang-jian-wen-ti">Oracel 的连接测试与常见问题</a><br> <strong>以同样的方式添加 Oracle 12C ，添加成功后显示如下：</strong>  </p>
+<h3 id="🌀-创建同步任务"><a href="#🌀-创建同步任务" class="headerlink" title="🌀 创建同步任务"></a>🌀 创建同步任务</h3><p>创建好连接之后，需要创建任务来配置进行数据同步。</p>
+<h4 id="1、创建任务"><a href="#1、创建任务" class="headerlink" title="1、创建任务"></a>1、创建任务</h4><p>配置源端和目标端连接，选择上一步中新建的连接：  </p>
+<h4 id="2、配置任务"><a href="#2、配置任务" class="headerlink" title="2、配置任务"></a>2、配置任务</h4><p>设置任务，本次选择 <code>全量+增量</code> 类型，<code>全量写入模式</code>：<br> <img src="/csdn-blog/images/9fc413102a7b11a78925550b5517ea2a.webp" alt="在这里插入图片描述" loading='lazy'></p>
+<h4 id="3、选择同步表"><a href="#3、选择同步表" class="headerlink" title="3、选择同步表"></a>3、选择同步表</h4><p>这里选择需要同步的表，添加到目标端：<br> <img src="/csdn-blog/images/a8547642b1e9b98132e0f916fa8f34fa.webp" alt="在这里插入图片描述" loading='lazy'><br> 同时还支持 <code>改名</code> 和 <code>字段映射</code>：<br> <img src="/csdn-blog/images/5b54be82d038912b690a7935c00924fd.webp" alt="在这里插入图片描述" loading='lazy'><br> 点击完成按钮，即可。如果点击没有反应，可以尝试退回上一步，再回来点击完成。</p>
+<h4 id="4、启动任务"><a href="#4、启动任务" class="headerlink" title="4、启动任务"></a>4、启动任务</h4><p>点击完成后，任务状态为 <code>待启动</code>，可以通过启动任务来开始：<br> <img src="/csdn-blog/images/cb713a52ba3accfcab243bf0d666e7fa.webp" alt="在这里插入图片描述" loading='lazy'><br> 先去目标端 Oracle 12C 查询表 Lucifer 是否存在：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> lucifer;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>确认没有表 Lucifer，启动任务：<br> <img src="/csdn-blog/images/47677412e1b58a7644bedb0346a31272.webp" alt="在这里插入图片描述" loading='lazy'></p>
+<h4 id="5、运行监控"><a href="#5、运行监控" class="headerlink" title="5、运行监控"></a>5、运行监控</h4><p>点击 <code>运行监控</code> 可以看到同步情：<br> <img src="/csdn-blog/images/f50ee6bef19f6a0be7c09cc23b991967.webp" alt="在这里插入图片描述" loading='lazy'></p>
+<h4 id="6、报错处理"><a href="#6、报错处理" class="headerlink" title="6、报错处理"></a>6、报错处理</h4><p>可以看到，这里报错了，看了一下日志记录：<br> 由于我之前创建表时，没有创建主键，<strong>咨询官方之后，确认必须需要表带主键才可以</strong>，因此，新增表主键：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> lucifer <span class="hljs-keyword">add</span> <span class="hljs-keyword">constraint</span> tb_lucifer_pk <span class="hljs-keyword">primary key</span> (id);<br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> tapdata <span class="hljs-keyword">add</span> <span class="hljs-keyword">constraint</span> tb_tapdata_pk <span class="hljs-keyword">primary key</span> (id);<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p>新增表主键之后，需要重新加载数据源，即<code>连接管理</code>那里连接测试即可。<br> 回到<code>运行监控</code>页面，<code>重置</code>之后重新同步：<br> <code>重置</code> 即清除进度，回到最初，然后点击启动即可。  </p>
+<h4 id="7、同步测试"><a href="#7、同步测试" class="headerlink" title="7、同步测试"></a>7、同步测试</h4><p>连接 Oracle 12C 目标端，查询 Lucifer 表的数据：<br> <img src="/csdn-blog/images/4c3a1f68d2ea7fb91ac1ba4786016eb1.webp" alt="在这里插入图片描述" loading='lazy'><br> 发现数据已经同步成功。</p>
+<p>测试源端 Oracle 11G 写入数据之后，目标端是否同步：</p>
+<p><strong>源端：</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> tapdata <span class="hljs-keyword">values</span> (<span class="hljs-number">17</span>,<span class="hljs-string">&#x27;haha&#x27;</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> lucifer <span class="hljs-keyword">values</span> (<span class="hljs-number">26</span>,<span class="hljs-string">&#x27;hah1a&#x27;</span>);<br><span class="hljs-keyword">delete</span> <span class="hljs-keyword">from</span> tapdata <span class="hljs-keyword">where</span> id=<span class="hljs-number">1</span>;<br><span class="hljs-keyword">delete</span> <span class="hljs-keyword">from</span> lucifer <span class="hljs-keyword">where</span> id=<span class="hljs-number">2</span>;<br><span class="hljs-keyword">commit</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>目标端：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> lucifer;<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> tapdata;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br><span class="hljs-operator">*</span> <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/9b8d1e1b9784abc3b989e0041e767eb7.webp" alt="在这里插入图片描述" loading='lazy'><br> 查看监控页面，可以发现源端的操作记录均已同步：<br> <strong>❤️ 至此，Oracle 不同版本间的实时数据同步测试已经完成。</strong></p>
+<h2 id="🌊-写在最后"><a href="#🌊-写在最后" class="headerlink" title="🌊 写在最后"></a>🌊 写在最后</h2><p><strong>首先，给 Tapdata 的文档点赞一波，写的真的很详细易懂！</strong></p>
+<p>本文从无到有地展示了所有环境的安装部署，数据同步的完整步骤以及一些需要注意的事项，可以说是尽善尽美了。之后，应该还会写异构数据库之间的同步教程。</p>
+<p>总体体验来说，Tapdata Cloud 在安装部署和使用方面，大大降低了技术难度，相较于其他一些数据同步产品，在入门体验上更好。关于实时同步的效率，由于没有实测生产，不做过多的评价。</p>
+<p>感兴趣的朋友可以多多测试，希望 Tapdata 能够越做越好！同时还可以参加 Tapdata 的新活动：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/QSRTlakt7ioEGArnuwOUkA">推荐 | 异构数据库同步云平台 Tapdata Cloud 开启有奖公测</a>，❤️ 奖品确实很丰厚！</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/119484697/">https://pc-study.github.io/csdn-blog/posts/119484697/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/linux/">linux</a><a class="post-meta__tags" href="/csdn-blog/tags/Tapdata/">Tapdata</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/119045623/" title="Oracle 数据库巡检，需要关注哪些点？（一些个人见解）"><img class="cover" src="/csdn-blog/images/49d186fc92acc052e2b96f62da49b73e.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Oracle 数据库巡检，需要关注哪些点？（一些个人见解）</div></div><div class="info-2"><div class="info-item-1">目录 🌲 前言 🌲 一、⭐️ 主机层面 ⭐️ 1、📚 主机版本和Oracle版本 2、💻 主机硬件资源 3、📒 计划任务 crontab 4、🌿 检查 Hosts 文件和网络配置 5、🍄 检查系统参数文件 6、🌻 检查 rc.local 文件 7、🍁 环境变量配置 8、🌵 检查系统服务 二、💫 数据</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119176009/" title="保姆级教程：Vagrant 从入门到超神玩法"><img class="cover" src="/csdn-blog/images/593371bf87e9caae483a3006ac29f683.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">保姆级教程：Vagrant 从入门到超神玩法</div></div><div class="info-2"><div class="info-item-1">{% raw %} 目录 🌲 前言 🌲 🌻 Vagrant 简介 🌻 ❤️ 入门玩法：Vagrant 安装 ❤️ ⚡️ 初阶玩法：Vagrant 常用命令 ⚡️ 1️⃣ Vagrant 基础命令 2️⃣ Vagrant Box 管理 3️⃣ Vagrant 虚拟机系统命令 4️⃣ Vagrant 插</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/138720075/" title="Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-11</div><div class="info-item-2">Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 6.10 一键安装 Oracle 11GR2 RAC（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 IS</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139180063/" title="Oracle Linux 8.9 一键安装 Oracle 19C 单机 ASM"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">Oracle Linux 8.9 一键安装 Oracle 19C 单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 8.9 一键安装 Oracle 19C 单机 ASM （19.23）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 IS</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122879837/" title="Oracle 11GR2 实战指南之手工创建数据库"><img class="cover" src="/csdn-blog/images/dfa9579e7fbcd0d04b552e344eb778dc.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-27</div><div class="info-item-2">Oracle 11GR2 实战指南之手工创建数据库</div></div><div class="info-2"><div class="info-item-1">目录 前言 一、环境准备 二、创建数据库 1、初始化实例 ID 2、创建密码文件 3、编写初始化参数文件 4、创建目录 5、创建 spfile 文件 6、启动实例至 nomount 状态 7、编写建库脚本 8、执行建库脚本 9、运行脚本创建数据字典 三、知识拓展 前言 如何不使用 ，手动一步步快速创</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/118101696/" title="第三章【Oracle自动化部署脚本】使用"><img class="cover" src="/csdn-blog/images/3a3cf7e153c661627d221db35ce9bdd1.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-22</div><div class="info-item-2">第三章【Oracle自动化部署脚本】使用</div></div><div class="info-2"><div class="info-item-1">前言 我猜很多朋友拿到脚本后一脸懵逼，不知道如何下手，所以打算先教大家用脚本以最便捷的方式在 Linux 上安装一套 Oracle 数据库。 使用脚本的流程可以参照下方： Linux 系统安装可以参考：保姆级 VirtualBox 虚拟机安装 Linux 系统 确保我们已经安装配置好 Linux 系</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/125249792/" title="单机：Oracle单机数据库一键安装（11GR2&#x2F;12C&#x2F;18C&#x2F;19C&#x2F;21C）"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-17</div><div class="info-item-2">单机：Oracle单机数据库一键安装（11GR2&#x2F;12C&#x2F;18C&#x2F;19C&#x2F;21C）</div></div><div class="info-2"><div class="info-item-1">前言 使用脚本安装 Oracle 数据库是一件省时又省事的事情，接下来我演示一下整个过程，11GR2/12C/18C/19C/21C 通用。 📢：脚本下载地址：，需要申请才能访问，请添加微信： 申请访问。 安装前准备 本脚本最初仅用于安装 Oracle 数据库，不支持操作系统的安装，请提前安装好 L</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/117887517/" title="第二章【Oracle自动化部署脚本】介绍"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-14</div><div class="info-item-2">第二章【Oracle自动化部署脚本】介绍</div></div><div class="info-2"><div class="info-item-1">作者简介 作者：LuciferLiu，中国DBA联盟(ACDU)成员。 目前从事Oracle DBA工作，曾从事 Oracle 数据库开发工作，主要服务于生产制造，汽车金融等行业。 现拥有Oracle OCP，OceanBase OBCA认证，擅长Oracle数据库运维开发，备份恢复，安装迁移，Li</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Tapdata-%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5"><span class="toc-number">1.</span> <span class="toc-text">Tapdata 数据同步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%B2-%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">🌲 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%98%80%EF%B8%8F-%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">3.</span> <span class="toc-text">☀️ 环境准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%92%BB-Linux-%E7%8E%AF%E5%A2%83%E9%83%A8%E7%BD%B2"><span class="toc-number">3.1.</span> <span class="toc-text">💻 Linux 环境部署</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E6%B7%BB%E5%8A%A0-Vagrant-box"><span class="toc-number">3.1.1.</span> <span class="toc-text">1、添加 Vagrant box</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81Vagrant-%E8%BF%9E%E6%8E%A5%E4%B8%BB%E6%9C%BA"><span class="toc-number">3.1.2.</span> <span class="toc-text">3、Vagrant 连接主机</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8C%A9-Tapdata-Agent-%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2"><span class="toc-number">3.2.</span> <span class="toc-text">🌩 Tapdata Agent 本地部署</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E5%AE%89%E8%A3%85-Java-%E7%8E%AF%E5%A2%83"><span class="toc-number">3.2.1.</span> <span class="toc-text">1、安装 Java 环境</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E4%B8%8B%E8%BD%BD-Tapdata-Agent-%E5%B9%B6%E9%83%A8%E7%BD%B2"><span class="toc-number">3.2.2.</span> <span class="toc-text">2、下载 Tapdata Agent 并部署</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81Tapdata-Agent-%E7%AE%A1%E7%90%86%E5%91%BD%E4%BB%A4"><span class="toc-number">3.2.3.</span> <span class="toc-text">3、Tapdata Agent 管理命令</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%86-Oracle-%E7%8E%AF%E5%A2%83%E9%83%A8%E7%BD%B2"><span class="toc-number">3.3.</span> <span class="toc-text">🔆 Oracle 环境部署</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E9%83%A8%E7%BD%B2-oracle11g-%E4%B8%BB%E6%9C%BA"><span class="toc-number">3.3.1.</span> <span class="toc-text">1、部署 oracle11g 主机</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81%E9%85%8D%E7%BD%AE-Shell-%E8%84%9A%E6%9C%AC"><span class="toc-number">3.3.2.</span> <span class="toc-text">3、配置 Shell 脚本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81%E9%85%8D%E7%BD%AE-Vagrantfile-%E8%84%9A%E6%9C%AC"><span class="toc-number">3.3.3.</span> <span class="toc-text">3、配置 Vagrantfile 脚本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%81%E5%90%AF%E5%8A%A8%E9%83%A8%E7%BD%B2-Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">3.3.4.</span> <span class="toc-text">4、启动部署 Oracle 数据库</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5%E3%80%81Oracle-11G-12C-%E5%88%9B%E5%BB%BA%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE"><span class="toc-number">3.3.5.</span> <span class="toc-text">5、Oracle 11G+12C 创建测试数据</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%92%9B-%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-Oracle-11GR2-%E2%80%93-12C"><span class="toc-number">4.</span> <span class="toc-text">💛 数据同步 Oracle 11GR2 –&gt; 12C</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9A%A1%EF%B8%8F-%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E4%BB%8B%E7%BB%8D"><span class="toc-number">4.1.</span> <span class="toc-text">⚡️ 数据同步介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9D%A4%EF%B8%8F-ORACLE-%E9%85%8D%E7%BD%AE-Tapdata%EF%BC%88%E6%BA%90%E7%AB%AF-%E7%9B%AE%E6%A0%87%E7%AB%AF%EF%BC%89"><span class="toc-number">4.2.</span> <span class="toc-text">❤️ ORACLE 配置 Tapdata（源端+目标端）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E5%BC%80%E5%90%AF%E5%BD%92%E6%A1%A3%E6%97%A5%E5%BF%97"><span class="toc-number">4.2.1.</span> <span class="toc-text">1、开启归档日志</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E5%BC%80%E5%90%AF-Supplemental-Logging"><span class="toc-number">4.2.2.</span> <span class="toc-text">2、开启 Supplemental Logging</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81%E5%88%9B%E5%BB%BA%E7%94%A8%E6%88%B7%E8%B4%A6%E5%8F%B7"><span class="toc-number">4.2.3.</span> <span class="toc-text">3、创建用户账号</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%98%80%EF%B8%8F-Tapdata-Cloud-%E8%BF%9E%E6%8E%A5-Oracle-11G-12C"><span class="toc-number">4.3.</span> <span class="toc-text">☀️ Tapdata Cloud 连接 Oracle 11G+12C</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E5%88%9B%E5%BB%BA%E8%BF%9E%E6%8E%A5"><span class="toc-number">4.3.1.</span> <span class="toc-text">1、创建连接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E9%80%89%E6%8B%A9-Oracle"><span class="toc-number">4.3.2.</span> <span class="toc-text">2、选择 Oracle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81%E5%A1%AB%E5%86%99%E5%85%B3%E9%94%AE%E4%BF%A1%E6%81%AF"><span class="toc-number">4.3.3.</span> <span class="toc-text">3、填写关键信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%81%E6%B5%8B%E8%AF%95%E8%BF%9E%E6%8E%A5"><span class="toc-number">4.3.4.</span> <span class="toc-text">4、测试连接</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8C%80-%E5%88%9B%E5%BB%BA%E5%90%8C%E6%AD%A5%E4%BB%BB%E5%8A%A1"><span class="toc-number">4.4.</span> <span class="toc-text">🌀 创建同步任务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E5%88%9B%E5%BB%BA%E4%BB%BB%E5%8A%A1"><span class="toc-number">4.4.1.</span> <span class="toc-text">1、创建任务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E9%85%8D%E7%BD%AE%E4%BB%BB%E5%8A%A1"><span class="toc-number">4.4.2.</span> <span class="toc-text">2、配置任务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81%E9%80%89%E6%8B%A9%E5%90%8C%E6%AD%A5%E8%A1%A8"><span class="toc-number">4.4.3.</span> <span class="toc-text">3、选择同步表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%81%E5%90%AF%E5%8A%A8%E4%BB%BB%E5%8A%A1"><span class="toc-number">4.4.4.</span> <span class="toc-text">4、启动任务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5%E3%80%81%E8%BF%90%E8%A1%8C%E7%9B%91%E6%8E%A7"><span class="toc-number">4.4.5.</span> <span class="toc-text">5、运行监控</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6%E3%80%81%E6%8A%A5%E9%94%99%E5%A4%84%E7%90%86"><span class="toc-number">4.4.6.</span> <span class="toc-text">6、报错处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7%E3%80%81%E5%90%8C%E6%AD%A5%E6%B5%8B%E8%AF%95"><span class="toc-number">4.4.7.</span> <span class="toc-text">7、同步测试</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%8A-%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">5.</span> <span class="toc-text">🌊 写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

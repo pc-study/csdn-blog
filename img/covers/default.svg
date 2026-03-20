@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a73e8;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#1a73e8;stop-opacity:0.6"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="#e8f0fe"/>
+  <rect x="40" y="40" width="720" height="320" rx="20" fill="url(#g)" opacity="0.15"/>
+  <circle cx="680" cy="100" r="120" fill="#1a73e8" opacity="0.08"/>
+  <circle cx="120" cy="300" r="80" fill="#1a73e8" opacity="0.06"/>
+  <text x="400" y="175" font-family="sans-serif" font-size="48" font-weight="700" fill="#1a73e8" text-anchor="middle">Lucifer</text>
+  <text x="400" y="235" font-family="sans-serif" font-size="36" font-weight="400" fill="#1a73e8" text-anchor="middle" opacity="0.7">Blog</text>
+  <line x1="300" y1="270" x2="500" y2="270" stroke="#1a73e8" stroke-width="3" opacity="0.3"/>
+</svg>

@@ -1,0 +1,305 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>数据中台怎么选型？终于有人讲明白了 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="导读：数据中台选型主要包括数据仓库选型、调度平台选型、BI工具选型3个方面，好的工具可以大幅提升开发效率，降低运维工作量。 点我跳转文末 领书，新出版的 《高效使用Greenplum》！ 本篇文章 + + ！皆可参与送书活动！ 01 数据仓库选型 数据仓库选型是整个数据中台项目的重中之重，是一切开发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据中台怎么选型？终于有人讲明白了">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/122363166/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="导读：数据中台选型主要包括数据仓库选型、调度平台选型、BI工具选型3个方面，好的工具可以大幅提升开发效率，降低运维工作量。 点我跳转文末 领书，新出版的 《高效使用Greenplum》！ 本篇文章 + + ！皆可参与送书活动！ 01 数据仓库选型 数据仓库选型是整个数据中台项目的重中之重，是一切开发">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/tech.svg">
+<meta property="article:published_time" content="2022-01-07T06:16:09.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.354Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="big data">
+<meta property="article:tag" content="hive">
+<meta property="article:tag" content="数据仓库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/tech.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"数据中台怎么选型？终于有人讲明白了","url":"https://pc-study.github.io/csdn-blog/posts/122363166/","image":"https://pc-study.github.io/csdn-blog/img/covers/tech.svg","datePublished":"2022-01-07T06:16:09.000Z","dateModified":"2026-03-20T12:25:38.354Z","description":"导读：数据中台选型主要包括数据仓库选型、调度平台选型、BI工具选型3个方面，好的工具可以大幅提升开发效率，降低运维工作量。 点我跳转文末 领书，新出版的 《高效使用Greenplum》！ 本篇文章 + + ！皆可参与送书活动！ 01 数据仓库选型 数据仓库选型是整个数据中台项目的重中之重，是一切开发","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/122363166/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/122363166/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '数据中台怎么选型？终于有人讲明白了',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/tech.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">数据中台怎么选型？终于有人讲明白了</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">数据中台怎么选型？终于有人讲明白了<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2022-01-07-122363166.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-01-07T06:16:09.000Z" title="发表于 2022-01-07 14:16:09">2022-01-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.354Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">4.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>14分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><blockquote>
+<p>导读：数据中台选型主要包括数据仓库选型、调度平台选型、BI工具选型3个方面，好的工具可以大幅提升开发效率，降低运维工作量。</p>
+</blockquote>
+<p><a href="#jump99"><strong>点我跳转文末</strong></a> <strong>领书，新出版的 《高效使用Greenplum》！</strong></p>
+<blockquote>
+<p><strong>本篇文章 <code>点赞</code> + <code>收藏</code> + <code>评论</code>！皆可参与送书活动！</strong></p>
+</blockquote>
+<h3 id="01-数据仓库选型"><a href="#01-数据仓库选型" class="headerlink" title="01 数据仓库选型"></a>01 数据仓库选型</h3><p>数据仓库选型是整个数据中台项目的重中之重，是一切开发和应用的基础。而数据仓库的选型，其实就是Hive数仓和非Hive数仓的较量。Hive数仓以Hive为核心，搭建数据ETL流程，配合Kylin、Presto、HAWQ、Spark、ClickHouse等查询引擎完成数据的最终展现。而非Hive数仓则以Greenplum、<br>Doris<br>、GaussDB、HANA（基于SAP BW构建的数据仓库一般以HANA作为底层数据库）等支持分布式扩展的OLAP数据库为主，支持数据ETL加工和OLAP查询。</p>
+<p>自从Facebook开源Hive以来，Hive逐渐占领了市场。Hive背靠Hadoop体系，基于HDFS的数据存储，安全稳定、读取高效，同时借助Yarn资源管理器和Spark计算引擎，可以很方便地扩展集群规模，实现稳定地批处理。Hive数据仓库的优势在于可扩展性强，有大规模集群的应用案例，受到广大<br>架构<br>师的推崇。</p>
+<p>虽然Hive应用广泛，但是其缺点也是不容忽视的。</p>
+<p>Hive的开源生态已经完全分化，各大互联网公司和云厂商都是基于早期的开源版本进行个性化修改以后投入生产使用的，很难再回到开源体系。Hive现在的3个版本方向1.2.x、2.1.x、3.1.x都有非常广泛的应用，无法形成合力。</p>
+<p>开源社区发布的Hive版本过于粗糙，漏洞太多。最典型的就是Hive 3.1.0版本里面的Timestamp类型自动存储为格林尼治时间的问题，无论怎么调整参数和系统变量都不能解决。据HDP官方说明，需要升级到3.1.2版才能解决。根据笔者实际应用的情况，Hive 3.1.2版在大表关联时又偶尔出现inert overwrite数据丢失的情况。</p>
+<p>Hive最影响查询性能的计算引擎也不能让人省心。Hive支持的查询引擎主要有MR、Spark、Tez。MR是一如既往的性能慢，升级到3.0版也没有任何提升。基于内存的Spark引擎性能有了大幅提升，3.x版本的稳定性虽然也有所加强，但是对JDBC的支持还是比较弱。基于MR优化的Tez引擎虽然是集成最好的，但是需要根据Hadoop和Hive版本自行编译，部署和升级都十分复杂。</p>
+<p>Hive对更新和删除操作的支持并不友好，导致在数据湖时代和实时数仓时代被迅速抛弃。</p>
+<p>Hive的查询引擎也很难让用户满意，最典型的就是以下查询引擎。</p>
+<p>1）Spark支持SQL查询，需要启动Thrift Server，表现不稳定，查询速度一般为几秒到几分钟。</p>
+<p>2）Impala是CDH公司推出的产品，一般用在CDH平台中，查询速度比Spark快，由于是C++开发的，因此非CDH平台安装Impala比较困难。</p>
+<p>3）Presto和Hive一样，也是Facebook开源的，语法不兼容Hive，查询速度一般为几秒到几分钟。</p>
+<p>4）Kylin是国人开源的MOLAP软件，基于Spark引擎对Hive数据做预算并保存在Hbase或其他存储中，查询速度非常快并且稳定，一般在10s以下。但是模型构建复杂，使用和运维都不太方便。</p>
+<p>5）ClickHouse是目前最火的OLAP查询软件，特点是查询速度快，集成了各大数据库的精华引擎，独立于Hadoop平台，需要把Hive数据同步迁移过去，提供有限的SQL支持，几乎不支持关联操作。</p>
+<p>以Hadoop为核心的Hive数据仓库的颓势已经是无法扭转的了，MapReduce早已被市场抛弃，HDFS在各大云平台也已经逐步被对象存储替代，Yarn被Kubernetes替代也是早晚的事。</p>
+<p>我们把视野扩展到Hive体系以外，就会发现MPP架构的分布式数据库正在蓬勃发展，大有取代Hive数仓的趋势。</p>
+<p>其中技术最成熟、生态最完善的当属Greenplum体系。Greenplum自2015年开源以来，经历了4.x、5.x、6.x三个大版本的升级，功能已经非常全面和稳定了，也受到市场的广泛推崇。基于Greenplum提供商业版本的，除了研发Greenplum的母公司Pivotal，还有中国本地团队的创业公司四维纵横。此外，还有阿里云提供的云数据库AnalyticDB for PostgreSQL、百度云FusionDB和京东云提供的JDW，都是基于Greenplum进行云化的产品。华为的GaussDB在设计中也参考了Greenplum数据库。</p>
+<p>OLAP查询性能最强悍的当属SAP商业数据库HANA，这是数据库领域当之无愧的王者。HANA是一个软硬件结合体，提供高性能的数据查询功能，用户可以直接对大量实时业务数据进行查询和分析。</p>
+<p>HANA唯一的缺点就是太贵，软件和硬件成本高昂。HANA是一个基于列式存储的内存数据库，主要具有以下优势。</p>
+<p>把数据保存在内存中，通过对比我们发现，内存的访问速度比磁盘快1000000倍，比SSD和闪存快1000倍。传统磁盘读取时间是5ms，内存读取时间是5ns。</p>
+<p>服务器采用多核架构（每个刀片8×8核心CPU），多刀片大规模并行扩展，刀片服务器价格低廉，采用64位地址空间—单台服务器容量为2TB，100GB&#x2F;s的数据吞吐量，价格迅速下降，性能迅速提升。</p>
+<p>数据存储可以选择行存储或者列存储，同时对数据进行压缩。SAP HANA采用数据字典的方法对数据进行压缩，用整数代表相应的文本，数据库可以进一步压缩数据和减少数据传输。</p>
+<p>百度开源的Doris也在迎头赶上，并且在百度云中提供云原生部署。<br>Apache<br> Doris是一款架构领先的MPP分析型数据库产品，仅须亚秒级响应时间即可获得查询结果，高效支持实时数据和批处理数据。Apache Doris的分布式架构非常简洁，易于运维，并且支持10PB以上的超大数据集，可以满足多种数据分析需求，例如固定历史报表，实时数据分析，交互式数据分析和探索式数据分析等。Apache Doris支持AGGREGATE、UNIQUE、DUPLICATE三种表模型，同时支持ROLLUP和MATERIALIZED VIEW两种向上聚合方式，可以更好地支撑OLAP查询请求。另外，Doris也支持快速插入和删除数据，是未来实时数仓或者数据湖产品的有力竞争者。</p>
+<p>尝试在OLTP的基础上融合OLAP的数据库TiDB、腾讯TBase（云平台上已改名为TDSQL PostgreSQL版）、阿里的OceanBase都在架构上做了大胆的突破。TiDB采用行存储、列存储两种数据格式各保存一份数据的方式，分别支持快速OLTP交易和OLAP查询。TBase则是分别针对OLAP业务和OLTP业务设置不同的计算引擎和数据服务接口，满足HTAP场景应用需求。OceanBase数据库使用基于LSM-Tree的存储引擎，能够有效地对数据进行压缩，并且不影响性能，可以降低用户的存储成本。</p>
+<h3 id="02-ETL工具选型"><a href="#02-ETL工具选型" class="headerlink" title="02 ETL工具选型"></a>02 ETL工具选型</h3><p>目前，业界比较领先的开源ETL数据抽取工具主要有Kettle、DataX和Waterdrop。商业版本的DataStage、Informatica和Data Services三款软件不仅配置复杂、开发效率低，执行大数据加载也非常慢。</p>
+<p>Kettle（正式名为Pentaho Data Integration）是一款基于Java开发的开源ETL工具，具有图形化界面，可以以工作流的形式流转，有效减少研发工作量，提高工作效率。Kettle支持不同来源的数据，包括不同数据库、Excel&#x2F;CSV等文件、邮件、网站爬虫等。除了数据的抽取与转换，还支持文件操作、收发邮件等，通过图形化界面来创建、设计转换和工作流任务。</p>
+<p>DataX是阿里巴巴集团内部广泛使用的离线数据同步工具&#x2F;平台，实现包括MySQL、Oracle、SQL Server、Postgre、HDFS、Hive、ADS、HBase、TableStore（OTS）、MaxCompute （ODPS）、DRDS等各种异构数据源之间高效的数据同步功能。</p>
+<p>Waterdrop是一款易用、高性能、支持实时流式和离线批处理的海量数据处理工具，程序运行在Apache Spark和Apache Flink之上。Waterdrop简单易用、灵活配置、无需开发，可运行在单机、Spark Standalone集群、Yarn集群、Mesos集群之上。Waterdrop支持实时流式处理，拥有高性能、海量数据处理能力，支持模块化和插件化，易于扩展。用户可根据需要来扩展插件，支持Java&#x2F;Scala实现的Input、Filter、Output插件。</p>
+<p>总的来说，Kettle适合中小企业ETL任务比较少并且单表数据量在百万以下的项目，开发速度快，支持的数据来源丰富，方便快速达成项目目标。DataX支持需要批处理抽取数据的项目，支持千万级、亿级数据的快速同步，性能高效、运维稳定。Waterdrop是后起之秀，在DataX的基础上还支持流式数据处理，是DataX的有力竞争者和潜在替代产品。</p>
+<h3 id="03-调度平台选型"><a href="#03-调度平台选型" class="headerlink" title="03 调度平台选型"></a>03 调度平台选型</h3><p>调度平台可以串联ETL任务并按照指定的依赖和顺序自动执行。调度平台一般用Java语言开发，平台实现难度小，大多数数据仓库实时厂商都有自研的调度平台。</p>
+<p>在早期银行业的数据仓库项目中，大多数据ETL过程都是通过DataStage、Informatica或者存储过程实现的。笔者接触过最好用的产品就是先进数通公司的Moia Control。Moia Control定位于企业统一调度<br>管理平台<br>，致力于为企业的批处理作业制定统一的开发规范、运维方法，对各系统的批量作业进行统一管理、调度和监控。Moia Control的系统架构如</p>
+<p>图1所示，系统分为管理节点和Agent节点，管理节点负责调度任务的配置和分发作业，Agent节点负责任务的执行和监控。Moia Control在金融领域具有非常广泛的应用。</p>
+<p><img src="/csdn-blog/images/990cb6a394e46662ee5358e04bb1b9e6.webp" alt="数据中台怎么选型？终于有人讲明白了" loading='lazy'></p>
+<p>在开源领域，伴随着大数据平台的崛起，虽然先后涌现了Oozie、Azkaban、AirFlow等深度融合Hadoop生态的产品，但都是昙花一现，目前已经逐步被DolphinScheduler取代。DolphinScheduler于2019年8月29日由易观科技捐赠给Apache启动孵化。DolphinScheduler的产品架构如图2所示。</p>
+<p>DolphinScheduler是全球顶尖架构师与社区认可的数据调度平台，把复杂性留给自己，易用性留给用户，具有如下特征。</p>
+<p>1）云原生设计：支持多云、多数据中心的跨端调度，同时也支持Kubernetes Docker的部署与扩展，性能上可以线性增长，在用户测试情况下最高可支持10万级的并行任务控制。</p>
+<p>2）高可用：去中心化的多主从节点工作模式，可以自动平衡任务负载，自动高可用，确保任务在任何节点死机的情况下都可以完成整体调度。</p>
+<p>3）用户友好的界面：可视化DAG图，包括子任务、条件调度、脚本管理、多租户等功能，可以让运行任务实例与任务模板分开，提供给平台维护人员和数据科学家一个方便易用的开发和管理平台。</p>
+<p>4）支持多种数据场景：支持流数据处理，批数据处理，暂停、恢复、多租户等，对于Spark、Hive、MR、Flink、ClickHouse等平台都可以直接调用。</p>
+<p>此外，Kettle本身包含调度平台的功能，我们可以直接在KJB文件中定义定时调度任务，也可以通过操作系统定时任务来启动Kettle，还可以去Kettle中文网申请KettleOnline在线调度管理系统。</p>
+<p>Kettle通过KJB任务里面的START组件可以设置定时调度器，操作界面如图3所示。</p>
+<p><img src="/csdn-blog/images/9a45edd91c7dcbcd82b9dd0659c98bcf.webp" alt="数据中台怎么选型？终于有人讲明白了 - 图2" loading='lazy'></p>
+<p>此外，在Kettle中文网还提供了功能更为强大的KettleOnline工具，非常适合较大型Kettle项目使用，具体功能这里就不展开介绍了。</p>
+<p>除了上述调度工具之外，还有一些小众的Web调度工具，例如Taskctl、XXL-JOB等。总的来说，都能满足基本的需求。有研发实力的公司可以在开源版本的基础上进一步完善功能，打造属于自己的调度平台。</p>
+<h3 id="04-BI工具选型"><a href="#04-BI工具选型" class="headerlink" title="04 BI工具选型"></a>04 BI工具选型</h3><p>BI是一套完整的商业解决方案，用于将企业现有的数据进行有效的整合，快速、准确地提供报表并提出决策依据，帮助企业做出明智的业务经营决策。BI工具是指可以快速完成报表创建的集成开发平台。</p>
+<p>和调度平台不一样，BI领域商业化产品百花齐放，而开源做成功的产品却基本没有。这也和产品的定位有关，调度平台重点关注功能实现，整体逻辑简单通用，便于快速研发出满足基本功能的产品。而BI则需要精心打磨，不断完善和优化，才能获得市场的认可。</p>
+<p>在早期Oracle称霸数据库市场的年代，BI领域有3个巨头，分别是IBM Cognos、Oracle BIEE和SAP BO。在早期BI领域，IBM 50亿美元收购Cognos、SAP 68亿美元收购BO都曾创造了软件行业的收购纪录。这两起收购发生分别发生在2007年和2008年。此后是传统BI的黄金十年，这三大软件占领了国内BI市场超过80%的份额。笔者参加工作的第一个岗位就是BIEE开发工程师，而后又兼职做过两年的Cognos报表开发，对二者都有比较深刻的认识。</p>
+<p>在传统BI时代，主要按照星形模型和雪花模型构建BI应用，在开发BI报表之前，必须先定义各种维度表和事实表，然后通过各BI软件配套的客户端工具完成数据建模，即事实表和维度表的关联，以及部分指标逻辑的计算（例如环比、同比、年累计等）。最后在Web页面上定制报表样式，开发出基于不同筛选条件下，相同样式展现不同数据的固定报表。整个开发过程逻辑清晰，模块划分明确，系统运行也比较稳定，作为整个数据分析项目的“脸面”，赢得了较高的客户满意度。</p>
+<p>传统BI以固定表格展现为主，辅以少量的图形。虽然模型和页面的分离让开发变得简单，目前广泛应用于金融行业和大型国企管理系统中，但是也有不少缺点，例如，星形模型的结构在大数据场景下查询速度非常慢、模型与页面的分离造成版本难以管控、模型中内嵌函数导致查找数据问题变得困难等。</p>
+<p>2017年前后，Tableau强势崛起，以“敏捷BI”的概念搅动了整个BI市场，引领BI进入一个全新的时代。</p>
+<p>Tableau最大的特点是以可视化为核心，强调BI应用构建的敏捷性。Tableau抛弃了传统BI的模型层，可以直接基于数据库的表或者查询来构建报表模块，大大降低了开发难度，提升了报表的开发效率和查询性能。曾经需要一天才能完成的报表开发，现在可能一个小时不到就可以完成，极大提升了产出效率。</p>
+<p>在传统BI时代，国产BI软件虽然也在发展，但是不够强大。在敏捷BI时代，FineBI、永洪BI、SmartBI、观远BI等商业化产品顺势崛起，开始抢占国内BI市场。帆软公司的Fine Report和FineBI更是其中的佼佼者，稳坐国产BI软件的头把交椅，将产品铺向了广大中小企业。国产BI在培训体系上做得更为完善，以至于笔者发现在最近半年的面试中，差不多有一半的应聘者使用过帆软公司的产品。</p>
+<p>在国产化BI之外，跨国软件公司也在敏捷BI方向上做出了调整，其中笔者接触过的就有微软的Power BI和微策略的新一代MSTR Desktop。同时，云厂商也加入BI市场的争夺，其中百度云Sugar、阿里云QuickBI都是内部产品对外提供服务的案例。</p>
+<p>总的来说，在敏捷BI领域，国外厂商的软件成熟度高，版本兼容性好。国内厂商的软件迭代比较快，也容易出现Bug。从实现效果上看，以上软件的差异并不大，BI战场已经变成了UI的较量了，只要UI能设计出好的样式，绝大多数BI软件都可以实现近似的效果。</p>
+<blockquote>
+<p>原文地址：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/3FG1KXzkiPEfbNWrBW5Lxg">https://mp.weixin.qq.com/s/3FG1KXzkiPEfbNWrBW5Lxg</a><br> 原文作者：王春波<br> 本文摘编于《高效使用Greenplum：入门、进阶与数据中台》，经出版方授权发布。（书号：9787111696490）转载请保留文章来源。</p>
+</blockquote>
+<hr>
+<h3 id="🥇-评论区抽粉丝送书啦"><a href="#🥇-评论区抽粉丝送书啦" class="headerlink" title="🥇 评论区抽粉丝送书啦"></a>🥇 评论区抽粉丝送书啦</h3><p><strong>💌 欢迎大家在评论区提出意见和建议! （抽 5 位幸运儿送书，实物图如下）💌</strong></p>
+<p><strong>《高效使用Greenplum》</strong></p>
+<hr>
+<h3 id="📚-本书介绍"><a href="#📚-本书介绍" class="headerlink" title="📚 本书介绍"></a>📚 本书介绍</h3><p>这不仅是一本从原理到使用、从入门到进阶讲解Greenplum的著作，而且是一本指导企业用更省钱、更高效地方式使用Greenplum构建企业级数据仓库和数据中台的著作。</p>
+<p><strong>有不想靠抽，想自己买的同学可以参考下面的链接！</strong></p>
+<p><a target="_blank" rel="noopener" href="https://item.jd.com/13563774.html">《高效使用Greenplum》- 京东图书</a></p>
+<hr>
+<p><strong>📢 注意：</strong></p>
+<p>🏆 想要跟着我一起打卡的朋友，可以 <strong>添加微信</strong>：<code>Lucifer-4622</code> 一起打卡，我保证能让你学习之余收获奖品🏅！</p>
+<p><strong>新的一周，活动奖励升级，增加抽奖池，绝对丰厚！详情戳：</strong><a target="_blank" rel="noopener" href="https://bbs.csdn.net/topics/603632186">https://bbs.csdn.net/topics/603632186</a></p>
+<p><strong>社区每日打卡地址（日更）</strong>：<a target="_blank" rel="noopener" href="https://docs.qq.com/doc/DRWJIV2VGdktPS3NE">https://docs.qq.com/doc/DRWJIV2VGdktPS3NE</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/122363166/">https://pc-study.github.io/csdn-blog/posts/122363166/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/big-data/">big data</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/">数据仓库</a><a class="post-meta__tags" href="/csdn-blog/tags/hive/">hive</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/122386817/" title="Oracle Net 12c: How to enable Clients using SID to connect to PDB? (Doc ID 1644355.1)"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Oracle Net 12c: How to enable Clients using SID to connect to PDB? (Doc ID 1644355.1)</div></div><div class="info-2"><div class="info-item-1">In this Document APPLIES TO SYMPTOMS CHANGES CAUSE SOLUTION APPLIES TO Oracle Net Services - Version 12.1.0.1 and later Information in this document a</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122318652/" title="Troubleshooting Guide ORA-609 : Opiodr aborting process unknown ospid (Doc ID 1121357.1)"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Troubleshooting Guide ORA-609 : Opiodr aborting process unknown ospid (Doc ID 1121357.1)</div></div><div class="info-2"><div class="info-item-1">In this Document APPLIES TO: PURPOSE TROUBLESHOOTING STEPS REFERENCES APPLIES TO: Oracle Net Services - Version 11.1.0.7 and later Oracle Database - E</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/123063938/" title="手把手教你绘制数据治理实施路线图"><img class="cover" src="/csdn-blog/images/1e27ed78abc90c8292b657ecf7fb2b14.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-22</div><div class="info-item-2">手把手教你绘制数据治理实施路线图</div></div><div class="info-2"><div class="info-item-1">导读 很多企业知道数据治理很重要，但是却不清楚如何做好数据治理。有的企业开展数据治理是“摸着石头过河”，还有一部分企业是"想过河但是不知道该摸哪一块石头”。 数据治理成熟度评估为企业提供了一个数据治理的切入点，通过发现企业数据治理中存在的问题，找到与业界领先企业的差距，绘制出符合企业现状和需求的数据</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/125182445/" title="经典的数据湖“不可能三角”，如何有效解决？"><img class="cover" src="/csdn-blog/images/f77db16dc77749f94e1efb1e341370b6.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-08</div><div class="info-item-2">经典的数据湖“不可能三角”，如何有效解决？</div></div><div class="info-2"><div class="info-item-1">数据湖是什么？ 提到数据湖就要先说一下数据仓库，数据仓库是集成多业务系统数据、面向主题的、专门用于数据查询分析的数据组织形式。当业务系统数据量不断增大、业务系统数量不断增多以后，数据仓库的出现就会成为必然。原始数据入仓时需要经过一系列清洗转换，以及深度组织才能满足业务的需要。因此数据仓库要解决的核心</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120413557/" title="Oracle 数据库监听日志过大，怎么清除？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-22</div><div class="info-item-2">Oracle 数据库监听日志过大，怎么清除？</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库的监听日志用于保留连接数据库的一些记录以及问题等 信息 ！ 当数据库运行长时间之后，日志文件就会一直变大，这时就需要定时清理！如果不清理，当日志大小达到 4G 左右的时候，可能会导致数据库宕机，无法使用！ 以 为例，以下为清除监听日志的详细步骤： 1、查询监听日志的位置 如图框中</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120344062/" title="Oracle 数据库管理员SYS&#x2F;SYSTEM密码忘记了，怎么破？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-17</div><div class="info-item-2">Oracle 数据库管理员SYS&#x2F;SYSTEM密码忘记了，怎么破？</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库在创建之初，就默认有两个管理员用户，权限之大，无人能及，分别为 SYS/SYSTEM！ 管理员用户的密码通常掌握在管理数据库的人员手中，是在创建数据库时进行 配置 的，如果 SYS/SYSTEM 密码丢失了，也不用害怕，可以通过如下方式进行修改！ 登录数据库服务端主机，这个很重要</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121954831/" title="初识 Vertica ，看完白皮书，我都发现了啥【文末赠书】"><img class="cover" src="/csdn-blog/images/694d1aa4e504d24e1b2c786b74df3a8b.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-15</div><div class="info-item-2">初识 Vertica ，看完白皮书，我都发现了啥【文末赠书】</div></div><div class="info-2"><div class="info-item-1">前言 我们已经进入大数据实时分析时代。 点我跳转文末 领书，价值 118 元的 《Python商业数据挖掘（第6版）》！ 用Python展示数据挖掘的理论、技术和应用，大数据必备书籍！ 今天聊聊一种列式数据库，基于 MPP 和真正列式数据库 技术 ，创建了面向大数据实时分析的全新架构：。 本篇文章</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/123560637/" title="“东数西算”国家工程全面启动，你想知道的全在这儿"><img class="cover" src="/csdn-blog/images/4379af945c63d524badd8f6c35cdfded.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-18</div><div class="info-item-2">“东数西算”国家工程全面启动，你想知道的全在这儿</div></div><div class="info-2"><div class="info-item-1">导读 日前，国家发改委、中央网信办、工信部和国家能源局联合印发通知，同意在京津冀、长三角、粤港澳大湾区、成渝、内蒙古、贵州、甘肃、宁夏等8地启动建设国家算力枢纽节点，并规划了10个国家数据中心集群。至此，全国一体化大数据中心体系完成总体布局设计，“东数西算”工程正式全面启动。 来源：文章来源于网络</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#01-%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E9%80%89%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">01 数据仓库选型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#02-ETL%E5%B7%A5%E5%85%B7%E9%80%89%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">02 ETL工具选型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#03-%E8%B0%83%E5%BA%A6%E5%B9%B3%E5%8F%B0%E9%80%89%E5%9E%8B"><span class="toc-number">3.</span> <span class="toc-text">03 调度平台选型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#04-BI%E5%B7%A5%E5%85%B7%E9%80%89%E5%9E%8B"><span class="toc-number">4.</span> <span class="toc-text">04 BI工具选型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%A5%87-%E8%AF%84%E8%AE%BA%E5%8C%BA%E6%8A%BD%E7%B2%89%E4%B8%9D%E9%80%81%E4%B9%A6%E5%95%A6"><span class="toc-number">5.</span> <span class="toc-text">🥇 评论区抽粉丝送书啦</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%9A-%E6%9C%AC%E4%B9%A6%E4%BB%8B%E7%BB%8D"><span class="toc-number">6.</span> <span class="toc-text">📚 本书介绍</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

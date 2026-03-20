@@ -1,0 +1,283 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>OGG 更新表频繁导致进程中断，见鬼了？非也！ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 问题描述 问题分析 解决方案 后续 前言 最近几周一直遇到一个 OGG 问题，有一张表已更新就会中断 OGG 同步进程，本文记录一下分析过程以及解决方案。 问题描述 昨天下午，客户说 OGG 又停了（OGG 版本是 19.1.0">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OGG 更新表频繁导致进程中断，见鬼了？非也！">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/148027514/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 问题描述 问题分析 解决方案 后续 前言 最近几周一直遇到一个 OGG 问题，有一张表已更新就会中断 OGG 同步进程，本文记录一下分析过程以及解决方案。 问题描述 昨天下午，客户说 OGG 又停了（OGG 版本是 19.1.0">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/3c2ad571818ea0875bc004a28ba92df0.png">
+<meta property="article:published_time" content="2025-05-17T05:38:53.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.222Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="ffmpeg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/3c2ad571818ea0875bc004a28ba92df0.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"OGG 更新表频繁导致进程中断，见鬼了？非也！","url":"https://pc-study.github.io/csdn-blog/posts/148027514/","image":"https://pc-study.github.io/csdn-blog/images/3c2ad571818ea0875bc004a28ba92df0.png","datePublished":"2025-05-17T05:38:53.000Z","dateModified":"2026-03-20T12:25:39.222Z","description":"大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 问题描述 问题分析 解决方案 后续 前言 最近几周一直遇到一个 OGG 问题，有一张表已更新就会中断 OGG 同步进程，本文记录一下分析过程以及解决方案。 问题描述 昨天下午，客户说 OGG 又停了（OGG 版本是 19.1.0","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/148027514/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/148027514/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'OGG 更新表频繁导致进程中断，见鬼了？非也！',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/3c2ad571818ea0875bc004a28ba92df0.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">OGG 更新表频繁导致进程中断，见鬼了？非也！</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">OGG 更新表频繁导致进程中断，见鬼了？非也！<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-05-17-148027514.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-17T05:38:53.000Z" title="发表于 2025-05-17 13:38:53">2025-05-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.222Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86/">多媒体处理</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">762</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>2分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><blockquote>
+<p>大家好，这里是 <strong>DBA学习之路</strong>，专注于提升数据库运维效率。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#_7">问题描述</a></li>
+<li><a href="#_21">问题分析</a></li>
+<li><a href="#_60">解决方案</a></li>
+<li><a href="#_79">后续</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近几周一直遇到一个 OGG 问题，有一张表已更新就会中断 OGG 同步进程，本文记录一下分析过程以及解决方案。</p>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>昨天下午，客户说 OGG 又停了（OGG 版本是 19.1.0.4，源端和目标端同版本，都是 19.20）：</p>
+<blockquote>
+<p>ogg 又停了，源端到目标端的 XZ3WFP 链路，可以查一下原因吗？</p>
+</blockquote>
+<p>连上环境看了下，确实目标端复制链路处理 ABENDED 状态：</p>
+<p><img src="/csdn-blog/images/9486c7a71e91dae383212dc7931f7ad0.png" alt="OGG 更新表频繁导致进程中断，见鬼了？非也！" loading='lazy'></p>
+<p>查看目标端 ggserr.log 日志（日志路径一般在 $OGG_HOME 目录下）：</p>
+<p><img src="/csdn-blog/images/57d4f10c575435b48896c7e1573b2e50.png" alt="OGG 更新表频繁导致进程中断，见鬼了？非也！ - 图2" loading='lazy'></p>
+<p>日志里没有看到明显报错信息。</p>
+<h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>简单查看了下每次链路 ABENDED，报错的内容都是因为 update 语句导致，源端都是正常抽取状态，目标端复制进程异常终止。</p>
+<p>关于 ggserr.log 日志中报错信息，查看官方针对这个错误代码的定义：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">OGG<span class="hljs-number">-01296</span>: Error <span class="hljs-keyword">mapping</span> <span class="hljs-keyword">from</span> &#123;<span class="hljs-number">0</span>&#125; <span class="hljs-keyword">to</span> &#123;<span class="hljs-number">1</span>&#125;<br>The <span class="hljs-keyword">mapping</span> <span class="hljs-keyword">of</span> the specified source <span class="hljs-keyword">and</span> target <span class="hljs-keyword">tables</span> failed.<br><br>Examine the accompanying messages that provide details about the <span class="hljs-keyword">mapping</span> failure, <span class="hljs-keyword">and</span> resolve the problem based <span class="hljs-keyword">on</span> those messages.<br></code></pre></td></tr></table></figure>
+
+<p>查看目标端 discardfile 文件（日志路径一般在 $OGG_HOME&#x2F;dirrpt 目录下）：</p>
+<p><img src="/csdn-blog/images/65557a17014707752799ba6901abba36.png" alt="OGG 更新表频繁导致进程中断，见鬼了？非也！ - 图3" loading='lazy'></p>
+<p>看报错是缺列 ID，ID 是这张表的主键，检查了一下源端和目标端的表结构以及主键，发现没有区别，两端保持一致：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">select</span> <span class="hljs-keyword">owner</span>, <span class="hljs-built_in">constraint_name</span>, constraint_type, status, validated <span class="hljs-keyword">from</span> dba_constraints <span class="hljs-keyword">where</span> owner=<span class="hljs-string">&#x27;XXXXXXX&#x27;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">TABLE_NAME</span> = <span class="hljs-string">&#x27;XXXXX&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/ec30598f11b9900c7885d5762248ae04.png" alt="OGG 更新表频繁导致进程中断，见鬼了？非也！ - 图4" loading='lazy'></p>
+<p>源端和目标端均存在主键，按理来说应该没有问题。问了一下客户，这张表是最近新建的表，检查一下源端的抽取链路参数：</p>
+<p><img src="/csdn-blog/images/3c2ad571818ea0875bc004a28ba92df0.png" alt="OGG 更新表频繁导致进程中断，见鬼了？非也！ - 图5" loading='lazy'></p>
+<p>有设置参数 <code>ddloptions addtrandata report</code> 参数，按理来说应该可以自动添加 trandata，检查一下源端 trandata 是否正常（一般是手动添加完 trandata 用 dba_log_groups 视图查看）：</p>
+<p><img src="/csdn-blog/images/573f329090f7f2cfb4ea087da09f8621.webp" alt="OGG 更新表频繁导致进程中断，见鬼了？非也！ - 图6" loading='lazy'></p>
+<p>但是通过参数自动添加需要使用下方方式查看：</p>
+<p><img src="/csdn-blog/images/2da8e78ca525c923a5052f0885791f15.webp" alt="OGG 更新表频繁导致进程中断，见鬼了？非也！ - 图7" loading='lazy'></p>
+<p>检查发现没有添加 trandata 记录，在 ggsci 中检查表是否添加 trandata：</p>
+<p><img src="/csdn-blog/images/7794f018a61b5b20efe22e44d813228b.webp" alt="OGG 更新表频繁导致进程中断，见鬼了？非也！ - 图8" loading='lazy'></p>
+<p>确实没有添加 trandata，这就很奇怪，不过先处理问题要紧。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>之前每次遇到这个问题，为了紧急恢复同步，都是使用跳过当前事务的方式恢复：</p>
+<p><img src="/csdn-blog/images/540ec58b27fcf655b8962911b301501e.webp" alt="OGG 更新表频繁导致进程中断，见鬼了？非也！ - 图9" loading='lazy'></p>
+<p>这里也是先紧急修复了，然后手动添加 trandata：</p>
+<p><img src="/csdn-blog/images/8b45c4eb17d0134cea36103eed4d09eb.webp" alt="OGG 更新表频繁导致进程中断，见鬼了？非也！ - 图10" loading='lazy'></p>
+<p>添加完之后再次检查视图：</p>
+<p><img src="/csdn-blog/images/81f8b2a17a0adc37e308631d91785daf.webp" alt="OGG 更新表频繁导致进程中断，见鬼了？非也！ - 图11" loading='lazy'></p>
+<p>可以查看记录，这次是添加成功了，后续请客户再次执行 update 操作：</p>
+<p><img src="/csdn-blog/images/e5d96335ab5c7d40110d8af8bcb97fbb.png" alt="OGG 更新表频繁导致进程中断，见鬼了？非也！ - 图12" loading='lazy'></p>
+<p>复制链路没有中断，数据正常同步，问题解决。</p>
+<h2 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h2><p>后续问了客户建表的操作，客户反馈：</p>
+<ol>
+<li>第一次建表忘记添加主键，所以添加成功后，删掉了这张表；</li>
+<li>重建表，设置 ID 为主键。</li>
+</ol>
+<p>之前每次对这张表进行 update 操作，都会导致复制链路中断。</p>
+<p>等后面有时间了可以做一下测试~</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/148027514/">https://pc-study.github.io/csdn-blog/posts/148027514/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/ffmpeg/">ffmpeg</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/148027519/" title="亲测有效！OGG 创建抽取进程报错 OGG-08241，如何解决？"><img class="cover" src="/csdn-blog/images/cf19c46d9176ab85213de6f56c4cdc41.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">亲测有效！OGG 创建抽取进程报错 OGG-08241，如何解决？</div></div><div class="info-2"><div class="info-item-1">前言 今天在测试 OGG 一个功能的时候，需要重新初始化 oggca，所以重装了一下 OGG。重建完之后重新添加抽取进程报错，一直无法添加成功： 经过一翻分析，找到了解决方案，本文记录一下解决过程。 问题描述 OGG 重装之前，没有清理原先抽取进程，重装后，抽取进程重建失败！ 原因是因为添加抽取进程</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148027506/" title="OGGMA 21c 微服务 (MySQL) 安装避坑指南"><img class="cover" src="/csdn-blog/images/aa0b8842e3326fd528988667d6a80ef6.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">OGGMA 21c 微服务 (MySQL) 安装避坑指南</div></div><div class="info-2"><div class="info-item-1">前言 这两天在写 100 天实战课程 的 OGG 微服务课程： 在 Oracle Linux 8.10 上安装 OGGMA 21c MySQL 遇到了一点问题，分享给大家一起避坑！ 环境信息 环境信息： 主机版本 主机名 实例名 MySQL 版本 IP 地址 数据库字符集 Goldengate 版本</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/148027519/" title="亲测有效！OGG 创建抽取进程报错 OGG-08241，如何解决？"><img class="cover" src="/csdn-blog/images/cf19c46d9176ab85213de6f56c4cdc41.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-17</div><div class="info-item-2">亲测有效！OGG 创建抽取进程报错 OGG-08241，如何解决？</div></div><div class="info-2"><div class="info-item-1">前言 今天在测试 OGG 一个功能的时候，需要重新初始化 oggca，所以重装了一下 OGG。重建完之后重新添加抽取进程报错，一直无法添加成功： 经过一翻分析，找到了解决方案，本文记录一下解决过程。 问题描述 OGG 重装之前，没有清理原先抽取进程，重装后，抽取进程重建失败！ 原因是因为添加抽取进程</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145762783/" title="Oracle 19C RAC 集群起不来了，ora.storage 的锅？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-20</div><div class="info-item-2">Oracle 19C RAC 集群起不来了，ora.storage 的锅？</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题分析 解决方案 写在最后 前言 半夜 11 点多接到电话，说有一个客户的生产库宕了一个节点，需要紧急恢复一下。赶紧下床打开电脑，一顿操作连上了客户的数据库主机，是一套 19C（19.22） RAC 2 节</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148232762/" title="红帽 RHEL 10 正式发布，这些亮点你必须知道！"><img class="cover" src="/csdn-blog/images/ba2d2f0d07734d4373d2383cd68fc168.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-26</div><div class="info-item-2">红帽 RHEL 10 正式发布，这些亮点你必须知道！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 颠覆性革新 1、安装程序全面重构 2、镜像构建器升级 3、重要功能调整 4、软件生态调整 5、生成式 AI Oracle 全系支持：一键部署实战 写在最后 前言 2025 年 5 月 13 日，Red Hat Enterpris</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/146155632/" title="数据泵导入报错 ORA-39405 提示时区要升级，怎么办？看这篇！"><img class="cover" src="/csdn-blog/images/253959e262ff31928891d4642737147d.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-10</div><div class="info-item-2">数据泵导入报错 ORA-39405 提示时区要升级，怎么办？看这篇！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题分析 解决方案 安装时区补丁 升级时区 写在最后 前言 最近遇到好几次数据泵导入报错 ORA-39405 的问题，需要升级时区，本文正好记录一下解决过程。 问题分析 两套 19C 数据库，补丁版本不一致，</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142649931/" title="达梦 DM8 数据库单机部署最佳实践"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-30</div><div class="info-item-2">达梦 DM8 数据库单机部署最佳实践</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 前言 达梦是国产数据库中第一家上市的公司，在未来信创路上应该会越走越顺，所以对于国产数据库学习比较迷茫的同学，可以考虑先学习达梦数据库。 学习任何一种数据库之前，都需要先安装好数据库环境，所以安装是 DBA 的必备技能之</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/146367499/" title="Oracle RAC ASM 磁盘组满了，无法扩容怎么在线处理？"><img class="cover" src="/csdn-blog/images/b2295d74649eb3b944fb0c9414421145.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-19</div><div class="info-item-2">Oracle RAC ASM 磁盘组满了，无法扩容怎么在线处理？</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题分析 处理过程 关闭自动扩展 重建临时表空间 重建 REDO 文件 写在最后 前言 上周给客户巡检的时候，发现有一套 Oracle RAC 11GR2 数据库的 ASM 磁盘使用率 99.9% 了，来不及</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-number">3.</span> <span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90"><span class="toc-number">4.</span> <span class="toc-text">问题分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">5.</span> <span class="toc-text">解决方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%BB%AD"><span class="toc-number">6.</span> <span class="toc-text">后续</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

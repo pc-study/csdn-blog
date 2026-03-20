@@ -1,0 +1,747 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>金仓数据库 KingbaseES V9 单机安装指南 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 环境准备 安装包下载 安装前配置 检查操作系统版本 关闭防火墙 创建用户 创建目录 系统参数配置 资源配置 配置 RemoveIPC 检查 &#x2F;tmp 目录 配置环境变量 KES 安装 安装 ISO 挂载">
+<meta property="og:type" content="article">
+<meta property="og:title" content="金仓数据库 KingbaseES V9 单机安装指南">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/142949036/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 环境准备 安装包下载 安装前配置 检查操作系统版本 关闭防火墙 创建用户 创建目录 系统参数配置 资源配置 配置 RemoveIPC 检查 &#x2F;tmp 目录 配置环境变量 KES 安装 安装 ISO 挂载">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg">
+<meta property="article:published_time" content="2024-10-15T05:18:15.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:13:19.886Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="kingbase">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"金仓数据库 KingbaseES V9 单机安装指南","url":"https://pc-study.github.io/csdn-blog/posts/142949036/","image":"https://pc-study.github.io/csdn-blog/img/covers/database.svg","datePublished":"2024-10-15T05:18:15.000Z","dateModified":"2026-03-20T12:13:19.886Z","description":"大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 环境准备 安装包下载 安装前配置 检查操作系统版本 关闭防火墙 创建用户 创建目录 系统参数配置 资源配置 配置 RemoveIPC 检查 /tmp 目录 配置环境变量 KES 安装 安装 ISO 挂载","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/142949036/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/142949036/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '金仓数据库 KingbaseES V9 单机安装指南',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/database.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">金仓数据库 KingbaseES V9 单机安装指南</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">金仓数据库 KingbaseES V9 单机安装指南<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-10-15-142949036.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-10-15T05:18:15.000Z" title="发表于 2024-10-15 13:18:15">2024-10-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:13:19.886Z" title="更新于 2026-03-20 20:13:19">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">7.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>29分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:13:19&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，分享一些学习国产数据库路上的知识和经验。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#_9">介绍</a></li>
+<li><a href="#_18">环境准备</a></li>
+<li><ul>
+<li><a href="#_33">安装包下载</a></li>
+</ul>
+</li>
+<li><a href="#_48">安装前配置</a></li>
+<li><ul>
+<li><a href="#_49">检查操作系统版本</a></li>
+<li><a href="#_61">关闭防火墙</a></li>
+<li><a href="#_70">创建用户</a></li>
+<li><a href="#_84">创建目录</a></li>
+<li><a href="#_103">系统参数配置</a></li>
+<li><a href="#_163">资源配置</a></li>
+<li><a href="#_RemoveIPC_176">配置 RemoveIPC</a></li>
+<li><a href="#_tmp__187">检查 &#x2F;tmp 目录</a></li>
+<li><a href="#_204">配置环境变量</a></li>
+</ul>
+</li>
+<li><a href="#KES__216">KES 安装</a></li>
+<li><ul>
+<li><a href="#_ISO__223">安装 ISO 挂载</a></li>
+<li><a href="#_248">配置语言环境</a></li>
+<li><a href="#_302">图形化安装</a></li>
+<li><ul>
+<li><a href="#_305">启动安装程序</a></li>
+<li><a href="#_KES__326">安装 KES 软件</a></li>
+<li><a href="#_372">初始化数据库</a></li>
+</ul>
+</li>
+<li><a href="#_446">命令行安装</a></li>
+<li><ul>
+<li><a href="#_449">启动安装程序</a></li>
+<li><a href="#_KES__496">安装 KES 软件</a></li>
+<li><a href="#_622">初始化数据库</a></li>
+</ul>
+</li>
+<li><a href="#_814">静默安装（非常建议）</a></li>
+<li><a href="#_907">连接测试</a></li>
+</ul>
+</li>
+<li><a href="#KES__997">KES 卸载</a></li>
+<li><ul>
+<li><a href="#_999">删除数据库服务</a></li>
+</ul>
+</li>
+<li><a href="#KES__1028">KES 常用命令</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>电科金仓最近发布了产品体验官招募活动，寻求长期合作伙伴，感兴趣的朋友可以参加体验：<strong><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Mz4Bi5jhZXz_UtZtmEAmyQ">号外！金仓数据库产品体验官火热招募</a></strong>。</p>
+<p>本文主要记录人大金仓 KES V9 的安装步骤以及经验总结，让大家更容易安装 KingbaseES，安装过程很丝滑。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>金仓数据库管理系统[简称: KingbaseES ]是中电科金仓公司自主研发的、具有自主知识产权的商用关系型数据库管理系统（DBMS）。该产品面向事务处理类应用，兼顾各类数据分析类应用，可用做信息管理系统、业务及生产系统、决策支持系统、全文检索、地理信息系统等的承载数据库。</p>
+<p>KingbaseES（KES） 支持多种操作系统和硬件平台：支持 Linux、Windows、国产 Kylin 等数十个操作系统产品版本，支持通用x86_64 及国产龙芯、飞腾、申威等 CPU 硬件体系架构。</p>
+<p>针对不同类型的客户需求，KingbaseES 提供标准版、企业版、专业版、开发版等多种版本。这些版本构建于同一数据库引擎上，不同平台版本完全兼容。</p>
+<p>KingbaseES 软件能够提供一主一备以及一主多备的高可用集群架构，实现数据及实例级 (异地) 故障容灾，也能够提供多节点并行服务，内存融合及存储共享，实现高并发性能利用最大化，结合读写分离或备份使用同步实现数据保护最大化。</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>本文演示环境为：</p>
+<table>
+<thead>
+<tr>
+<th>主机名</th>
+<th>版本</th>
+<th>CPU</th>
+<th>内存</th>
+<th>硬盘</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>kes</td>
+<td>银河麒麟V10</td>
+<td>x86</td>
+<td>8G</td>
+<td>100G</td>
+</tr>
+</tbody></table>
+<p>KingbaseES 对内存和硬盘的要求不高，资源不足的同学可以参考以下配置：</p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>要求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>标准版&#x2F;企业版&#x2F;专业版&#x2F;开发版</td>
+<td>CPU：X86、龙芯、飞腾、鲲鹏 内存：512MB 以上 硬盘：11GB 以上空闲空间</td>
+</tr>
+</tbody></table>
+<p>系统安装建议不要使用最小化，可能确实必要命令（ifconfig，unzip 等），对新手不是很友好。</p>
+<h3 id="安装包下载"><a href="#安装包下载" class="headerlink" title="安装包下载"></a>安装包下载</h3><p>金仓官网提供安装软件介质，直接访问：<strong><a target="_blank" rel="noopener" href="https://www.kingbase.com.cn/xzzx/index.htm">下载中心</a></strong></p>
+<p>选择对应版本以及系统类型下载即可，下载完成后建议进行版本校验认证：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">md5sum</span> KingbaseES_V009R001C001B0030_Lin64_install.iso</span><br>3adf56122ea7d407bc43138ab8b11f84  KingbaseES_V009R001C001B0030_Lin64_install.iso<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># 官方 MD5 校验码</span></span><br>3ADF56122EA7D407BC43138AB8B11F84<br></code></pre></td></tr></table></figure>
+
+<p>如不是从官方渠道下载，则必须要与官方提供的校验码需保持一致，校验无误后，则可以放心使用。</p>
+<h2 id="安装前配置"><a href="#安装前配置" class="headerlink" title="安装前配置"></a>安装前配置</h2><h3 id="检查操作系统版本"><a href="#检查操作系统版本" class="headerlink" title="检查操作系统版本"></a>检查操作系统版本</h3><p>检查操作系统版本信息：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-section">[root@kes ~]</span><span class="hljs-comment"># cat /etc/os-release</span><br><span class="hljs-attr">NAME</span>=<span class="hljs-string">&quot;Kylin Linux Advanced Server&quot;</span><br><span class="hljs-attr">VERSION</span>=<span class="hljs-string">&quot;V10 (Halberd)&quot;</span><br><span class="hljs-attr">ID</span>=<span class="hljs-string">&quot;kylin&quot;</span><br><span class="hljs-attr">VERSION_ID</span>=<span class="hljs-string">&quot;V10&quot;</span><br><span class="hljs-attr">PRETTY_NAME</span>=<span class="hljs-string">&quot;Kylin Linux Advanced Server V10 (Halberd)&quot;</span><br><span class="hljs-attr">ANSI_COLOR</span>=<span class="hljs-string">&quot;0;31&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="关闭防火墙"><a href="#关闭防火墙" class="headerlink" title="关闭防火墙"></a>关闭防火墙</h3><p>数据库安装均建议关闭防火墙：</p>
+<figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs nsis">[root@kes ~]<span class="hljs-comment"># systemctl stop firewalld</span><br>[root@kes ~]<span class="hljs-comment"># systemctl disable firewalld</span><br>Removed /etc/<span class="hljs-params">system</span>d/<span class="hljs-params">system</span>/multi-<span class="hljs-literal">user</span>.target.wants/firewalld.service.<br>Removed /etc/<span class="hljs-params">system</span>d/<span class="hljs-params">system</span>/dbus-org.fedoraproject.FirewallD1.service.<br></code></pre></td></tr></table></figure>
+
+<h3 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h3><p>建议在所有服务器上创建 KES 产品的安装用户 kingbase，而非使用 root 身份执行安装部署：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs autoit">[root<span class="hljs-symbol">@kes</span> ~]<span class="hljs-meta"># useradd -d /home/kingbase -m kingbase</span><br>[root<span class="hljs-symbol">@kes</span> ~]<span class="hljs-meta"># echo <span class="hljs-string">&quot;kingbase:kingbase&quot;</span> | chpasswd</span><br>[root<span class="hljs-symbol">@kes</span> ~]<span class="hljs-meta"># id kingbase</span><br>用户id=<span class="hljs-number">1001</span>(kingbase) 组id=<span class="hljs-number">1001</span>(kingbase) 组=<span class="hljs-number">1001</span>(kingbase)<br></code></pre></td></tr></table></figure>
+
+<p>如果有密码复杂性要求，不想设置密码太复杂的话，可以取消密码复杂度：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs swift">[root<span class="hljs-meta">@kes</span> <span class="hljs-operator">~</span>]# sed <span class="hljs-operator">-</span>i &#x27;s<span class="hljs-regexp">/^password\+[[:space:]]\+requisite[[:space:]]\+pam_pwquality.so/</span>#<span class="hljs-operator">&amp;/</span>g&#x27; <span class="hljs-regexp">/etc/</span>pam.d<span class="hljs-operator">/</span>system<span class="hljs-operator">-</span>auth<br>[root<span class="hljs-meta">@kes</span> <span class="hljs-operator">~</span>]# sed <span class="hljs-operator">-</span>i &#x27;s<span class="hljs-regexp">/use_authtok$/</span><span class="hljs-regexp">/&#x27; /</span>etc<span class="hljs-regexp">/pam.d/</span>system<span class="hljs-operator">-</span>auth<br></code></pre></td></tr></table></figure>
+
+<h3 id="创建目录"><a href="#创建目录" class="headerlink" title="创建目录"></a>创建目录</h3><p>为了利于数据库的日常运维、持续使用、存储扩容等，我们在安装前必须做好选项、存储目录规划：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>设置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>目录</td>
+<td>安装软件存储目录: &#x2F;install 备份目录: &#x2F;backup 归档目录: &#x2F;archive 数据存储目录: &#x2F;data KES 安装目录: &#x2F;KingbaseES&#x2F;V9</td>
+</tr>
+<tr>
+<td>端口</td>
+<td>54321</td>
+</tr>
+<tr>
+<td>SYSTEM 密码</td>
+<td>kingbase</td>
+</tr>
+<tr>
+<td>数据库编码格式</td>
+<td>UTF8</td>
+</tr>
+</tbody></table>
+<p>创建安装所需目录并且授权：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">[root@kes ~]# <span class="hljs-built_in">mkdir</span> -p /KingbaseES/V9 /data /backup /archive /install<br>[root@kes ~]# <span class="hljs-built_in">chown</span> -R kingbase:kingbase &#123;/KingbaseES,/data,/backup,/archive,/install&#125;<br>[root@kes ~]# <span class="hljs-built_in">chmod</span> -R 775 &#123;/KingbaseES,/backup,/archive,/install&#125;<br><span class="hljs-comment">## 注意：DATA 目录这里必须要授权 700，否则后续数据库无法启动</span><br>[root@kes ~]# <span class="hljs-built_in">chmod</span> -R 700 /data<br></code></pre></td></tr></table></figure>
+
+<h3 id="系统参数配置"><a href="#系统参数配置" class="headerlink" title="系统参数配置"></a>系统参数配置</h3><p>为了避免在 KingbaseES 安装和使用过程中出现问题，官方建议调整系统内核参数：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>参考值</th>
+<th>所在文件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>semmsl</td>
+<td>250</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;sem</td>
+</tr>
+<tr>
+<td>semmns</td>
+<td>32000</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;sem</td>
+</tr>
+<tr>
+<td>semopm</td>
+<td>100</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;sem</td>
+</tr>
+<tr>
+<td>semmni</td>
+<td>128</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;sem</td>
+</tr>
+<tr>
+<td>shmall</td>
+<td>2097152</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;shmall</td>
+</tr>
+<tr>
+<td>shmmax</td>
+<td>最小: 536870912 最大: 物理内存值减去1字节 建议: 大于物理内存的一半</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;shmmax</td>
+</tr>
+<tr>
+<td>shmmin</td>
+<td>4096</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;shmmni</td>
+</tr>
+<tr>
+<td>file-max</td>
+<td>6815744</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;fs&#x2F;file-max</td>
+</tr>
+<tr>
+<td>aio-max-nr</td>
+<td>1048576 注意: 本参数限制并发发出的请求数量。应该设置以避免IO子系统的失败。</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;fs&#x2F;aio-max-nr</td>
+</tr>
+<tr>
+<td>ip_local_port_range</td>
+<td>最小：9000 最大：65500</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;net&#x2F;ipv4&#x2F;ip_local_port_range</td>
+</tr>
+<tr>
+<td>rmem_default</td>
+<td>262144</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;net&#x2F;core&#x2F;rmem_default</td>
+</tr>
+<tr>
+<td>rmem_max</td>
+<td>4194304</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;net&#x2F;core&#x2F;rmem_max</td>
+</tr>
+<tr>
+<td>wmem_default</td>
+<td>262144</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;net&#x2F;core&#x2F;wmem_default</td>
+</tr>
+<tr>
+<td>wmem_max</td>
+<td>1048576</td>
+<td>&#x2F;proc&#x2F;sys&#x2F;net&#x2F;core&#x2F;wmem_max</td>
+</tr>
+</tbody></table>
+<p>注意：这里关于 shmmax 和 shmall 参数值的计算，我们可以参考 oracle 来设置：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment"># 物理内存（KB）</span><br><span class="hljs-attribute">os_memory_total</span>=$(awk <span class="hljs-string">&#x27;/MemTotal/&#123;print $2&#125;&#x27;</span> /proc/meminfo)<br><span class="hljs-comment"># 获取系统页面大小，用于计算内存总量</span><br><span class="hljs-attribute">pagesize</span>=$(getconf PAGE_SIZE)<br>((shmall = (os_memory_total - 1) * 1024 / pagesize))<br>((shmmax = os_memory_total * 1024 - 10))<br><span class="hljs-comment"># 如果 shmall 小于 2097152，则将其设为 2097152</span><br>((shmall &lt; 2097152)) &amp;&amp; <span class="hljs-attribute">shmall</span>=2097152<br><span class="hljs-comment"># 如果 shmmax 小于 4294967295，则将其设为 4294967295</span><br>((shmmax &lt; 4294967295)) &amp;&amp; <span class="hljs-attribute">shmmax</span>=4294967295<br></code></pre></td></tr></table></figure>
+
+<p>复制以上命令，直接执行即可计算得出这两个参数值：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs autoit">[root<span class="hljs-symbol">@kes</span> ~]<span class="hljs-meta"># echo $shmall</span><br><span class="hljs-number">2097152</span><br>[root<span class="hljs-symbol">@kes</span> ~]<span class="hljs-meta"># echo $shmmax</span><br><span class="hljs-number">7008067574</span><br></code></pre></td></tr></table></figure>
+
+<p>根据官方建议值，配置系统参数文件：</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs dns">[root@kes ~]# cat&lt;&lt;-EOF&gt;&gt;/etc/sysctl.conf<br>fs.aio-max-nr= <span class="hljs-number">1048576</span><br>fs.file-max= <span class="hljs-number">6815744</span><br>kernel.shmall= <span class="hljs-number">2097152</span><br>kernel.shmmax= <span class="hljs-number">7008067574</span><br>kernel.shmmni= <span class="hljs-number">4096</span><br>kernel.sem= <span class="hljs-number">250 32000 100</span> <span class="hljs-number">128</span><br>net.ipv4.ip_local_port_range= <span class="hljs-number">9000 65500</span><br>net.core.rmem_default= <span class="hljs-number">262144</span><br>net.core.rmem_max= <span class="hljs-number">4194304</span><br>net.core.wmem_default= <span class="hljs-number">262144</span><br>net.core.wmem_max= <span class="hljs-number">1048576</span><br>EOF<br><br>## 生效配置<br>[root@kes ~]# sysctl -p<br></code></pre></td></tr></table></figure>
+
+<h3 id="资源配置"><a href="#资源配置" class="headerlink" title="资源配置"></a>资源配置</h3><p>限制用户可使用的资源数量对系统的稳定性非常重要，可以通过调整资源限制数量改进系统性能：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">[root@kes ~]# <span class="hljs-built_in">cat</span>&lt;&lt;-<span class="hljs-string">EOF&gt;&gt;/etc/security/limits.conf</span><br><span class="hljs-string">kingbase soft nofile 65536</span><br><span class="hljs-string">kingbase hard nofile 65536</span><br><span class="hljs-string">kingbase soft nproc 65536</span><br><span class="hljs-string">kingbase hard nproc 65536</span><br><span class="hljs-string">kingbase soft core unlimited</span><br><span class="hljs-string">kingbase hard core unlimited</span><br><span class="hljs-string">EOF</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="配置-RemoveIPC"><a href="#配置-RemoveIPC" class="headerlink" title="配置 RemoveIPC"></a>配置 RemoveIPC</h3><p>systemd-logind 服务中引入的一个特性 RemoveIPC，会造成程序信号丢失等问题，只有Redhat7 及以上和一些特殊的国产Linux的版本需要修改，改之前可先查看此项是否为默认yes)，需要设置 RemoveIPC&#x3D;no：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-section">[root@kes ~]</span><span class="hljs-comment"># sed -i &#x27;s/#RemoveIPC=no/RemoveIPC=no/&#x27; /etc/systemd/logind.conf</span><br><span class="hljs-section">[root@kes ~]</span><span class="hljs-comment"># grep RemoveIPC /etc/systemd/logind.conf</span><br><span class="hljs-attr">RemoveIPC</span>=<span class="hljs-literal">no</span><br><span class="hljs-comment"># 重新加载 systemd 守护进程并重启 systemd-logind 服务生效</span><br><span class="hljs-section">[root@kes ~]</span><span class="hljs-comment"># systemctl daemon-reload</span><br><span class="hljs-section">[root@kes ~]</span><span class="hljs-comment"># systemctl restart systemd-logind.service</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="检查-tmp-目录"><a href="#检查-tmp-目录" class="headerlink" title="检查 &#x2F;tmp 目录"></a>检查 &#x2F;tmp 目录</h3><p>KES 安装对于 &#x2F;tmp 目录有一定要求，至少需要 10G 空间，否则安装时会报警并使用 kingbase 用户家目录作为替代：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">Now launch installer...<br>正在准备进行安装<br>警告:/tmp 磁盘空间不足！正在尝试将 /home/kingbase 用于安装基础和 tmp <span class="hljs-built_in">dir</span>。<br></code></pre></td></tr></table></figure>
+
+<p>手动挂载 &#x2F;tmp 目录空间：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">[root@kes ~]# <span class="hljs-built_in">cat</span>&lt;&lt;-<span class="hljs-string">EOF&gt;&gt;/etc/fstab</span><br><span class="hljs-string">tmpfs /tmp tmpfs size=10G 0 0</span><br><span class="hljs-string">EOF</span><br>[root@kes ~]# mount -o remount /tmp<br>[root@kes ~]# <span class="hljs-built_in">df</span> -h | grep /tmp<br>tmpfs                   10G   20K   10G    1% /tmp<br></code></pre></td></tr></table></figure>
+
+<h3 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h3><p>这一步官方文档没有提到，是以我安装其他数据库的经验添加：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs routeros">[root@kes ~]# cat&lt;&lt;-\EOF&gt;&gt;/home/kingbase/.bash_profile<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">KES_HOME</span>=/KingbaseES/V9/Server<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">LD_LIBRARY_PATH</span>=<span class="hljs-variable">$KES_HOME</span>/lib:/lib:/usr/lib<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$KES_HOME</span>/bin:/usr/sbin:$PATH<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">PS1</span>=<span class="hljs-string">&quot;[`whoami`@`hostname`:&quot;</span><span class="hljs-string">&#x27;$PWD]$ &#x27;</span><br>EOF<br></code></pre></td></tr></table></figure>
+
+<p>环境配置方面到这就结束了，没有看到关于 selinux，swap 以及透明大页这些配置的要求，所有也就没有多此一举了。</p>
+<h2 id="KES-安装"><a href="#KES-安装" class="headerlink" title="KES 安装"></a>KES 安装</h2><p>KES 安装支持以下 3 种方式：</p>
+<ul>
+<li>图形化安装</li>
+<li>命令行安装</li>
+<li>静默安装</li>
+</ul>
+<p>本文基于三种模式都会演示一遍。</p>
+<h3 id="安装-ISO-挂载"><a href="#安装-ISO-挂载" class="headerlink" title="安装 ISO 挂载"></a>安装 ISO 挂载</h3><p>KES 的安装包和达梦的类似，都是 iso 格式的，iso 格式的安装包需要先挂载才能使用。</p>
+<p>挂载 iso 文件需要使用 root 用户，安装包上传在 &#x2F;install 目录，挂载到 &#x2F;mnt 目录下：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs tap">[root@kes ~]<span class="hljs-comment"># cd /install/</span><br>[root@kes install]<span class="hljs-comment"># ls</span><br>KingbaseES_V009R001C001B0030_Lin64_install.iso<br>[root@kes install]<span class="hljs-comment"># mount -o loop KingbaseES_V009R001C001B0030_Lin64_install.iso /mnt/</span><br>mount: /mnt: WARNING: source write-protected, mounted read-only.<br><span class="hljs-comment">## 挂载目录下可以看到 setup 目录和 setup.sh 脚本</span><br>[root@kes install]<span class="hljs-comment"># ll /mnt/</span><br>dr-xr-xr-x<span class="hljs-number"> 2 </span>root root<span class="hljs-number"> 2048 </span> 5月<span class="hljs-number"> 21 </span>21:44 setup<br>-r-xr-xr-x<span class="hljs-number"> 1 </span>root root<span class="hljs-number"> 3932 </span> 5月<span class="hljs-number"> 21 </span>21:44 setup.sh<br><span class="hljs-comment">## 将挂载出来的安装文件拷贝到 /install 目录下</span><br>[root@kes install]<span class="hljs-comment"># cp -r /mnt/* /install</span><br>[root@kes install]<span class="hljs-comment"># ll</span><br>-rw-r--r--<span class="hljs-number"> 1 </span>root root<span class="hljs-number"> 2502940672 </span> 9月<span class="hljs-number"> 24 </span>21:23 KingbaseES_V009R001C001B0030_Lin64_install.iso<br>dr-xr-xr-x<span class="hljs-number"> 2 </span>root root        <span class="hljs-number"> 91 </span> 9月<span class="hljs-number"> 24 </span>21:24 setup<br>-r-xr-xr-x<span class="hljs-number"> 1 </span>root root      <span class="hljs-number"> 3932 </span> 9月<span class="hljs-number"> 24 </span>21:25 setup.sh<br><span class="hljs-comment">## 复制完成后取消安装 iso 的挂载</span><br>[root@kes install]<span class="hljs-comment"># umount /mnt</span><br></code></pre></td></tr></table></figure>
+
+<p>此时 &#x2F;mnt 已经和 iso 文件解除挂载关系，在 &#x2F;mnt 目录下不会再看到安装相关文件。</p>
+<h3 id="配置语言环境"><a href="#配置语言环境" class="headerlink" title="配置语言环境"></a>配置语言环境</h3><p>图形化安装支持中文和英文的安装界面，根据操作系统的语言设置会显示对应语言的安装界面，可以执行如下命令查看操作系统的语言设置：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros">[root@kes install]# echo <span class="hljs-variable">$LANG</span><br>zh_CN.UTF-8<br><span class="hljs-comment">## 显示值包含“zh_CN”，则为中文语言，否则为英文；我安装系统时选的中文，所以是中文环境</span><br><span class="hljs-comment">## 如何不是也可以手动切换为中文</span><br><span class="hljs-built_in">export</span> <span class="hljs-attribute">LANG</span>=zh_CN.UTF-8<br></code></pre></td></tr></table></figure>
+
+<p>设置好语言环境后，切换为安装用户 kingbase，进入安装程序 setup.sh 所在目录：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs crystal"><span class="hljs-comment">## 由于之前 root 复制的安装文件权限为 root，所以需要重新授权 kingbase 用户</span><br>[root<span class="hljs-variable">@kes</span> install]<span class="hljs-comment"># chown -R kingbase:kingbase /install</span><br>[root<span class="hljs-variable">@kes</span> install]<span class="hljs-comment"># su - kingbase</span><br>c[kingbase<span class="hljs-variable">@kes</span> ~]<span class="hljs-variable">$ </span>cd /install/<br>[kingbase<span class="hljs-variable">@kes</span> install]<span class="hljs-variable">$ </span>ls<br>KingbaseES_V009R001C001B0030_Lin64_install.iso  setup  setup.sh<br></code></pre></td></tr></table></figure>
+
+<p>查看一下 setup.sh 的帮助命令：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs vim">[kingbase@kes install]$ ./setup.<span class="hljs-keyword">sh</span> -i <span class="hljs-keyword">silent</span> -h<br>Usage: install [-<span class="hljs-keyword">f</span> <span class="hljs-symbol">&lt;path_to_installer_properties_file&gt;</span> | -<span class="hljs-keyword">options</span>]<br>            (<span class="hljs-keyword">to</span> <span class="hljs-keyword">execute</span> the installer)<br><br>Where <span class="hljs-keyword">options</span> include:<br>    -?      Show this <span class="hljs-keyword">help</span> text<br>    -h      Show this <span class="hljs-keyword">help</span> text<br>    -<span class="hljs-keyword">help</span>   Show this <span class="hljs-keyword">help</span> text<br>    --<span class="hljs-keyword">help</span>  Show this <span class="hljs-keyword">help</span> text<br>    -i [<span class="hljs-keyword">gui</span> | console | <span class="hljs-keyword">silent</span>]<br>            Specify the user interface <span class="hljs-keyword">mode</span> <span class="hljs-keyword">for</span> the installer<br>    -D<span class="hljs-symbol">&lt;name&gt;</span>=<span class="hljs-symbol">&lt;value&gt;</span><br>            Specify installer properties<br>    -r <span class="hljs-symbol">&lt;path_to_generate_response_file&gt;</span><br>            Generates response <span class="hljs-keyword">file</span>.<br>JVM heap size <span class="hljs-keyword">options</span> are <span class="hljs-keyword">only</span> applicable <span class="hljs-keyword">to</span> Installers<br>    -jvmxms <span class="hljs-symbol">&lt;size&gt;</span><br>            Specify JVM initial heap size.<br>    -jvmxmx <span class="hljs-symbol">&lt;size&gt;</span><br>            Specify JVM maximum heap size.<br>The <span class="hljs-keyword">options</span> field may also include the following in case of uninstaller<br><span class="hljs-keyword">if</span> it <span class="hljs-keyword">is</span> enabled <span class="hljs-keyword">for</span> Maintenance Mode<br>    -<span class="hljs-built_in">add</span> <span class="hljs-symbol">&lt;feature_name_1&gt;</span> [&lt;feature_name_2 ...]<br>            Add Specified Features<br>    -<span class="hljs-built_in">remove</span> <span class="hljs-symbol">&lt;feature_name_1&gt;</span> [&lt;feature_name_2 ...]<br>            Remove Specified Features<br>    -repair<br>            Repair Installation<br>    -uninstall<br>            Uninstall<br></code></pre></td></tr></table></figure>
+
+<p>接下来就可以开始进行 KingbaseES 的安装了。</p>
+<h3 id="图形化安装"><a href="#图形化安装" class="headerlink" title="图形化安装"></a>图形化安装</h3><p>注意：最小化安装的操作系统可以跳过图形化安装这段，直接去命令行和静默安装了。</p>
+<h4 id="启动安装程序"><a href="#启动安装程序" class="headerlink" title="启动安装程序"></a>启动安装程序</h4><p>启动图形化安装程序，指定参数 <code>-i gui</code> 为图形化安装：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs vim">## 这里不指定 -i 参数，直接执行 <span class="hljs-keyword">sh</span> setup.<span class="hljs-keyword">sh</span> 也是可以的<br>[kingbase@kes install]$ <span class="hljs-keyword">sh</span> setup.<span class="hljs-keyword">sh</span> -i <span class="hljs-keyword">gui</span><br></code></pre></td></tr></table></figure>
+
+<p>这里遇到一个问题，如果当前环境不支持图形化调用或者没配置好图形化界面（包括最小化安装），则会报错如下：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs abnf">正在启动安装程序...<br><br>Graphical installers are not supported by the VM. The console mode should be used instead...<br><br><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span><br>KingbaseES V9                                           (使用 InstallAnywhere 创建)<br>-------------------------------------------------------------------------------<br><br>正在准备控制台模式安装...<br></code></pre></td></tr></table></figure>
+
+<p>提示使用命令行模式进行安装，这里可以输入 <code>quit</code> 取消，重新配置好图形化界面后再重新执行即可。</p>
+<h4 id="安装-KES-软件"><a href="#安装-KES-软件" class="headerlink" title="安装 KES 软件"></a>安装 KES 软件</h4><p>这里建议使用 VNC 连接主机，可以直接调用出来图形化界面：</p>
+<p>第一步是安装程序简介，直接下一步：</p>
+<p>勾选许可协议，没什么好说的：</p>
+<p>根据安装后数据库服务功能的不同，KingbaseES 可分为完全安装、客户端安装和定制安装三种安装集：</p>
+<ul>
+<li><strong>完全安装</strong>：包括数据库服务器、高可用组件、接口、数据库开发管理工具、数据库迁移工具、数据库部署工具。</li>
+<li><strong>客户端安装</strong>：包括接口、数据库开发管理工具、数据库迁移工具、数据库部署工具。</li>
+<li><strong>定制安装</strong>：在数据库服务器、高可用组件、接口、数据库开发管理工具、数据库迁移工具、数据库部署工具所有组件中自由选择。</li>
+</ul>
+<p>大家根据自己的需求进行选择，这里我选择完全安装：</p>
+<p>注意：数据库 license 是 KingbaseES 提供的授权文件，其中会对数据库有效日期、发布类型、最大并发连接数、mac 地址、ip 等信息进行设置。如果在 license 文件中信息与安装环境中相关信息不匹配，数据库将无法启动。</p>
+<p>如果在安装时未选择 license 文件，则会使用软件自带试用版授权：</p>
+<p>选择安装目录，选择我们规划好的目录：&#x2F;KingbaseES&#x2F;V9</p>
+<p>安装摘要，告知我们需要安装的功能组件以及磁盘空间信息：</p>
+<p>确认没问题后，选择安装按钮进行安装：</p>
+<p>等待一段时间后，很快软件就会完成安装：</p>
+<p>到这一步软件安装结束，则代表 KES 软件已经安装完成了，接下来就是<strong>初始化数据库步骤</strong>。</p>
+<h4 id="初始化数据库"><a href="#初始化数据库" class="headerlink" title="初始化数据库"></a>初始化数据库</h4><p>首先选择数据库数据目录，选择规划好的存储数据目录：&#x2F;data</p>
+<p>下一步就是初始化数据库参数：</p>
+<ul>
+<li>默认端口为:54321（可自定义）；</li>
+<li>默认账户为:system（可自定义）；</li>
+<li>密码（自定义）；</li>
+<li>默认字符集编码为：UTF8（可选 default、GBK、GB2312、GB18030）；</li>
+<li>区域，可选值将随字符集编码选项发生变动；<ul>
+<li>当字符集编码为 default 时，默认区域值为：default（可选 C）；</li>
+<li>当字符集编码为 UTF8 时，默认区域值为：zh_CN.UTF-8（可选 en_US.UTF-8、C）</li>
+<li>当字符集编码为 GBK 时，默认区域值为：zh_CN.GBK（可选 C）；</li>
+<li>当字符集编码为 GB2312 时，默认区域值为：zh_CN.GB2312（可选 C）；</li>
+<li>当字符集编码为 GB18030 时，默认区域值为：zh_CN.GB18030（可选 C）；</li>
+</ul>
+</li>
+<li>默认数据库兼容模式为：ORACLE（可选 PG、MySQL）；</li>
+<li>默认大小写敏感为：是（可选否）；</li>
+<li>默认数据块大小为：8k（可选16k、32k）；</li>
+<li>默认身份认证方法为 scram-sha-256（可选 scram-sm3，sm4，sm3）；</li>
+<li>自定义参数（自定义），可自由输入任何值，作为初始化数据库的参数；</li>
+</ul>
+<blockquote>
+<p>注意：输入的参数值不能包含 -W，–pwprompt，% 和 $。</p>
+</blockquote>
+<p>根据我们前面规划好的参数进行填写即可（基本都是默认值）：</p>
+<p>点击下一步，开始初始化数据库：</p>
+<p>等待几分钟即可完成数据库初始化，提示 KES 安装成功，点击完成即可退出安装程序：</p>
+<figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs erlang">[kingbase@kes install]<span class="hljs-string">$ </span>./setup.sh -i gui<br>Now launch installer...<br>正在准备进行安装<br>正在从安装程序档案中提取 JRE...<br>正在解包 JRE...<br>正在从安装程序档案中提取安装资源...<br>配置该系统环境的安装程序...<br>          Verifying JVM........<br>正在启动安装程序...<br><br>Complete.<br></code></pre></td></tr></table></figure>
+
+<p>别忘记还有最后一步，root 用户下执行 root.sh 脚本：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs autoit"><span class="hljs-meta">## 这一步是为了注册数据库服务为系统服务</span><br>[root<span class="hljs-symbol">@kes</span> ~]<span class="hljs-meta"># /KingbaseES/V9/install/script/root.sh</span><br>Starting KingbaseES V9:<br>等待服务器进程启动 .... 完成<br>服务器进程已经启动<br>KingbaseES V9 started successfully<br></code></pre></td></tr></table></figure>
+
+<p>注册服务成功后，如果想启动或停止数据库服务，进入 &#x2F;KingbaseES&#x2F;V9&#x2F;Server&#x2F;bin 目录，使用 kingbase 用户执行如下命令：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment"># 停止服务</span><br>[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/home/kingbase</span>]<span class="hljs-variable">$ </span>sys_ctl stop -m fast -w -D /data<br>等待服务器进程关闭 .... 完成<br>服务器进程已经关闭<br><span class="hljs-comment"># 启动服务</span><br>[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/home/kingbase</span>]<span class="hljs-variable">$ </span>sys_ctl -w start -D /data -l <span class="hljs-string">&quot;/data/sys_log/startup.log&quot;</span><br>等待服务器进程启动 .... 完成<br>服务器进程已经启动<br></code></pre></td></tr></table></figure>
+
+<p>到此，图形化安装部署演示结束，过程十分流畅，堪称丝滑。</p>
+<h3 id="命令行安装"><a href="#命令行安装" class="headerlink" title="命令行安装"></a>命令行安装</h3><p>命令行安装与图形化安装其实差不多，大概演示一下安装过程。</p>
+<h4 id="启动安装程序-1"><a href="#启动安装程序-1" class="headerlink" title="启动安装程序"></a>启动安装程序</h4><p>启动安装程序：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">[kingbase@kes:/install]$ sh setup.sh -i console<br>Now launch installer...<br>正在准备进行安装<br>正在从安装程序档案中提取 JRE...<br>正在解包 JRE...<br>正在从安装程序档案中提取安装资源...<br>配置该系统环境的安装程序...<br><span class="hljs-code">          Verifying JVM........</span><br>正在启动安装程序...<br><br>===============================================================================<br>KingbaseES V9                                           (使用 InstallAnywhere 创建)<br>-------------------------------------------------------------------------------<br><br>正在准备控制台模式安装...<br><br>===============================================================================<br><br><span class="hljs-section">请稍候</span><br><span class="hljs-section">---</span><br><br>===============================================================================<br>简介<br>--<br><br>本安装程序将指导您完成 KingbaseES V9 的安装。<br><br>建议您在继续本次安装前，退出所有程序。<br>如果要回到前一屏幕进行更改，可输入“back”。<br><br>如果要取消本次安装，可随时输入“quit”。<br><br>KingbaseES Version: V9<br>Kingbase Type:BMJ-NO<br>Installer Version: V009R001C001B0030<br>Install DATE:202409251209<br><br>Kingbase Inc.<br>        http://www.kingbase.com.cn<br><br>请按 &lt;ENTER&gt; 键继续:<br></code></pre></td></tr></table></figure>
+
+<p>如果不想安装也可以输入 <code>quit</code> 取消。</p>
+<h4 id="安装-KES-软件-1"><a href="#安装-KES-软件-1" class="headerlink" title="安装 KES 软件"></a>安装 KES 软件</h4><p>回车继续安装，下面这一部分全都是许可协议，一路回车即可：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">===============================================================================<br><br>请稍候<br>---<br><br>===============================================================================<br><span class="hljs-section">许可协议</span><br><span class="hljs-section">----</span><br><br>## 这一部分全都是许可协议内容，这里就不展示了，比较占篇幅，中间一直回车就完事了<br><br>是否接受此许可协议条款？ (Y/N): Y<br></code></pre></td></tr></table></figure>
+
+<p>输入 Y 接受许可，选择完全安装：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">===============================================================================<br>选择安装集<br>-----<br><br>请选择将由本安装程序安装的“安装集”。<br><br>  -&gt;1- 完全安装<br>    2- 客户端安装<br><br>    3- 定制安装<br><br>输入“安装集”的号码，或按 &lt;ENTER&gt; 键以接受缺省值<br>   : <br><br>===============================================================================<br><br><span class="hljs-section">请稍候</span><br><span class="hljs-section">---</span><br></code></pre></td></tr></table></figure>
+
+<p>选择授权文件，没有就直接回车：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs markdown">===============================================================================<br><span class="hljs-section">选择授权文件</span><br><span class="hljs-section">------</span><br><br>不选择授权文件，则使用软件自带试用版授权<br>提示：请在有效期内及时更换正式授权文件。<br><br>文件路径 :<br></code></pre></td></tr></table></figure>
+
+<p>选择安装目录，输入 &#x2F;KingbaseES&#x2F;V9&#x2F;，确认，回车继续：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs awk">===============================================================================<br>选择安装目录<br>------<br><br>请选择一个安装目录。<br><br>您想在哪一位置安装？<br><br>  缺省安装文件夹： <span class="hljs-regexp">/opt/</span>Kingbase<span class="hljs-regexp">/ES/</span>V9<br><br>输入一个绝对路径，或按 &lt;ENTER&gt; 键以接受缺省路径<br>      : <span class="hljs-regexp">/KingbaseES/</span>V9/<br><br>安装文件夹为： <span class="hljs-regexp">/KingbaseES/</span>V9<br>   是否正确？ (Y/N): Y<br></code></pre></td></tr></table></figure>
+
+<p>预安装摘要，没问题直接回车下一步：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs markdown">===============================================================================<br><span class="hljs-section">预安装摘要</span><br><span class="hljs-section">-----</span><br><br>在继续执行前请检查以下信息：<br><br>产品名：<br><span class="hljs-code">    KingbaseES V9</span><br><span class="hljs-code"></span><br>安装文件夹：<br><span class="hljs-code">    /KingbaseES/V9</span><br><span class="hljs-code"></span><br>产品功能部件：<br><span class="hljs-code">    数据库服务器,</span><br><span class="hljs-code">    接口,</span><br><span class="hljs-code">    数据库部署工具,</span><br><span class="hljs-code">    高可用组件,</span><br><span class="hljs-code">    数据库开发管理工具,</span><br><span class="hljs-code">    数据迁移工具</span><br><span class="hljs-code"></span><br>安装空间磁盘信息<br><span class="hljs-code">    所需磁盘空间： 5378 MB           空闲磁盘空间： 77447 MB</span><br><span class="hljs-code"></span><br>请按 <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ENTER</span>&gt;</span></span> 键继续:<br></code></pre></td></tr></table></figure>
+
+<p>开始安装：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">===============================================================================<br>准备就绪，可以安装<br>---------<br><br>本安装程序已准备完毕，可在下列位置安装 KingbaseES V9：<br><br>/KingbaseES/V9<br><br>按 &lt;ENTER&gt; 键进行安装: <br><br>===============================================================================<br><span class="hljs-section">正在安装...</span><br><span class="hljs-section">-------</span><br><br><span class="hljs-code"> [==================|==================|==================|==================]</span><br><span class="hljs-code"> [------------------|------------------|------------------|------------------]</span><br><br>===============================================================================<br><br>请稍候<br>---<br></code></pre></td></tr></table></figure>
+
+<p>等待进度条完成代表软件已经安装完成。</p>
+<h4 id="初始化数据库-1"><a href="#初始化数据库-1" class="headerlink" title="初始化数据库"></a>初始化数据库</h4><p>接着上面流程继续，选择数据存储的目录：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs haskell">===============================================================================<br>选择存储数据的文件夹<br><span class="hljs-comment">----------</span><br><br>请选择一个文件夹，该文件夹必须为空。<br><br><span class="hljs-type">Data</span> folder (默认﹕ /<span class="hljs-type">KingbaseES</span>/<span class="hljs-type">V9</span>/<span class="hljs-class"><span class="hljs-keyword">data</span>): /<span class="hljs-keyword">data</span></span><br></code></pre></td></tr></table></figure>
+
+<p>配置数据库初始参数：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">===============================================================================<br>数据库端口<br>-----<br><br>请输入数据库服务监听端口，默认54321。<br><br>端口 (默认﹕ 54321): <br><br>===============================================================================<br><span class="hljs-section">数据库管理员</span><br><span class="hljs-section">------</span><br><br>请输入数据库管理员用户名。<br><br>User (默认﹕ system): <br><br>===============================================================================<br>输入密码<br>----<br><br>本次安装需输入密码才能继续。<br><br>请输入密码: 请输入密码:*********<br><br>===============================================================================<br><span class="hljs-section">再次输入密码</span><br><span class="hljs-section">------</span><br><br>本次安装需再次输入密码才能继续。<br><br>请再次输入密码: 请再次输入密码:<span class="hljs-strong">*****</span><span class="hljs-strong">***</span>*<br><br>===============================================================================<br>数据库服务字符集<br>--------<br><br>请输入服务端字符集编码。<br><br>    1- default<br>  -&gt;2- UTF8<br>    3- GBK<br>    4- GB2312<br>    5- GB18030<br><br>输入您选择的号码，或按 &lt;ENTER&gt; 键以接受缺省值: <br><br>===============================================================================<br><span class="hljs-section">区域</span><br><span class="hljs-section">--</span><br><br>请输入数据库区域。<br><br><span class="hljs-code">    1- C</span><br><span class="hljs-code">  -&gt;2- zh_CN.UTF-8</span><br><span class="hljs-code">    3- en_US.UTF-8</span><br><br>输入您选择的号码，或按 &lt;ENTER&gt; 键以接受缺省值: <br><br>===============================================================================<br>数据库兼容模式<br>-------<br><br>请输入数据库兼容模式。<br><br>    1- PG<br>  -&gt;2- ORACLE<br>    3- MySQL<br><br>输入您选择的号码，或按 &lt;ENTER&gt; 键以接受缺省值: <br><br>===============================================================================<br><span class="hljs-section">字符大小写敏感特性</span><br><span class="hljs-section">---------</span><br><br>请输入字符大小写敏感特性。<br><br><span class="hljs-code">  -&gt;1- YES</span><br><span class="hljs-code">    2- NO</span><br><br>输入您选择的号码，或按 &lt;ENTER&gt; 键以接受缺省值: <br><br>===============================================================================<br>存储块大小<br>-----<br><br>请输入存储块大小。<br><br>  -&gt;1- 8k<br>    2- 16k<br>    3- 32k<br><br>输入您选择的号码，或按 &lt;ENTER&gt; 键以接受缺省值: <br><br>===============================================================================<br><span class="hljs-section">身份认证方法</span><br><span class="hljs-section">------</span><br><br>请选择身份认证方法。<br><br><span class="hljs-code">  -&gt;1- scram-sha-256</span><br><span class="hljs-code">    2- scram-sm3</span><br><span class="hljs-code">    3- sm4</span><br><span class="hljs-code">    4- sm3</span><br><br>输入您选择的号码，或按 &lt;ENTER&gt; 键以接受缺省值: <br><br>===============================================================================<br>自定义参数<br>-----<br><br>请输入自定义初始化数据库参数。<br><br>Custom (默认﹕  ):<br></code></pre></td></tr></table></figure>
+
+<p>开始初始化数据库：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs markdown">===============================================================================<br><span class="hljs-section">提示</span><br><span class="hljs-section">--</span><br><br>数据库即将被安装，需要花费一些时间，请耐心等待。<br><br>请按 <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ENTER</span>&gt;</span></span> 键继续:<br></code></pre></td></tr></table></figure>
+
+<p>等待安装完成后，退出安装程序：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs markdown">===============================================================================<br><span class="hljs-section">安装完成</span><br><span class="hljs-section">----</span><br><br>恭喜！KingbaseES V9 已成功地安装到：<br><br>/KingbaseES/V9<br><br>如果您需要将 KingbaseES V9 注册为系统服务，请运行<br><br><span class="hljs-code">    /KingbaseES/V9/install/script/root.sh</span><br><span class="hljs-code"></span><br>按 <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ENTER</span>&gt;</span></span> 键以退出安装程序: <br>Complete.<br></code></pre></td></tr></table></figure>
+
+<p>执行 root.sh 脚本：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs swift">[root<span class="hljs-meta">@kes</span> <span class="hljs-operator">~</span>]# <span class="hljs-regexp">/KingbaseES/</span><span class="hljs-type">V9</span><span class="hljs-regexp">/install/</span>script<span class="hljs-operator">/</span>root.sh<br><span class="hljs-type">Starting</span> <span class="hljs-type">KingbaseES</span> <span class="hljs-type">V9</span>: <br>等待服务器进程启动 <span class="hljs-operator">....</span> 完成<br>服务器进程已经启动<br><span class="hljs-type">KingbaseES</span> <span class="hljs-type">V9</span> started successfully<br></code></pre></td></tr></table></figure>
+
+<p>命令行模式到这就安装结束了，说实话安装过程十分麻烦（<strong>吐槽：光是许可协议输出就一堆</strong>），不建议使用这种方式。</p>
+<h3 id="静默安装（非常建议）"><a href="#静默安装（非常建议）" class="headerlink" title="静默安装（非常建议）"></a>静默安装（非常建议）</h3><p>静默安装我感觉是最方便的，只需要配置参数文件之后，一条命令即可完成安装。</p>
+<p>静默安装模式下，安装程序通过读取配置文件来安装数据库。安装包 iso 文件挂载后，setup 目录下已存在 silent.cfg 模板文件，需要根据实际安装机器的情况修改参数值。</p>
+<p><strong>配置文件的参数可参考：</strong></p>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>参数名</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>CHOSEN_INSTALL_SET</td>
+<td>Full</td>
+<td>选择安装集，可选值包括： 1）Full：完全安装 2）Client：客户端安装 3）Custom：定制安装</td>
+</tr>
+<tr>
+<td>2</td>
+<td>CHOSEN_FEATURE_LIST</td>
+<td>SERVER,MANAGER, KDTS,DEPLOY, INTERFACE, KINGBASEHA</td>
+<td>选择安装特性，CHOSEN_INSTALL_SET&#x3D;Custom 起作用。可选值： 1）SERVER：服务器 2）KSTUDIO：数据库开发管理工具 3）KDTS：数据库迁移工具 4）DEPLOY：数据库部署工具 5）INTERFACE：接口 6）KINGBASEHA：高可用组件 多值用逗号分隔。大小写不敏感。如果是错误的组件名称则忽略。</td>
+</tr>
+<tr>
+<td>3</td>
+<td>KB_LICENSE_PATH</td>
+<td></td>
+<td>授权文件的绝对路径，如果指定该参数，就会选择用户指定的 license 文件；如果未指定，则会使用软件自带试用版授权， 请在有效期内及时更换正式授权文件。</td>
+</tr>
+<tr>
+<td>4</td>
+<td>USER_INSTALL_DIR</td>
+<td>&#x2F;opt&#x2F;Kingbase&#x2F;ES&#x2F;V8</td>
+<td>安装目录绝对路径，必须指定，否则报错退出安装过程。 路径分隔符使用’&#x2F;‘。</td>
+</tr>
+<tr>
+<td>5</td>
+<td>USER_SELECTED_DATA_FOLDER</td>
+<td></td>
+<td>数据目录绝对路径，必须为空目录，否则报错退出安装过程。 如果不指定数据目录，默认为安装路径下 data 目录。</td>
+</tr>
+<tr>
+<td>6</td>
+<td>DB_PORT</td>
+<td>54321</td>
+<td>数据库服务端口，必填，端口取值范围为 1-65535。 否则报错退出安装过程。</td>
+</tr>
+<tr>
+<td>7</td>
+<td>DB_USER</td>
+<td>system</td>
+<td>数据库默认用户名，必填，长度不超过 63 字符。 否则报错退出安装过程。</td>
+</tr>
+<tr>
+<td>8</td>
+<td>DB_PASS</td>
+<td></td>
+<td>数据库初始密码，必填，否则报错退出安装过程。无长度限制。</td>
+</tr>
+<tr>
+<td>9</td>
+<td>DB_PASS2</td>
+<td></td>
+<td>确认数据库初始密码，需要和 DB_PASS 一致，否则报错退出安装过程。</td>
+</tr>
+<tr>
+<td>10</td>
+<td>ENCODING_PARAM</td>
+<td>UTF8</td>
+<td>数据库字符集，必填，大小写敏感，否则报错退出安装过程。 可选值： 1）default 2）UTF8 3）GBK 4）GB2312 5）GB18030</td>
+</tr>
+<tr>
+<td>11</td>
+<td>DATABASE_MODE_PARAM</td>
+<td>ORACLE</td>
+<td>数据库兼容模式，必填，大小写敏感，否则报错退出安装过程。 可选值： 1）ORACLE 2）PG 3）MySQL</td>
+</tr>
+<tr>
+<td>12</td>
+<td>LOCALE_PARAM</td>
+<td></td>
+<td>当字符集编码为 default 时，默认区域值为：default（可选 C） 当字符集编码为 UTF8 时，默认区域值为：zh_CN.UTF-8 （可选 en_US.UTF-8、C） 当字符集编码为GBK 时，默认区域值为：zh_CN.GBK（可选 C） 当字符集编码为GB2312时，默认区域值为：zh_CN.GB2312（可选 C） 当字符集编码为GB18030时，默认区域值为：zh_CN.GB18030（可选 C）</td>
+</tr>
+<tr>
+<td>13</td>
+<td>CASE_SENSITIVE_PARAM</td>
+<td>YES</td>
+<td>数据库是否区分大小写，必填，大小写敏感，否则报错退出安装过程。可选值1）YES 2）NO</td>
+</tr>
+<tr>
+<td>14</td>
+<td>BLOCK_SIZE_PARAM</td>
+<td>8k</td>
+<td>存储块大小，必填，大小写敏感，否则报错退出安装过程。可选值 1）8k 2）16k 3）32k</td>
+</tr>
+<tr>
+<td>15</td>
+<td>AUTHENTICATION_METHOD_PARAM</td>
+<td>scram-sha-256</td>
+<td>默认身份认证方法为scram-sha-256（可选 scram-sm3，sm4，sm3）</td>
+</tr>
+<tr>
+<td>16</td>
+<td>INITCUSTOM</td>
+<td></td>
+<td>自定义参数，作为初始化数据库的参数，选填 注意：输入的参数值不能包含-W，–pwprompt，%和$。 如果输入的参数值包含-c，则启动数据库将使用默认端口值54321。</td>
+</tr>
+</tbody></table>
+<p>查看默认的配置参数文件内容：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs routeros">[kingbase@kes:/install/setup]$ grep -v <span class="hljs-string">&quot;^\s*\(#\|$\)&quot;</span> /install/setup/silent.cfg <br>KB_LICENSE_PATH=<br><span class="hljs-attribute">CHOSEN_INSTALL_SET</span>=Full<br><span class="hljs-attribute">CHOSEN_FEATURE_LIST</span>=SERVER,KSTUDIO,KDTS,INTERFACE,DEPLOY,KINGBASEHA<br><span class="hljs-attribute">USER_INSTALL_DIR</span>=/opt/Kingbase/ES/V9<br>USER_SELECTED_DATA_FOLDER=<br><span class="hljs-attribute">DB_PORT</span>=54321<br><span class="hljs-attribute">DB_USER</span>=system<br>DB_PASS=<br>DB_PASS2=<br><span class="hljs-attribute">ENCODING_PARAM</span>=UTF8<br><span class="hljs-attribute">LOCALE_PARAM</span>=zh_CN.UTF-8<br>INITCUSTOM=<br><span class="hljs-attribute">DATABASE_MODE_PARAM</span>=ORACLE<br><span class="hljs-attribute">CASE_SENSITIVE_PARAM</span>=<span class="hljs-literal">YES</span><br><span class="hljs-attribute">BLOCK_SIZE_PARAM</span>=8k<br><span class="hljs-attribute">AUTHENTICATION_METHOD_PARAM</span>=scram-sha-256<br></code></pre></td></tr></table></figure>
+
+<p>根据需求修改对应的参数值：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs routeros">[kingbase@kes:/install/setup]$ vi /install/setup/silent.cfg<br><br><span class="hljs-comment">## 修改以下内容</span><br><span class="hljs-attribute">USER_INSTALL_DIR</span>=/KingbaseES/V9<br><span class="hljs-attribute">USER_SELECTED_DATA_FOLDER</span>=/data<br><span class="hljs-attribute">DB_PASS</span>=kingbase<br><span class="hljs-attribute">DB_PASS2</span>=kingbase<br></code></pre></td></tr></table></figure>
+
+<p>修改后的配置文件内容：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs routeros">[kingbase@kes:/install/setup]$ grep -v <span class="hljs-string">&quot;^\s*\(#\|$\)&quot;</span> /install/setup/silent.cfg <br>KB_LICENSE_PATH=<br><span class="hljs-attribute">CHOSEN_INSTALL_SET</span>=Full<br><span class="hljs-attribute">CHOSEN_FEATURE_LIST</span>=SERVER,KSTUDIO,KDTS,INTERFACE,DEPLOY,KINGBASEHA<br><span class="hljs-attribute">USER_INSTALL_DIR</span>=/KingbaseES/V9<br><span class="hljs-attribute">USER_SELECTED_DATA_FOLDER</span>=/data<br><span class="hljs-attribute">DB_PORT</span>=54321<br><span class="hljs-attribute">DB_USER</span>=system<br><span class="hljs-attribute">DB_PASS</span>=kingbase<br><span class="hljs-attribute">DB_PASS2</span>=kingbase<br><span class="hljs-attribute">ENCODING_PARAM</span>=UTF8<br><span class="hljs-attribute">LOCALE_PARAM</span>=zh_CN.UTF-8<br>INITCUSTOM=<br><span class="hljs-attribute">DATABASE_MODE_PARAM</span>=ORACLE<br><span class="hljs-attribute">CASE_SENSITIVE_PARAM</span>=<span class="hljs-literal">YES</span><br><span class="hljs-attribute">BLOCK_SIZE_PARAM</span>=8k<br><span class="hljs-attribute">AUTHENTICATION_METHOD_PARAM</span>=scram-sha-256<br></code></pre></td></tr></table></figure>
+
+<p>修改完配置文件后，进入安装程序所在目录，以 kingbase 用户执行如下命令：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli"><span class="hljs-comment">## -f 参数指定修改后配置文件的相对或绝对路径，相对路径是指相对 setup/silent.cfg 的相对路径。</span><br>[kingbase@kes:<span class="hljs-string">/install</span>]$ <span class="hljs-string">./setup.sh</span> -i silent -f <span class="hljs-string">/install/setup/silent.cfg</span><br>Now launch installer.<span class="hljs-string">..</span><br>          Verifying JVM.<span class="hljs-string">..Complete.</span><br></code></pre></td></tr></table></figure>
+
+<p>静默安装时不输出如何屏显，但是可以在安装完成后，查看安装日志 &#x2F;KingbaseES&#x2F;V9&#x2F;install&#x2F;Logs&#x2F;<strong>KingbaseES_V9_安装_*.log</strong>：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs elixir">[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/home/kingbase</span>]<span class="hljs-variable">$ </span>tail <span class="hljs-number">-2000</span>f /<span class="hljs-title class_">KingbaseES</span>/<span class="hljs-title class_">V9</span>/install/<span class="hljs-title class_">Logs</span>/<span class="hljs-title class_">KingbaseES_V9_</span>*.log<br></code></pre></td></tr></table></figure>
+
+<p>等待安装完成后，如果没有报错，则代表安装成功，如果有类似如下错误：</p>
+<p>则代表 silent.cfg 文件中参数取值有错误，未完成安装过程，需要修改后重新执行。</p>
+<h3 id="连接测试"><a href="#连接测试" class="headerlink" title="连接测试"></a>连接测试</h3><p>连接 KES 数据库，查看版本信息：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">## 查看 KES 版本<br>[kingbase@kes:/home/kingbase]$ kingbase -V<br>KINGBASE (KingbaseES) V009R001C001B0030<br><span class="hljs-comment">-- 使用 system 用户连接到 kingbase 数据库</span><br>[kingbase@kes:/home/kingbase]$ ksql -p <span class="hljs-number">54321</span> -U <span class="hljs-keyword">system</span> kingbase<br>用户 <span class="hljs-keyword">system</span> 的口令：<br>输入 &quot;help&quot; 来获取帮助信息.<br><br><span class="hljs-comment">-- 查看数据库版本</span><br>kingbase=# <span class="hljs-keyword">select</span> version();<br>                                                       <span class="hljs-keyword">version</span>                                                        <br><span class="hljs-comment">----------------------------------------------------------------------------------------------------------------------</span><br> KingbaseES V009R001C001B0030 <span class="hljs-keyword">on</span> x86_64-pc-linux-gnu, compiled <span class="hljs-keyword">by</span> gcc (GCC) <span class="hljs-number">4.8</span><span class="hljs-number">.5</span> <span class="hljs-number">20150623</span> (Red Hat <span class="hljs-number">4.8</span><span class="hljs-number">.5</span><span class="hljs-number">-28</span>), <span class="hljs-number">64</span>-<span class="hljs-type">bit</span><br>(<span class="hljs-number">1</span> 行记录)<br><br><span class="hljs-comment">-- 创建数据库 lucifer</span><br>kingbase=# <span class="hljs-keyword">create</span> <span class="hljs-keyword">database</span> lucifer;<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">DATABASE</span><br><br><span class="hljs-comment">-- 查看数据库信息</span><br>kingbase=# \l <br>                                  数据库列表<br>   名称    | 拥有者 | 字元编码 |  校对规则   |    Ctype    |     存取权限      <br><span class="hljs-comment">-----------+--------+----------+-------------+-------------+-------------------</span><br> kingbase  | <span class="hljs-keyword">system</span> | UTF8     | zh_CN.UTF<span class="hljs-number">-8</span> | zh_CN.UTF<span class="hljs-number">-8</span> | <br> lucifer   | <span class="hljs-keyword">system</span> | UTF8     | zh_CN.UTF<span class="hljs-number">-8</span> | zh_CN.UTF<span class="hljs-number">-8</span> | <br> <span class="hljs-keyword">security</span>  | <span class="hljs-keyword">system</span> | UTF8     | zh_CN.UTF<span class="hljs-number">-8</span> | zh_CN.UTF<span class="hljs-number">-8</span> | <br> template0 | <span class="hljs-keyword">system</span> | UTF8     | zh_CN.UTF<span class="hljs-number">-8</span> | zh_CN.UTF<span class="hljs-number">-8</span> | =c/<span class="hljs-keyword">system</span>        +<br>           |        |          |             |             | <span class="hljs-keyword">system</span>=CTc/<span class="hljs-keyword">system</span><br> template1 | <span class="hljs-keyword">system</span> | UTF8     | zh_CN.UTF<span class="hljs-number">-8</span> | zh_CN.UTF<span class="hljs-number">-8</span> | =c/<span class="hljs-keyword">system</span>        +<br>           |        |          |             |             | <span class="hljs-keyword">system</span>=CTc/<span class="hljs-keyword">system</span><br> test      | <span class="hljs-keyword">system</span> | UTF8     | zh_CN.UTF<span class="hljs-number">-8</span> | zh_CN.UTF<span class="hljs-number">-8</span> | <br>(<span class="hljs-number">6</span> 行记录)<br><br><span class="hljs-comment">-- 切换数据库</span><br>kingbase-# \c lucifer       <br>您现在以用户名&quot;system&quot;连接到数据库&quot;lucifer&quot;。<br><br><span class="hljs-comment">-- 查看连接信息</span><br>lucifer=# \conninfo                     <br>以用户 &quot;system&quot; 的身份，通过套接字&quot;/tmp&quot;在端口&quot;54321&quot;连接到数据库 &quot;lucifer&quot;<br><br><span class="hljs-comment">-- 创建用户并授权</span><br>lucifer=# <span class="hljs-keyword">create</span> <span class="hljs-keyword">user</span> lucifer <span class="hljs-keyword">with</span> <span class="hljs-keyword">password</span> <span class="hljs-string">&#x27;lucifer&#x27;</span>;<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">ROLE</span><br>lucifer=# <span class="hljs-keyword">alter</span> <span class="hljs-keyword">user</span> lucifer <span class="hljs-keyword">createdb</span>;<br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">ROLE</span><br><br><span class="hljs-comment">-- 查看用户信息</span><br>lucifer=# \dg lucifer<br>           角色列表<br> 角色名称 |  属性   | 成员属于 <br><span class="hljs-comment">----------+---------+----------</span><br> lucifer  | 建立 DB | &#123;&#125;<br><br><span class="hljs-comment">-- 使用新用户 lucifer 连接数据库 lucifer</span><br>lucifer=# \c lucifer lucifer<br>用户 lucifer 的口令：<br>您现在以用户名&quot;lucifer&quot;连接到数据库&quot;lucifer&quot;。<br><br><span class="hljs-comment">-- 创建表 t1</span><br>lucifer=# <span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> t1(id number, <span class="hljs-type">name</span> varchar2(<span class="hljs-number">20</span>));<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span><br><span class="hljs-comment">-- 创建索引 idx_t1_id</span><br>lucifer=# <span class="hljs-keyword">create</span> <span class="hljs-keyword">index</span> idx_t1_id <span class="hljs-keyword">on</span> t1(id);<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">INDEX</span><br><span class="hljs-comment">-- 插入数据</span><br>lucifer=# <span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> t1 <span class="hljs-keyword">values</span>(<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;lucifer&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-number">0</span> <span class="hljs-number">1</span><br><span class="hljs-comment">-- 查看表结构</span><br>lucifer=# \d t1<br>                      数据表 &quot;public.t1&quot;<br> 栏位 |            类型            | 校对规则 | 可空的 | 预设 <br><span class="hljs-comment">------+----------------------------+----------+--------+------</span><br> id   | <span class="hljs-type">numeric</span>                    |          |        | <br> <span class="hljs-type">name</span> | <span class="hljs-type">character</span> <span class="hljs-type">varying</span>(<span class="hljs-number">20</span> <span class="hljs-type">char</span>) |          |        | <br>索引：<br>    &quot;idx_t1_id&quot; btree (id)<br><br><span class="hljs-comment">-- 查看表数据</span><br>lucifer=# <span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> t1;<br> id |  <span class="hljs-type">name</span>   <br><span class="hljs-comment">----+---------</span><br>  <span class="hljs-number">1</span> | lucifer<br>(<span class="hljs-number">1</span> 行记录)<br></code></pre></td></tr></table></figure>
+
+<h2 id="KES-卸载"><a href="#KES-卸载" class="headerlink" title="KES 卸载"></a>KES 卸载</h2><p>安装学会了，自然也要知道如何卸载 KES，卸载一般都很简单。</p>
+<h3 id="删除数据库服务"><a href="#删除数据库服务" class="headerlink" title="删除数据库服务"></a>删除数据库服务</h3><p>如果在安装后执行 root.sh 脚本在系统中注册了数据库服务，需要在卸载前执行 rootuninstall.sh 脚本删除已注册的数据库服务：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs autoit"><span class="hljs-meta">## 执行没有任何输出</span><br>[root<span class="hljs-symbol">@kes</span> ~]<span class="hljs-meta"># /KingbaseES/V9/install/script/rootuninstall.sh</span><br></code></pre></td></tr></table></figure>
+
+<p>KES 卸载也分 3 种方式：</p>
+<ul>
+<li>图形化卸载</li>
+<li>控制台卸载</li>
+<li>静默卸载</li>
+</ul>
+<p>看来 KES 在软件这块支持的功能还是很丰富的，这里为了省事，就直接使用静默方式进行卸载（kingbase 用户执行）：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 进入安装目录下的 Uninstall 目录下执行</span><br>[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/home/kingbase</span>]<span class="hljs-variable">$ </span>cd /<span class="hljs-title class_">KingbaseES</span>/<span class="hljs-title class_">V9</span>/<span class="hljs-title class_">Uninstall</span><br><span class="hljs-comment">## 如果是通过静默安装方式安装的，可以不加 -i 参数，否则必须附加 -i 参数</span><br>[kingbase<span class="hljs-variable">@kes</span><span class="hljs-symbol">:/KingbaseES/V9/Uninstall</span>]<span class="hljs-variable">$ </span>sh <span class="hljs-title class_">Uninstaller</span> -i silent<br></code></pre></td></tr></table></figure>
+
+<p>卸载过程没有提示信息，等待卸载过程完成即可。</p>
+<blockquote>
+<p>📢 注意：对于初始化生成的文件或程序运行中生成的文件，卸载过程当中无法自动删除（<strong>这个我认为是非常合理的，卸载软件不删除数据，是为了保护数据</strong>），需要再退出卸载程序后手动删除。</p>
+</blockquote>
+<p>手动删除初始化生成的文件（前提是确实不需要这些数据了才能删除，这里用于便于测试，所以删除）：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs autoit">[root<span class="hljs-symbol">@kes</span> ~]<span class="hljs-meta"># rm -rf /KingbaseES/V9/*</span><br>[root<span class="hljs-symbol">@kes</span> ~]<span class="hljs-meta"># rm -rf /data</span><br></code></pre></td></tr></table></figure>
+
+<p>至此，KES 完全卸载完成。</p>
+<h2 id="KES-常用命令"><a href="#KES-常用命令" class="headerlink" title="KES 常用命令"></a>KES 常用命令</h2><p>分享一些 KES 常用运维命令：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs tap"><span class="hljs-comment"># 停止数据库服务</span><br>[kingbase@kes:/home/kingbase]$ sys_ctl stop -m fast -w -D /data<br>等待服务器进程关闭 .... 完成<br>服务器进程已经关闭<br><span class="hljs-comment"># 启动数据库服务</span><br>[kingbase@kes:/home/kingbase]$ sys_ctl -w start -D /data -l &quot;/data/sys_log/startup.log&quot;<br>等待服务器进程启动 .... 完成<br>服务器进程已经启动<br><span class="hljs-comment"># 查看数据库进程</span><br>[kingbase@kes:/home/kingbase]$ ps -ef | grep kingbase: | grep -v grep<br>kingbase  <span class="hljs-number"> 10881 </span> <span class="hljs-number"> 10880 </span><span class="hljs-number"> 0 </span>13:33 ?        00:00:00 kingbase: logger   <br>kingbase  <span class="hljs-number"> 10883 </span> <span class="hljs-number"> 10880 </span><span class="hljs-number"> 0 </span>13:33 ?        00:00:00 kingbase: checkpointer   <br>kingbase  <span class="hljs-number"> 10884 </span> <span class="hljs-number"> 10880 </span><span class="hljs-number"> 0 </span>13:33 ?        00:00:00 kingbase: background writer   <br>kingbase  <span class="hljs-number"> 10885 </span> <span class="hljs-number"> 10880 </span><span class="hljs-number"> 0 </span>13:33 ?        00:00:00 kingbase: walwriter   <br>kingbase  <span class="hljs-number"> 10886 </span> <span class="hljs-number"> 10880 </span><span class="hljs-number"> 0 </span>13:33 ?        00:00:00 kingbase: autovacuum launcher   <br>kingbase  <span class="hljs-number"> 10887 </span> <span class="hljs-number"> 10880 </span><span class="hljs-number"> 0 </span>13:33 ?        00:00:00 kingbase: stats collector   <br>kingbase  <span class="hljs-number"> 10888 </span> <span class="hljs-number"> 10880 </span><span class="hljs-number"> 0 </span>13:33 ?        00:00:00 kingbase: kwr collector   <br>kingbase  <span class="hljs-number"> 10889 </span> <span class="hljs-number"> 10880 </span><span class="hljs-number"> 0 </span>13:33 ?        00:00:00 kingbase: ksh writer   <br>kingbase  <span class="hljs-number"> 10890 </span> <span class="hljs-number"> 10880 </span><span class="hljs-number"> 0 </span>13:33 ?        00:00:00 kingbase: ksh collector   <br>kingbase  <span class="hljs-number"> 10891 </span> <span class="hljs-number"> 10880 </span><span class="hljs-number"> 0 </span>13:33 ?        00:00:00 kingbase: logical replication launcher<br></code></pre></td></tr></table></figure>
+
+<p>今天的分享到这结束，如果有好的建议或者错误请留言，我会及时纠正，谢谢。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/142949036/">https://pc-study.github.io/csdn-blog/posts/142949036/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/kingbase/">kingbase</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/142949185/" title="Yashandb YMP 安装部署"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Yashandb YMP 安装部署</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 安装前准备 关闭防火墙 用户数参数配置 创建用户 依赖包安装 配置 JAVA8 环境 YMP 安装 OCI 环境准备（可选） YMP 安装包解压 安装参数调整 默认内置库安装 YMP（推荐方案） 查看运</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142948929/" title="KingbaseES KSQL 免密登录的几种方式"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">KingbaseES KSQL 免密登录的几种方式</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 KSQL 连接数据库 常规连接方式 免密连接方式 alias 方式 环境变量方式 kbpass 文件方式 最佳免密方式 alias + kbpass 环境变量 + kbpass 总结 后记 前言 经常使</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/145739382/" title="老张的国产数据库历险记：从怀疑金仓数据库到真香的心路历程"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-19</div><div class="info-item-2">老张的国产数据库历险记：从怀疑金仓数据库到真香的心路历程</div></div><div class="info-2"><div class="info-item-1">"你猜怎么着？我们那套SQLServer系统，居然真的成功迁移到国产数据库上了！"前几个月的凌晨两点，老张突然给我发来语音，声音里充满了兴奋。 我揉着眼睛看了眼窗外漆黑的夜色：“你们领导终于决定换掉那台十几年老旧服务器了？” “比那还让人惊讶！上周五领导突然说要搞数据库国产化，刚开始我有点担心——你</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142948929/" title="KingbaseES KSQL 免密登录的几种方式"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-15</div><div class="info-item-2">KingbaseES KSQL 免密登录的几种方式</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 KSQL 连接数据库 常规连接方式 免密连接方式 alias 方式 环境变量方式 kbpass 文件方式 最佳免密方式 alias + kbpass 环境变量 + kbpass 总结 后记 前言 经常使</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">4.</span> <span class="toc-text">环境准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%8C%85%E4%B8%8B%E8%BD%BD"><span class="toc-number">4.1.</span> <span class="toc-text">安装包下载</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%89%8D%E9%85%8D%E7%BD%AE"><span class="toc-number">5.</span> <span class="toc-text">安装前配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%89%88%E6%9C%AC"><span class="toc-number">5.1.</span> <span class="toc-text">检查操作系统版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E9%98%B2%E7%81%AB%E5%A2%99"><span class="toc-number">5.2.</span> <span class="toc-text">关闭防火墙</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%94%A8%E6%88%B7"><span class="toc-number">5.3.</span> <span class="toc-text">创建用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%9B%AE%E5%BD%95"><span class="toc-number">5.4.</span> <span class="toc-text">创建目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE"><span class="toc-number">5.5.</span> <span class="toc-text">系统参数配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E9%85%8D%E7%BD%AE"><span class="toc-number">5.6.</span> <span class="toc-text">资源配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE-RemoveIPC"><span class="toc-number">5.7.</span> <span class="toc-text">配置 RemoveIPC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5-tmp-%E7%9B%AE%E5%BD%95"><span class="toc-number">5.8.</span> <span class="toc-text">检查 &#x2F;tmp 目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">5.9.</span> <span class="toc-text">配置环境变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KES-%E5%AE%89%E8%A3%85"><span class="toc-number">6.</span> <span class="toc-text">KES 安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-ISO-%E6%8C%82%E8%BD%BD"><span class="toc-number">6.1.</span> <span class="toc-text">安装 ISO 挂载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E8%AF%AD%E8%A8%80%E7%8E%AF%E5%A2%83"><span class="toc-number">6.2.</span> <span class="toc-text">配置语言环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E5%BD%A2%E5%8C%96%E5%AE%89%E8%A3%85"><span class="toc-number">6.3.</span> <span class="toc-text">图形化安装</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F"><span class="toc-number">6.3.1.</span> <span class="toc-text">启动安装程序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-KES-%E8%BD%AF%E4%BB%B6"><span class="toc-number">6.3.2.</span> <span class="toc-text">安装 KES 软件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">6.3.3.</span> <span class="toc-text">初始化数据库</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%AE%89%E8%A3%85"><span class="toc-number">6.4.</span> <span class="toc-text">命令行安装</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F-1"><span class="toc-number">6.4.1.</span> <span class="toc-text">启动安装程序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-KES-%E8%BD%AF%E4%BB%B6-1"><span class="toc-number">6.4.2.</span> <span class="toc-text">安装 KES 软件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%B0%E6%8D%AE%E5%BA%93-1"><span class="toc-number">6.4.3.</span> <span class="toc-text">初始化数据库</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E9%BB%98%E5%AE%89%E8%A3%85%EF%BC%88%E9%9D%9E%E5%B8%B8%E5%BB%BA%E8%AE%AE%EF%BC%89"><span class="toc-number">6.5.</span> <span class="toc-text">静默安装（非常建议）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E6%B5%8B%E8%AF%95"><span class="toc-number">6.6.</span> <span class="toc-text">连接测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KES-%E5%8D%B8%E8%BD%BD"><span class="toc-number">7.</span> <span class="toc-text">KES 卸载</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9C%8D%E5%8A%A1"><span class="toc-number">7.1.</span> <span class="toc-text">删除数据库服务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KES-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">8.</span> <span class="toc-text">KES 常用命令</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

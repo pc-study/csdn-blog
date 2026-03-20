@@ -1,0 +1,316 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Typora + PicGo + Gitee/GitHub 免费搭建个人图床 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="目录 前言 搭建准备 Typora PicGo Gitee&#x2F;GitHub 搭建步骤 Gitee&#x2F;GitHub 创建图床仓库 - Gitee步骤 1、创建图床仓库 2、生成私人令牌 Token GitHub步骤 1、创建图床仓库 2、生成私人令牌 Token 配置 PicGo - GitHub 图床配">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Typora + PicGo + Gitee&#x2F;GitHub 免费搭建个人图床">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/119575209/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="目录 前言 搭建准备 Typora PicGo Gitee&#x2F;GitHub 搭建步骤 Gitee&#x2F;GitHub 创建图床仓库 - Gitee步骤 1、创建图床仓库 2、生成私人令牌 Token GitHub步骤 1、创建图床仓库 2、生成私人令牌 Token 配置 PicGo - GitHub 图床配">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/bec4140a9fa582c5793056f31cf56e88.webp">
+<meta property="article:published_time" content="2021-10-20T07:56:59.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.286Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="gitee">
+<meta property="article:tag" content="picgo">
+<meta property="article:tag" content="typora">
+<meta property="article:tag" content="图床">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/bec4140a9fa582c5793056f31cf56e88.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Typora + PicGo + Gitee/GitHub 免费搭建个人图床","url":"https://pc-study.github.io/csdn-blog/posts/119575209/","image":"https://pc-study.github.io/csdn-blog/images/bec4140a9fa582c5793056f31cf56e88.webp","datePublished":"2021-10-20T07:56:59.000Z","dateModified":"2026-03-20T12:25:38.286Z","description":"目录 前言 搭建准备 Typora PicGo Gitee/GitHub 搭建步骤 Gitee/GitHub 创建图床仓库 - Gitee步骤 1、创建图床仓库 2、生成私人令牌 Token GitHub步骤 1、创建图床仓库 2、生成私人令牌 Token 配置 PicGo - GitHub 图床配","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/119575209/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/119575209/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Typora + PicGo + Gitee/GitHub 免费搭建个人图床',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/bec4140a9fa582c5793056f31cf56e88.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">Typora + PicGo + Gitee/GitHub 免费搭建个人图床</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Typora + PicGo + Gitee/GitHub 免费搭建个人图床<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-10-20-119575209.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-10-20T07:56:59.000Z" title="发表于 2021-10-20 15:56:59">2021-10-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.286Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_1">前言</a></li>
+<li><a href="#_8">搭建准备</a></li>
+<li><ul>
+<li><a href="#Typora_12">Typora</a></li>
+<li><a href="#PicGo_22">PicGo</a></li>
+<li><a href="#GiteeGitHub_32">Gitee&#x2F;GitHub</a></li>
+</ul>
+</li>
+<li><a href="#_40">搭建步骤</a></li>
+<li><ul>
+<li><a href="#GiteeGitHub__44">Gitee&#x2F;GitHub 创建图床仓库</a></li>
+<li><ul>
+<li><a href="#Gitee_48">Gitee步骤</a></li>
+<li><ul>
+<li><a href="#1_50">1、创建图床仓库</a></li>
+<li><a href="#2_Token_60">2、生成私人令牌 Token</a></li>
+</ul>
+</li>
+<li><a href="#GitHub_76">GitHub步骤</a></li>
+<li><ul>
+<li><a href="#1_80">1、创建图床仓库</a></li>
+<li><a href="#2_Token_88">2、生成私人令牌 Token</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_PicGo_104">配置 PicGo</a></li>
+<li><ul>
+<li><a href="#GitHub__106">GitHub 图床配置</a></li>
+<li><a href="#Gitee__114">Gitee 图床配置</a></li>
+</ul>
+</li>
+<li><a href="#_Typora_136">配置 Typora</a></li>
+</ul>
+</li>
+<li><a href="#_152">写在最后</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>写了将近一年多博客，之前半年都是用 <code>富文本</code> 的方式来写博客。直到遇到了一些博友，听说他们都是用 <code>Markdown</code> 格式来写博客。结果，我就放弃了富文本模式，见仁见智，我是觉得真的很难用。</p>
+<p>接触到 <code>Markdown</code> 模式的第一个问题就是图的问题，因为都是要贴网址的。当时没多想，因为都是用的博客平台，只需要将图片复制进去就行，也很方便。</p>
+<p>后来，听说还有 <code>图床</code> 这个东西，但是由于懒，就一直没有去玩。最近，出于种种原因，还是尝试搭建了一下，这里分享一下搭建过程。</p>
+<h2 id="搭建准备"><a href="#搭建准备" class="headerlink" title="搭建准备"></a>搭建准备</h2><p>本次搭建过程需要以下介质：Typora + PicGo + Gitee&#x2F;GitHub ，<strong>免费！</strong></p>
+<h3 id="Typora"><a href="#Typora" class="headerlink" title="Typora"></a>Typora</h3><p>Typora 是一款 markdown 编辑器，支持几乎所有的 markdown 格式，神器！</p>
+<p>支持 <code>macOS</code>、<code>Windows</code>、<code>Linux</code> 三种操作系统，下载地址：<a target="_blank" rel="noopener" href="https://www.typora.io/%E3%80%82">https://www.typora.io/。</a></p>
+<p>macOS 也可以直接通过 Homebrew 安装：<code>brew install typora</code>。</p>
+<h3 id="PicGo"><a href="#PicGo" class="headerlink" title="PicGo"></a>PicGo</h3><p>PicGo 是用于快速上传图片并获取图片 URL 链接的工具，也是神器！</p>
+<p>支持 <code>macOS</code>、<code>Windows</code>、<code>Linux</code> 三种操作系统，下载地址：<a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/PicGo/releases%E3%80%82">https://github.com/Molunerfinn/PicGo/releases。</a></p>
+<p>macOS 也可以直接通过 Homebrew 安装：<code>brew install picgo</code>。</p>
+<h3 id="Gitee-GitHub"><a href="#Gitee-GitHub" class="headerlink" title="Gitee&#x2F;GitHub"></a>Gitee&#x2F;GitHub</h3><p>Gitee&#x2F;GitHub 都是代码托管平台，免费的私有仓库，没有容量限制，写代码的都知道吧？</p>
+<p><img src="/csdn-blog/images/bec4140a9fa582c5793056f31cf56e88.webp" alt="image-20210810160746165" loading='lazy'></p>
+<p>你要问我孰优孰劣？我只能说，国内的就老老实实用 Gitee 吧！</p>
+<h2 id="搭建步骤"><a href="#搭建步骤" class="headerlink" title="搭建步骤"></a>搭建步骤</h2><p>接下来我们开始搭建，确保已经安装上述软件和注册 Gitee&#x2F;GitHub 账号。</p>
+<h3 id="Gitee-GitHub-创建图床仓库"><a href="#Gitee-GitHub-创建图床仓库" class="headerlink" title="Gitee&#x2F;GitHub 创建图床仓库"></a>Gitee&#x2F;GitHub 创建图床仓库</h3><p>在 Gitee&#x2F;GitHub 创建一个图床仓库，用来存放你的图片。</p>
+<h4 id="Gitee步骤"><a href="#Gitee步骤" class="headerlink" title="Gitee步骤"></a>Gitee步骤</h4><h5 id="1、创建图床仓库"><a href="#1、创建图床仓库" class="headerlink" title="1、创建图床仓库"></a>1、创建图床仓库</h5><p>首先打开你的 <code>Gitee</code> 主页，点击 <code>新建仓库</code> ，创建一个仓库。</p>
+<p>如下图，输入你的仓库信息，必须为 <code>开源</code>，否则无法上传图片。</p>
+<p><img src="/csdn-blog/images/f258a18e9609df02b2d2eb6b9ea48dc0.webp" alt="image-20210810161941077" loading='lazy'></p>
+<h5 id="2、生成私人令牌-Token"><a href="#2、生成私人令牌-Token" class="headerlink" title="2、生成私人令牌 Token"></a>2、生成私人令牌 Token</h5><p>点击个人设置–&gt;私人令牌：</p>
+<p>点击 <code>+生成新令牌</code> 生成一个私人令牌：</p>
+<p><img src="/csdn-blog/images/8319fabe9603e7a3844f1de5b6a07775.webp" alt="image-20210810162911778" loading='lazy'></p>
+<p>填写描述，然后提交，输入你的 Gitee 账号密码即可，<strong>Token 关闭页面后将不再显示，因此需要记录 Token。</strong></p>
+<p><strong>至此，Gitee 的配置已经完成。</strong></p>
+<h4 id="GitHub步骤"><a href="#GitHub步骤" class="headerlink" title="GitHub步骤"></a>GitHub步骤</h4><p>前提：GitHub 与 Gitee 大同小异，最好有 🪜 ，不然不建议使用 Github，以下只是演示下如何使用。</p>
+<h5 id="1、创建图床仓库-1"><a href="#1、创建图床仓库-1" class="headerlink" title="1、创建图床仓库"></a>1、创建图床仓库</h5><p>这里和 Gitee 大同小异，填写相关信息即可。</p>
+<h5 id="2、生成私人令牌-Token-1"><a href="#2、生成私人令牌-Token-1" class="headerlink" title="2、生成私人令牌 Token"></a>2、生成私人令牌 Token</h5><p>打开 <a target="_blank" rel="noopener" href="https://github.com/settings/tokens%EF%BC%8C%E7%82%B9%E5%87%BB">https://github.com/settings/tokens，点击</a> <code>Generate new token</code> 创建一个私人令牌：</p>
+<p><img src="/csdn-blog/images/20099569d0af693051a004acea65f15e.webp" alt="image-20210810164905375" loading='lazy'></p>
+<p>选择 <code>无限期</code>，勾选 <code>repo</code> 即可：</p>
+<p>同样的，保存好你的 Token：</p>
+<p><strong>至此，Github已配置完成。</strong></p>
+<h3 id="配置-PicGo"><a href="#配置-PicGo" class="headerlink" title="配置 PicGo"></a>配置 PicGo</h3><h4 id="GitHub-图床配置"><a href="#GitHub-图床配置" class="headerlink" title="GitHub 图床配置"></a>GitHub 图床配置</h4><p>打开 PicGo 详细窗口，根据提示填入 GitHub 图床仓库的相关信息：</p>
+<p><img src="/csdn-blog/images/bdd0522ce7b9750b6d65fee93b83a8cb.webp" alt="image-20210810165805839" loading='lazy'></p>
+<p>这个很简单，不做解释，相信以你的聪明才智，分分钟搞定。</p>
+<h4 id="Gitee-图床配置"><a href="#Gitee-图床配置" class="headerlink" title="Gitee 图床配置"></a>Gitee 图床配置</h4><p>由于 PicGo 原生不支持 Gitee，因此需要通过插件安装。</p>
+<p>点击插件设置，搜索 <code>gitee-upload</code> ，点击安装。</p>
+<p><strong>注意：这里需要提前安装 <code>node.js</code>，否则无法安装！</strong></p>
+<p>插件安装成功后，重启 PicGo ，然后配置 gitee：</p>
+<p>配置方式与 GitHub 大同小异。</p>
+<p>经过如上配置，图床已经搭建成功，可以通过上传图片测试：</p>
+<p>点击上传图片，然后复制到 <code>markdown</code> 编辑器中查看。</p>
+<h3 id="配置-Typora"><a href="#配置-Typora" class="headerlink" title="配置 Typora"></a>配置 Typora</h3><p>为什么要配置 Typora ？当然是为了方便，不能每次都手动去上传图片，然后复制链接吧，只需要简单配置 Typora 就可以实现复制图片自动上传。</p>
+<p>配置如上，选择插入图片时选择 <code>PicGo.app</code> 即可！就这么简单~</p>
+<p>测试一下最终效果，直接截图当前界面，上传粘贴：</p>
+<p><img src="/csdn-blog/images/0913da2695d3f1a5fe4ceab818987cae.gif" alt="test" loading='lazy'></p>
+<p>可以发现，已经自动实现上传了！</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>总的来说，搭建过程不算难，只需要了解这些软件的简单使用即可。</p>
+<p>终于拥有自己的图床了，再也不怕网站挂了图片不显示，最主要的是还去水印！</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/119575209/">https://pc-study.github.io/csdn-blog/posts/119575209/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/typora/">typora</a><a class="post-meta__tags" href="/csdn-blog/tags/%E5%9B%BE%E5%BA%8A/">图床</a><a class="post-meta__tags" href="/csdn-blog/tags/picgo/">picgo</a><a class="post-meta__tags" href="/csdn-blog/tags/gitee/">gitee</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/120860134/" title="Linux查看物理CPU、内存信息"><img class="cover" src="/csdn-blog/img/covers/linux.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Linux查看物理CPU、内存信息</div></div><div class="info-2"><div class="info-item-1">CPU 计算 公式 总核数 = 物理CPU个数 X 每颗物理CPU的核数 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数 查看 命令 查看物理CPU个数 查看每个物理CPU中core的个数(即核数) 查看逻辑CPU的个数 查看CPU信息（型号） 查看内存 信息</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120791629/" title="最受DBA欢迎的250篇学习文档"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">最受DBA欢迎的250篇学习文档</div></div><div class="info-2"><div class="info-item-1">墨天轮是国内比较专业的数据库平台，帮助读者整理了很多优秀的文档！ 我挑选了其中最受欢迎的 250 篇下载，现在分享给大家 😄！ 点我跳转文末 可以获取 提取码 以及博主的联系方式 📚 前言 作为一个DBA，必须要精通 SQL 命令 、各种数据库架构、数据库管理和维护、数据库调优！必要的时候，还需要为</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%AD%E5%BB%BA%E5%87%86%E5%A4%87"><span class="toc-number">3.</span> <span class="toc-text">搭建准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Typora"><span class="toc-number">3.1.</span> <span class="toc-text">Typora</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PicGo"><span class="toc-number">3.2.</span> <span class="toc-text">PicGo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Gitee-GitHub"><span class="toc-number">3.3.</span> <span class="toc-text">Gitee&#x2F;GitHub</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%AD%E5%BB%BA%E6%AD%A5%E9%AA%A4"><span class="toc-number">4.</span> <span class="toc-text">搭建步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Gitee-GitHub-%E5%88%9B%E5%BB%BA%E5%9B%BE%E5%BA%8A%E4%BB%93%E5%BA%93"><span class="toc-number">4.1.</span> <span class="toc-text">Gitee&#x2F;GitHub 创建图床仓库</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Gitee%E6%AD%A5%E9%AA%A4"><span class="toc-number">4.1.1.</span> <span class="toc-text">Gitee步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1%E3%80%81%E5%88%9B%E5%BB%BA%E5%9B%BE%E5%BA%8A%E4%BB%93%E5%BA%93"><span class="toc-number">4.1.1.1.</span> <span class="toc-text">1、创建图床仓库</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2%E3%80%81%E7%94%9F%E6%88%90%E7%A7%81%E4%BA%BA%E4%BB%A4%E7%89%8C-Token"><span class="toc-number">4.1.1.2.</span> <span class="toc-text">2、生成私人令牌 Token</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GitHub%E6%AD%A5%E9%AA%A4"><span class="toc-number">4.1.2.</span> <span class="toc-text">GitHub步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1%E3%80%81%E5%88%9B%E5%BB%BA%E5%9B%BE%E5%BA%8A%E4%BB%93%E5%BA%93-1"><span class="toc-number">4.1.2.1.</span> <span class="toc-text">1、创建图床仓库</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2%E3%80%81%E7%94%9F%E6%88%90%E7%A7%81%E4%BA%BA%E4%BB%A4%E7%89%8C-Token-1"><span class="toc-number">4.1.2.2.</span> <span class="toc-text">2、生成私人令牌 Token</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE-PicGo"><span class="toc-number">4.2.</span> <span class="toc-text">配置 PicGo</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#GitHub-%E5%9B%BE%E5%BA%8A%E9%85%8D%E7%BD%AE"><span class="toc-number">4.2.1.</span> <span class="toc-text">GitHub 图床配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Gitee-%E5%9B%BE%E5%BA%8A%E9%85%8D%E7%BD%AE"><span class="toc-number">4.2.2.</span> <span class="toc-text">Gitee 图床配置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE-Typora"><span class="toc-number">4.3.</span> <span class="toc-text">配置 Typora</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">5.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

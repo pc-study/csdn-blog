@@ -1,0 +1,318 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="文章目录 前言 一、ToDesk 介绍 二、新版本体验介绍 1、RTC （Real Time Communication）技术 2、隐私屏保护用户信息 - 2.1、功能体验 2.2、功能限制 3、文件传输使用更加舒适 4、流畅度纵享丝滑 5、自定义键鼠映射 6、pad 远控秒变电脑敲代码 愿景 前言">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/125316961/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="文章目录 前言 一、ToDesk 介绍 二、新版本体验介绍 1、RTC （Real Time Communication）技术 2、隐私屏保护用户信息 - 2.1、功能体验 2.2、功能限制 3、文件传输使用更加舒适 4、流畅度纵享丝滑 5、自定义键鼠映射 6、pad 远控秒变电脑敲代码 愿景 前言">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/146613b6d753b0690cd5859cef90839c.webp">
+<meta property="article:published_time" content="2022-07-13T03:33:04.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.414Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="todesk">
+<meta property="article:tag" content="实时音视频">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/146613b6d753b0690cd5859cef90839c.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？","url":"https://pc-study.github.io/csdn-blog/posts/125316961/","image":"https://pc-study.github.io/csdn-blog/images/146613b6d753b0690cd5859cef90839c.webp","datePublished":"2022-07-13T03:33:04.000Z","dateModified":"2026-03-20T12:25:38.414Z","description":"文章目录 前言 一、ToDesk 介绍 二、新版本体验介绍 1、RTC （Real Time Communication）技术 2、隐私屏保护用户信息 - 2.1、功能体验 2.2、功能限制 3、文件传输使用更加舒适 4、流畅度纵享丝滑 5、自定义键鼠映射 6、pad 远控秒变电脑敲代码 愿景 前言","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/125316961/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/125316961/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/146613b6d753b0690cd5859cef90839c.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2022-07-13-125316961.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-07-13T03:33:04.000Z" title="发表于 2022-07-13 11:33:04">2022-07-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.414Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>6分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><h4 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h4><ul>
+<li><a href="#_1">前言</a></li>
+<li><a href="#ToDesk__4">一、ToDesk 介绍</a></li>
+<li><a href="#_34">二、新版本体验介绍</a></li>
+<li><ul>
+<li><a href="#1RTC_Real_Time_Communication_35">1、RTC （Real Time Communication）技术</a></li>
+<li><a href="#2_45">2、隐私屏保护用户信息</a></li>
+<li><ul>
+<li><a href="#21_53">2.1、功能体验</a></li>
+<li><a href="#22_84">2.2、功能限制</a></li>
+</ul>
+</li>
+<li><a href="#3_93">3、文件传输使用更加舒适</a></li>
+<li><a href="#4_101">4、流畅度纵享丝滑</a></li>
+<li><a href="#5_112">5、自定义键鼠映射</a></li>
+<li><a href="#6pad__117">6、pad 远控秒变电脑敲代码</a></li>
+</ul>
+</li>
+<li><a href="#_128">愿景</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近，我收到了一份关于升级的内部关于全新 ToDesk 4.3 专业版的测试邀请，提前感受了一下，在新版本中 ToDesk 采用全新 RTC 引擎技术，这在远程控制业界中还是国内首发，用户体验优化大大增强！</p>
+<h2 id="一、ToDesk-介绍"><a href="#一、ToDesk-介绍" class="headerlink" title="一、ToDesk 介绍"></a>一、ToDesk 介绍</h2><p>由于新冠疫情的发生，远程办公已经成为许多企业的日常工作模式，也使得远程控制软件逐渐成为大家常用的工具之一。ToDesk 作为近两年流行的远程桌面软件，在各大平台上广受好评。发布仅两年就有 4000 多万用户，可以说是一匹势头强劲的黑马。</p>
+<p>只要采用几个简单的步骤，远程控制软件就可以使办公电脑在几秒钟内成为云主机，并实现在家也能轻松操作办公室电脑的办公体验，宛如在现场使用本机办公。</p>
+<p>通常 <code>办公场景</code> 有以下几类：</p>
+<ul>
+<li>普通员工：远程办公、居家办公—灵活多样的工作方式、提升工作效率</li>
+<li>运维工程师：监测、预警故障；故障发生后及时进行响应</li>
+<li>客服、售后：进行产品安装测试；帮用户解决问题</li>
+<li>IT部门：对内—对内部员工进行技术支持、机房和电脑运维；对外—接受供应商的技术支持</li>
+</ul>
+<p><code>生活场景</code> 就更加多了：</p>
+<ul>
+<li>家庭关怀：父母不会安装电脑软件，自己在办公室用手机或者电脑远程控制家里的电脑帮他们装</li>
+<li>会议投屏：电脑忘带了，用手机控制电脑打开PPT文件在会议室投屏，微信文件传输助手</li>
+<li>学生实验室：学生在宿舍控制实验室的电脑看绝密资料、及时获得实验数据反馈</li>
+<li>学生忘带资料：可在实验室打开并控制自己的电脑，传输文件</li>
+<li>实验室电脑配置太低：学生可以将高配软件下载在自己的电脑，进行远程控制</li>
+<li>电商客服：为了维持权重电商在多台电脑上登录不同的客服号，可用同一台电脑远程控制，完成同步服务</li>
+<li>电商打印：电商老板同时打印不同电脑上多个店铺的订单和快递单</li>
+<li>电商帮装软件：购买破解软件，安装程序复杂，电商可远程帮客户安装好</li>
+<li>监控未成年人上网情况：远程监督未成年人用电脑的内容和时长，并用摄像头观察其状况</li>
+<li>监考：远程监督考生的电脑界面，防止其查答案，用摄像头观看考生周围状况和动作，防止其翻书作弊</li>
+<li>广告屏：一台电脑便可以控制几十米高的巨幕广告屏所投放的内容</li>
+<li>无人售卖机：机器出故障或需要调试，即可远程控制；若配有摄像头，可实时监控购买者</li>
+<li>手机同步教学：自己不会手机上很复杂的操作，便可以找个会的人，用电脑观看他在手机上的操作，自己同时用手机跟一遍</li>
+</ul>
+<h2 id="二、新版本体验介绍"><a href="#二、新版本体验介绍" class="headerlink" title="二、新版本体验介绍"></a>二、新版本体验介绍</h2><h3 id="1、RTC-（Real-Time-Communication）技术"><a href="#1、RTC-（Real-Time-Communication）技术" class="headerlink" title="1、RTC （Real Time Communication）技术"></a>1、RTC （Real Time Communication）技术</h3><p>RTC 技术主要用于互动直播、视频会议、游戏连麦等应用场景，为了能更好地实现高清、流畅、低延时的远控效果，ToDesk 通过 RTC 技术大幅度提升了网络吞吐能力和弱网对抗能力。可以说，有了 RTC 技术的加持，ToDesk 远程控制可以做到操作更丝滑、画质更高清、传输更流畅，真正做到远程操作宛如本机。简单来说，Todesk 融入 RTC 技术，是以较低的成本，解决互联网的延迟问题，并且拥有高清画质。</p>
+<blockquote>
+<p>RTC（Real time communication）即实时通信，是实时音视频的一个简称，但又不局限于音视频，包括 IM、图片、白板、文件共享等实时交互场景，无疑也属于 RTC 技术范畴，主要用来解决互联网应用的三大问题：延迟、质量、成本；</p>
+</blockquote>
+<p><img src="/csdn-blog/images/146613b6d753b0690cd5859cef90839c.webp" alt="ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？" loading='lazy'></p>
+<p>ToDesk 研发团队基于超过 10 年、支持过近 4 亿 MAU 产品的 RTC 技术经验，在标准协议上增加了大量的带宽估计、自适应流控等功能，最终实现 4K 高清、60 帧、10bit 颜色、端到端延时低至 40ms 的一流体验。</p>
+<h3 id="2、隐私屏保护用户信息"><a href="#2、隐私屏保护用户信息" class="headerlink" title="2、隐私屏保护用户信息"></a>2、隐私屏保护用户信息</h3><p>ToDesk 作为一款企业级安全免费不限速的远程控制软件，个人觉得首先需要确保的就是用户的安全以及隐私。</p>
+<p>ToDesk 的隐私屏可以保护用户的屏幕文件、个人隐私信息不被侵犯，是一个很有用的功能。我举一个例子，假设你的电脑正在被对方远程，此时你有急事需要离开电脑前，但是正在被远程又不能打断，这时候，就可以要求对方开启隐私屏功能，开启后远程显示器将会被锁定，不再显示画面，类似于电脑锁屏功能，但是又不影响对方的操作 👍🏻。</p>
+<p>下面我们来测试一下开启隐私屏后的效果，我使用的是 Mac 电脑来访问我的虚拟机 Windows 电脑（禁止套娃🪆）。</p>
+<p><img src="/csdn-blog/images/5793d53e47df0dbbf5d809649682f0c1.webp" alt="ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？ - 图2" loading='lazy'></p>
+<h4 id="2-1、功能体验"><a href="#2-1、功能体验" class="headerlink" title="2.1、功能体验"></a>2.1、功能体验</h4><p>演示为 Mac 端 ToDesk 连接 Windows 端 ToDesk：</p>
+<p><strong>Mac 端（V4.2.1）：</strong></p>
+<p><img src="/csdn-blog/images/e06df30f15195c93b448418669b136db.webp" alt="ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？ - 图3" loading='lazy'></p>
+<p><strong>Windows 端（V4.3.0）：</strong></p>
+<p><strong>Mac 端连接 Windows 端：</strong></p>
+<p><strong>此时 Windows 端的屏幕显示如下：</strong></p>
+<p><strong>现在 Mac 端打开隐私屏功能：</strong></p>
+<p><img src="/csdn-blog/images/f9e20db0cfce74993d1abbee94c8ab28.webp" alt="ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？ - 图4" loading='lazy'></p>
+<p><strong>Windows 端选择同意之后，远程桌面将显示为（如果是同一个账号登录，无需确认直接开启隐私屏）：</strong></p>
+<p>此时，Mac 端的操作不会有任何影响：</p>
+<h4 id="2-2、功能限制"><a href="#2-2、功能限制" class="headerlink" title="2.2、功能限制"></a>2.2、功能限制</h4><p>隐私屏的使用目前还存在一些限制：</p>
+<ul>
+<li>隐私屏目前仅支持被控为 Windows 系统时使用；</li>
+<li>暂不支持 Windows XP&#x2F;2003 操作系统；</li>
+<li>被控端操作系统版本为：Windows Vista，Windows 7 需要安装额外驱动（驱动下载地址：<a target="_blank" rel="noopener" href="https://dl.todesk.com/tdps_setup.exe">https://dl.todesk.com/tdps_setup.exe</a>）</li>
+<li>Windows 8&#x2F;10 以上系统无需安装额外驱动</li>
+</ul>
+<p>总体来说限制不多，以上就是 ToDesk 的隐私屏功能，大大的赞👍🏻，感兴趣的朋友可以用起来了！</p>
+<h3 id="3、文件传输使用更加舒适"><a href="#3、文件传输使用更加舒适" class="headerlink" title="3、文件传输使用更加舒适"></a>3、文件传输使用更加舒适</h3><p>ToDesk 4.3 版本在文件传输方面的功能也进行了增强。使用远程桌面不可避免的要使用到复制粘贴以及文件传输，所以这类功能的使用舒适性很重要，ToDesk 复制粘贴以及拖拽文件，使用起来更加得心应手。</p>
+<p><img src="/csdn-blog/images/034c8d029af9015aa849483e42be4869.webp" alt="ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？ - 图5" loading='lazy'></p>
+<p>经过实测，传输速度真能如官方所示达到 12M&#x2F;s，100M 的文件 10s 就能传输完毕。</p>
+<h3 id="4、流畅度纵享丝滑"><a href="#4、流畅度纵享丝滑" class="headerlink" title="4、流畅度纵享丝滑"></a>4、流畅度纵享丝滑</h3><p>ToDesk 的远程桌面清晰度，可以根据网速等需求自行调节清晰度、屏幕分辨率以及画面比例，达到了 1:1 的还原度，打开全屏之后，使用效果更佳，使用远程观看视频更是流畅性不错，丝滑如德芙。</p>
+<p><img src="/csdn-blog/images/c109d588c6826aa4f864d6e22e36dbca.webp" alt="ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？ - 图6" loading='lazy'></p>
+<p><img src="/csdn-blog/images/155c494d4d736059292cf4b5c7729249.webp" alt="ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？ - 图7" loading='lazy'></p>
+<p>值得一提的是在 4.3.0 专业版（付费版）中，画质会得到进一步提升，从原旧版专业版 1080p 高清画质升级为 2K 画质，远控大型 3A 端游不在话下。</p>
+<h3 id="5、自定义键鼠映射"><a href="#5、自定义键鼠映射" class="headerlink" title="5、自定义键鼠映射"></a>5、自定义键鼠映射</h3><p>当使用 Mac 访问 Windows 主机时，键盘的按键不同是一件很困扰的事情，ToDesk 的自定义键鼠映射功能轻松化解了这种问题，不再为 ctrl、control、alt、option、command 这些按键傻傻分不清楚而头疼 。</p>
+<p><img src="/csdn-blog/images/e1b045d09594ea6a29ecfb78a66adebd.webp" alt="ToDesk版本更新，引入RTC传输技术，是否早以替代向日葵远程控制？ - 图8" loading='lazy'></p>
+<h3 id="6、pad-远控秒变电脑敲代码"><a href="#6、pad-远控秒变电脑敲代码" class="headerlink" title="6、pad 远控秒变电脑敲代码"></a>6、pad 远控秒变电脑敲代码</h3><p>通过 pad 远程连接电脑，分分钟实现在 pad 敲代码，再也不怕在地铁上拿着电脑办公的窘境了，优雅的拿出 pad 完成工作。</p>
+<p><strong>操作演示：</strong></p>
+<h2 id="愿景"><a href="#愿景" class="headerlink" title="愿景"></a>愿景</h2><p>疫情虽然给我们的工作和生活带来了许多不便，但却也成为了科技发展和创新的催化剂，使得ToDesk这样的国产企业能不断精进技术，开发更多便利实用功能，解决国人的远程办公更多问题和需求。对于国内有这样优质的企业，我表示非常高兴，希望 ToDesk 保持初心，不断前进。但愿 ToDesk 不断创新、精益求精，并且能够长久地陪在我们身边，保障我们远程控制、远程办公顺利畅快！</p>
+<blockquote>
+<p>ToDesk 下载地址：<a target="_blank" rel="noopener" href="https://www.todesk.com/download.html">ToDesk 远程控制软件下载</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/125316961/">https://pc-study.github.io/csdn-blog/posts/125316961/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E5%AE%9E%E6%97%B6%E9%9F%B3%E8%A7%86%E9%A2%91/">实时音视频</a><a class="post-meta__tags" href="/csdn-blog/tags/todesk/">todesk</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/125830289/" title="单机：Oracle 11GR2 数据库一键安装"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">单机：Oracle 11GR2 数据库一键安装</div></div><div class="info-2"><div class="info-item-1">前言 本文将演示如何使用脚本一键安装 Oracle 11GR2 单机数据库的全过程。 安装前准备 在生产环境中，Linux 操作系统和网络一般不是由 DBA 来配置，为了更贴合生产使用，本脚本仅用于安装 Oracle 数据库，请提前安装好 Linux 操作系统。 主机版本 主机IP 主机内存 磁盘空</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/125249792/" title="单机：Oracle单机数据库一键安装（11GR2/12C/18C/19C/21C）"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">单机：Oracle单机数据库一键安装（11GR2/12C/18C/19C/21C）</div></div><div class="info-2"><div class="info-item-1">前言 使用脚本安装 Oracle 数据库是一件省时又省事的事情，接下来我演示一下整个过程，11GR2/12C/18C/19C/21C 通用。 📢：脚本下载地址：，需要申请才能访问，请添加微信： 申请访问。 安装前准备 本脚本最初仅用于安装 Oracle 数据库，不支持操作系统的安装，请提前安装好 L</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81ToDesk-%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">一、ToDesk 介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%96%B0%E7%89%88%E6%9C%AC%E4%BD%93%E9%AA%8C%E4%BB%8B%E7%BB%8D"><span class="toc-number">4.</span> <span class="toc-text">二、新版本体验介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81RTC-%EF%BC%88Real-Time-Communication%EF%BC%89%E6%8A%80%E6%9C%AF"><span class="toc-number">4.1.</span> <span class="toc-text">1、RTC （Real Time Communication）技术</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E9%9A%90%E7%A7%81%E5%B1%8F%E4%BF%9D%E6%8A%A4%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF"><span class="toc-number">4.2.</span> <span class="toc-text">2、隐私屏保护用户信息</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1%E3%80%81%E5%8A%9F%E8%83%BD%E4%BD%93%E9%AA%8C"><span class="toc-number">4.2.1.</span> <span class="toc-text">2.1、功能体验</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2%E3%80%81%E5%8A%9F%E8%83%BD%E9%99%90%E5%88%B6"><span class="toc-number">4.2.2.</span> <span class="toc-text">2.2、功能限制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E4%BD%BF%E7%94%A8%E6%9B%B4%E5%8A%A0%E8%88%92%E9%80%82"><span class="toc-number">4.3.</span> <span class="toc-text">3、文件传输使用更加舒适</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81%E6%B5%81%E7%95%85%E5%BA%A6%E7%BA%B5%E4%BA%AB%E4%B8%9D%E6%BB%91"><span class="toc-number">4.4.</span> <span class="toc-text">4、流畅度纵享丝滑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5%E3%80%81%E8%87%AA%E5%AE%9A%E4%B9%89%E9%94%AE%E9%BC%A0%E6%98%A0%E5%B0%84"><span class="toc-number">4.5.</span> <span class="toc-text">5、自定义键鼠映射</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6%E3%80%81pad-%E8%BF%9C%E6%8E%A7%E7%A7%92%E5%8F%98%E7%94%B5%E8%84%91%E6%95%B2%E4%BB%A3%E7%A0%81"><span class="toc-number">4.6.</span> <span class="toc-text">6、pad 远控秒变电脑敲代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%84%BF%E6%99%AF"><span class="toc-number">5.</span> <span class="toc-text">愿景</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

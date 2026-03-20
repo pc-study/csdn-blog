@@ -1,0 +1,869 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>New DocumentApache Log4j Security Alert CVE-2021-44228 Products and Versions (Doc ID 2828594.1) | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="In this Document PURPOSE SCOPE DETAILS Applicability of Security Alert CVE-2021-44228 to Oracle Clouds Applicability of Security Alert CVE-2021-44228">
+<meta property="og:type" content="article">
+<meta property="og:title" content="New DocumentApache Log4j Security Alert CVE-2021-44228 Products and Versions (Doc ID 2828594.1)">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/121981393/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="In this Document PURPOSE SCOPE DETAILS Applicability of Security Alert CVE-2021-44228 to Oracle Clouds Applicability of Security Alert CVE-2021-44228">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg">
+<meta property="article:published_time" content="2021-12-16T10:51:05.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.194Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="log4j">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"New DocumentApache Log4j Security Alert CVE-2021-44228 Products and Versions (Doc ID 2828594.1)","url":"https://pc-study.github.io/csdn-blog/posts/121981393/","image":"https://pc-study.github.io/csdn-blog/img/covers/database.svg","datePublished":"2021-12-16T10:51:05.000Z","dateModified":"2026-03-20T08:34:08.194Z","description":"In this Document PURPOSE SCOPE DETAILS Applicability of Security Alert CVE-2021-44228 to Oracle Clouds Applicability of Security Alert CVE-2021-44228","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/121981393/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/121981393/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'New DocumentApache Log4j Security Alert CVE-2021-44228 Products and Versions (Doc ID 2828594.1)',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/database.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">New DocumentApache Log4j Security Alert CVE-2021-44228 Products and Versions (Doc ID 2828594.1)</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">New DocumentApache Log4j Security Alert CVE-2021-44228 Products and Versions (Doc ID 2828594.1)<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-12-16-121981393.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-12-16T10:51:05.000Z" title="发表于 2021-12-16 18:51:05">2021-12-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.194Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>19分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><h4 id="In-this-Document"><a href="#In-this-Document" class="headerlink" title="In this Document"></a>In this Document</h4><ul>
+<li><a href="#PURPOSE_1">PURPOSE</a></li>
+<li><a href="#SCOPE_4">SCOPE</a></li>
+<li><a href="#DETAILS_7">DETAILS</a></li>
+<li><ul>
+<li><a href="#Applicability_of_Security_Alert_CVE202144228_to_Oracle_Clouds_20">Applicability of Security Alert CVE-2021-44228 to Oracle Clouds</a></li>
+<li><a href="#Applicability_of_Security_Alert_CVE202144228_to_Oracle_onpremises_products_24">Applicability of Security Alert CVE-2021-44228 to Oracle on-premises products</a></li>
+<li><a href="#10_Oracle_products_with_patches_or_mitigation_available_28">1.0 Oracle products with patches or mitigation available</a></li>
+<li><a href="#20_Oracle_products_with_patches_pending_130">2.0 Oracle products with patches pending</a></li>
+<li><a href="#30_Oracle_products_under_investigation_176">3.0 Oracle products under investigation</a></li>
+<li><a href="#40_Oracle_products_with_impacted_underlying_Oracle_components_224">4.0 Oracle products with impacted underlying Oracle components</a></li>
+<li><a href="#50_Oracle_products_not_requiring_patches_229">5.0 Oracle products not requiring patches</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="PURPOSE"><a href="#PURPOSE" class="headerlink" title="PURPOSE"></a>PURPOSE</h2><p>This document details the Oracle Products and Versions affected by CVE-2021-44228, an Apache Log4j 2 vulnerability described in Security Alert CVE-2021-44228.</p>
+<h2 id="SCOPE"><a href="#SCOPE" class="headerlink" title="SCOPE"></a>SCOPE</h2><p>This document applies to all Oracle products.</p>
+<h2 id="DETAILS"><a href="#DETAILS" class="headerlink" title="DETAILS"></a>DETAILS</h2><p>The impact of the Apache Log4j vulnerability CVE-2021-44228 on Oracle products, for releases and versions that are in Premier Support or Extended Support under the Oracle Lifetime Support Policy, is listed in the appropriate categories below.</p>
+<p><strong>Note:</strong></p>
+<ul>
+<li>Oracle is aware of CVE-2021-45046 and this document and related documents will be updated to indicate the patching status for CVE-2021-45046.</li>
+<li>Product releases that are not under Premier Support or Extended Support are not tested for the presence of this vulnerability.</li>
+<li><strong>Reminder:</strong> Oracle <strong>strongly</strong> recommends that customers remain on actively-supported versions and apply Critical Patch Update security patches without delay. For the most recent Critical Patch Updates, see <a target="_blank" rel="noopener" href="https://www.oracle.com/security-alerts/">https://www.oracle.com/security-alerts/</a>.</li>
+<li><a target="_blank" rel="noopener" href="https://logging.apache.org/log4j/2.x/index.html">Apache reported</a> that CVE-2021-44228 applies only to Log4j versions 2.0-2.14.1, and does not apply to Log4j versions 1.x.</li>
+<li><strong>Oracle believes at the time of the publication of this document that product releases that are not listed in Tables 1-4 below are not affected by this vulnerability in their default product distribution.</strong></li>
+</ul>
+<p><strong>This page was last updated on: December 15, 2021 at 03:49 PM PST.</strong></p>
+<h3 id="Applicability-of-Security-Alert-CVE-2021-44228-to-Oracle-Clouds"><a href="#Applicability-of-Security-Alert-CVE-2021-44228-to-Oracle-Clouds" class="headerlink" title="Applicability of Security Alert CVE-2021-44228 to Oracle Clouds"></a>Applicability of Security Alert CVE-2021-44228 to Oracle Clouds</h3><p>The Oracle Cloud operations and security teams are evaluating this Security Alert as well as all relevant third-party fixes as they become available. They will apply the relevant patches in accordance with applicable change management processes. This MOS article will be updated to reflect the application of the required patches in the Oracle clouds.</p>
+<h3 id="Applicability-of-Security-Alert-CVE-2021-44228-to-Oracle-on-premises-products"><a href="#Applicability-of-Security-Alert-CVE-2021-44228-to-Oracle-on-premises-products" class="headerlink" title="Applicability of Security Alert CVE-2021-44228 to Oracle on-premises products"></a>Applicability of Security Alert CVE-2021-44228 to Oracle on-premises products</h3><p>This section provides information about the availability of patches or mitigation instructions for products physically located in customers’ on-premise locations (including traditionally licensed products and cloud on-premises components).</p>
+<h3 id="1-0-Oracle-products-with-patches-or-mitigation-available"><a href="#1-0-Oracle-products-with-patches-or-mitigation-available" class="headerlink" title="1.0 Oracle products with patches or mitigation available"></a>1.0 Oracle products with patches or mitigation available</h3><p>Oracle has determined that the following Oracle products are vulnerable and have patches or mitigation available for CVE-2021-44228. For patch and mitigation availability information refer to the individual Patch Availability Documents referenced in the table below.</p>
+<p>Patch availability information is provided only for product versions that are covered under the Premier Support or Extended Support phases of the Lifetime Support Policy. Oracle recommends that customers remain on actively supported versions to ensure that they continue to receive security fixes from Oracle.</p>
+<table>
+<thead>
+<tr>
+<th>Patch Availability Table</th>
+<th>MOS note</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Affected Products</td>
+<td>Patch Availability</td>
+</tr>
+<tr>
+<td>Agile Engineering Data Management [Product ID 4436]</td>
+<td>2827823.1</td>
+</tr>
+<tr>
+<td>Agile PLM Framework [Product ID 4461]</td>
+<td>2827700.1</td>
+</tr>
+<tr>
+<td>Autonomous Health Framework &#x2F; Trace File Analyzer [Product ID 10655]</td>
+<td>2796575.1</td>
+</tr>
+<tr>
+<td>Autovue for Agile Product Lifecycle Management [Product ID 4434]</td>
+<td>2827700.1</td>
+</tr>
+<tr>
+<td>Communications Convergent Charging Controller [Product ID 12985]</td>
+<td>2827826.1</td>
+</tr>
+<tr>
+<td>Communications Evolved Communications Application Server [Product ID 10994]</td>
+<td>2828268.1</td>
+</tr>
+<tr>
+<td>Communications Instant Messaging Server [Product ID 8495]</td>
+<td>2827846.1</td>
+</tr>
+<tr>
+<td>Communications IP Service Activator [Product ID 2261]</td>
+<td>2827897.1</td>
+</tr>
+<tr>
+<td>Communications Messaging Server [Product ID 8496]</td>
+<td>2827846.1</td>
+</tr>
+<tr>
+<td>Communications Network Charging and Control [Product ID 4623]</td>
+<td>2827826.1</td>
+</tr>
+<tr>
+<td>Communications Offline Mediation Controller [Product ID 2269]</td>
+<td>2827844.1</td>
+</tr>
+<tr>
+<td>Communications Pricing Design Center [Product ID 9437]</td>
+<td>2827844.1</td>
+</tr>
+<tr>
+<td>Communications Unified Inventory Management [Product ID 4516]</td>
+<td>2827890.1</td>
+</tr>
+<tr>
+<td>Communications WebRTC Session Controller [Product ID 10811]</td>
+<td>2828270.1</td>
+</tr>
+<tr>
+<td>Enterprise Manager for Peoplesoft [Product ID 2131]</td>
+<td>2828293.1</td>
+</tr>
+<tr>
+<td>Enterprise Manager Ops Center [Product ID 9835]</td>
+<td>2828286.1</td>
+</tr>
+<tr>
+<td>Health Insurance Enterprise Commissions [Product ID 12596]</td>
+<td>2827793.1</td>
+</tr>
+<tr>
+<td>Health Sciences Data Management Workbench [Product ID 9581]</td>
+<td>2827966.1</td>
+</tr>
+<tr>
+<td>Health Sciences Empirica Signal [Product ID 9646]</td>
+<td>2828060.1</td>
+</tr>
+<tr>
+<td>Health Sciences Information Manager [Product ID 9177]</td>
+<td>2827979.1</td>
+</tr>
+<tr>
+<td>Healthcare Foundation [Product ID 12950]</td>
+<td>2828054.1</td>
+</tr>
+<tr>
+<td>Hyperion Data Relationship Management [Product ID 4375]</td>
+<td>2828248.1</td>
+</tr>
+<tr>
+<td>Hyperion Essbase [Product ID 4379]</td>
+<td>2827793.1</td>
+</tr>
+<tr>
+<td>Identity Manager Connector [Product ID 1999]</td>
+<td>2828241.1</td>
+</tr>
+<tr>
+<td>Instantis EnterpriseTrack [Product ID 10563]</td>
+<td>2827904.1</td>
+</tr>
+<tr>
+<td>Insurance Insbridge Rating and Underwriting [Product ID 5484]</td>
+<td>2827731.1</td>
+</tr>
+<tr>
+<td>Insurance Policy Administration J2EE [Product ID 5279]</td>
+<td>2827731.1</td>
+</tr>
+<tr>
+<td>Insurance Rules Palette [Product ID 5288]</td>
+<td>2827731.1</td>
+</tr>
+<tr>
+<td>Managed File Transfer [Product ID 10198]</td>
+<td>2828548.1</td>
+</tr>
+<tr>
+<td>MySQL Enterprise Monitor [Product ID 8480]</td>
+<td>2827698.1</td>
+</tr>
+<tr>
+<td>Oracle Agile Engineering Collaboration [Product ID 4439]</td>
+<td>2827700.1</td>
+</tr>
+<tr>
+<td>Oracle Agile PLM MCAD Connector [Product ID 4440]</td>
+<td>2827700.1</td>
+</tr>
+<tr>
+<td>Oracle Analytics Desktop [Product ID 12791]</td>
+<td>2828540.1</td>
+</tr>
+<tr>
+<td>Oracle Analytics Server [Product ID 2025]</td>
+<td>2828398.1</td>
+</tr>
+<tr>
+<td>Oracle API Gateway [Product ID 9195]</td>
+<td>2828365.1</td>
+</tr>
+<tr>
+<td>Oracle Banking Deposits and Lines of Credit Servicing [Product ID 13928]</td>
+<td>2828115.1</td>
+</tr>
+<tr>
+<td>Oracle Banking Enterprise Collections [Product ID 13390]</td>
+<td>2828115.1</td>
+</tr>
+<tr>
+<td>Oracle Banking Loans Servicing [Product ID 13927]</td>
+<td>2828115.1</td>
+</tr>
+<tr>
+<td>Oracle Banking Party Management [Product ID 13929]</td>
+<td>2828115.1</td>
+</tr>
+<tr>
+<td>Oracle Banking Platform [Product ID 9178]</td>
+<td>2828115.1</td>
+</tr>
+<tr>
+<td>Oracle Big Data Appliance [Product ID 9734]</td>
+<td>2828023.1</td>
+</tr>
+<tr>
+<td>Oracle Communications ASAP [Product ID 2260]</td>
+<td>2827910.1</td>
+</tr>
+<tr>
+<td>Oracle Communications Billing and Revenue Management [Product ID 2136]</td>
+<td>2827844.1</td>
+</tr>
+<tr>
+<td>Oracle Communications BRM Elastic Charging Engine [Product ID 9742]</td>
+<td>2827844.1</td>
+</tr>
+<tr>
+<td>Oracle Communications Convergence [Product ID 8501]</td>
+<td>2827846.1</td>
+</tr>
+<tr>
+<td>Oracle Communications Diameter Signaling Router [Product ID 10899]</td>
+<td>2828201.1</td>
+</tr>
+<tr>
+<td>Oracle Communications Performance Intelligence Center (PIC) Software [Product ID 11044]</td>
+<td>2828122.1</td>
+</tr>
+<tr>
+<td>Oracle Communications Service Broker [Product ID 8565]</td>
+<td>2827833.1</td>
+</tr>
+<tr>
+<td>Oracle Communications Services Gatekeeper [Product ID 5381]</td>
+<td>2828256.1</td>
+</tr>
+<tr>
+<td>Oracle Data Integrator (ODI) [Product ID 2196]</td>
+<td>2827929.1</td>
+</tr>
+<tr>
+<td>Oracle E-Business Suite [Product ID 1745]</td>
+<td>2827804.1</td>
+</tr>
+<tr>
+<td>Oracle EBS Extensions for Oracle Endeca - INSTALL [Product ID 10240]</td>
+<td>2827804.1</td>
+</tr>
+<tr>
+<td>Oracle Enterprise Manager [Product ID 1370]</td>
+<td>2828296.1</td>
+</tr>
+<tr>
+<td>Oracle Enterprise Performance Management [Product ID 4392]</td>
+<td>2828262.1</td>
+</tr>
+<tr>
+<td>Oracle Enterprise Repository [Product ID 5326]</td>
+<td>2827793.1</td>
+</tr>
+<tr>
+<td>Oracle Fusion Middleware Infrastructure [Product ID 1032]</td>
+<td>2827793.1</td>
+</tr>
+<tr>
+<td>Oracle GoldenGate Application Adapters [Product ID 5760]</td>
+<td>2828058.1</td>
+</tr>
+<tr>
+<td>Oracle GoldenGate Studio [Product ID 10945]</td>
+<td>2828091.1</td>
+</tr>
+<tr>
+<td>Oracle GoldenGate Veridata [Product ID 5758]</td>
+<td>2828356.1</td>
+</tr>
+<tr>
+<td>Oracle Health Insurance Analytics [Product ID 9656]</td>
+<td>2827793.1</td>
+</tr>
+<tr>
+<td>Oracle Health Insurance Claims Pricing [Product ID 10295]</td>
+<td>2827793.1</td>
+</tr>
+<tr>
+<td>Oracle Healthcare Translational Research [Product ID 9427]</td>
+<td>2828329.1</td>
+</tr>
+<tr>
+<td>Oracle Hospitality Gift and Loyalty [Product ID 11600]</td>
+<td>2827908.1</td>
+</tr>
+<tr>
+<td>Oracle Hospitality Labor Management [Product ID 11601]</td>
+<td>2827908.1</td>
+</tr>
+<tr>
+<td>Oracle Hospitality OPERA 5 [Product ID 12726]</td>
+<td>2827653.1</td>
+</tr>
+<tr>
+<td>Oracle Hospitality Reporting and Analytics [Product ID 11599]</td>
+<td>2827908.1</td>
+</tr>
+<tr>
+<td>Oracle Hospitality RES 3700 [Product ID 11596]</td>
+<td>2828515.1</td>
+</tr>
+<tr>
+<td>Oracle Hospitality Simphony [Product ID 11594]</td>
+<td>2828331.1</td>
+</tr>
+<tr>
+<td>Oracle Hospitality Simphony First Edition [Product ID 11591]</td>
+<td>2828514.1</td>
+</tr>
+<tr>
+<td>Oracle Hospitality Token Proxy Service [Product ID 13387]</td>
+<td>2827732.1</td>
+</tr>
+<tr>
+<td>Oracle Insurance Data Gateway [Product ID 13628]</td>
+<td>2827731.1</td>
+</tr>
+<tr>
+<td>Oracle JDeveloper [Product ID 807]</td>
+<td>2827793.1</td>
+</tr>
+<tr>
+<td>Oracle Payment Interface [Product ID 13173]</td>
+<td>2827654.1</td>
+</tr>
+<tr>
+<td>Oracle Platform Security for Java [Product ID 2233]</td>
+<td>2827793.1</td>
+</tr>
+<tr>
+<td>Oracle Policy Automation [Product ID 5624]</td>
+<td>2827722.1</td>
+</tr>
+<tr>
+<td>Oracle Real Time Decision Server (RTD Server) [Product ID 2104]</td>
+<td>2827793.1</td>
+</tr>
+<tr>
+<td>Oracle Reports Developer [Product ID 159]</td>
+<td>2827793.1</td>
+</tr>
+<tr>
+<td>Oracle Retail Invoice Matching [Product ID 1810]</td>
+<td>2828547.1</td>
+</tr>
+<tr>
+<td>Oracle Spatial and Graph [Product ID 619] [See</td>
+<td>2828303.1]</td>
+</tr>
+<tr>
+<td>Oracle Unified Directory (OUD) [Product ID 9118]</td>
+<td>2827793.1</td>
+</tr>
+<tr>
+<td>Oracle WebCenter Sites [Product ID 9617]</td>
+<td>2827793.1</td>
+</tr>
+<tr>
+<td>PeopleSoft PeopleTools [Product ID 5085]</td>
+<td>2828073.1</td>
+</tr>
+<tr>
+<td>Primavera Analytics [Product ID 8577]</td>
+<td>2827736.1</td>
+</tr>
+<tr>
+<td>Primavera Gateway [Product ID 10605]</td>
+<td>2827707.1</td>
+</tr>
+<tr>
+<td>Primavera P6 Enterprise Project Portfolio Management [Product ID 5579]</td>
+<td>2827712.1</td>
+</tr>
+<tr>
+<td>Primavera P6 Professional Project Management [Product ID 5580]</td>
+<td>2827712.1</td>
+</tr>
+<tr>
+<td>Primavera Unifier [Product ID 10354]</td>
+<td>2827713.1</td>
+</tr>
+<tr>
+<td>Product Lifecycle Analytics [Product ID 9387]</td>
+<td>2828294.1</td>
+</tr>
+<tr>
+<td>Siebel UI Framework [Product ID 9011]</td>
+<td>2828323.1</td>
+</tr>
+<tr>
+<td>SQL Developer and SQL Developer Data Modeler [Product ID 1875]</td>
+<td>2796575.1</td>
+</tr>
+<tr>
+<td>Utilities Network Management System [Product ID 2241]</td>
+<td>2827974.1</td>
+</tr>
+<tr>
+<td>WebCenter Portal [Product ID 1696]</td>
+<td>2827977.1</td>
+</tr>
+</tbody></table>
+<h3 id="2-0-Oracle-products-with-patches-pending"><a href="#2-0-Oracle-products-with-patches-pending" class="headerlink" title="2.0 Oracle products with patches pending"></a>2.0 Oracle products with patches pending</h3><p>Oracle has determined that the following Oracle products are vulnerable and do not currently have patches available for CVE-2021-44228:</p>
+<ul>
+<li>Automatic Service Request [Product ID 9042]</li>
+<li>Communications Application Session Controller [Product ID 10769]</li>
+<li>Communications Interactive Session Recorder [Product ID 10765]</li>
+<li>Communications Session Report Manager [Product ID 10770]</li>
+<li>Communications Session Route Manager [Product ID 10771]</li>
+<li>Currency Transaction Reporting [Product ID 9784]</li>
+<li>Enterprise Metadata Management [Product ID 11264]</li>
+<li>Financial Services Behavior Detection Platform [Product ID 9190]</li>
+<li>Financial Services Economic Capital Advanced [Product ID 9475]</li>
+<li>Financial Services Foreign Account Tax Compliance Act Management [Product ID 10308]</li>
+<li>Financial Services Lending and Leasing [Product ID 10484]</li>
+<li>Financial Services Personal Trading Approval [Product ID 10647]</li>
+<li>Financial Services Regulatory Reporting [Product ID 9142]</li>
+<li>Financial Services Revenue Management and Billing [Product ID 5322]</li>
+<li>FLEXCUBE Core Banking [Product ID 9101]</li>
+<li>FLEXCUBE Investor Servicing [Product ID 9099]</li>
+<li>Insurance Calculation Engine [Product ID 10837]</li>
+<li>Management Cloud Engine [Product ID 14252]</li>
+<li>Oracle Banking Corporate Lending [Product ID 12989]</li>
+<li>Oracle Banking Corporate Lending Process Management [Product ID 13701]</li>
+<li>Oracle Banking Credit Facilities Process Management [Product ID 13703]</li>
+<li>Oracle Banking Extensibility Workbench [Product ID 14124]</li>
+<li>Oracle Banking Treasury Management [Product ID 14133]</li>
+<li>Oracle Communications Session Element Manager [Product ID 11052]</li>
+<li>Oracle Financial Services Analytical Applications Infrastructure [Product ID 5680]</li>
+<li>Oracle Financial Services Anti Money Laundering Event Scoring [Product ID 13609]</li>
+<li>Oracle Financial Services Asset Liability Management [Product ID 5662]</li>
+<li>Oracle Financial Services Balance Computation Engine [Product ID 14246]</li>
+<li>Oracle Financial Services Balance Sheet Planning [Product ID 5663]</li>
+<li>Oracle Financial Services Crime and Compliance Management Studio [Product ID 13595]</li>
+<li>Oracle Financial Services Data Integration Hub [Product ID 11289]</li>
+<li>Oracle Financial Services Enterprise Case Management [Product ID 13545]</li>
+<li>Oracle Financial Services Loan Loss Forecasting and Provisioning [Product ID 9474]</li>
+<li>Oracle Financial Services Market Risk Measurement and Management [Product ID 13111]</li>
+<li>Oracle Financial Services Model Management and Governance [Product ID 14276]</li>
+<li>Oracle Financial Services Trade-Based Anti Money Laundering Enterprise Edition [Product ID 13789]</li>
+<li>Oracle FLEXCUBE Private Banking [Product ID 9110]</li>
+<li>Oracle Insurance Accounting Analyzer [Product ID 13809]</li>
+<li>Oracle Insurance Allocation Manager for Enterprise Profitability [Product ID 13946]</li>
+<li>Oracle Insurance Policy Administration Operational Data Store for Life and Annuity [Product ID 13339]</li>
+<li>Oracle Retail EFTLink [Product ID 11516]</li>
+<li>Oracle Retail Xstore Point of Service [Product ID 11513]</li>
+</ul>
+<h3 id="3-0-Oracle-products-under-investigation"><a href="#3-0-Oracle-products-under-investigation" class="headerlink" title="3.0 Oracle products under investigation"></a>3.0 Oracle products under investigation</h3><p>The following Oracle products are under investigation and may be impacted by vulnerability CVE-2021-44228:</p>
+<ul>
+<li>Advanced Support Gateway [Product ID 9296]</li>
+<li>Functional Testing Advanced Pack for Oracle Utilities [Product ID 11163]</li>
+<li>Oracle Analytics Client Tools [Product ID 2025]</li>
+<li>Oracle Data Gateway [Product ID 2025]</li>
+<li>Oracle Exalogic Elastic Cloud [Product ID 9415]</li>
+<li>Oracle Fabric Manager [Product ID 10477]</li>
+<li>Oracle Policy Automation Connector for Siebel [Product ID 5627]</li>
+<li>Oracle Real-Time Scheduler [Product ID 2238]</li>
+<li>Oracle Retail Allocation [Product ID 1786]</li>
+<li>Oracle Retail Assortment Planning [Product ID 1788]</li>
+<li>Oracle Retail Back Office [Product ID 2013]</li>
+<li>Oracle Retail Bulk Data Integration [Product ID 12968]</li>
+<li>Oracle Retail Central Office [Product ID 2016]</li>
+<li>Oracle Retail Customer Management and Segmentation Foundation [Product ID 13388]</li>
+<li>Oracle Retail Data Extractor for Merchandising [Product ID 12936]</li>
+<li>Oracle Retail Extract Tranform and Load [Product ID 1803]</li>
+<li>Oracle Retail Financial Integration [Product ID 10722]</li>
+<li>Oracle Retail Fiscal Management [Product ID 9038]</li>
+<li>Oracle Retail Insights [Product ID 10263]</li>
+<li>Oracle Retail Integration Bus [Product ID 1807]</li>
+<li>Oracle Retail Merchandising System [Product ID 1816]</li>
+<li>Oracle Retail Order Management System Cloud Service [Product ID 11519]</li>
+<li>Oracle Retail Predictive Application Server [Product ID 1823]</li>
+<li>Oracle Retail Price Management [Product ID 1824]</li>
+<li>Oracle Retail Returns Management [Product ID 2020]</li>
+<li>Oracle Retail Service Backbone [Product ID 10867]</li>
+<li>Oracle Retail Store Inventory Management [Product ID 1838]</li>
+<li>Oracle Solaris Operating System [Product ID 10006]</li>
+<li>Oracle SuperCluster [Product ID 10011]</li>
+<li>Oracle Utilities Application Framework [Product ID 2245]</li>
+<li>Oracle Utilities Asset Management Base [Product ID 9574]</li>
+<li>Oracle Utilities Customer to Meter [Product ID 13345]</li>
+<li>Oracle Utilities Smart Grid Gateway Adapter for Echelon [Product ID 9129]</li>
+<li>Oracle Utilities Smart Grid Gateway Adapter for Landis Gyr [Product ID 9130]</li>
+<li>Oracle Utilities Smart Grid Gateway MV90 Adapter for Itron [Product ID 9128]</li>
+<li>Oracle Utilities Testing Accelerator [Product ID 13784]</li>
+<li>Retail Analytics [Product ID 9346]</li>
+<li>Utilities Meter Data Management [Product ID 4101]</li>
+<li>Utilities Mobile Workforce Management [Product ID 2239]</li>
+<li>Utilities Smart Grid Gateway [Product ID 9127]</li>
+<li>Utilities Smart Grid Gateway Adapter Development Kit [Product ID 10356]</li>
+<li>Utilities Smart Grid Gateway Adapter for Itron OpenWay [Product ID 10211]</li>
+<li>Utilities Smart Grid Gateway Adapter for Sensus RNI [Product ID 9563]</li>
+<li>Utilities Smart Grid Gateway Adapter for Silver Spring Networks [Product ID 9560]</li>
+</ul>
+<h3 id="4-0-Oracle-products-with-impacted-underlying-Oracle-components"><a href="#4-0-Oracle-products-with-impacted-underlying-Oracle-components" class="headerlink" title="4.0 Oracle products with impacted underlying Oracle components"></a>4.0 Oracle products with impacted underlying Oracle components</h3><p>No products in this category.</p>
+<h3 id="5-0-Oracle-products-not-requiring-patches"><a href="#5-0-Oracle-products-not-requiring-patches" class="headerlink" title="5.0 Oracle products not requiring patches"></a>5.0 Oracle products not requiring patches</h3><p>At this point in time, Oracle doesn’t believe the following products to be affected by vulnerability CVE-2021-44228:</p>
+<ul>
+<li>Application Testing Suite [Product ID 4622]</li>
+<li>Argus Analytics [Product ID 9171]</li>
+<li>Argus Mart [Product ID 10383]</li>
+<li>Banking Digital Experience [Product ID 12605]</li>
+<li>Berkeley DB [Product ID 2051]</li>
+<li>Commerce Platform [Product ID 9348]</li>
+<li>Commerce Service Center [Product ID 9351]</li>
+<li>Communications Converged Application Server [Product ID 5382]</li>
+<li>Communications EAGLE FTP Table Base Retrieval [Product ID 11116]</li>
+<li>Communications Network Integrity [Product ID 4491]</li>
+<li>Communications Order and Service Management [Product ID 2270]</li>
+<li>CRF Submit Requestor [Product ID 9641]</li>
+<li>Database Gateway for APPC [Product ID 774]</li>
+<li>Demantra Demand Management [Product ID 2100]</li>
+<li>Enterprise Data Quality [Product ID 9464]</li>
+<li>Enterprise Manager for MySQL Database [Product ID 11166]</li>
+<li>Enterprise Single Sign-On Suite Plus [Product ID 2074]</li>
+<li>Exalytics Software [Product ID 9736]</li>
+<li>FLEXCUBE Direct Banking [Product ID 9111]</li>
+<li>Health Insurance Claims Management Data Marts [Product ID 9313]</li>
+<li>Health Insurance Data Management [Product ID 10643]</li>
+<li>Healthcare Data Repository [Product ID 9161]</li>
+<li>JD Edwards EnterpriseOne Deployment Server [Product ID 4781]</li>
+<li>JD Edwards EnterpriseOne Enterprise Server [Product ID 4781]</li>
+<li>JD Edwards EnterpriseOne Enterprise Server Platform Pack [Product ID 4781]</li>
+<li>JD Edwards EnterpriseOne Server Manager [Product ID 4781]</li>
+<li>JD Edwards World [Product ID 4839]</li>
+<li>Mobile Application Framework [Product ID 11055]</li>
+<li>MySQL Server [Product ID 8478]</li>
+<li>Oracle Access Manager &#x2F; Webgates [Product ID 5565]</li>
+<li>Oracle Access Manager [Product ID 5565]</li>
+<li>Oracle Adaptive Access Manager [Product ID 4419]</li>
+<li>Oracle Application Express [Product ID 1348]</li>
+<li>Oracle Audit Vault and Database Firewall [Product ID 9749]</li>
+<li>Oracle Banking Cash Management [Product ID 14195]</li>
+<li>Oracle Banking Liquidity Management [Product ID 13304]</li>
+<li>Oracle Banking Supply Chain Finance [Product ID 13872]</li>
+<li>Oracle Banking Trade Finance Process Management [Product ID 13718]</li>
+<li>Oracle Banking Virtual Account Management [Product ID 13487]</li>
+<li>Oracle Big Data Spatial and Graph [Product ID 11528]</li>
+<li>Oracle Blockchain Cloud Service [Product ID 13444]</li>
+<li>Oracle BPEL Process Manager 10g [Product ID 1669]</li>
+<li>Oracle Business Intelligence Enterprise Edition [Product ID 2025]</li>
+<li>Oracle Business Intelligence Publisher [Product ID 1479]</li>
+<li>Oracle Client [Product ID 5]</li>
+<li>Oracle Coherence [Product ID 2545]</li>
+<li>Oracle Commerce Guided Search&#x2F;Oracle Commerce Experience Mgr [Product ID 9633]</li>
+<li>Oracle Communications Calendar Server [Product ID 8494]</li>
+<li>Oracle Communications Contacts Server [Product ID 10696]</li>
+<li>Oracle Communications Control Plane Monitor [Product ID 10764]</li>
+<li>Oracle Communications EAGLE [Product ID 10768]</li>
+<li>Oracle Communications EAGLE Application Processor [Product ID 11122]</li>
+<li>Oracle Communications EAGLE Element Management System [Product ID 11125]</li>
+<li>Oracle Communications EAGLE LNP Application Processor [Product ID 11118]</li>
+<li>Oracle Communications Fraud Monitor [Product ID 10763]</li>
+<li>Oracle Communications LSMS [Product ID 11114]</li>
+<li>Oracle Communications MetaSolv Solution [Product ID 2267]</li>
+<li>Oracle Communications Operations Monitor [Product ID 10761]</li>
+<li>Oracle Communications Session Border Controller [Product ID 10750]</li>
+<li>Oracle Communications User Data Repository [Product ID 11108]</li>
+<li>Oracle Database (not exploitable) [Product ID 5] [See MOS Note 2796575.1]</li>
+<li>Oracle Database Appliance [Product ID 9435]</li>
+<li>Oracle Database Global Service Manager [Product ID 5]</li>
+<li>Oracle Directory Server Enterprise Edition [Product ID 8512]</li>
+<li>Oracle Documaker [Product ID 5477]</li>
+<li>Oracle Enterprise Operations Monitor [Product ID 10762]</li>
+<li>Oracle Enterprise Session Border Controller [Product ID 10757]</li>
+<li>Oracle Enterprise Telephony Fraud Monitor [Product ID 13804]</li>
+<li>Oracle Exadata Storage Server Software [Product ID 2546]</li>
+<li>Oracle Fail Safe [Product ID 843]</li>
+<li>Oracle Forms [Product ID 45]</li>
+<li>Oracle Global Lifecycle Management FMW Installer [Product ID 12748]</li>
+<li>Oracle Global Lifecycle Management Repository Creation Utility [Product ID 12746]</li>
+<li>Oracle GoldenGate [Product ID 5757]</li>
+<li>Oracle GoldenGate for HP Nonstop [Product ID 13046]</li>
+<li>Oracle Health Insurance Claims Management [Product ID 9307]</li>
+<li>Oracle Health Insurance Claims Management Web Services [Product ID 9311]</li>
+<li>Oracle Health Insurance Disbursements and Collections [Product ID 9308]</li>
+<li>Oracle Health Insurance Long Term Care [Product ID 9394]</li>
+<li>Oracle Health Insurance Policy Administration [Product ID 9306]</li>
+<li>Oracle Health Insurance Policy Administration Data Marts [Product ID 9312]</li>
+<li>Oracle Health Insurance Policy Administration Web Services [Product ID 9310]</li>
+<li>Oracle Health Sciences Argus Safety [Product ID 5710]</li>
+<li>Oracle Health Sciences Clinical Development Analytics [Product ID 5563]</li>
+<li>Oracle Health Sciences InForm [Product ID 9636]</li>
+<li>Oracle HTTP Server [Product ID 1042]</li>
+<li>Oracle Identity Manager [Product ID 1980]</li>
+<li>Oracle Integrated Lights Out Manager (ILOM) [Product ID 9849]</li>
+<li>Oracle Internet Directory [Product ID 355]</li>
+<li>Oracle Key Vault [Product ID 10221]</li>
+<li>Oracle Linux [Product ID 1309]</li>
+<li>Oracle MapViewer [Product ID 1215]</li>
+<li>Oracle MiniCluster S7-2 Engineered System [Product ID 12598]</li>
+<li>Oracle NoSQL Database [Product ID 13373]</li>
+<li>Oracle Retail Advanced Inventory Planning [Product ID 1785]</li>
+<li>Oracle Retail Data Model [Product ID 2538]</li>
+<li>Oracle SD-WAN Aware [Product ID 13941]</li>
+<li>Oracle SD-WAN Edge [Product ID 13940]</li>
+<li>Oracle Secure Backup [Product ID 1522]</li>
+<li>Oracle Service Architecture Leveraging Tuxedo (SALT) [Product ID 5435]</li>
+<li>Oracle SOA Suite [Product ID 1162]</li>
+<li>Oracle SPARC Server Firmware [Product ID 9846]</li>
+<li>Oracle StorageTek Tape Analytics [Product ID 10085]</li>
+<li>Oracle TimesTen In-Memory Database [Product ID 1870]</li>
+<li>Oracle Tuxedo Application Rehosting Workbench [Product ID 8485]</li>
+<li>Oracle Tuxedo Mainframe Adapter for OSI TP [Product ID 5439]</li>
+<li>Oracle Virtual Directory [Product ID 1978]</li>
+<li>Oracle VM [Product ID 4455]</li>
+<li>Oracle VM VirtualBox [Product ID 8370]</li>
+<li>Oracle Warehouse Builder [Product ID 9]</li>
+<li>Oracle WebCenter Content [Product ID 2271]</li>
+<li>Oracle WebCenter Content: Imaging [Product ID 4576]</li>
+<li>Oracle WebCenter Enterprise Capture [Product ID 10212]</li>
+<li>Oracle WebLogic Server (not exploitable) [Product ID 5242] [See MOS Note 2827793.1]</li>
+<li>Oracle x86 Server Firmware [Product ID Multiple]</li>
+<li>Oracle ZFS Storage Appliance Kit [Product ID 10026]</li>
+<li>Outside In Technology [Product ID 2276]</li>
+<li>PeopleSoft Enterprise CRM Client Management [Product ID 4860]</li>
+<li>PeopleSoft Enterprise CS Install [Product ID 9068]</li>
+<li>PeopleSoft Enterprise FIN Install [Product ID 8925]</li>
+<li>PeopleSoft Enterprise FIN Supply Chain Portal Pack Brazil [Product ID 8883]</li>
+<li>PeopleSoft Enterprise HCM Human Resources [Product ID 5071]</li>
+<li>PeopleSoft Enterprise PRTL Interaction Hub [Product ID 5090]</li>
+<li>Policy Automation for Mobile Devices [Product ID 5626]</li>
+<li>Portable ClusterWare [Product ID 5]</li>
+<li>Private Cloud Appliance [Product ID 10635]</li>
+<li>Rapid Planning [Product ID 5235]</li>
+<li>Secure Global Desktop [Product ID 8539]</li>
+<li>Sun StorageTek Tape Library ACSLS [Product ID 10088]</li>
+<li>Tekelec Platform [Product ID 11269]</li>
+<li>Transportation Management [Product ID 1991]</li>
+<li>Universal Installer [Product ID 662]</li>
+<li>Zero Data Loss Recovery Appliance [Product ID 11342]</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/121981393/">https://pc-study.github.io/csdn-blog/posts/121981393/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/log4j/">log4j</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/121981461/" title="December 2021 Apache Log4j Vulnerabilities on Oracle Products and Services(Doc ID 2827611.1)"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">December 2021 Apache Log4j Vulnerabilities on Oracle Products and Services(Doc ID 2827611.1)</div></div><div class="info-2"><div class="info-item-1">In this Document PURPOSE SCOPE DETAILS Applicability of these vulnerabilities to Oracle cloud environments Applicability of Security Alert CVE-2021-45</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121954831/" title="初识 Vertica ，看完白皮书，我都发现了啥【文末赠书】"><img class="cover" src="/csdn-blog/images/694d1aa4e504d24e1b2c786b74df3a8b.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">初识 Vertica ，看完白皮书，我都发现了啥【文末赠书】</div></div><div class="info-2"><div class="info-item-1">前言 我们已经进入大数据实时分析时代。 点我跳转文末 领书，价值 118 元的 《Python商业数据挖掘（第6版）》！ 用Python展示数据挖掘的理论、技术和应用，大数据必备书籍！ 今天聊聊一种列式数据库，基于 MPP 和真正列式数据库 技术 ，创建了面向大数据实时分析的全新架构：。 本篇文章</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/144504477/" title="干货分享：达梦共享集群（DMDSC）一键安装脚本"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-16</div><div class="info-item-2">干货分享：达梦共享集群（DMDSC）一键安装脚本</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群可以添加号主微信：Lucifer-0622，备注</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/138719905/" title="Oracle Linux 6.10 一键安装 Oracle 11GR2（231017）单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-11</div><div class="info-item-2">Oracle Linux 6.10 一键安装 Oracle 11GR2（231017）单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Oracle Linux 6.10 一键安装 Oracle 11GR2 单机（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120236191/" title="Oracle 重做日志调整 SQL语句"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-11</div><div class="info-item-2">Oracle 重做日志调整 SQL语句</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库 安装之后，重做日志默认为 3组，如果需要新增删除，可以通过以下方式！ 查询： 新增： 单机数据库： RAC集群数据库： 删除： 📢 注意：如果当前要删除的 logfile 状态不是 ，那么删除会报错，需要执行 来切换日志，直到状态为 才可以删除！ 本次分享到此结束啦~ 如果觉得</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120256024/" title="Oracle 快速创建 N 个表空间数据文件"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-12</div><div class="info-item-2">Oracle 快速创建 N 个表空间数据文件</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库是由无数个表空间组成，表空间是由无数个数据文件组成，数据文件存放在磁盘中。 随着时间和业务量的增长，数据文件会不断的增长，默认的数据文件一个为 32G，因此，需要不断的新增数据文件！ 那么，问题来了！需要新增很多数据文件怎么办？ 以下示例以 表空间进行演示！默认 开启 OMF！</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139778202/" title="中科方德 NFSChina 4.0一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-18</div><div class="info-item-2">中科方德 NFSChina 4.0一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示中科方德 NFSChina 4.0一键安装 Oracle 19C 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/147408850/" title="别再手动搭建 Oracle ADG 了！这个脚本让你效率翻倍"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-22</div><div class="info-item-2">别再手动搭建 Oracle ADG 了！这个脚本让你效率翻倍</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 环境信息 Oracle 一键安装 主库环境 备库环境 ADG 快速搭建 主库开启归档和强制日志 主库增加 standby redo 日志 配置 hosts 配置 TNS DBCA 搭建 ADG 主库设置 ADG 参数 备库设置</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#In-this-Document"><span class="toc-number">1.</span> <span class="toc-text">In this Document</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PURPOSE"><span class="toc-number">2.</span> <span class="toc-text">PURPOSE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SCOPE"><span class="toc-number">3.</span> <span class="toc-text">SCOPE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DETAILS"><span class="toc-number">4.</span> <span class="toc-text">DETAILS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Applicability-of-Security-Alert-CVE-2021-44228-to-Oracle-Clouds"><span class="toc-number">4.1.</span> <span class="toc-text">Applicability of Security Alert CVE-2021-44228 to Oracle Clouds</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Applicability-of-Security-Alert-CVE-2021-44228-to-Oracle-on-premises-products"><span class="toc-number">4.2.</span> <span class="toc-text">Applicability of Security Alert CVE-2021-44228 to Oracle on-premises products</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-0-Oracle-products-with-patches-or-mitigation-available"><span class="toc-number">4.3.</span> <span class="toc-text">1.0 Oracle products with patches or mitigation available</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-0-Oracle-products-with-patches-pending"><span class="toc-number">4.4.</span> <span class="toc-text">2.0 Oracle products with patches pending</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-0-Oracle-products-under-investigation"><span class="toc-number">4.5.</span> <span class="toc-text">3.0 Oracle products under investigation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-0-Oracle-products-with-impacted-underlying-Oracle-components"><span class="toc-number">4.6.</span> <span class="toc-text">4.0 Oracle products with impacted underlying Oracle components</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-0-Oracle-products-not-requiring-patches"><span class="toc-number">4.7.</span> <span class="toc-text">5.0 Oracle products not requiring patches</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

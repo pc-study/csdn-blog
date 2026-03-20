@@ -1,0 +1,348 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Oracle Alert 日志频繁告警 12170 TNS-12535/TNS-00505，我看看怎么个事儿？ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 问题描述 问题重现 解决方案 调整防火墙 调整 Oracle 参数 治标不治本 写在最后 前言 节后巡检一套 Oracle 11GR2 的库，发现 alert 日志很大，于是看看 alert 日志里都记录了啥？好家伙，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Oracle Alert 日志频繁告警 12170 TNS-12535&#x2F;TNS-00505，我看看怎么个事儿？">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/145697072/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 问题描述 问题重现 解决方案 调整防火墙 调整 Oracle 参数 治标不治本 写在最后 前言 节后巡检一套 Oracle 11GR2 的库，发现 alert 日志很大，于是看看 alert 日志里都记录了啥？好家伙，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/oracle.svg">
+<meta property="article:published_time" content="2025-02-18T01:10:31.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.490Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/oracle.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Oracle Alert 日志频繁告警 12170 TNS-12535/TNS-00505，我看看怎么个事儿？","url":"https://pc-study.github.io/csdn-blog/posts/145697072/","image":"https://pc-study.github.io/csdn-blog/img/covers/oracle.svg","datePublished":"2025-02-18T01:10:31.000Z","dateModified":"2026-03-20T08:34:08.490Z","description":"大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 问题描述 问题重现 解决方案 调整防火墙 调整 Oracle 参数 治标不治本 写在最后 前言 节后巡检一套 Oracle 11GR2 的库，发现 alert 日志很大，于是看看 alert 日志里都记录了啥？好家伙，","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/145697072/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/145697072/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Oracle Alert 日志频繁告警 12170 TNS-12535/TNS-00505，我看看怎么个事儿？',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/oracle.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">Oracle Alert 日志频繁告警 12170 TNS-12535/TNS-00505，我看看怎么个事儿？</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Oracle Alert 日志频繁告警 12170 TNS-12535/TNS-00505，我看看怎么个事儿？<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-02-18-145697072.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-02-18T01:10:31.000Z" title="发表于 2025-02-18 09:10:31">2025-02-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.490Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/">Oracle 数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>13分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，致力于分享数据库领域相关知识。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#_31">问题描述</a></li>
+<li><a href="#_85">问题重现</a></li>
+<li><a href="#_214">解决方案</a></li>
+<li><ul>
+<li><a href="#_217">调整防火墙</a></li>
+<li><a href="#_Oracle__226">调整 Oracle 参数</a></li>
+<li><a href="#_243">治标不治本</a></li>
+</ul>
+</li>
+<li><a href="#_258">写在最后</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>节后巡检一套 Oracle 11GR2 的库，发现 alert 日志很大，于是看看 alert 日志里都记录了啥？好家伙，一打开日志发现全是告警 <code>TNS-12170/12535/12560/00505</code>，一眼刷不到头：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">***</span><br><span class="hljs-strong">Fatal NI connect error 12170.</span><br><span class="hljs-strong"></span><br><span class="hljs-strong">  VERSION INFORMATION:</span><br><span class="hljs-strong">        TNS for Linux: Version 11.2.0.4.0 - Production</span><br><span class="hljs-strong">        Oracle Bequeath NT Protocol Adapter for Linux: Version 11.2.0.4.0 - Production</span><br><span class="hljs-strong">        TCP/IP NT Protocol Adapter for Linux: Version 11.2.0.4.0 - Production</span><br><span class="hljs-strong">  Time: 06-FEB-2025 00:16:10</span><br><span class="hljs-strong">  Tracing not turned on.</span><br><span class="hljs-strong">  Tns error struct:</span><br><span class="hljs-strong">    ns main err code: 12535</span><br><span class="hljs-strong"></span><br><span class="hljs-strong">TNS-12535: TNS:operation timed out</span><br><span class="hljs-strong">    ns secondary err code: 12560</span><br><span class="hljs-strong">    nt main err code: 505</span><br><span class="hljs-strong"></span><br><span class="hljs-strong">TNS-00505: Operation timed out</span><br><span class="hljs-strong">    nt secondary err code: 110</span><br><span class="hljs-strong">    nt OS err code: 0</span><br><span class="hljs-strong">Thu Feb 06 00:20:32 2025</span><br><span class="hljs-strong">**</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-emphasis">*</span><br></code></pre></td></tr></table></figure>
+
+<p>这明显是个老朋友了，对 Oracle DBA 来说太常见了，但是大多数人往往都选择视而不见，正好有案例，我打算记录一下解决过程。</p>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>首先可以通过 <code>oerr</code> 看一下这个报错的描述：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs 1c">[oracle@lucifer<span class="hljs-punctuation">:</span><span class="hljs-symbol">~]$ oerr ora 12170</span><br><span class="hljs-symbol">12170, 00000, &quot;TNS</span>:Connect timeout occurred<span class="hljs-string">&quot;</span><br><span class="hljs-comment">// *Cause:  The server shut down because connection establishment or</span><br><span class="hljs-comment">// communication with a client failed to complete within the allotted time</span><br><span class="hljs-comment">// interval. This may be a result of network or system delays; or this may</span><br><span class="hljs-comment">// indicate that a malicious client is trying to cause a Denial of Service</span><br><span class="hljs-comment">// attack on the server.</span><br><span class="hljs-comment">// *Action: If the error occurred because of a slow network or system,</span><br><span class="hljs-comment">// reconfigure one or all of the parameters SQLNET.INBOUND_CONNECT_TIMEOUT,</span><br><span class="hljs-comment">// SQLNET.SEND_TIMEOUT, SQLNET.RECV_TIMEOUT in sqlnet.ora to larger values.</span><br><span class="hljs-comment">// If a malicious client is suspected, use the address in sqlnet.log to</span><br><span class="hljs-comment">// identify the source and restrict access. Note that logged addresses may</span><br><span class="hljs-comment">// not be reliable as they can be forged (e.g. in TCP/IP).</span><br></code></pre></td></tr></table></figure>
+
+<p>简单来说，就是连接超时了，可能是网络慢或者有人搞破坏。例如，拔网线、防火墙断开连接或客户端崩溃且未通知服务器等。</p>
+<p>再看这次的案例：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Fatal</span> NI connect error <span class="hljs-number">12170</span>.<br><br>  <span class="hljs-attribute">VERSION</span> INFORMATION:<br>        <span class="hljs-attribute">TNS</span> for Linux: Version <span class="hljs-number">11.2.0.4</span>.<span class="hljs-number">0</span> - Production<br>        <span class="hljs-attribute">Oracle</span> Bequeath NT Protocol Adapter for Linux: Version <span class="hljs-number">11.2.0.4</span>.<span class="hljs-number">0</span> - Production<br>        <span class="hljs-attribute">TCP</span>/IP NT Protocol Adapter for Linux: Version <span class="hljs-number">11.2.0.4</span>.<span class="hljs-number">0</span> - Production<br>  <span class="hljs-attribute">Time</span>: <span class="hljs-number">06</span>-FEB-<span class="hljs-number">2025</span> <span class="hljs-number">00</span>:<span class="hljs-number">16</span>:<span class="hljs-number">10</span><br>  <span class="hljs-attribute">Tracing</span> not turned <span class="hljs-literal">on</span>.<br>  <span class="hljs-attribute">Tns</span> error struct:<br>    <span class="hljs-attribute">ns</span> main err code: <span class="hljs-number">12535</span><br><br><span class="hljs-attribute">TNS</span>-<span class="hljs-number">12535</span>: TNS:operation timed out<br>    <span class="hljs-attribute">ns</span> secondary err code: <span class="hljs-number">12560</span><br>    <span class="hljs-attribute">nt</span> main err code: <span class="hljs-number">505</span><br><br><span class="hljs-attribute">TNS</span>-<span class="hljs-number">00505</span>: Operation timed out<br>    <span class="hljs-attribute">nt</span> secondary err code: <span class="hljs-number">110</span><br>    <span class="hljs-attribute">nt</span> OS err code: <span class="hljs-number">0</span><br><span class="hljs-attribute">Thu</span> Feb <span class="hljs-number">06</span> <span class="hljs-number">00</span>:<span class="hljs-number">20</span>:<span class="hljs-number">32</span> <span class="hljs-number">2025</span><br></code></pre></td></tr></table></figure>
+
+<p>错误堆栈依次为 <code>12170/TNS-12535/12560/TNS-00505</code>，这表示已建立的连接由于网络问题而超时。在这种情况下 Oracle 服务器进程无法确定客户端状态，它必须等到 TCP keepalive 超时（可能是几个小时），然后该进程将终止，上述消息将打印在 alert 日志中。所以，这是一个网络&#x2F;应用程序问题，而不是数据库的错误。</p>
+<blockquote>
+<p>📢 注意：Oracle 11GR1 版本之前同样的信息 ‘Fatal NI connect error 12170’ 是写入 sqlnet.log 中的。</p>
+</blockquote>
+<p>当 Oracle 安装在不同的操作系统（OS）时，对于 <code>nt secondary err code</code> 错误代码有所不同：</p>
+<ul>
+<li><strong>Solaris</strong>：nt secondary err code: 145（ETIMEDOUT 145 &#x2F;* Connection timed out *&#x2F;）</li>
+<li><strong>Linux</strong>：nt secondary err code: 110（ETIMEDOUT 110 Connection timed out）</li>
+<li><strong>HP-UX</strong>：nt secondary err code: 238（ETIMEDOUT 238 &#x2F;* Connection timed out *&#x2F;）</li>
+<li><strong>AIX</strong>：nt secondary err code: 78（ETIMEDOUT 78 &#x2F;* Connection timed out *&#x2F;）</li>
+<li><strong>Windows</strong>：nt secondary err code: 60（Winsock 错误：10060）</li>
+</ul>
+<p>很明显，当前案例的操作系统就是 Linux 了。</p>
+<h2 id="问题重现"><a href="#问题重现" class="headerlink" title="问题重现"></a>问题重现</h2><p>为了更深入的理解，我们可以重现一下这个问题。</p>
+<p>在模拟开始前，我们先了解一下操作系统 <strong>TCP KeepAlive</strong> 机制的原理：</p>
+<blockquote>
+<p>当建立 TCP 链接后，如果应用程序或者上层协议一直不发送数据，或者隔很长一段时间才发送数据，当链接很久没有数据报文传输时就需要通过 keepalive 机制去确定对方是否在线，链接是否需要继续保持。当超过一定时间没有发送数据时，TCP 会自动发送一个数据为空的报文给对方，如果对方回应了报文，说明对方在线，链接可以继续保持，如果对方没有报文返回，则在重试一定次数之后认为链接丢失，就不会释放链接。</p>
+</blockquote>
+<p>TCP的keepalive机制是用来在非活跃的连接上发送保活探测数据包，以检测对端是否仍然活跃。如果对端不响应，可以断定连接已经断开，并且可以采取相应的动作。</p>
+<p>操作系统的 TCP keepalive 有 3 个参数（这是 Linux 参数，当然其它操作系统也有类似的参数）：</p>
+<ul>
+<li><strong>tcp_keepalive_time</strong>：在开始发送保活探测数据包之前，TCP 连接处于非活动状态的时间。</li>
+<li><strong>tcp_keepalive_intvl</strong>：如果对端没有任何响应，保活探测包的发送间隔。</li>
+<li><strong>tcp_keepalive_probes</strong>：在认定连接失效之前，发送保活探测包的次数。</li>
+</ul>
+<p>查看 Linux 系统的默认值：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 保活时间，默认为 7200s</span><br>[root<span class="hljs-variable">@oracle11g</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># sysctl net.ipv4.tcp_keepalive_time</span><br>net.ipv4.tcp_keepalive_time = <span class="hljs-number">7200</span><br><span class="hljs-comment">## 发生间隔，默认为 75s</span><br>[root<span class="hljs-variable">@oracle11g</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># sysctl net.ipv4.tcp_keepalive_intvl</span><br>net.ipv4.tcp_keepalive_intvl = <span class="hljs-number">75</span><br><span class="hljs-comment">## 重试次数，默认为 9次</span><br>[root<span class="hljs-variable">@oracle11g</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># sysctl net.ipv4.tcp_keepalive_probes</span><br>net.ipv4.tcp_keepalive_probes = <span class="hljs-number">9</span><br></code></pre></td></tr></table></figure>
+
+<p>这里为了快速模拟，我已经提前将服务端的 tcp_keepalive 临时改变为 5 分钟，重试次数为 3 次（需要在最初客户端建立连接前修改，否则不生效）：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 第一步就需要执行修改，然后再在客户端模拟连接</span><br>[root<span class="hljs-variable">@oracle11g</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># sysctl -w net.ipv4.tcp_keepalive_time=300</span><br>net.ipv4.tcp_keepalive_time = <span class="hljs-number">300</span><br>[root<span class="hljs-variable">@oracle11g</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># sysctl -w net.ipv4.tcp_keepalive_probes=3</span><br>net.ipv4.tcp_keepalive_probes = <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+
+<p>使用客户端连接一套 11GR2 测试环境，确定会话和服务器进程：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sql">[oracle<span class="hljs-variable">@oracle19c</span>:<span class="hljs-operator">/</span>home<span class="hljs-operator">/</span>oracle]$ sqlplus lucifer<span class="hljs-operator">/</span>oracle<span class="hljs-variable">@192</span><span class="hljs-number">.168</span><span class="hljs-number">.6</span><span class="hljs-number">.60</span><span class="hljs-operator">/</span>lucifer<br><br><span class="hljs-keyword">SQL</span><span class="hljs-operator">*</span>Plus: <span class="hljs-keyword">Release</span> <span class="hljs-number">19.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span> <span class="hljs-operator">-</span> Production <span class="hljs-keyword">on</span> Thu Feb <span class="hljs-number">6</span> <span class="hljs-number">10</span>:<span class="hljs-number">56</span>:<span class="hljs-number">38</span> <span class="hljs-number">2025</span><br>Version <span class="hljs-number">19.3</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span><br><br>Copyright (c) <span class="hljs-number">1982</span>, <span class="hljs-number">2019</span>, Oracle.  <span class="hljs-keyword">All</span> rights reserved.<br><br><br>Connected <span class="hljs-keyword">to</span>:<br>Oracle Database <span class="hljs-number">11</span>g Enterprise Edition <span class="hljs-keyword">Release</span> <span class="hljs-number">11.2</span><span class="hljs-number">.0</span><span class="hljs-number">.4</span><span class="hljs-number">.0</span> <span class="hljs-operator">-</span> <span class="hljs-number">64</span>bit Production<br><span class="hljs-keyword">With</span> the Partitioning, OLAP, Data Mining <span class="hljs-keyword">and</span> <span class="hljs-type">Real</span> Application Testing options<br><br>LUCIFER<span class="hljs-variable">@192</span><span class="hljs-number">.168</span><span class="hljs-number">.6</span><span class="hljs-number">.60</span><span class="hljs-operator">/</span>lucifer <span class="hljs-keyword">SQL</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">select</span> s.sid,s.serial#,p.spid <span class="hljs-keyword">from</span> v$session s, v$process p, (<span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> v$mystat <span class="hljs-keyword">where</span> rownum<span class="hljs-operator">=</span><span class="hljs-number">1</span>) ms <span class="hljs-keyword">where</span> s.paddr<span class="hljs-operator">=</span>p.addr <span class="hljs-keyword">and</span> s.sid<span class="hljs-operator">=</span>ms.sid;<br><br>       SID    SERIAL# SPID<br><span class="hljs-comment">---------- ---------- ------------------------</span><br>      <span class="hljs-number">2273</span>         <span class="hljs-number">31</span> <span class="hljs-number">36644</span><br></code></pre></td></tr></table></figure>
+
+<p>客户端的端口可以通过 <strong>listener.log</strong> 来标识，在本例中为 <code>61809</code>：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Thu</span> Feb <span class="hljs-number">06</span> <span class="hljs-number">10</span>:<span class="hljs-number">56</span>:<span class="hljs-number">39</span> <span class="hljs-number">2025</span><br><span class="hljs-attribute">06</span>-FEB-<span class="hljs-number">2025</span> <span class="hljs-number">10</span>:<span class="hljs-number">56</span>:<span class="hljs-number">39</span> * (CONNECT_DATA=(SERVICE_NAME=lucifer)(CID=(PROGRAM=sqlplus)(HOST=oracle19c)(USER=oracle))) * (ADDRESS=(PROTOCOL=tcp)(HOST=<span class="hljs-number">192.168.6.194</span>)(PORT=<span class="hljs-number">61809</span>)) * establish * lucifer * <span class="hljs-number">0</span><br><span class="hljs-attribute">06</span>-FEB-<span class="hljs-number">2025</span> <span class="hljs-number">10</span>:<span class="hljs-number">56</span>:<span class="hljs-number">42</span> * service_update * lucifer * <span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
+
+<p>拔掉客户端和服务器之间的网线，或者通过 <code>iptables</code> 命令断开连接，监控服务器的连接：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs elixir"><span class="hljs-comment">## 宕掉网卡</span><br>[root<span class="hljs-variable">@oracle19c</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># nmcli connection show </span><br><span class="hljs-title class_">NAME</span>    <span class="hljs-title class_">UUID</span>                                  <span class="hljs-title class_">TYPE</span>      <span class="hljs-title class_">DEVICE</span> <br>ens192  <span class="hljs-number">882</span>d9815-b6c2<span class="hljs-number">-4</span>a6d-a1d9<span class="hljs-number">-514</span>e120be9bd  ethernet  ens192 <br>virbr0  <span class="hljs-number">34</span>fa23fb<span class="hljs-number">-9193</span><span class="hljs-number">-4872</span><span class="hljs-number">-85</span>d7<span class="hljs-number">-0</span>a7615a12311  bridge    virbr0 <br>[root<span class="hljs-variable">@oracle19c</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># nmcli connection down ens192 </span><br><br><span class="hljs-comment">## 防火墙断开</span><br><span class="hljs-comment">## iptables -A INPUT -p tcp -s 192.168.6.194 --sport 61809 -j DROP</span><br><span class="hljs-comment">## iptables -nL</span><br></code></pre></td></tr></table></figure>
+
+<p>可以看到，即使网线已被拔出（或连接已被 iptables 断开），操作系统 角度来看 TCP 连接仍处于已建立状态：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">[root@oracle11g:/root]<span class="hljs-comment"># date</span><br>Thu Feb  <span class="hljs-number">6</span> <span class="hljs-number">10</span>:<span class="hljs-number">58</span>:<span class="hljs-number">02</span> CST <span class="hljs-number">2025</span><br>[root@oracle11g:/root]<span class="hljs-comment"># lsof -Pani :61809</span><br>COMMAND   PID   <span class="hljs-keyword">USER</span>   <span class="hljs-title">FD</span>   <span class="hljs-keyword">TYPE</span> DEVICE SIZE/OFF <span class="hljs-keyword">NODE</span> <span class="hljs-title">NAME</span><br>oracle  <span class="hljs-number">36644</span> oracle   <span class="hljs-number">14</span>u  IPv6  <span class="hljs-number">70337</span>      <span class="hljs-number">0</span>t0  TCP <span class="hljs-number">192.168</span>.<span class="hljs-number">6.60</span>:<span class="hljs-number">1521</span>-&gt;<span class="hljs-number">192.168</span>.<span class="hljs-number">6.194</span>:<span class="hljs-number">61809</span> (ESTABLISHED)<br></code></pre></td></tr></table></figure>
+
+<p>服务器进程在 oracle 端仍然存在：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">SYS@lucifer <span class="hljs-keyword">SQL</span>&gt; <span class="hljs-keyword">select</span> sysdate,s.sid,s.serial#,p.spid,event,status,state <span class="hljs-keyword">from</span> v$<span class="hljs-keyword">session</span> s, v$process p <span class="hljs-keyword">where</span> s.paddr=p.addr <span class="hljs-keyword">and</span> s.sid=<span class="hljs-number">2273</span>;<br><br>SYSDATE                   SID    <span class="hljs-type">SERIAL</span># SPID                     EVENT                                                            STATUS   STATE<br><span class="hljs-comment">------------------ ---------- ---------- ------------------------ ---------------------------------------------------------------- -------- -------------------</span><br><span class="hljs-number">06</span>-FEB<span class="hljs-number">-25</span>                <span class="hljs-number">2273</span>         <span class="hljs-number">31</span> <span class="hljs-number">36644</span>                    <span class="hljs-keyword">SQL</span>*Net message <span class="hljs-keyword">from</span> client                                      INACTIVE WAITING<br></code></pre></td></tr></table></figure>
+
+<p>使用 ss 命令可以确定当前连接的 keepalive 时间：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs ruby">[root<span class="hljs-variable">@oracle11g</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># ss -tuanop &#x27;( sport = :1521 and dport = :61809 )&#x27;</span><br><span class="hljs-title class_">Netid</span>               <span class="hljs-title class_">State</span>                <span class="hljs-title class_">Recv</span>-Q                <span class="hljs-title class_">Send</span>-Q                                       <span class="hljs-title class_">Local</span> <span class="hljs-title class_">Address</span><span class="hljs-symbol">:Port</span>                                         <span class="hljs-title class_">Peer</span> <span class="hljs-title class_">Address</span><span class="hljs-symbol">:Port</span>                <span class="hljs-title class_">Process</span>               <br>tcp                 <span class="hljs-variable constant_">ESTAB</span>                <span class="hljs-number">0</span>                     <span class="hljs-number">0</span>                                    [<span class="hljs-symbol">:</span><span class="hljs-symbol">:ffff</span><span class="hljs-symbol">:</span><span class="hljs-number">192.168</span>.<span class="hljs-number">6.60</span>]<span class="hljs-symbol">:</span><span class="hljs-number">1521</span>                               [<span class="hljs-symbol">:</span><span class="hljs-symbol">:ffff</span><span class="hljs-symbol">:</span><span class="hljs-number">192.168</span>.<span class="hljs-number">6.194</span>]<span class="hljs-symbol">:</span><span class="hljs-number">61809</span>                <span class="hljs-symbol">users:</span>((<span class="hljs-string">&quot;oracle&quot;</span>,pid=<span class="hljs-number">36644</span>,fd=<span class="hljs-number">14</span>)) <span class="hljs-symbol">timer:</span>(keepalive,27sec,<span class="hljs-number">0</span>)<br></code></pre></td></tr></table></figure>
+
+<p>等待一会儿后，数据库 alert 告警日志显示以下消息：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">***</span><br><span class="hljs-strong"></span><br><span class="hljs-strong">Fatal NI connect error 12170.</span><br><span class="hljs-strong"></span><br><span class="hljs-strong">  VERSION INFORMATION:</span><br><span class="hljs-strong">        TNS for Linux: Version 11.2.0.4.0 - Production</span><br><span class="hljs-strong">        Oracle Bequeath NT Protocol Adapter for Linux: Version 11.2.0.4.0 - Production</span><br><span class="hljs-strong">        TCP/IP NT Protocol Adapter for Linux: Version 11.2.0.4.0 - Production</span><br><span class="hljs-strong">  Time: 06-FEB-2025 11:12:18</span><br><span class="hljs-strong">  Tracing not turned on.</span><br><span class="hljs-strong">  Tns error struct:</span><br><span class="hljs-strong">    ns main err code: 12535</span><br><span class="hljs-strong">    </span><br><span class="hljs-strong">TNS-12535: TNS:operation timed out</span><br><span class="hljs-strong">    ns secondary err code: 12560</span><br><span class="hljs-strong">    nt main err code: 505</span><br><span class="hljs-strong">    </span><br><span class="hljs-strong">TNS-00505: Operation timed out</span><br><span class="hljs-strong">    nt secondary err code: 110</span><br><span class="hljs-strong">    nt OS err code: 0</span><br><span class="hljs-strong">  Client address: (ADDRESS=(PROTOCOL=tcp)(HOST=192.168.6.194)(PORT=61809))</span><br></code></pre></td></tr></table></figure>
+
+<p>再次查看进程已经不存在：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs ruby">[root<span class="hljs-variable">@oracle11g</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># ss -tuanop &#x27;( sport = :1521 and dport = :61809 )&#x27;</span><br><span class="hljs-title class_">Netid</span>                  <span class="hljs-title class_">State</span>                  <span class="hljs-title class_">Recv</span>-Q                  <span class="hljs-title class_">Send</span>-Q                                   <span class="hljs-title class_">Local</span> <span class="hljs-title class_">Address</span><span class="hljs-symbol">:Port</span>                                   <span class="hljs-title class_">Peer</span> <span class="hljs-title class_">Address</span><span class="hljs-symbol">:Port</span>                 <span class="hljs-title class_">Process</span>  <br>[root<span class="hljs-variable">@oracle11g</span><span class="hljs-symbol">:/root</span>]<span class="hljs-comment"># lsof -Pani :61809</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>📢 注意</strong>：在 12C 或更高版本上，如果启用了 DCD，则服务器进程的 tcp keepalive 时间将更改为 DCD 间隔值。</p>
+<blockquote>
+<p>具体可参考：<a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2403921.1">Oracle Net 12c: DCD (Dead Connection Detection ) 功能的改变 (Doc ID 2403921.1)</a></p>
+</blockquote>
+<p>到这，这个问题的模拟也就结束了。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>说了这么多，还没有给解决方案，别急，来了！</p>
+<h3 id="调整防火墙"><a href="#调整防火墙" class="headerlink" title="调整防火墙"></a>调整防火墙</h3><p>防火墙 (FW) 在当今的网络中已经很常见，用于保护网络环境。防火墙识别 TCP 协议并记录客户端服务器套接字端点。此外，FW 识别 TCP 连接关闭，然后将释放为记录打开连接而分配的资源。对于每对端点，防火墙还必须分配一些资源（可能很小）。</p>
+<p>当客户端或服务器关闭通信时，它会发送 TCP FIN 类型数据包，这是正常的套接字关闭行为。然而，客户端服务器通信突然终止而没有通过发送 FIN 数据包正确关闭端点的情况并不罕见。<strong>例如，当客户端或服务器崩溃、断电或网络错误导致无法向另一端发送关闭数据包时。在这种情况下，防火墙并不知道端点是否继续使用仍然处于打开的那些通道。作为被动模式，它无法确定端点是否仍然处于活动状态。因为不可能永远维护资源，而且，在未知的时间内一直保持端口开放是一种安全威胁。因此，防火墙会对那些在预定时间内保持空闲状态的连接实施封锁。</strong></p>
+<p>最初，FW 旨在保护应用程序服务器、网络，然后保护客户端&#x2F;服务器连接。考虑到这些，以小时为单位的超时（大多数固件默认为 1 小时）是合理的。随着更复杂的安全方案的出现，FW 不仅存在于客户端和服务器之间，还存在于不同的应用服务器（内网、非军事区（DMZ）等）和数据库服务器之间。因此，服务器之间通信的 1 小时空闲时间范围可能不合适。</p>
+<p><strong>建议</strong>：<strong>调整防火墙设置，以获得最大空闲时间</strong>。当然这是一个安全设置，所以应该由网络或系统管理员完成。</p>
+<h3 id="调整-Oracle-参数"><a href="#调整-Oracle-参数" class="headerlink" title="调整 Oracle 参数"></a>调整 Oracle 参数</h3><p>数据库连接中，如果一端是监听进程（可能是专用进程或调度程序进程），当连接被阻断时，后端无法知道客户端是否还能发送请求。这会导致资源浪费，比如数据库会话、锁和文件描述符等。</p>
+<p><strong>解决办法是让后端“主动”一点，使用 DCD（死连接检测）来检查连接是否还正常。</strong></p>
+<p>具体操作是在服务器端的 <code>$ORACLE_HOME/network/admin/sqlnet.ora</code> 文件中设置 <code>SQLNET.EXPIRE_TIME=10</code>（10分钟）。这样，如果10分钟内没有活动，服务器会向客户端发送一个小探测包。如果客户端没有回应，服务器就会关闭连接并释放资源。</p>
+<p><strong>DCD（死连接检测）有两个好处</strong>：</p>
+<ol>
+<li>如果 <code>SQLNET.EXPIRE_TIME</code> 比防火墙的空闲超时时间短，防火墙会把这个探测包当作活动信号，不会中断连接，除非客户端或服务器真的出了问题。</li>
+<li>如果 <code>SQLNET.EXPIRE_TIME</code> 比防火墙的空闲超时时间长，一旦连接中断，数据库会很快发现并关闭连接。</li>
+</ol>
+<p>第一种情况适合连接来自应用服务器时使用，第二种情况则适合客户端应用。</p>
+<p>DCD 是在应用层和 TCP&#x2F;IP 协议上工作的。如果你设置了 <code>SQLNET.EXPIRE_TIME=10</code>，也就是说如果断电或网络中断 10 分钟，连接不会被立即标记为死亡。</p>
+<p>一旦你修改了 <code>SQLNET.EXPIRE_TIME</code> 的设置，不需要重启监听器或数据库，新的连接会立刻生效。但是，<strong>已经存在的连接不会受到影响</strong>，只有新建立的连接才会使用这个新设置。所以，在全部连接都更新之前，你可能还会遇到一些超时问题。</p>
+<h3 id="治标不治本"><a href="#治标不治本" class="headerlink" title="治标不治本"></a>治标不治本</h3><p>最后，还有一个治标不治本的方法，就是屏蔽掉这些告警日志，不让他写入 alert 日志。可以通过设置以下参数来关闭 <strong>Automatic Diagnostic Repository (ADR)</strong>，这样 Oracle 的网络诊断信息就不会被写入到 alert 日志文件中。</p>
+<p>1.<strong>关闭 SQLNET 的 ADR</strong>：</p>
+<p>在服务器的 <code>sqlnet.ora</code> 文件中添加以下参数 <code>DIAG_ADR_ENABLED = OFF</code>。</p>
+<p>2.<strong>关闭监听器的 ADR</strong>：</p>
+<p>在服务器的 <code>listener.ora</code> 文件中添加以下参数：<code>DIAG_ADR_ENABLED_&lt;监听器名称&gt; = OFF</code>，将 <code>&lt;监听器名称&gt;</code> 替换为实际的监听器名字。比如，如果监听器名字是 <code>LISTENER</code>，参数就写成：<code>DIAG_ADR_ENABLED_LISTENER = OFF</code>。</p>
+<p>修改后，需要重新加载 <code>reload</code> 或重启 <code>restart</code> 监听，让设置生效。</p>
+<p>简单来说，就是通过改这两个文件，关掉 ADR，避免网络诊断信息写进日志，改完后别忘了重启监听！</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>大家处理问题的时候，一定要见微知著，深入研究，这样才能真正学习到东西，<strong>干中学，学中干</strong>！</p>
+<hr>
+<p>本文部分内容参考自 MOS 文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=1628949.1">Alert Log Errors: 12170 TNS-12535&#x2F;TNS-00505: Operation Timed Out (Doc ID 1628949.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2995380.1">警报日志超时的演示：TNS-12170&#x2F;TNS-12535&#x2F;TNS-12560&#x2F;TNS-00505 (Doc ID 2995380.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2226594.1">在 11g 12c已经更高版本的数据库中 alert 日志中报 Fatal NI Connect Error 12170, ‘TNS-12535: TNS:operation timed out’ (Doc ID 2226594.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2999935.1">Resolving Problems with Connection Idle Timeout With Firewall (Doc ID 2999935.1)</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/145697072/">https://pc-study.github.io/csdn-blog/posts/145697072/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/145697091/" title="金仓 KES 性能优化工具 KWR 入门"><img class="cover" src="/csdn-blog/images/7453ee4483af4e9865ecbacd4627bc28.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">金仓 KES 性能优化工具 KWR 入门</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 KWR 介绍 开启 KWR 使用 KWR 查看 KWR 报告 写在最后 前言 数据库性能是应用系统高效运行的基石，因此性能调优至关重要。比如在 Oracle 数据库中，DBAers 通常使用 AWR、ASH、ADDM</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145697062/" title="Oracle 修改 sys 密码无效，啥情况？"><img class="cover" src="/csdn-blog/images/b9e0f4a205a7b8eaf4e4c2c46ddc75b1.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Oracle 修改 sys 密码无效，啥情况？</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 问题描述 问题分析与解决 写在最后 前言 今天初八，开工大吉！祝大家新年快乐，发大财！ 问题描述 一大早就有个客户找，说有个 Oracle 数据库，修改了 sys 密码，怎么都无法登录，一直报错： 使用客户端工具连接报</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/143920156/" title="麒麟 V10 一键安装 Oracle 19C 19.22 单机版"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-11-20</div><div class="info-item-2">麒麟 V10 一键安装 Oracle 19C 19.22 单机版</div></div><div class="info-2"><div class="info-item-1">Oracle 一键安装脚本，演示 麒麟 V10 一键安装 Oracle 19C 19.22 单机版过程（全程无需人工干预）：（脚本包括 ORALCE PSU/OJVM 等补丁自动安装） ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 脚本第三代支持 N 节点一键安装，不限制节点数！ 安装准</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139177079/" title="SUSE 12 SP5 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">SUSE 12 SP5 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 SUSE 12 SP5 一键安装 Oracle 19C 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安装包（安装基</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122452761/" title="[译] Oracle Database 21c 中的数据泵（expdp、impdp）增强功能"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-12</div><div class="info-item-2">[译] Oracle Database 21c 中的数据泵（expdp、impdp）增强功能</div></div><div class="info-2"><div class="info-item-1">原文地址： 原文作者：Tim Hall 目录 环境准备 JSON 数据类型支持 CHECKSUM、CHECKSUM\ALGORITHM、VERIFY\ONLY 和 VERIFY\CHECKSUM 参数 同时支持INCLUDE和EXCLUDE 索引压缩 可传输表空间增强 从 Oracle 自治数据库导</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/118705960/" title="实战篇：Oracle 巧记登录用户 IP，无所遁形"><img class="cover" src="/csdn-blog/images/61c3a87677baaf152274c94a8e1f283c.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-14</div><div class="info-item-2">实战篇：Oracle 巧记登录用户 IP，无所遁形</div></div><div class="info-2"><div class="info-item-1">前言 日常工作生产，我们一般都通过监听连接 数据库。如果想要记录访问过数据库的用户 地址，常规方式是无法做到的，但是可以通过一些非常规方式来实现。 一、介绍 这里提供几种方式： 通过触发器实现 查看监听日志 通过 PLSQL 包 二、实战演示 1、触发器实现 创建单独表空间存放记录： 通过 复制 v</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119845936/" title="《零基础安装 Oracle 数据库》单机系列 ③ 一键快速安装 Oracle 18C 数据库"><img class="cover" src="/csdn-blog/images/644c43399983590f415749804cc0f3b4.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-21</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机系列 ③ 一键快速安装 Oracle 18C 数据库</div></div><div class="info-2"><div class="info-item-1">目录 前言 安装 下载项目 安装软件 下载 Oracle 安装包 安装 编辑 vagrant.yml 文件 开始安装 使用方式 连接主机 关闭主机 开启主机 销毁主机 写在最后 前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + she</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/147408828/" title="【纯干货】Oracle 19C RU 19.27 发布，如何快速升级和安装？"><img class="cover" src="/csdn-blog/images/cf76115bc9fbbda5de026250ad41b2e0.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-22</div><div class="info-item-2">【纯干货】Oracle 19C RU 19.27 发布，如何快速升级和安装？</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 介绍 19.27 RU 补丁安装 环境准备 README 升级 OPatch 冲突检查 补丁升级 一键安装补丁 写在最后 前言 前几天 19.27 补丁发布了，一直没时间安装测试，今天正好有空，测试一下。 介绍 Oracle 1</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-number">3.</span> <span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E9%87%8D%E7%8E%B0"><span class="toc-number">4.</span> <span class="toc-text">问题重现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">5.</span> <span class="toc-text">解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E6%95%B4%E9%98%B2%E7%81%AB%E5%A2%99"><span class="toc-number">5.1.</span> <span class="toc-text">调整防火墙</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E6%95%B4-Oracle-%E5%8F%82%E6%95%B0"><span class="toc-number">5.2.</span> <span class="toc-text">调整 Oracle 参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B2%BB%E6%A0%87%E4%B8%8D%E6%B2%BB%E6%9C%AC"><span class="toc-number">5.3.</span> <span class="toc-text">治标不治本</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">6.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

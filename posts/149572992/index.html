@@ -1,0 +1,423 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>金仓 KEMCC 非云环境初始化与纳管指南 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 非云环境初始化 创建非云平台账号 纳管服务器 注册数据库实例 上传镜像文件 创建数据库实例 问题记录 前言 前文 从零搭建金仓运维利器：KEMCC 安装与初探 介绍了如何快速安装一套 KEMCC 管理平台，本文将演示如何初始化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="金仓 KEMCC 非云环境初始化与纳管指南">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/149572992/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 非云环境初始化 创建非云平台账号 纳管服务器 注册数据库实例 上传镜像文件 创建数据库实例 问题记录 前言 前文 从零搭建金仓运维利器：KEMCC 安装与初探 介绍了如何快速安装一套 KEMCC 管理平台，本文将演示如何初始化">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/e4fda0dab03c7946935f5e2dd565d688.webp">
+<meta property="article:published_time" content="2025-07-23T07:29:32.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.266Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="Kingbase">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="金仓数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/e4fda0dab03c7946935f5e2dd565d688.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"金仓 KEMCC 非云环境初始化与纳管指南","url":"https://pc-study.github.io/csdn-blog/posts/149572992/","image":"https://pc-study.github.io/csdn-blog/images/e4fda0dab03c7946935f5e2dd565d688.webp","datePublished":"2025-07-23T07:29:32.000Z","dateModified":"2026-03-20T12:25:39.266Z","description":"大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 非云环境初始化 创建非云平台账号 纳管服务器 注册数据库实例 上传镜像文件 创建数据库实例 问题记录 前言 前文 从零搭建金仓运维利器：KEMCC 安装与初探 介绍了如何快速安装一套 KEMCC 管理平台，本文将演示如何初始化","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/149572992/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/149572992/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '金仓 KEMCC 非云环境初始化与纳管指南',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/e4fda0dab03c7946935f5e2dd565d688.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">金仓 KEMCC 非云环境初始化与纳管指南</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">金仓 KEMCC 非云环境初始化与纳管指南<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-07-23-149572992.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-23T07:29:32.000Z" title="发表于 2025-07-23 15:29:32">2025-07-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.266Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><blockquote>
+<p>大家好，这里是 <strong>DBA学习之路</strong>，专注于提升数据库运维效率。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#_16">非云环境初始化</a></li>
+<li><ul>
+<li><a href="#_21">创建非云平台账号</a></li>
+<li><a href="#_66">纳管服务器</a></li>
+<li><a href="#_111">注册数据库实例</a></li>
+<li><a href="#_137">上传镜像文件</a></li>
+<li><a href="#_156">创建数据库实例</a></li>
+</ul>
+</li>
+<li><a href="#_216">问题记录</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前文 <a target="_blank" rel="noopener" href="https://www.modb.pro/db/1923756852664348672">从零搭建金仓运维利器：KEMCC 安装与初探</a> 介绍了如何快速安装一套 KEMCC 管理平台，本文将演示如何初始化 KEMCC 平台以及纳管非云平台的金仓数据库实例。</p>
+<p>KEMCC 被设计用来满足如下使用场景：</p>
+<ol>
+<li>基于三方云平台构建数据库云</li>
+<li>将 KES 数据库的生命周期管理能力融入三方门户</li>
+<li>数据库一体机</li>
+<li>非云环境数据库集中管控</li>
+<li>自建私有数据库云</li>
+</ol>
+<p>大类可以分为云环境和非云环境两种，作者由于环境限制，仅演示非云平台环境的初始化设置以及纳管，有条件的朋友可以尝试一下云环境。</p>
+<h2 id="非云环境初始化"><a href="#非云环境初始化" class="headerlink" title="非云环境初始化"></a>非云环境初始化</h2><p>非云环境是指在非云物理机上部署 KES 实例，初始化配置包含如下步骤：</p>
+<ol>
+<li>创建非云平台账号</li>
+<li>纳管服务器</li>
+</ol>
+<h3 id="创建非云平台账号"><a href="#创建非云平台账号" class="headerlink" title="创建非云平台账号"></a>创建非云平台账号</h3><p>选择【平台配置】-&gt;【IaaS 管理】界面，点击【新增】按钮进入云平台账号新增页面：</p>
+<p><img src="/csdn-blog/images/7cea832416b84a65ccf891c27158f2f7.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南" loading='lazy'></p>
+<p>在平台类型中选择 &lt;非云服务器&gt; 选项，按照要求填写所有必填信息后，点击【保存并引导配置】按钮以继续完成资源配置的引导流程：</p>
+<p><img src="/csdn-blog/images/c3abc9a2651990b1b2371cf3e878ded9.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图2" loading='lazy'></p>
+<p>其中关键字段含义如下：</p>
+<ul>
+<li><strong>平台</strong>：系统支持的云平台和非云平台的驱动，通过配置平台驱动实现与各个平台进行 API 通讯</li>
+<li><strong>版本</strong>：云平台和非云平台的驱动的版本号</li>
+</ul>
+<p>进入实例规格配置界面后，可以通过【是否开启资源限制】按钮选择启用或禁用资源限制功能。若无需进行资源隔离设置，可直接点击【下一步】继续操作：</p>
+<p><img src="/csdn-blog/images/ac35d95237bf5c4f0de2f7c17108ed9d.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图3" loading='lazy'></p>
+<p>若需启用资源隔离功能，点击【是否开启资源限制】按钮进行设置，还可以通过点击【+】按钮添加规格填写框，并通过【×】按钮移除不需要的规格项，完成所有配置后，点击【下一步】继续操作：</p>
+<p><img src="/csdn-blog/images/c7a1500ef4f66d1a54ec7f823968f196.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图4" loading='lazy'></p>
+<blockquote>
+<p>Tips：在同一台服务器上部署多个数据库实例，各数据库实例可使用的最大服务器资源（CPU 和内存）根据创建实例时选择的规格进行限制，此机制确保每个数据库实例都能在预设的资源配额范围内运行。</p>
+</blockquote>
+<p>上传授权文件（KEMCC 安装目录下有两个 license_xxx.dat）：</p>
+<p><img src="/csdn-blog/images/a1e6bea6e71d3fc3f64e1085e51d98c5.webp" alt="image.png" loading='lazy'></p>
+<p><img src="/csdn-blog/images/547a337b5f92c3e0b12ebf8abd47fc91.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图5" loading='lazy'></p>
+<p><img src="/csdn-blog/images/cb88b98b4795d1a3485aeceee9d7e78f.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图6" loading='lazy'></p>
+<p>进入【授权配置】界面配置数据库实例授权方式，填写完授权方式点击【完成】按钮保存配置：</p>
+<p><img src="/csdn-blog/images/fea17998cc9dcb5cf476a6f3f9aca5e4.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图7" loading='lazy'></p>
+<p>其中关键字段含义如下：</p>
+<ul>
+<li><strong>授权方式</strong>：非云平台目前支持数量授权；</li>
+<li><strong>激活文件</strong>：授权服务的激活文件；</li>
+<li><strong>授权类型</strong>：数据库 license 的类型，需要与预安装的数据库的类型保持一致；</li>
+<li><strong>统一设置</strong>：勾选此复选框启用配置，用此账号创建实例的默认授权信息，不勾选则需要在实例创建界面自行配置授权信息；</li>
+</ul>
+<p><img src="/csdn-blog/images/8e8d3ae66ffc375c80203dfce26d23ea.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图8" loading='lazy'></p>
+<p>非云纳管实例时，授权方式选择数量授权后，保存即可，不需要勾选【统一设置】，也不需要上传激活文件。保存成功后，非云平台添加完成，如未配置，非云平台列表中，状态显示未配置，在非云平台中不能纳管服务器。</p>
+<h3 id="纳管服务器"><a href="#纳管服务器" class="headerlink" title="纳管服务器"></a>纳管服务器</h3><p>在【IaaS 管理】界面点击【非云平台】进入非云平台账号详情界面：</p>
+<p><img src="/csdn-blog/images/fe0669f8ebebf2340ad46ac4ce5205e3.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图9" loading='lazy'></p>
+<p>非云平台账号详情界面点击【服务器】切换到服务器添加界面添加服务器：</p>
+<p><img src="/csdn-blog/images/6a58215d1d8a516d5d7ca2dcf8c644ea.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图10" loading='lazy'></p>
+<p>按照以下步骤新增服务器器：</p>
+<ol>
+<li>点击【添加】按钮；</li>
+<li>进入服务器新增页面后，请填写完整的服务器相关信息；</li>
+<li>填写完成后，点击【检测】按钮验证账号、密码及端口信息无误；</li>
+<li>验证通过后请点击【确认】按钮保存服务器配置；</li>
+</ol>
+<p><img src="/csdn-blog/images/e4fda0dab03c7946935f5e2dd565d688.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图11" loading='lazy'></p>
+<p>其中关键字段含义如下：</p>
+<ul>
+<li><strong>端口</strong>：SSH 协议端口（一般默认 22），点击【检查】按钮可根据填写服务器连接信息检查系统部署服务器到纳管服务器 SSH 网络是否连通；</li>
+<li><strong>CPU 超分系数</strong>：服务器可超额分配的 CPU 核数的系数，可分配 CPU 核数 &#x3D; 服务器实际 CPU 核数 ×CPU 超分系数，不限制则设置为 1；</li>
+<li><strong>内存超分系数</strong>：服务器可超额分配的内存容量的系数，可分配内存容量 &#x3D; 服务器实际内存容量 × 内存超分系数，不限制则设置为 1；</li>
+<li><strong>磁盘挂载点</strong>：服务器文件系统磁盘挂载路径；</li>
+</ul>
+<p>点击左侧【服务器】菜单，进入服务器列表页面：</p>
+<p><img src="/csdn-blog/images/251351659cc1df56a467645a678ed557.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图12" loading='lazy'></p>
+<p>在该页面中，您可以查看所有已纳管的服务器列表及相关状态信息（对于新纳入管理的服务器，默认尚未安装 Agent）。</p>
+<p>点击左侧【安装 agent】按钮，开始安装 agent：</p>
+<p><img src="/csdn-blog/images/a8aa6fd472411b3f38a68dbf05aee33f.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图13" loading='lazy'></p>
+<p>Agent 安装完成后如图所示，此时需要确认 agent 是否可用，点击左侧【同步服务器】按钮，开始通过 agent 同步服务器信息：</p>
+<p><img src="/csdn-blog/images/7379a63587ece242f9eb9e25b45b6c93.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图14" loading='lazy'></p>
+<p>服务器信息同步完成后，此时在列表页中能看到服务器磁盘、内存、CPU 等信息：</p>
+<p><img src="/csdn-blog/images/73a6a4ddb2a99f4a8b5c866993f96541.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图15" loading='lazy'></p>
+<p><img src="/csdn-blog/images/80164bc89cc0c5191b5f4d408e89e4db.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图16" loading='lazy'></p>
+<p>至此，服务器纳管完成。</p>
+<h3 id="注册数据库实例"><a href="#注册数据库实例" class="headerlink" title="注册数据库实例"></a>注册数据库实例</h3><p>KEMCC 支持注册已经部署非云的 KES 实例，注册非云 KES 实例的服务器后，即可注册 KES 实例。</p>
+<p><img src="/csdn-blog/images/0d1f92dd20edb1bdab77992bbca137e1.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图17" loading='lazy'></p>
+<p>填写被注册集群基础信息：</p>
+<blockquote>
+<p>查看实例信息可以使用 sql 查询：kingbase&#x3D;# select * from v$instance;</p>
+</blockquote>
+<p><img src="/csdn-blog/images/603d90a0b6b8e4ced79508c01137b679.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图18" loading='lazy'></p>
+<p>获取集群配置信息：</p>
+<p><img src="/csdn-blog/images/ac740ad5a854660ced83d157a8a49b81.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图19" loading='lazy'></p>
+<p>完成注册：</p>
+<p><img src="/csdn-blog/images/ac390498607fb09b42ecb6918935c38e.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图20" loading='lazy'></p>
+<p>查看监控：</p>
+<p><img src="/csdn-blog/images/1fb3f73bd95725f450ca050de6783dde.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图21" loading='lazy'></p>
+<p>支持对数据库进行一些日常管理操作：</p>
+<p><img src="/csdn-blog/images/23a979df8f0f82df6979b954e7dee837.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图22" loading='lazy'></p>
+<h3 id="上传镜像文件"><a href="#上传镜像文件" class="headerlink" title="上传镜像文件"></a>上传镜像文件</h3><p>非云平台需要上传数据库镜像文件才能创建数据库实例，KEMCC 安装后默认没有内置下发实例需要的数据库镜像文件，需要上传至 KEMCC 安装路径 <code>/kemcc/kemcc/db-package</code> 目录下。</p>
+<p><img src="/csdn-blog/images/3f451bf793ffb44788c47578c696bf8a.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图23" loading='lazy'></p>
+<p>这里我们获取到的镜像名称为 <code>r6-image-x86-20250409.zip</code>，需要手动创建与版本名称同名的目录 <code>V008R006B11191612</code>，然后将镜像移动到目录下：</p>
+<p><img src="/csdn-blog/images/bacf300fc919deb2d14e700a4a7e9d74.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图24" loading='lazy'></p>
+<p><strong>⚠️ 注意</strong>：这里的 iso 镜像名称必须要改为 <code>r6-image.zip</code> 名称，否则无法识别到：</p>
+<p><img src="/csdn-blog/images/3036dd0aefa13751a329b8d47a22a469.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图25" loading='lazy'></p>
+<p>最后记得授权一下：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs swift">[root<span class="hljs-meta">@kemcc</span> db<span class="hljs-operator">-</span><span class="hljs-keyword">package</span>]# chown <span class="hljs-operator">-</span><span class="hljs-type">R</span> kemcc:kemcc <span class="hljs-regexp">/kemcc/</span>kemcc<span class="hljs-regexp">/db-package/</span><br></code></pre></td></tr></table></figure>
+
+<p>确保所需数据库镜像文件已经上传，就可以开始创建数据库实例了。</p>
+<h3 id="创建数据库实例"><a href="#创建数据库实例" class="headerlink" title="创建数据库实例"></a>创建数据库实例</h3><p>点击左侧菜单栏【实例管理】-&gt;【实例列表】，点击【创建实例】按钮，进入创建实例页面：</p>
+<p><img src="/csdn-blog/images/4d36bb451de464f831b2e0dbac01428c.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图26" loading='lazy'></p>
+<p>填写基本信息：</p>
+<ul>
+<li><strong>数据库账号</strong>：默认为 [system]。</li>
+<li><strong>实例名称</strong>：默认根填充为 [kes+ 日期]（可自行修改）。</li>
+<li><strong>兼容模式</strong>：可选不同的数据库模式【Oracle 模式】&#x2F;【Pg 模式】&#x2F;【Mysql 模式】。</li>
+<li><strong>大小写敏感</strong>：可设置为【敏感】&#x2F;【不敏感】。</li>
+<li><strong>数据库版本</strong>：V8_R6</li>
+</ul>
+<p><img src="/csdn-blog/images/66df7b21fa2792b43fff7138089841a2.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图27" loading='lazy'></p>
+<p>点击【选择服务器】按钮，弹出【选择服务器】对话框。选择实例将要部署的物理服务器，点击【确定】按钮：</p>
+<p><img src="/csdn-blog/images/9f0410957454e0b558b79c384d403204.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图28" loading='lazy'></p>
+<p>部署平台：可选【深信服平台】&#x2F;【k8S 平台】&#x2F;【非云平台】。</p>
+<ul>
+<li>部署架构：可选【单机】&#x2F;【主备】&#x2F;【读写分离】。<ul>
+<li>【主备】架构可调整备机数量</li>
+<li>【读写分离】架构可调整读机数量。</li>
+</ul>
+</li>
+<li>网络类型：选择【VPC 网络】。<ul>
+<li>VPC 网络选择【rdj-vpc】，其子网为【192.168.0.0&#x2F;24】&#x2F;【192.168.1.0&#x2F;24】选项。</li>
+</ul>
+</li>
+<li>配置弹性 IP：可选。勾选【配置弹性 IP】复选框，弹出下拉框，选择需要的弹性 IP。<ul>
+<li>只有 VPC 网络有弹性 IP，非云平台没有弹性 IP。</li>
+</ul>
+</li>
+</ul>
+<p>创建部署路径：</p>
+<blockquote>
+<p>部署路径：输入部署路径，默认为‘&#x2F;kingbaseES’。部署路径非必须，若填写部署路径，则实例将部署在填写的部署路径中，若不填写，则系统将自动选择合适的路径进行部署。<strong>这里输入的 &#x2F;KingbaseES&#x2F;V8 目录不需要手动创建，会自动创建。</strong></p>
+</blockquote>
+<p><img src="/csdn-blog/images/06799f5c801b3ff19b679be466a123ec.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图29" loading='lazy'></p>
+<p>配置实例：</p>
+<ul>
+<li><strong>实例规格</strong>：选择不同大小的 CPU 和内存。</li>
+<li><strong>可维护时间段</strong>：使用时间范围设置具体的可维护时间段，系统将在可维护时间段内进行备份等操作。</li>
+<li><strong>开启自动备份</strong>：勾选复选框，备份位置默认为外部 ，备份内容设置为每 7 天 02:00 执行一次全量备份。<ul>
+<li><strong>内部</strong>：内部备份是指在数据库实例本地进行数据库物理备份</li>
+<li><strong>外部</strong>：外部是指非数据库节点服务器</li>
+<li><strong>云对象</strong>：支持 S3 协议云对象存储</li>
+</ul>
+</li>
+</ul>
+<p>点击修改按钮，弹出配置自动备份对话框，可选择备份位置、备份时间间隔、备份时间点。</p>
+<p><img src="/csdn-blog/images/2fea58c831b2c7dd6e423db09266647b.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图30" loading='lazy'></p>
+<p>这里我们可以选择内部备份：</p>
+<p><img src="/csdn-blog/images/755a9e54cff45fd51c05e8855d971661.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图31" loading='lazy'></p>
+<p>配置磁盘空间，可拉动滑块设置数据盘存储空间，也可点击【+】&#x2F;【-】按钮设置数据盘存储空间：</p>
+<p><img src="/csdn-blog/images/a682794aadc816af461d30d1f55f5c91.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图32" loading='lazy'></p>
+<p>确认是否创建：</p>
+<p><img src="/csdn-blog/images/72e6bbd2f0b3e93c5bfccaa586f21624.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图33" loading='lazy'></p>
+<p>可以看到实例已经创建成功：</p>
+<p><img src="/csdn-blog/images/f0db7d1abc96409b6fe1d0d0284cc3b2.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图34" loading='lazy'></p>
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>这里有个不算坑的小问题，我记录一下。</p>
+<p>在创建非云平台的时候，有一个 &lt;是否开启资源限制&gt; 的选项：</p>
+<p><img src="/csdn-blog/images/ac35d95237bf5c4f0de2f7c17108ed9d.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图35" loading='lazy'></p>
+<p>资源隔离使用的场景是在一台物理机上下发多个实例，而且实例直接通过 Cgroup 进行资源限制；安装镜像是区分资源隔离和非资源隔离的版本的。</p>
+<p>如果我们勾选了开启资源限制，然后使用的是非资源隔离的 iso 镜像，在创建数据库实例的时候，就会报错：</p>
+<p><img src="/csdn-blog/images/c8cad74e235a7e0ceb348b3323ad33ef.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图36" loading='lazy'></p>
+<p><img src="/csdn-blog/images/bb678c9fa3d349f3f0c034d57495d3ac.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图37" loading='lazy'></p>
+<p><img src="/csdn-blog/images/262ea7f62bed7ec56b662bd7730dc581.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图38" loading='lazy'></p>
+<p>可以看到在启动实例时报错：</p>
+<p><img src="/csdn-blog/images/15f85bb229b73b34aa1483603425c8d7.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图39" loading='lazy'></p>
+<p>启动日志中的具体报错内容如下：</p>
+<p><img src="/csdn-blog/images/690868532ea4892280ac2831fb767cec.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图40" loading='lazy'></p>
+<p>对应的参数值：</p>
+<p><img src="/csdn-blog/images/c6bc6fed30f25d5d792aee633d892337.webp" alt="image.png" loading='lazy'></p>
+<p>这里由于我当前主机确实是有多个金仓数据库实例的，所以得要勾选资源隔离，但是我镜像又是非资源隔离的，所以就报这个错了。</p>
+<p>官方的解决方案是需要重新生成一个资源隔离的 ISO 镜像，我这里临时的解决方案是把资源隔离的这几个参数给删掉：</p>
+<p><img src="/csdn-blog/images/a59bb9c23a30d9c25bb108f8a0e9fcfd.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图41" loading='lazy'></p>
+<p>然后在任务中心这里选择重试：</p>
+<p><img src="/csdn-blog/images/26bc150375c0d4d729248ef7b4fa55cc.webp" alt="金仓 KEMCC 非云环境初始化与纳管指南 - 图42" loading='lazy'></p>
+<p>接着就顺利完成了！但是不建议这么玩，哈哈～</p>
+<p>如果不用资源隔离的版本就别勾选开启资源限制就行了，然后把服务器添加到平台之后，选择这个服务器就可以进行 KES 部署了。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/149572992/">https://pc-study.github.io/csdn-blog/posts/149572992/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/%E9%87%91%E4%BB%93%E6%95%B0%E6%8D%AE%E5%BA%93/">金仓数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/Kingbase/">Kingbase</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/149573014/" title="重磅发布：Oracle ADG 一键自动化搭建脚本"><img class="cover" src="/csdn-blog/images/c1ade4d9c6acc44303c4b13255ee5ae1.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">重磅发布：Oracle ADG 一键自动化搭建脚本</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 前言 在 Oracle 数据库高可用架构中，Active Data Guard (ADG) 是保障数据安全和业务连续性的核心方案。然而传统 ADG 搭建涉及数十项复杂配置（监听、TNSNAMES、参数文件、密码文件、日志传输、应用服务等）</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149572961/" title="从零搭建金仓运维利器：KEMCC 安装与初探"><img class="cover" src="/csdn-blog/images/02b7f7a058f9aae37e037dfd4e2b7091.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">从零搭建金仓运维利器：KEMCC 安装与初探</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 KEMCC 介绍 环境信息 安装前检查 关闭防火墙 创建用户 创建安装目录 系统参数配置 配置系统编码 crontab 权限检查 时钟检查 JDK 版本检查 配置环境变量 KEMCC 安装 安装包解压 图形化安装 KEMCC 启</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/149572926/" title="昨天去看了电科金仓的发布会，有点东西！"><img class="cover" src="/csdn-blog/images/bd09e71393ba70dd6f50460b6f5a9b53.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-23</div><div class="info-item-2">昨天去看了电科金仓的发布会，有点东西！</div></div><div class="info-2"><div class="info-item-1">前言 昨天（7 月 15 日），我受邀参加了电科金仓的 2025 年度发布会，主题是“融合进化 智领未来”。作为一个跟数据库打了快十年交道的 DBA，我太清楚这个领域现在有多热闹了：国产化势头猛，AI 技术天天变，老一套运维方法快顶不住了。 这次去，我带着学习的态度，真心想看看国产数据库能拿出什么新</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/144215691/" title="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移"><img class="cover" src="/csdn-blog/images/5a69762ab0f1a6dc43c9e5ae4f82d282.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-03</div><div class="info-item-2">金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149572961/" title="从零搭建金仓运维利器：KEMCC 安装与初探"><img class="cover" src="/csdn-blog/images/02b7f7a058f9aae37e037dfd4e2b7091.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-23</div><div class="info-item-2">从零搭建金仓运维利器：KEMCC 安装与初探</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 KEMCC 介绍 环境信息 安装前检查 关闭防火墙 创建用户 创建安装目录 系统参数配置 配置系统编码 crontab 权限检查 时钟检查 JDK 版本检查 配置环境变量 KEMCC 安装 安装包解压 图形化安装 KEMCC 启</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/155039355/" title="困扰 MySQL 用户多年的问题，它只用一个插件就解决了！"><img class="cover" src="/csdn-blog/images/1d5de2aeb7154eb14814781917382294.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-19</div><div class="info-item-2">困扰 MySQL 用户多年的问题，它只用一个插件就解决了！</div></div><div class="info-2"><div class="info-item-1">目录 前言 MySQL 数据库 金仓数据库 加载插件 实战演示 写在最后 前言 上周有个朋友问我：“哥，我们刚从 MySQL 8.0 迁到金仓数据库的 MySQL 兼容模式，发现一个很神奇的 BUG”！ 当我在金仓数据库中新建了一个用户以及表，没有对这个用户授权该表的访问权限，但是可以在 表中查询到</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/144443754/" title="实战篇：一步步教你搭建 GBase 8s SSC 共享集群"><img class="cover" src="/csdn-blog/images/3d0129674f40fb31483af3dc7f8790b5.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-13</div><div class="info-item-2">实战篇：一步步教你搭建 GBase 8s SSC 共享集群</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群可以添加号主微信：Lucifer-0622，备注</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/147016494/" title="【KWDB创作者计划】_KaiwuDB 2.1.0 单节点裸机部署"><img class="cover" src="/csdn-blog/images/a09d0d5bbfc70d04031e5c4a1a656924.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-05</div><div class="info-item-2">【KWDB创作者计划】_KaiwuDB 2.1.0 单节点裸机部署</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 KWDB 介绍 安装准备 环境信息 配置要求 操作系统 软件依赖 端口要求 安装包下载 部署 KWDB 简单实用 连接数据库 创建数据库 创建用户 创建时序表 前言 今天无意间在墨天轮看到一个征文活动 征文大赛 「码」上数据库—</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9E%E4%BA%91%E7%8E%AF%E5%A2%83%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">3.</span> <span class="toc-text">非云环境初始化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E9%9D%9E%E4%BA%91%E5%B9%B3%E5%8F%B0%E8%B4%A6%E5%8F%B7"><span class="toc-number">3.1.</span> <span class="toc-text">创建非云平台账号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%B3%E7%AE%A1%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">3.2.</span> <span class="toc-text">纳管服务器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E4%BE%8B"><span class="toc-number">3.3.</span> <span class="toc-text">注册数据库实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0%E9%95%9C%E5%83%8F%E6%96%87%E4%BB%B6"><span class="toc-number">3.4.</span> <span class="toc-text">上传镜像文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E4%BE%8B"><span class="toc-number">3.5.</span> <span class="toc-text">创建数据库实例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95"><span class="toc-number">4.</span> <span class="toc-text">问题记录</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

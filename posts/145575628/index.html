@@ -1,0 +1,696 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>RHEL 7 安装 Oracle 12CR1 RAC 数据库 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 整体规划 系统规划 网络规划 存储规划 内存规划 环境信息 系统安装 网络配置（rac01&amp;rac02） 配置本地软件源（rac01&amp;rac02） hosts文件配置（rac01&amp;rac02） 防火墙配置（r">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RHEL 7 安装 Oracle 12CR1 RAC 数据库">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/145575628/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 整体规划 系统规划 网络规划 存储规划 内存规划 环境信息 系统安装 网络配置（rac01&amp;rac02） 配置本地软件源（rac01&amp;rac02） hosts文件配置（rac01&amp;rac02） 防火墙配置（r">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/276aab5ca5760928592b59bc07092582.webp">
+<meta property="article:published_time" content="2025-02-11T08:59:27.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.198Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/276aab5ca5760928592b59bc07092582.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"RHEL 7 安装 Oracle 12CR1 RAC 数据库","url":"https://pc-study.github.io/csdn-blog/posts/145575628/","image":"https://pc-study.github.io/csdn-blog/images/276aab5ca5760928592b59bc07092582.webp","datePublished":"2025-02-11T08:59:27.000Z","dateModified":"2026-03-20T12:25:39.198Z","description":"大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 整体规划 系统规划 网络规划 存储规划 内存规划 环境信息 系统安装 网络配置（rac01&rac02） 配置本地软件源（rac01&rac02） hosts文件配置（rac01&rac02） 防火墙配置（r","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/145575628/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/145575628/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'RHEL 7 安装 Oracle 12CR1 RAC 数据库',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/276aab5ca5760928592b59bc07092582.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">RHEL 7 安装 Oracle 12CR1 RAC 数据库</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">RHEL 7 安装 Oracle 12CR1 RAC 数据库<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-02-11-145575628.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-02-11T08:59:27.000Z" title="发表于 2025-02-11 16:59:27">2025-02-11</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.198Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">4.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>21分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，分享一些学习国产数据库路上的知识和经验。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#_7">整体规划</a></li>
+<li><ul>
+<li><a href="#_10">系统规划</a></li>
+<li><a href="#_21">网络规划</a></li>
+<li><a href="#_43">存储规划</a></li>
+<li><a href="#_51">内存规划</a></li>
+<li><a href="#_57">环境信息</a></li>
+</ul>
+</li>
+<li><a href="#_65">系统安装</a></li>
+<li><ul>
+<li><a href="#rac01rac02_70">网络配置（rac01&amp;rac02）</a></li>
+<li><a href="#rac01rac02_97">配置本地软件源（rac01&amp;rac02）</a></li>
+<li><a href="#hostsrac01rac02_180">hosts文件配置（rac01&amp;rac02）</a></li>
+<li><a href="#rac01rac02_205">防火墙配置（rac01&amp;rac02）</a></li>
+<li><a href="#selinux_rac01rac02_213">selinux 配置（rac01&amp;rac02）</a></li>
+<li><a href="#rac01rac02_225">用户及组、目录创建（rac01&amp;rac02）</a></li>
+<li><a href="#_263">挂载共享盘</a></li>
+<li><a href="#rac01rac02_387">时间同步配置（rac01&amp;rac02）</a></li>
+<li><a href="#_NUMArac01rac02_410">关闭透明大页和 NUMA（rac01&amp;rac02）</a></li>
+<li><a href="#avahidaemon_rac01rac02_420">avahi-daemon 配置（rac01&amp;rac02）</a></li>
+<li><a href="#rac01rac02_438">系统参数配置（rac01&amp;rac02）</a></li>
+<li><a href="#rac01rac02_476">系统资源限制配置（rac01&amp;rac02）</a></li>
+<li><a href="#_devshm_505">配置 &#x2F;dev&#x2F;shm</a></li>
+<li><a href="#rac01rac02_514">环境变量配置（rac01&amp;rac02）</a></li>
+<li><a href="#rac01_561">安装介质上传解压（rac01）</a></li>
+</ul>
+</li>
+<li><a href="#_Grid_rac01_601">安装 Grid 软件（rac01）</a></li>
+<li><ul>
+<li><a href="#_GRID__602">安装 GRID 软件</a></li>
+<li><a href="#_678">检查集群状态和补丁</a></li>
+</ul>
+</li>
+<li><a href="#_ASM__699">创建 ASM 数据盘</a></li>
+<li><a href="#_Oracle__724">安装 Oracle 软件</a></li>
+<li><a href="#_786">创建数据库</a></li>
+<li><a href="#rac01_845">数据库优化配置（rac01）</a></li>
+<li><ul>
+<li><a href="#_846">配置归档删除定期任务</a></li>
+<li><a href="#_870">配置低版本客户端连接</a></li>
+<li><a href="#_879">配置数据库开机自启</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近，有一套 12CR1 RAC 需要安装，正好记录一下安装过程。</p>
+<h2 id="整体规划"><a href="#整体规划" class="headerlink" title="整体规划"></a>整体规划</h2><p>Oracle RAC 2 节点需要安装 2 台主机系统，一般在安装之前都需要提前规划一下环境信息。</p>
+<h3 id="系统规划"><a href="#系统规划" class="headerlink" title="系统规划"></a>系统规划</h3><p>安装 RAC 和单机不一样，需要提前规划好以下信息：</p>
+<ul>
+<li><strong>主机名：</strong> 需要英文字母开头，建议小写，rac01&#x2F;rac02</li>
+<li><strong>集群名称：</strong> 长度不超过 15 位，rac-cluster</li>
+<li><strong>Linux 系统版本：</strong> RedHat 7.4</li>
+<li><strong>磁盘：</strong> 本地磁盘 100G，用于安装 OS，存放 grid 和 oracle 安装软件，用于 oracle 和 grid 安装目录</li>
+<li><strong>ASM 共享盘（磁盘空间有限）：</strong><ul>
+<li>裁决盘 OCR：OCR + VOTING&#x3D;<strong>10G</strong>、冗余模式：<strong>EXTERNAL</strong></li>
+<li>数据盘 DATA：DATA&#x3D;<strong>20G</strong>、冗余模式：<strong>EXTERNAL</strong>（数据文件，归档日志文件，spfile 文件等）</li>
+</ul>
+</li>
+<li><strong>补丁更新：</strong> 补丁都是建议在安装 Oracle 软件时进行安装，获取最新补丁进行修补 BUG，防止数据库出现意外故障。</li>
+</ul>
+<h3 id="网络规划"><a href="#网络规划" class="headerlink" title="网络规划"></a>网络规划</h3><p>Oracle RAC 需要至少 2 张网卡，一个用于公网访问，一个用于主机间私网心跳（生产建议2个心跳，公网2张网卡做 bond）。</p>
+<ul>
+<li>Public IP（公司内部访问，非外网）</li>
+</ul>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs accesslog"><span class="hljs-number">192.168.6.70</span>   rac01  <br><span class="hljs-number">192.168.6.71</span>   rac02<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>Private IP（用于节点间心跳网络）</li>
+</ul>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs accesslog"><span class="hljs-number">100.100.100.1</span>   rac01-priv  <br><span class="hljs-number">100.100.100.2</span>   rac02-priv<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>Virtual IP（提供客户端访问，漂移）</li>
+</ul>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs accesslog"><span class="hljs-number">192.168.6.72</span>   rac01-vip  <br><span class="hljs-number">192.168.6.73</span>   rac02-vip<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>SCAN IP（提供客户端访问，均衡）</li>
+</ul>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs accesslog"><span class="hljs-number">192.168.6.75</span>   rac-scan<br></code></pre></td></tr></table></figure>
+
+<h3 id="存储规划"><a href="#存储规划" class="headerlink" title="存储规划"></a>存储规划</h3><p>Oracle RAC 使用 ASM 存储来存放数据，通常使用 OCR 和 DATA 两个磁盘组！</p>
+<table>
+<thead>
+<tr>
+<th>磁盘名称</th>
+<th>磁盘用途</th>
+<th>磁盘大小</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>asm-ocr</td>
+<td>OCR&#x2F;Voting File</td>
+<td>10G</td>
+</tr>
+<tr>
+<td>asm-data</td>
+<td>Data Files</td>
+<td>20G</td>
+</tr>
+<tr>
+<td>系统盘</td>
+<td>安装系统和数据库软件</td>
+<td>100G</td>
+</tr>
+</tbody></table>
+<h3 id="内存规划"><a href="#内存规划" class="headerlink" title="内存规划"></a>内存规划</h3><p>主机内存建议每台设置 8G 物理内存和 8G SWAP：</p>
+<table>
+<thead>
+<tr>
+<th>内存</th>
+<th>SWAP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>8G</td>
+<td>8G</td>
+</tr>
+</tbody></table>
+<h3 id="环境信息"><a href="#环境信息" class="headerlink" title="环境信息"></a>环境信息</h3><p>综合上述要求，本次教程的环境信息大致如下：</p>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>主机版本</th>
+<th>主机名</th>
+<th>实例名</th>
+<th>Grid&#x2F;Oracle版本</th>
+<th>Public IP</th>
+<th>Private IP</th>
+<th>Virtual IP</th>
+<th>Scan IP</th>
+<th>内存</th>
+<th>SWAP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>rhel7.4</td>
+<td>rac01</td>
+<td>lucifer1</td>
+<td>12.1.0.2</td>
+<td>192.168.6.70</td>
+<td>100.100.100.1</td>
+<td>192.168.6.72</td>
+<td>192.168.6.75</td>
+<td>8G</td>
+<td>8G</td>
+</tr>
+<tr>
+<td>2</td>
+<td>rhel7.4</td>
+<td>rac02</td>
+<td>lucifer2</td>
+<td>12.1.0.2</td>
+<td>192.168.6.71</td>
+<td>100.100.100.2</td>
+<td>192.168.6.73</td>
+<td>192.168.6.75</td>
+<td>8G</td>
+<td>8G</td>
+</tr>
+</tbody></table>
+<h2 id="系统安装"><a href="#系统安装" class="headerlink" title="系统安装"></a>系统安装</h2><p>Linux 系统安装好之后，建议大家做一个快照，因为我们后面实战需要用到很多 Linux 系统，避免每次都要安装系统！</p>
+<blockquote>
+<p><strong>📢 注意：</strong> 以下标题中（<strong>rac01&amp;rac02</strong>）代表节点一和节点二都需要执行，（<strong>rac01</strong>）代表只需要节点一执行。</p>
+</blockquote>
+<h3 id="网络配置（rac01-rac02）"><a href="#网络配置（rac01-rac02）" class="headerlink" title="网络配置（rac01&amp;rac02）"></a>网络配置（rac01&amp;rac02）</h3><p>在安装 Linux 系统过程中我已经配置好了网络，如果没有配置的话，Linux 7 版本可以使用 <code>nmcli</code> 命令来配置网络，以下命令中的 <strong>IP地址、子网掩码、网关</strong> 和 <strong>网卡名称</strong> 请根据实际情况进行修改！</p>
+<p><strong>rac01：</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment">##配置Public IP</span><br>nmcli<span class="hljs-built_in"> connection </span>modify ens192 ipv4.addresses 192.168.6.70/24 ipv4.gateway 192.168.6.254 ipv4.method<span class="hljs-built_in"> manual </span>autoconnect <span class="hljs-literal">yes</span><br><span class="hljs-comment">##配置Private IP</span><br>nmcli<span class="hljs-built_in"> connection </span>modify ens224 ipv4.addresses 100.100.100.1/24 ipv4.method<span class="hljs-built_in"> manual </span>autoconnect <span class="hljs-literal">yes</span><br><span class="hljs-comment">##生效</span><br>nmcli<span class="hljs-built_in"> connection </span>up ens192<br>nmcli<span class="hljs-built_in"> connection </span>up ens224<br>nmcli<span class="hljs-built_in"> connection </span>show<br></code></pre></td></tr></table></figure>
+
+<p><strong>rac02：</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment">##配置Public IP</span><br>nmcli<span class="hljs-built_in"> connection </span>modify ens192 ipv4.addresses 192.168.6.71/24 ipv4.gateway 192.168.6.254 ipv4.method<span class="hljs-built_in"> manual </span>autoconnect <span class="hljs-literal">yes</span><br><span class="hljs-comment">##配置Private IP</span><br>nmcli<span class="hljs-built_in"> connection </span>modify ens224 ipv4.addresses 100.100.100.2/24 ipv4.method<span class="hljs-built_in"> manual </span>autoconnect <span class="hljs-literal">yes</span><br><span class="hljs-comment">##生效</span><br>nmcli<span class="hljs-built_in"> connection </span>up ens192<br>nmcli<span class="hljs-built_in"> connection </span>up ens224<br>nmcli<span class="hljs-built_in"> connection </span>show<br></code></pre></td></tr></table></figure>
+
+<p>最后，配置好网络后，输入命令 <code>ip a</code> 查看网络是否配置成功，尝试 <code>ping</code> 测试网络。</p>
+<h3 id="配置本地软件源（rac01-rac02）"><a href="#配置本地软件源（rac01-rac02）" class="headerlink" title="配置本地软件源（rac01&amp;rac02）"></a>配置本地软件源（rac01&amp;rac02）</h3><p>确保虚拟机已经挂载 ISO 镜像源，手动在 Linux 主机 mount：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">mount /dev/sr0 /mnt<br><span class="hljs-built_in">df</span> -Th | grep /mnt<br></code></pre></td></tr></table></figure>
+
+<p>配置本地 YUM 源：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs routeros">cat &lt;&lt;-EOF&gt;/etc/yum.repos.d/local.repo<br>[local]<br><span class="hljs-attribute">name</span>=local<br><span class="hljs-attribute">baseurl</span>=file:///mnt<br><span class="hljs-attribute">gpgcheck</span>=0<br><span class="hljs-attribute">enabled</span>=1<br>EOF<br><br>yum repolist all<br></code></pre></td></tr></table></figure>
+
+<p>安装依赖包：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">yum</span> install -y binutils <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>compat-libcap1 <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>compat-libstdc++-<span class="hljs-number">33</span> <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>gcc <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>gcc-c++ <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>glibc <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>glibc-devel <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libaio <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libaio-devel <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>ksh <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>make <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libXi <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libXtst <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libgcc <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libstdc++ <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libstdc++-devel <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>sysstat <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>nfs-utils <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>unzip <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>openssh-clients <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>readline <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>readline-devel <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>psmisc --skip-broken<br></code></pre></td></tr></table></figure>
+
+<p>手动上传并安装依赖包：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs subunit">## 创建 /soft 文件夹<br>mkdir /soft<br>## 上传 compat-libstdc++<span class="hljs-string">-33</span><span class="hljs-string">-3</span>.2.3<span class="hljs-string">-72</span>.el7.x86_64.rpm 安装包<br>cd /soft<br>## 安装 compat-libstdc++<span class="hljs-string">-33</span><span class="hljs-string">-3</span>.2.3<span class="hljs-string">-72</span>.el7.x86_64.rpm<br>rpm -ivh compat-libstdc++<span class="hljs-string">-33</span><span class="hljs-string">-3</span>.2.3<span class="hljs-string">-72</span>.el7.x86_64.rpm<br></code></pre></td></tr></table></figure>
+
+<p>检查依赖包安装情况：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">rpm</span> -q binutils <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>compat-libcap1 <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>compat-libstdc++-<span class="hljs-number">33</span> <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>gcc <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>gcc-c++ <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>glibc <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>glibc-devel <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libaio <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libaio-devel <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>ksh <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>make <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libXi <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libXtst <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libgcc <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libstdc++ <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>libstdc++-devel <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>sysstat <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>nfs-utils <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>unzip <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>openssh-clients <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>readline <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>readline-devel <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>psmisc<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/276aab5ca5760928592b59bc07092582.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库" loading='lazy'></p>
+<p><strong>📢 注意：</strong> 确保以上依赖包一定要两个节点均全部安装成功，否则可能导致数据库安装失败！</p>
+<h3 id="hosts文件配置（rac01-rac02）"><a href="#hosts文件配置（rac01-rac02）" class="headerlink" title="hosts文件配置（rac01&amp;rac02）"></a>hosts文件配置（rac01&amp;rac02）</h3><p>如果安装系统过程中没有配置 hostname，可以执行以下命令配置：</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig"><span class="hljs-string">hostnamectl</span> <span class="hljs-built_in">set-hostname</span> <span class="hljs-string">rac01</span><br><span class="hljs-string">hostnamectl</span> <span class="hljs-built_in">set-hostname</span> <span class="hljs-string">rac02</span><br></code></pre></td></tr></table></figure>
+
+<p>配置 hosts 文件：</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs accesslog">cat&lt;&lt;-\EOF&gt;&gt;/etc/hosts<br># Public IP<br><span class="hljs-number">192.168.6.70</span>   rac01<br><span class="hljs-number">192.168.6.71</span>   rac02<br><br># Private IP<br><span class="hljs-number">100.100.100.1</span> rac01-priv<br><span class="hljs-number">100.100.100.2</span> rac02-priv<br><br># Vip IP<br><span class="hljs-number">192.168.6.72</span> rac01-vip<br><span class="hljs-number">192.168.6.73</span> rac02-vip<br><br># Scan IP<br><span class="hljs-number">192.168.6.75</span> rac-scan<br>EOF<br></code></pre></td></tr></table></figure>
+
+<h3 id="防火墙配置（rac01-rac02）"><a href="#防火墙配置（rac01-rac02）" class="headerlink" title="防火墙配置（rac01&amp;rac02）"></a>防火墙配置（rac01&amp;rac02）</h3><figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs nsis"><span class="hljs-params">system</span>ctl stop firewalld.service<br><span class="hljs-params">system</span>ctl disable firewalld.service<br><span class="hljs-params">system</span>ctl status firewalld.service<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/482ab7436c52aaaa0bd98868c7336748.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图2" loading='lazy'></p>
+<h3 id="selinux-配置（rac01-rac02）"><a href="#selinux-配置（rac01-rac02）" class="headerlink" title="selinux 配置（rac01&amp;rac02）"></a>selinux 配置（rac01&amp;rac02）</h3><p>配置 selinux 临时生效：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs swift">sed <span class="hljs-operator">-</span>i &#x27;s<span class="hljs-regexp">/SELINUX=enforcing/</span><span class="hljs-type">SELINUX</span><span class="hljs-operator">=</span>disabled<span class="hljs-regexp">/g&#x27; /</span>etc<span class="hljs-regexp">/selinux/</span>config<br>setenforce <span class="hljs-number">0</span><br>getenforce<br>sestatus<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/09f1575856f491b8c3481232a578d9cb.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图3" loading='lazy'></p>
+<p><strong>📢 注意：</strong> selinux 配置需要重启生效！</p>
+<h3 id="用户及组、目录创建（rac01-rac02）"><a href="#用户及组、目录创建（rac01-rac02）" class="headerlink" title="用户及组、目录创建（rac01&amp;rac02）"></a>用户及组、目录创建（rac01&amp;rac02）</h3><p>创建安装 Oracle 数据库所需的用户、组以及安装目录：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs crystal">/usr/sbin/groupadd -g <span class="hljs-number">54321</span> oinstall<br><span class="hljs-regexp">/usr/sbin</span><span class="hljs-regexp">/groupadd -g 54322 dba</span><br><span class="hljs-regexp">/usr</span><span class="hljs-regexp">/sbin/groupadd</span> -g <span class="hljs-number">54323</span> oper<br><span class="hljs-regexp">/usr/sbin</span><span class="hljs-regexp">/groupadd -g 54324 backupdba</span><br><span class="hljs-regexp">/usr</span><span class="hljs-regexp">/sbin/groupadd</span> -g <span class="hljs-number">54325</span> dgdba<br><span class="hljs-regexp">/usr/sbin</span><span class="hljs-regexp">/groupadd -g 54326 kmdba</span><br><span class="hljs-regexp">/usr</span><span class="hljs-regexp">/sbin/groupadd</span> -g <span class="hljs-number">54327</span> asmdba<br><span class="hljs-regexp">/usr/sbin</span><span class="hljs-regexp">/groupadd -g 54328 asmoper</span><br><span class="hljs-regexp">/usr</span><span class="hljs-regexp">/sbin/groupadd</span> -g <span class="hljs-number">54329</span> asmadmin<br><span class="hljs-regexp">/usr/sbin</span><span class="hljs-regexp">/groupadd -g 54330 racdba</span><br></code></pre></td></tr></table></figure>
+
+<p>grid&#x2F;oracle 用户创建：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 创建 grid/oraprod 用户</span><br>/usr/sbin/useradd -u 11012 -g oinstall -G asmadmin,asmdba,asmoper,dba,racdba,oper grid<br>/usr/sbin/useradd -u 54321 -g oinstall -G asmadmin,asmdba,dba,backupdba,dgdba,kmdba,racdba,oper oraprod<br><span class="hljs-comment">## 修改用户密码为oracle</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;oracle&quot;</span> |passwd oraprod --stdin<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;oracle&quot;</span> |passwd grid --stdin<br><span class="hljs-comment">## 查看用户组</span><br><span class="hljs-built_in">id</span> grid<br><span class="hljs-built_in">id</span> oraprod<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/1589bcda0b918787ec1a9d80550cb155.png" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图4" loading='lazy'></p>
+<p>创建软件目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> -p /u01/app/12.1.0/grid /u01/app/grid /u01/app/oracle/product/12.1.0/db /u01/app/oraInventory /backup /home/oraprod/scripts<br><span class="hljs-built_in">chown</span> -R oraprod:oinstall /backup /home/oraprod/scripts<br><span class="hljs-built_in">chown</span> -R grid:oinstall /u01<br><span class="hljs-built_in">chown</span> -R oraprod:oinstall /u01/app/oracle<br><span class="hljs-built_in">chmod</span> -R 775 /u01<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/5143590d3bcf5ce63c4f3c0e34fe45e9.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图5" loading='lazy'></p>
+<h3 id="挂载共享盘"><a href="#挂载共享盘" class="headerlink" title="挂载共享盘"></a>挂载共享盘</h3><p>部署 SSC 集群需要挂载共享盘，挂载共享盘的方式有很多，可以使用虚拟机创建共享盘的方式，也可以通过 iscsi 共享存储作为数据库存储文件系统，可自行选择。</p>
+<p>本文使用 Starwind 配置 iscsi 共享盘，可以参考为之前写的文章：</p>
+<blockquote>
+<p>⭐️ <strong><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/xjYZmGcwshbJBICcr0xvBw">实战篇：使用 StarWind 配置 ISCSI 共享存储</a></strong></p>
+</blockquote>
+<p><strong>1、Linux 客户端安装 iscsi 软件</strong></p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs autoit"><span class="hljs-meta">## 以节点一为例</span><br><span class="hljs-meta">## 如果遇到报错 -bash: iscsiadm：未找到命令，就需要安装 iscsi 软件</span><br>[root<span class="hljs-symbol">@rac01</span> ~]<span class="hljs-meta"># yum install -y iscsi-initiator-utils*</span><br>[root<span class="hljs-symbol">@rac01</span> ~]<span class="hljs-meta"># systemctl start iscsid.service</span><br>[root<span class="hljs-symbol">@rac01</span> ~]<span class="hljs-meta"># systemctl enable iscsid.service</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>2、搜索服务端 iscsi target</strong></p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs accesslog">## 以节点一为例<br>## <span class="hljs-number">192</span>.<span class="hljs-number">168</span>.<span class="hljs-number">6</span>.<span class="hljs-number">43</span> 为 iscsi 服务端 IP 地址<br><span class="hljs-string">[root@rac01 ~]</span># iscsiadm -m discovery -t st -p <span class="hljs-number">192</span>.<span class="hljs-number">168</span>.<span class="hljs-number">6</span>.<span class="hljs-number">43</span><br><span class="hljs-number">192.168.6.43:3260</span>,-<span class="hljs-number">1</span> iqn.<span class="hljs-number">2008</span>-<span class="hljs-number">08</span>.com.starwindsoftware:lpc-matebook-12cr1<br></code></pre></td></tr></table></figure>
+
+<p><strong>3、连接服务端 iscsi 共享存储</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment">## 以节点一为例</span><br><span class="hljs-comment">## iqn.2008-08.com.starwindsoftware:lpc-matebook-12cr1 为上一步搜索出的 target 名称</span><br>[<span class="hljs-string">root@rac01</span> <span class="hljs-string">~</span>]<span class="hljs-comment"># iscsiadm -m node -T iqn.2008-08.com.starwindsoftware:lpc-matebook-12cr1 -p 192.168.6.43 -l</span><br><span class="hljs-string">Logging</span> <span class="hljs-string">in</span> <span class="hljs-string">to</span> [<span class="hljs-attr">iface:</span> <span class="hljs-string">default</span>, <span class="hljs-attr">target:</span> <span class="hljs-string">iqn.2008-08.com.starwindsoftware:lpc-matebook-12cr1</span>, <span class="hljs-attr">portal:</span> <span class="hljs-number">192.168</span><span class="hljs-number">.6</span><span class="hljs-number">.43</span>,<span class="hljs-number">3260</span>] <span class="hljs-string">(multiple)</span><br><span class="hljs-string">Login</span> <span class="hljs-string">to</span> [<span class="hljs-attr">iface:</span> <span class="hljs-string">default</span>, <span class="hljs-attr">target:</span> <span class="hljs-string">iqn.2008-08.com.starwindsoftware:lpc-matebook-12cr1</span>, <span class="hljs-attr">portal:</span> <span class="hljs-number">192.168</span><span class="hljs-number">.6</span><span class="hljs-number">.43</span>,<span class="hljs-number">3260</span>] <span class="hljs-string">successful.</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>4、配置开机自动挂载</strong></p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs autoit"><span class="hljs-meta">## 以节点一为例</span><br>[root<span class="hljs-symbol">@rac01</span> ~]<span class="hljs-meta"># iscsiadm -m node -T iqn.2008-08.com.starwindsoftware:lpc-matebook-12cr1 -p 192.168.6.43 --op update -n node.startup -v automatic</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>5、查看挂载成功的共享盘</strong></p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs tap"><span class="hljs-comment">## 以节点一为例，sdb、sdc 为挂载的共享盘</span><br>[root@rac01 ~]<span class="hljs-comment"># lsblk </span><br>NAME          MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT<br>sda             8:0   <span class="hljs-number"> 0 </span> 100G <span class="hljs-number"> 0 </span>disk <br>├─sda1          8:1   <span class="hljs-number"> 0 </span>   1G <span class="hljs-number"> 0 </span>part /boot<br>└─sda2          8:2   <span class="hljs-number"> 0 </span>  99G <span class="hljs-number"> 0 </span>part <br>  ├─rhel-root 253:0   <span class="hljs-number"> 0 </span>  91G <span class="hljs-number"> 0 </span>lvm  /<br>  └─rhel-swap 253:1   <span class="hljs-number"> 0 </span>   8G <span class="hljs-number"> 0 </span>lvm  [SWAP]<br>sdb             8:16  <span class="hljs-number"> 0 </span>  10G <span class="hljs-number"> 0 </span>disk <br>sdc             8:32  <span class="hljs-number"> 0 </span>  20G <span class="hljs-number"> 0 </span>disk <br>sr0            11:0   <span class="hljs-number"> 1 </span> 3.8G <span class="hljs-number"> 0 </span>rom  /mnt<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/17408e3c6bcd00dd8e0c76fe87c8dd68.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图6" loading='lazy'></p>
+<p>确保两个节点都连接共享存储之后，安装 <code>multipath</code> 绑定多路径：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment">## 如未安装需要安装 multipath</span><br>yum install -y device-mapper*<br>mpathconf --enable --with_multipathd y<br><span class="hljs-comment">## 查看共享盘的 scsi_id</span><br><span class="hljs-regexp">/usr/</span>lib<span class="hljs-regexp">/udev/</span>scsi_id -g -u <span class="hljs-regexp">/dev/</span>sdb<br><span class="hljs-regexp">/usr/</span>lib<span class="hljs-regexp">/udev/</span>scsi_id -g -u <span class="hljs-regexp">/dev/</span>sdc<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/126d714ef1a9f7046e07b45bfcf4f183.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图7" loading='lazy'></p>
+<p>配置 multipath 文件：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">cat</span> &lt;&lt;EOF&gt;/etc/multipath.conf<br>defaults &#123;<br>    <span class="hljs-attribute">user_friendly_names</span> <span class="hljs-literal">yes</span><br>&#125;<br> <br>blacklist &#123;<br>  <span class="hljs-attribute">devnode</span> <span class="hljs-string">&quot;^sda&quot;</span><br>&#125;<br><br>multipaths &#123;<br>  <span class="hljs-section">multipath</span> &#123;<br>  <span class="hljs-attribute">wwid</span> <span class="hljs-string">&quot;200be82b65378c737&quot;</span><br>  alias asm_ocr<br>  &#125;<br>  multipath &#123;<br>  <span class="hljs-attribute">wwid</span> <span class="hljs-string">&quot;259f2dfe91387593a&quot;</span><br>  alias asm_data<br>  &#125;<br>&#125;<br>EOF<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/36c24aed4f219b368a3eb5b11c6664a0.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图8" loading='lazy'></p>
+<p><strong>📢 注意：</strong> wwid 的值为上面获取的 scsi_id，alias 别名可自定义，这里配置 1 块 OCR 盘，1 块 DATA 盘！</p>
+<p>激活 multipath 多路径：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-keyword">multipath </span>-F<br><span class="hljs-keyword">multipath </span>-v2<br><span class="hljs-keyword">multipath </span>-<span class="hljs-keyword">ll</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/7460e77f69afddef2d48b4deb550b549.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图9" loading='lazy'></p>
+<p>配置 UDEV 绑盘：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">rm</span> -rf /dev/mapper/udev_info<br><span class="hljs-built_in">rm</span> -rf /etc/udev/rules.d/99-oracle-asmdevices.rules<br><span class="hljs-built_in">cd</span> /dev/mapper<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> asm_*; <span class="hljs-keyword">do</span><br>  <span class="hljs-built_in">printf</span> <span class="hljs-string">&quot;%s %s\n&quot;</span> <span class="hljs-string">&quot;<span class="hljs-variable">$i</span>&quot;</span> <span class="hljs-string">&quot;<span class="hljs-subst">$(udevadm info --query=all --name=/dev/mapper/<span class="hljs-string">&quot;<span class="hljs-variable">$i</span>&quot;</span> | grep -i dm_uuid)</span>&quot;</span> &gt;&gt;/dev/mapper/udev_info<br><span class="hljs-keyword">done</span><br><span class="hljs-keyword">while</span> <span class="hljs-built_in">read</span> -r line; <span class="hljs-keyword">do</span><br>  dm_uuid=$(<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$line</span>&quot;</span> | awk -F<span class="hljs-string">&#x27;=&#x27;</span> <span class="hljs-string">&#x27;&#123;print $2&#125;&#x27;</span>)<br>  disk_name=$(<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$line</span>&quot;</span> | awk <span class="hljs-string">&#x27;&#123;print $1&#125;&#x27;</span>)<br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;KERNEL==\&quot;dm-*\&quot;,ENV&#123;DM_UUID&#125;==\&quot;<span class="hljs-variable">$&#123;dm_uuid&#125;</span>\&quot;,SYMLINK+=\&quot;<span class="hljs-variable">$&#123;disk_name&#125;</span>\&quot;,OWNER=\&quot;grid\&quot;,GROUP=\&quot;asmadmin\&quot;,MODE=\&quot;0660\&quot;&quot;</span> &gt;&gt;/etc/udev/rules.d/99-oracle-asmdevices.rules<br><span class="hljs-keyword">done</span> &lt;/dev/mapper/udev_info<br></code></pre></td></tr></table></figure>
+
+<p>查看配置好的规则：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">cat <span class="hljs-regexp">/etc/u</span>dev<span class="hljs-regexp">/rules.d/</span><span class="hljs-number">99</span>-oracle-asmdevices.rules<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/8dab1a7c466cf5aeed8819c77d98eadf.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图10" loading='lazy'></p>
+<p>重载 udev 规则，检查共享存储多路径绑盘是否成功：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">udevadm control <span class="hljs-params">--reload-rules</span><br>udevadm trigger <span class="hljs-params">--type=devices</span><br>ll <span class="hljs-string">/dev/asm_</span>*<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/6796948b675a89e20deedb52b55f98cc.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图11" loading='lazy'></p>
+<h3 id="时间同步配置（rac01-rac02）"><a href="#时间同步配置（rac01-rac02）" class="headerlink" title="时间同步配置（rac01&amp;rac02）"></a>时间同步配置（rac01&amp;rac02）</h3><p>禁用 chronyd：</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig"><span class="hljs-comment">## 没有安装 chrony 最好安装一下，防止以后被安装生效</span><br><span class="hljs-string">yum</span> <span class="hljs-string">install</span> -<span class="hljs-string">y</span> <span class="hljs-string">chrony</span><br><span class="hljs-string">timedatectl</span> <span class="hljs-built_in">set-timezone</span> <span class="hljs-string">Asia</span>/<span class="hljs-string">Shanghai</span><br><span class="hljs-string">systemctl</span> <span class="hljs-string">stop</span> <span class="hljs-string">chronyd</span>.<span class="hljs-string">service</span><br><span class="hljs-string">systemctl</span> <span class="hljs-string">disable</span> <span class="hljs-string">chronyd</span>.<span class="hljs-string">service</span><br></code></pre></td></tr></table></figure>
+
+<p>配置 ntpdate 时间同步计划任务：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment">## 未安装需要手动安装 ntpdate</span><br>yum install -y ntpdate<br><span class="hljs-comment">## 192.168.6.188 为时间服务器 IP，每天 12 点同步系统时间</span><br>cat &lt;&lt;EOF&gt;&gt;<span class="hljs-regexp">/var/</span>spool<span class="hljs-regexp">/cron/</span>root<br><span class="hljs-number">00</span> <span class="hljs-number">12</span> * * * <span class="hljs-regexp">/usr/</span>sbin<span class="hljs-regexp">/ntpdate -u 192.168.6.188 &amp;&amp; /u</span>sr<span class="hljs-regexp">/sbin/</span>hwclock -w<br>EOF<br><span class="hljs-comment">## 查看计划任务</span><br>crontab -l<br><span class="hljs-comment">## 手动执行</span><br><span class="hljs-regexp">/usr/</span>sbin<span class="hljs-regexp">/ntpdate -u 192.168.6.188 &amp;&amp; /u</span>sr<span class="hljs-regexp">/sbin/</span>hwclock -w<br></code></pre></td></tr></table></figure>
+
+<h3 id="关闭透明大页和-NUMA（rac01-rac02）"><a href="#关闭透明大页和-NUMA（rac01-rac02）" class="headerlink" title="关闭透明大页和 NUMA（rac01&amp;rac02）"></a>关闭透明大页和 NUMA（rac01&amp;rac02）</h3><p>RHEL 7 配置内核文件，关闭透明大页和 numa：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">sed -i <span class="hljs-string">&#x27;s/quiet/quiet transparent_hugepage=never numa=off/&#x27;</span> /etc/default/grub<br>grub2-mkconfig -o /boot/grub2/grub.cfg<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/348f702d20b24df97da0a7953d1731c3.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图12" loading='lazy'></p>
+<p><strong>📢 注意：</strong> 关闭 <code>透明大页</code> 和 <code>numa</code> 的配置，需要重启主机生效！</p>
+<h3 id="avahi-daemon-配置（rac01-rac02）"><a href="#avahi-daemon-配置（rac01-rac02）" class="headerlink" title="avahi-daemon 配置（rac01&amp;rac02）"></a>avahi-daemon 配置（rac01&amp;rac02）</h3><p>有些主机安装选择最小化安装，没有安装 avahi-daemon 功能，建议安装之后禁用，防止以后误操作导致出问题：</p>
+<figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs nsis">yum install -y avahi*<br><span class="hljs-params">system</span>ctl stop avahi-daemon.socket<br><span class="hljs-params">system</span>ctl stop avahi-daemon.service<br>pgrep -f avahi-daemon | awk <span class="hljs-string">&#x27;&#123;print &quot;kill -9 &quot;<span class="hljs-variable">$2</span>&#125;&#x27;</span><br><span class="hljs-params">system</span>ctl disable avahi-daemon.socket<br><span class="hljs-params">system</span>ctl disable avahi-daemon.service<br></code></pre></td></tr></table></figure>
+
+<p>配置 NOZEROCONF：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">cat <span class="hljs-symbol">&lt;&lt;EOF&gt;&gt;</span>/etc/sysconfig/network<br>NOZEROCONF=yes<br>EOF<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/190a6ad6ea5d5614bc2fcf0e858209f5.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图13" loading='lazy'></p>
+<h3 id="系统参数配置（rac01-rac02）"><a href="#系统参数配置（rac01-rac02）" class="headerlink" title="系统参数配置（rac01&amp;rac02）"></a>系统参数配置（rac01&amp;rac02）</h3><p>安装 Oracle 数据库需要配置系统参数，以下使用脚本命令一键式配置：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment">## 网卡名称需根据实际情况需改</span><br><span class="hljs-attribute">PublicFName</span>=ens192<br><span class="hljs-attribute">PrivateFName</span>=ens224<br><span class="hljs-attribute">memTotal</span>=$(grep MemTotal /proc/meminfo | awk <span class="hljs-string">&#x27;&#123;print $2&#125;&#x27;</span>)<br><span class="hljs-attribute">totalMemory</span>=$((memTotal / 2048))<br><span class="hljs-attribute">shmall</span>=$((memTotal / 4))<br><span class="hljs-keyword">if</span> [ <span class="hljs-variable">$shmall</span> -lt 2097152 ]; then<br>  <span class="hljs-attribute">shmall</span>=2097152<br>fi<br><span class="hljs-attribute">shmmax</span>=$((memTotal * 1024 - 1))<br><span class="hljs-keyword">if</span> [ <span class="hljs-string">&quot;<span class="hljs-variable">$shmmax</span>&quot;</span> -lt 4294967295 ]; then<br>  <span class="hljs-attribute">shmmax</span>=4294967295<br>fi<br>cat &lt;&lt;EOF&gt;&gt;/etc/sysctl.conf<br>fs.aio-max-nr = 1048576<br>fs.file-max = 6815744<br>kernel.shmall = <span class="hljs-variable">$shmall</span><br>kernel.shmmax = <span class="hljs-variable">$shmmax</span><br>kernel.shmmni = 4096<br>kernel.sem = 250 32000 100 128<br>net.ipv4.ip_local_port_range = 9000 65500<br>net.core.rmem_default = 262144<br>net.core.rmem_max = 4194304<br>net.core.wmem_default = 262144<br>net.core.wmem_max = 1048576<br>net.ipv4.conf.<span class="hljs-variable">$PublicFName</span>.rp_filter = 1<br>net.ipv4.conf.<span class="hljs-variable">$PrivateFName</span>.rp_filter = 2<br>EOF<br></code></pre></td></tr></table></figure>
+
+<p>生效系统参数：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">sysctl -<span class="hljs-selector-tag">p</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/52d16eb11e787d83f34dee72ab969298.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图14" loading='lazy'></p>
+<h3 id="系统资源限制配置（rac01-rac02）"><a href="#系统资源限制配置（rac01-rac02）" class="headerlink" title="系统资源限制配置（rac01&amp;rac02）"></a>系统资源限制配置（rac01&amp;rac02）</h3><p>配置 limits.conf：</p>
+<figure class="highlight mel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs mel">cat &lt;&lt;EOF&gt;&gt;/etc/security/limits.conf<br>oraprod <span class="hljs-keyword">soft</span> nofile <span class="hljs-number">1024</span><br>oraprod hard nofile <span class="hljs-number">65536</span><br>oraprod <span class="hljs-keyword">soft</span> stack <span class="hljs-number">10240</span><br>oraprod hard stack <span class="hljs-number">32768</span><br>oraprod <span class="hljs-keyword">soft</span> nproc <span class="hljs-number">16384</span><br>oraprod hard nproc <span class="hljs-number">16384</span><br>oraprod hard memlock unlimited<br>oraprod <span class="hljs-keyword">soft</span> memlock unlimited<br><br><span class="hljs-keyword">grid</span> <span class="hljs-keyword">soft</span> nofile <span class="hljs-number">1024</span><br><span class="hljs-keyword">grid</span> hard nofile <span class="hljs-number">65536</span><br><span class="hljs-keyword">grid</span> <span class="hljs-keyword">soft</span> stack <span class="hljs-number">10240</span><br><span class="hljs-keyword">grid</span> hard stack <span class="hljs-number">32768</span><br><span class="hljs-keyword">grid</span> <span class="hljs-keyword">soft</span> nproc <span class="hljs-number">16384</span><br><span class="hljs-keyword">grid</span> hard nproc <span class="hljs-number">16384</span><br>EOF<br></code></pre></td></tr></table></figure>
+
+<p>配置pam.d&#x2F;login：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">cat <span class="hljs-symbol">&lt;&lt;EOF&gt;&gt;</span>/etc/pam.d/<span class="hljs-keyword">login</span><br><span class="hljs-keyword">session</span> required pam_limits.so <br><span class="hljs-keyword">session</span> required /lib64/<span class="hljs-keyword">security</span>/pam_limits.so<br>EOF<br></code></pre></td></tr></table></figure>
+
+<h3 id="配置-dev-shm"><a href="#配置-dev-shm" class="headerlink" title="配置 &#x2F;dev&#x2F;shm"></a>配置 &#x2F;dev&#x2F;shm</h3><p>如果 shm 不配置可能会造成后面安装过程出现警告，使用上出现报错等等。</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">cat <span class="hljs-symbol">&lt;&lt;EOF &gt;&gt;</span> /etc/fstab<br>tmpfs /dev/shm tmpfs defaults,size=<span class="hljs-number">8</span>G <span class="hljs-number">0</span> <span class="hljs-number">0</span><br>EOF<br>mount -o remount /dev/shm<br></code></pre></td></tr></table></figure>
+
+<h3 id="环境变量配置（rac01-rac02）"><a href="#环境变量配置（rac01-rac02）" class="headerlink" title="环境变量配置（rac01&amp;rac02）"></a>环境变量配置（rac01&amp;rac02）</h3><p>grid 用户环境变量：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs routeros">cat &lt;&lt;EOF&gt;&gt;/home/grid/.bash_profile<br><span class="hljs-comment">################OracleBegin#########################</span><br>umask 022<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">TMP</span>=/tmp<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">TMPDIR</span>=\$TMP<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">NLS_LANG</span>=AMERICAN_AMERICA.AL32UTF8<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">ORACLE_BASE</span>=/u01/app/grid<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">ORACLE_HOME</span>=/u01/app/12.1.0/grid<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">ORACLE_TERM</span>=xterm<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">TNS_ADMIN</span>=\$ORACLE_HOME/network/admin<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">LD_LIBRARY_PATH</span>=\$ORACLE_HOME/lib:/lib:/usr/lib<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">ORACLE_SID</span>=+ASM1<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">PATH</span>=/usr/sbin:\$PATH<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">PATH</span>=\$ORACLE_HOME/bin:\$ORACLE_HOME/OPatch:\$PATH<br>alias <span class="hljs-attribute">sas</span>=<span class="hljs-string">&#x27;sqlplus / as sysasm&#x27;</span><br><span class="hljs-built_in">export</span> <span class="hljs-attribute">PS1</span>=<span class="hljs-string">&quot;[\`whoami\`@\`hostname\`:&quot;</span><span class="hljs-string">&#x27;\w]\$ &#x27;</span><br>EOF<br></code></pre></td></tr></table></figure>
+
+<p><strong>📢 注意：</strong> 每个节点的 ORACLE_SID 不一样（+ASM1&#x2F;+ASM2），需要自行修改！</p>
+<p>oraprod 用户环境变量：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs clean">cat &lt;&lt;EOF&gt;&gt;/home/oraprod/.bash_profile<br>################OracleBegin#########################<br>umask <span class="hljs-number">022</span><br><span class="hljs-keyword">export</span> TMP=/tmp<br><span class="hljs-keyword">export</span> TMPDIR=\$TMP<br><span class="hljs-keyword">export</span> NLS_LANG=AMERICAN_AMERICA.AL32UTF8<br><span class="hljs-keyword">export</span> ORACLE_BASE=/u01/app/oracle<br><span class="hljs-keyword">export</span> ORACLE_HOME=\$ORACLE_BASE/product/<span class="hljs-number">12.1</span><span class="hljs-number">.0</span>/db<br><span class="hljs-keyword">export</span> ORACLE_HOSTNAME=rac01<br><span class="hljs-keyword">export</span> ORACLE_TERM=xterm<br><span class="hljs-keyword">export</span> TNS_ADMIN=\$ORACLE_HOME/network/admin<br><span class="hljs-keyword">export</span> LD_LIBRARY_PATH=\$ORACLE_HOME/lib:/lib:/usr/lib<br><span class="hljs-keyword">export</span> ORACLE_SID=lucifer1<br><span class="hljs-keyword">export</span> PATH=/usr/sbin:\$PATH<br><span class="hljs-keyword">export</span> PATH=\$ORACLE_HOME/bin:\$ORACLE_HOME/OPatch:\$PATH<br>alias sas=<span class="hljs-string">&#x27;sqlplus / as sysdba&#x27;</span><br><span class="hljs-keyword">export</span> PS1=<span class="hljs-string">&quot;[\`whoami\`@\`hostname\`:&quot;</span><span class="hljs-string">&#x27;\w]\$ &#x27;</span><br>################OracleEnd#########################<br>EOF<br></code></pre></td></tr></table></figure>
+
+<p><strong>📢 注意：</strong> 每个节点的 ORACLE_HOSTNAME（rac01&#x2F;rac02）和 ORACLE_SID（lucifer1&#x2F;lucifer2）不一样，需要自行修改！</p>
+<h3 id="安装介质上传解压（rac01）"><a href="#安装介质上传解压（rac01）" class="headerlink" title="安装介质上传解压（rac01）"></a>安装介质上传解压（rac01）</h3><p>安装包可以使用 xftp 工具进行上传，只需要上传至一节点 &#x2F;soft 目录下：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs tap"><span class="hljs-comment">## 上传安装介质到/soft目录</span><br>-rw-------.<span class="hljs-number"> 1 </span>root root<span class="hljs-number"> 1673544724 </span>Feb<span class="hljs-number"> 10 </span>15:22 12102_database_linuxx86_64_1of2.zip<br>-rw-------.<span class="hljs-number"> 1 </span>root root<span class="hljs-number"> 1014530602 </span>Feb<span class="hljs-number"> 10 </span>15:21 12102_database_linuxx86_64_2of2.zip<br>-rw-------.<span class="hljs-number"> 1 </span>root root<span class="hljs-number"> 1747043545 </span>Feb<span class="hljs-number"> 10 </span>15:21 12102_grid_linuxx86_64_1of2.zip<br>-rw-------.<span class="hljs-number"> 1 </span>root root <span class="hljs-number"> 646972897 </span>Feb<span class="hljs-number"> 10 </span>15:21 12102_grid_linuxx86_64_2of2.zip<br></code></pre></td></tr></table></figure>
+
+<p><strong>静默解压 grid 安装包：</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css">## root 用户下执行<br>unzip -<span class="hljs-selector-tag">q</span> <span class="hljs-number">12102</span>_grid_linuxx86_64_1of2<span class="hljs-selector-class">.zip</span><br>unzip -<span class="hljs-selector-tag">q</span> <span class="hljs-number">12102</span>_grid_linuxx86_64_2of2<span class="hljs-selector-class">.zip</span><br>chown -<span class="hljs-attribute">R</span> <span class="hljs-attribute">grid</span>:oinstall /soft<br></code></pre></td></tr></table></figure>
+
+<p><strong>静默解压 oracle 安装包：</strong></p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-comment">## root 用户下执行</span><br><span class="hljs-attribute">unzip</span> -q <span class="hljs-number">12102</span>_database_linuxx86_64_1of2.zip<br><span class="hljs-attribute">unzip</span> -q <span class="hljs-number">12102</span>_database_linuxx86_64_2of2.zip<br></code></pre></td></tr></table></figure>
+
+<p><strong>root 用户安装 cvuqdisk 包（rac01&amp;rac02）：</strong></p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">cd</span> /soft/grid/rpm/<br><span class="hljs-attribute">rpm</span> -ivh cvuqdisk-<span class="hljs-number">1</span>.<span class="hljs-number">0</span>.<span class="hljs-number">9</span>-<span class="hljs-number">1</span>.rpm<br><span class="hljs-comment">## 传输到节点二安装</span><br><span class="hljs-attribute">scp</span> cvuqdisk-<span class="hljs-number">1</span>.<span class="hljs-number">0</span>.<span class="hljs-number">9</span>-<span class="hljs-number">1</span>.rpm <span class="hljs-number">192.168.6.71</span>:/soft<br><span class="hljs-attribute">rpm</span> -ivh cvuqdisk-<span class="hljs-number">1</span>.<span class="hljs-number">0</span>.<span class="hljs-number">9</span>-<span class="hljs-number">1</span>.rpm<br></code></pre></td></tr></table></figure>
+
+<p>至此，Linux 操作系统的配置就完成了，重启两台主机确保配置没有！重启成功后检查一下 Selinux，透明大页和 numa：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> /etc/selinux/config<br><span class="hljs-built_in">cat</span> /sys/kernel/mm/transparent_hugepage/enabled<br><span class="hljs-built_in">cat</span> /proc/cmdline<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/e5810fb9b9af96c16ddd56c11c09aa64.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图15" loading='lazy'></p>
+<p>至此，一切准备工作都已经做完了，接下来可以正式开始安装 Oracle RAC 数据库！</p>
+<h2 id="安装-Grid-软件（rac01）"><a href="#安装-Grid-软件（rac01）" class="headerlink" title="安装 Grid 软件（rac01）"></a>安装 Grid 软件（rac01）</h2><h3 id="安装-GRID-软件"><a href="#安装-GRID-软件" class="headerlink" title="安装 GRID 软件"></a>安装 GRID 软件</h3><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs elixir">[grid<span class="hljs-variable">@rac01</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>cd /soft/grid<br>[grid<span class="hljs-variable">@rac01</span><span class="hljs-symbol">:/soft/grid</span>]<span class="hljs-variable">$ </span>./runInstaller<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/77c0e9325f15aac7dfc018bd840c90f9.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图16" loading='lazy'></p>
+<p>直接跳出安装界面，选择集群安装：</p>
+<p><img src="/csdn-blog/images/1f829c6460d6cdde4b6a6d08f8149c9d.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图17" loading='lazy'></p>
+<p><img src="/csdn-blog/images/d2bbaf832b5db29adfbceca177915a7f.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图18" loading='lazy'></p>
+<p>选择自定义安装：</p>
+<p><img src="/csdn-blog/images/ab8b2a812dce63a02a64f00829dc0d89.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图19" loading='lazy'></p>
+<p><img src="/csdn-blog/images/cc025cc7d6bf8f7e403d49264c3c17c4.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图20" loading='lazy'></p>
+<p>修改 scan 名称，与 hosts 文件配置 scan 名称保持一致，输入 grid 用户密码，创建用户时两节点必须保持一致。先执行 setup，再执行 test，开始互信：</p>
+<p><img src="/csdn-blog/images/dfdadb9f415d89cfddad9e0a6da33956.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图21" loading='lazy'></p>
+<p><img src="/csdn-blog/images/9c79eca069f48472a6c1e952c7916857.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图22" loading='lazy'></p>
+<p>确保对应网卡和IP网段对应即可，12CR1 心跳网段需要选 Private：</p>
+<p><img src="/csdn-blog/images/0b24243c2070bac04e9acc17a54e19f5.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图23" loading='lazy'></p>
+<p><img src="/csdn-blog/images/c956c53190115101b1fbd923bbd03b87.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图24" loading='lazy'></p>
+<p><img src="/csdn-blog/images/4c2fed9f4ca15db636e1358db4f2c06f.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图25" loading='lazy'></p>
+<p>安装时填创建 OCR 盘，一块盘冗余 External，目录选择udev绑的路径：</p>
+<p><img src="/csdn-blog/images/ade22a6a1fa0ead823ae95bc0ccf9bad.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图26" loading='lazy'></p>
+<p><img src="/csdn-blog/images/4ba367fca118c7254f1df4d2d53babed.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图27" loading='lazy'></p>
+<p><img src="/csdn-blog/images/daa637f6139bb3e56af9f65f3db72197.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图28" loading='lazy'></p>
+<p><img src="/csdn-blog/images/d4fde3cb280c618dc23bb5b8363b080e.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图29" loading='lazy'></p>
+<p><img src="/csdn-blog/images/3357403c83b6f538e3b755e95f763dbc.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图30" loading='lazy'></p>
+<p><img src="/csdn-blog/images/1a16f1f861d91c840a00f2476acff129.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图31" loading='lazy'></p>
+<p><img src="/csdn-blog/images/a353a807a4a5a7da5ec1c66181557bb7.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图32" loading='lazy'></p>
+<p>这里不选择自动执行 root.sh 脚本，因此容易失败，所以选择手动执行：</p>
+<p><img src="/csdn-blog/images/6f119c0823b141a59b0e4a04f630d8e0.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图33" loading='lazy'></p>
+<p>安装预检查，关于 DNS 和 NTP 相关的都可以忽略，继续下一步：</p>
+<p><img src="/csdn-blog/images/59cad8b6e1bbad47f8faca3d64bf534d.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图34" loading='lazy'></p>
+<p>开始安装 grid：</p>
+<p><img src="/csdn-blog/images/db76678a6be1ec0edbfc94d0f2803b13.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图35" loading='lazy'></p>
+<p><img src="/csdn-blog/images/04bc179d5182cb1eab556ce32e993a7e.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图36" loading='lazy'></p>
+<p>root 用户下，两个节点顺序执行 root.sh，先节点一执行完，再节点二执行，两个节点的 root.sh 都执行完之后，继续安装：</p>
+<p><img src="/csdn-blog/images/a167d206eba9f7c186752c7de7888767.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图37" loading='lazy'></p>
+<p>这个错误是由于在 &#x2F;etc&#x2F;hosts 中配置了 scan ip，而不是使用 DNS 配置解析，可以忽略该错误，完成安装！</p>
+<blockquote>
+<p>MOS 文档：PRVF-4664 PRVF-4657: Found inconsistent name resolution entries for SCAN name (Doc ID 887471.1)</p>
+</blockquote>
+<p><img src="/csdn-blog/images/b234ac47051e24953981f4ee28120a68.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图38" loading='lazy'></p>
+<p>安装完成：</p>
+<p><img src="/csdn-blog/images/647e05f32dced79da0c30ec3193864f4.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图39" loading='lazy'></p>
+<h3 id="检查集群状态和补丁"><a href="#检查集群状态和补丁" class="headerlink" title="检查集群状态和补丁"></a>检查集群状态和补丁</h3><p>检查集群状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">su - grid<br>crsctl <span class="hljs-built_in">stat</span> res -t<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/7f71fcaef344fd17dda2e7c7047f6e69.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图40" loading='lazy'></p>
+<p>检查 grid 补丁情况：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs applescript">opatch lspatches<br>sqlplus -<span class="hljs-built_in">version</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/c74704164e8505afde67eb36c4b620b2.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图41" loading='lazy'></p>
+<p>检查 asm 磁盘组：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">asmcmd lsdg</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/d00ca8fdd655b757e695e408bdfa570c.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图42" loading='lazy'></p>
+<h2 id="创建-ASM-数据盘"><a href="#创建-ASM-数据盘" class="headerlink" title="创建 ASM 数据盘"></a>创建 ASM 数据盘</h2><p>这里创建的 DATA 磁盘组主要用于存放数据文件、归档日志文件等数据库文件！</p>
+<p>使用图形化方式添加 ASM DATA 数据盘：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">asmca</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/10600ae9c83bf532d9e122504836026d.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图43" loading='lazy'></p>
+<p><img src="/csdn-blog/images/501d65194690ef2d2eecc618619e174f.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图44" loading='lazy'></p>
+<p><img src="/csdn-blog/images/c1a922a188402c458615509d44da4ba1.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图45" loading='lazy'></p>
+<p><img src="/csdn-blog/images/791e2530739c0d0a3d7d66e29467da13.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图46" loading='lazy'></p>
+<p><img src="/csdn-blog/images/c1a1cdf705c6983fd8d149b6394e925c.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图47" loading='lazy'></p>
+<p>再次检查 asm 磁盘：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">asmcmd lsdg</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/89f2bcfc6a7f5b2f34250509c3f858d2.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图48" loading='lazy'></p>
+<p><strong>📢 注意：</strong> 建议重启两台主机，重启后再次检查集群状态，监听状态，ASM 磁盘组情况，确保没有问题再继续安装！</p>
+<h2 id="安装-Oracle-软件"><a href="#安装-Oracle-软件" class="headerlink" title="安装 Oracle 软件"></a>安装 Oracle 软件</h2><p>开始安装，12CR1 安装 Oracle 软件还不支持提前安装 PSU，所以先安装 Oracle 软件再打补丁：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">chown</span> -R oraprod:oinstall /soft<br><span class="hljs-built_in">cd</span> /soft/database<br>./runInstaller<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/d9e8ddd613637f69dddcb1c1b2b3eacc.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图49" loading='lazy'></p>
+<p>进入安装界面，不接收安全更新：</p>
+<p><img src="/csdn-blog/images/1eab879f7d01e4bb3300371093b1d2a2.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图50" loading='lazy'></p>
+<p>选择仅安装 Oracle 软件：</p>
+<p><img src="/csdn-blog/images/aa16be65fa296acfe98852f9d4cf540a.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图51" loading='lazy'></p>
+<p>选择集群模式：</p>
+<p><img src="/csdn-blog/images/ab3dcd2b22a2f0a2c129d80b19c419b2.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图52" loading='lazy'></p>
+<p>输入 oraprod 用户密码，先执行 setup，再执行 test，开始互信：</p>
+<p><img src="/csdn-blog/images/96cfe33f783f546a3ae83c6f3b197bb8.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图53" loading='lazy'></p>
+<p><img src="/csdn-blog/images/81715a4011ebe0cf73aff1704dc1298a.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图54" loading='lazy'></p>
+<p>选择企业版：</p>
+<p><img src="/csdn-blog/images/5f5cead418f9d12c8dc32d1ea45fe867.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图55" loading='lazy'></p>
+<p><img src="/csdn-blog/images/a66b0869f68fab6bc667d1ebbd125481.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图56" loading='lazy'></p>
+<p>默认即可：</p>
+<p><img src="/csdn-blog/images/c762b4834829692f02749b67f19f359c.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图57" loading='lazy'></p>
+<p><img src="/csdn-blog/images/9d738a8f1021a82312509847660f2a5b.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图58" loading='lazy'></p>
+<p>安装预检查，由于我们只配了一个 SCAN，所以关于 DNS 相关的都无视，继续：</p>
+<p><img src="/csdn-blog/images/52e06175388ce59e5cf40da86d2583f4.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图59" loading='lazy'></p>
+<p>开始安装：</p>
+<p><img src="/csdn-blog/images/3a0904ecc9bbefe272537fe75e34231c.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图60" loading='lazy'></p>
+<p><img src="/csdn-blog/images/0638d539b845ef1e5e7aa8d5bac2e253.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图61" loading='lazy'></p>
+<p><img src="/csdn-blog/images/214989dcd4ae4cab6c19a5c4f5ccac9c.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图62" loading='lazy'></p>
+<p>root 用户下，两个节点都要执行 root.sh：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">/u01/</span>app<span class="hljs-regexp">/oracle/</span>product<span class="hljs-regexp">/12.2.0/</span>db/root.sh<br></code></pre></td></tr></table></figure>
+
+<p>安装完成：</p>
+<p><img src="/csdn-blog/images/ad801b709303b4f94deab8d4a2ddd218.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图63" loading='lazy'></p>
+<p><strong>至此，Oracle 软件已全部安装成功！</strong></p>
+<h2 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h2><p>打开 oracle 用户下的 vnc 界面，执行 <code>dbca</code> 创建数据库实例：</p>
+<p><img src="/csdn-blog/images/efac61820eb75eed0a32bd2c8495f480.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图64" loading='lazy'></p>
+<p>选择自定义模式：</p>
+<p><img src="/csdn-blog/images/0ea1abf3ba6a686f4c9acae016b0b5b8.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图65" loading='lazy'></p>
+<p>默认选择一版用途安装：</p>
+<p><img src="/csdn-blog/images/31d93c141896b6df30dde8b7ac0f3b88.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图66" loading='lazy'></p>
+<p>填写数据库名称 lucifer，由于默认添加为 1，2，实例名规划为 lucifer1&#x2F;2；选择安装 CDB 模式，不创建 PDB：</p>
+<p><img src="/csdn-blog/images/f5ce62f24c2ebf23b594391d1ff2f172.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图67" loading='lazy'></p>
+<p><img src="/csdn-blog/images/6e94b1bd550edd6a1108da5c67da0110.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图68" loading='lazy'></p>
+<p><img src="/csdn-blog/images/159b5085a88b5d6db744507e035fe2bf.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图69" loading='lazy'></p>
+<p><img src="/csdn-blog/images/ecd602b39e963f80c820051e8f5aec07.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图70" loading='lazy'></p>
+<p>默认即可，使用 OMF 模式：</p>
+<p><img src="/csdn-blog/images/556d66d3db7406fe9b5b857543e1cbdf.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图71" loading='lazy'></p>
+<p><img src="/csdn-blog/images/495ef40448afeed655058785e3e325ff.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图72" loading='lazy'></p>
+<p>配置内存，使用 ASMM 模式，数据库总内存占用物理内存 70%-90% 之间：</p>
+<p><img src="/csdn-blog/images/6380e85bd2eecbc7d25dcae687b97d1a.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图73" loading='lazy'></p>
+<p>一般用途模式安装，block_size 是无法修改的，process 进程数修改为1500，根据实际情况修改：</p>
+<p><img src="/csdn-blog/images/8440e0e5ca689158cf6b83f98555e581.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图74" loading='lazy'></p>
+<p>配置数据库字符集：默认 AL32UTF8，国家字符集：默认 AL16UTF16；根据实际业务情况修改成对应字符集：</p>
+<p><img src="/csdn-blog/images/631f8262ae443df3e85946d4d5af03f1.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图75" loading='lazy'></p>
+<p><img src="/csdn-blog/images/8da59a461d6dedfa641fe575101c1c92.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图76" loading='lazy'></p>
+<p><img src="/csdn-blog/images/f94645521a6061e685e5df10ae7c8328.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图77" loading='lazy'></p>
+<p><img src="/csdn-blog/images/7bf72f3df7684d5004e37be83d0b0c87.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图78" loading='lazy'></p>
+<p><img src="/csdn-blog/images/1a129d449857cb4b293544a3ff7e97fd.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图79" loading='lazy'></p>
+<p>开始安装：</p>
+<p><img src="/csdn-blog/images/1e3d49c77d2f64d301c2f245360c63d6.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图80" loading='lazy'></p>
+<p>经过漫长的等待，数据库建完了：</p>
+<p><img src="/csdn-blog/images/e3812428d103ffe8b999eeca20ef1238.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图81" loading='lazy'></p>
+<p><strong>至此，数据库实例创建完成！</strong></p>
+<h2 id="数据库优化配置（rac01）"><a href="#数据库优化配置（rac01）" class="headerlink" title="数据库优化配置（rac01）"></a>数据库优化配置（rac01）</h2><h3 id="配置归档删除定期任务"><a href="#配置归档删除定期任务" class="headerlink" title="配置归档删除定期任务"></a>配置归档删除定期任务</h3><p>如果数据库开启了归档模式，那么就需要配置归档删除的定期任务，否则归档日志越来越多回导致磁盘空间被用尽。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment">## 进入 oraprod 用户，创建脚本</span><br>cat&lt;&lt;-DELARCH&gt;<span class="hljs-regexp">/home/</span>oraprod<span class="hljs-regexp">/scripts/</span>del_arch.sh<br><span class="hljs-comment">#!/bin/bash</span><br>source ~/.bash_profile<br>deltime=\$(date +<span class="hljs-string">&quot;20%y%m%d%H%M%S&quot;</span>)<br>rman target <span class="hljs-regexp">/ nocatalog msglog /</span>home<span class="hljs-regexp">/oraprod/</span>scripts/del_arch_\<span class="hljs-variable">$deltime</span>.log &lt;&lt;-EOF<br>crosscheck archivelog all;<br><span class="hljs-keyword">delete</span> noprompt archivelog until time <span class="hljs-string">&#x27;sysdate-7&#x27;</span>;<br><span class="hljs-keyword">delete</span> noprompt force archivelog until time <span class="hljs-string">&#x27;SYSDATE-10&#x27;</span>;<br>EOF<br>DELARCH<br>chmod +x <span class="hljs-regexp">/home/</span>oraprod<span class="hljs-regexp">/scripts/</span>del_arch.sh<br></code></pre></td></tr></table></figure>
+
+<p>切换到 root 用户写入计划任务：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs awk">echo <span class="hljs-string">&quot;12 00 * * * /home/oraprod/scripts/del_arch.sh&quot;</span> &gt;&gt;<span class="hljs-regexp">/var/</span>spool<span class="hljs-regexp">/cron/</span>oraprod<br><span class="hljs-comment">## 手动执行测试</span><br>su - oraprod<br><span class="hljs-regexp">/home/</span>oraprod<span class="hljs-regexp">/scripts/</span>del_arch.sh<br></code></pre></td></tr></table></figure>
+
+<h3 id="配置低版本客户端连接"><a href="#配置低版本客户端连接" class="headerlink" title="配置低版本客户端连接"></a>配置低版本客户端连接</h3><p>12CR1 版本之后由于低版本客户端连接可能会报错，因此需要配置 sqlnet 来支持低版本客户端连接：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros">su - oraprod<br>cat&lt;&lt;- EOF&gt;&gt;<span class="hljs-variable">$TNS_ADMIN</span>/sqlnet.ora<br>SQLNET.<span class="hljs-attribute">ALLOWED_LOGON_VERSION_CLIENT</span>=8<br>SQLNET.<span class="hljs-attribute">ALLOWED_LOGON_VERSION_SERVER</span>=8<br>EOF<br></code></pre></td></tr></table></figure>
+
+<h3 id="配置数据库开机自启"><a href="#配置数据库开机自启" class="headerlink" title="配置数据库开机自启"></a>配置数据库开机自启</h3><p>配置数据库实例随集群服务自启动：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment">## root用户下执行</span><br><span class="hljs-regexp">/u01/</span>app<span class="hljs-regexp">/12.1.0/g</span>rid<span class="hljs-regexp">/bin/</span>crsctl modify resource <span class="hljs-string">&quot;ora.lucifer.db&quot;</span> -attr <span class="hljs-string">&quot;AUTO_START=always&quot;</span> -unsupported<br></code></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong> <code>ora.lucifer.db</code>中的 lucifer 是指 db 名称；需要在 root 用户下执行！</p>
+<p><strong>所有都配置完成之后，关闭数据库，重启主机，重启后检查集群状态和数据库运行状态！</strong></p>
+<p><img src="/csdn-blog/images/e45d6ef9c6381c3b18119ebea792b2fb.webp" alt="RHEL 7 安装 Oracle 12CR1 RAC 数据库 - 图82" loading='lazy'></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/145575628/">https://pc-study.github.io/csdn-blog/posts/145575628/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/145697019/" title="GBase 8c GDCA 认证课后练习题大全（题库）"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">GBase 8c GDCA 认证课后练习题大全（题库）</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，致力于分享数据库领域相关知识。 目录 前言 单选题 多选题 判断题 写在最后 往期精彩文章 前言 2025 年第一场 GBase 培训：培训预告 2025元月 GBase 8c 认证培训班开始报名啦~，到今天为止，培训课程已经学习完成，我总结了每节课的课后练习题</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145545997/" title="学习 MySQL 需要知道的 28 个小技巧"><img class="cover" src="/csdn-blog/images/1f9fd6027d72fd95e729895b6c0bad7a.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">学习 MySQL 需要知道的 28 个小技巧</div></div><div class="info-2"><div class="info-item-1">前言 随着信息技术的不断发展以及互联网行业的高速增长，作为开源数据库的MySQL得到了广泛的应用和发展。目前MySQL已成为关系型数据库领域中非常重要的一员。 无论是运维、开发、测试，还是架构师，数据库技术都是一个 ，那么，一直说学习数据库、学 ，到底是要学习它的哪些东西呢？ 一、如何快速掌握 My</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/140400728/" title="Deepin 20.9 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-13</div><div class="info-item-2">Deepin 20.9 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Deepin 20.9 一键安装 Oracle 19C 单机版过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 ⭐️ 更多教程参考：Oracle 一键安装脚本实操合集，持续更新中！！！ 前置准备 1、系统组安装好操作系统（支</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/154742448/" title="EMCC 13.5 安装中断，如何清理 OMS 库？"><img class="cover" src="/csdn-blog/images/906c9e9e996746d92d2a284c33fbf3ac.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-12</div><div class="info-item-2">EMCC 13.5 安装中断，如何清理 OMS 库？</div></div><div class="info-2"><div class="info-item-1">前言 昨天安装一套 EMCC13.5，安装过程中 VNC 卡死导致安装失败，清理目录后重新执行安装，结果安装过程中报错了： 应该是 OMS 数据库在前一次安装过程中已经创建了用户以及一些对象，导致 OMS 数据库不干净了，一般建议重建 OMS 数据库，但是时间比较久，今天介绍一下另一种解决这个问题的</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/147408807/" title="Oracle RAC 一键安装翻车？手把手教你如何排错！"><img class="cover" src="/csdn-blog/images/9d78cb4fc4a322f65b9b7cca4c03d1b7.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-22</div><div class="info-item-2">Oracle RAC 一键安装翻车？手把手教你如何排错！</div></div><div class="info-2"><div class="info-item-1">前言 今天 Oracle 一键安装脚本群有个朋友使用过程中安装失败，需要帮忙分析： 这里记录一下分析过程以及解决过程~ 问题分析 为了方便分析，我在脚本内置了日志模块，安装遇到问题只需要把日志发出来即可快速分析问题，通过日志可以发现： 可以看到这里集群状态有问题，大概率是 root.sh 执行有问题</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119843603/" title="《零基础安装 Oracle 数据库》单机系列 ② 一键快速安装 Oracle 12CR2 数据库"><img class="cover" src="/csdn-blog/images/644c43399983590f415749804cc0f3b4.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-21</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机系列 ② 一键快速安装 Oracle 12CR2 数据库</div></div><div class="info-2"><div class="info-item-1">目录 前言 安装 下载项目 安装软件 下载 Oracle 安装包 安装 编辑 vagrant.yml 文件 开始安装 使用方式 连接主机 关闭主机 开启主机 销毁主机 写在最后 前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + she</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148293355/" title="Oracle Linux 9 安装 EMCC 13.5：避坑细节与实战经验汇总！"><img class="cover" src="/csdn-blog/images/ec1baadf7e0bbead262f413972e1d8e0.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-28</div><div class="info-item-2">Oracle Linux 9 安装 EMCC 13.5：避坑细节与实战经验汇总！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 安装前准备 主机信息 硬件要求 EMCC 需要开放端口 建议补丁 安装包上传 数据库安装 Oracle 19C 一键安装 数据库修改参数 EMCC 安装准备 emcc 依赖包安装 配置 net.ipv4.ip\local\por</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139775686/" title="RedHat 6.10 一键安装 Oracle 11GR2 单机 ASM"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-18</div><div class="info-item-2">RedHat 6.10 一键安装 Oracle 11GR2 单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 RedHat 6.10 一键安装 Oracle 11GR2 单机 ASM 过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E8%A7%84%E5%88%92"><span class="toc-number">3.</span> <span class="toc-text">整体规划</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%A7%84%E5%88%92"><span class="toc-number">3.1.</span> <span class="toc-text">系统规划</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E8%A7%84%E5%88%92"><span class="toc-number">3.2.</span> <span class="toc-text">网络规划</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E8%A7%84%E5%88%92"><span class="toc-number">3.3.</span> <span class="toc-text">存储规划</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E8%A7%84%E5%88%92"><span class="toc-number">3.4.</span> <span class="toc-text">内存规划</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E4%BF%A1%E6%81%AF"><span class="toc-number">3.5.</span> <span class="toc-text">环境信息</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85"><span class="toc-number">4.</span> <span class="toc-text">系统安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE%EF%BC%88rac01-rac02%EF%BC%89"><span class="toc-number">4.1.</span> <span class="toc-text">网络配置（rac01&amp;rac02）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0%E8%BD%AF%E4%BB%B6%E6%BA%90%EF%BC%88rac01-rac02%EF%BC%89"><span class="toc-number">4.2.</span> <span class="toc-text">配置本地软件源（rac01&amp;rac02）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#hosts%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE%EF%BC%88rac01-rac02%EF%BC%89"><span class="toc-number">4.3.</span> <span class="toc-text">hosts文件配置（rac01&amp;rac02）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B2%E7%81%AB%E5%A2%99%E9%85%8D%E7%BD%AE%EF%BC%88rac01-rac02%EF%BC%89"><span class="toc-number">4.4.</span> <span class="toc-text">防火墙配置（rac01&amp;rac02）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#selinux-%E9%85%8D%E7%BD%AE%EF%BC%88rac01-rac02%EF%BC%89"><span class="toc-number">4.5.</span> <span class="toc-text">selinux 配置（rac01&amp;rac02）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E5%8F%8A%E7%BB%84%E3%80%81%E7%9B%AE%E5%BD%95%E5%88%9B%E5%BB%BA%EF%BC%88rac01-rac02%EF%BC%89"><span class="toc-number">4.6.</span> <span class="toc-text">用户及组、目录创建（rac01&amp;rac02）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%82%E8%BD%BD%E5%85%B1%E4%BA%AB%E7%9B%98"><span class="toc-number">4.7.</span> <span class="toc-text">挂载共享盘</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E9%85%8D%E7%BD%AE%EF%BC%88rac01-rac02%EF%BC%89"><span class="toc-number">4.8.</span> <span class="toc-text">时间同步配置（rac01&amp;rac02）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E9%80%8F%E6%98%8E%E5%A4%A7%E9%A1%B5%E5%92%8C-NUMA%EF%BC%88rac01-rac02%EF%BC%89"><span class="toc-number">4.9.</span> <span class="toc-text">关闭透明大页和 NUMA（rac01&amp;rac02）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#avahi-daemon-%E9%85%8D%E7%BD%AE%EF%BC%88rac01-rac02%EF%BC%89"><span class="toc-number">4.10.</span> <span class="toc-text">avahi-daemon 配置（rac01&amp;rac02）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%EF%BC%88rac01-rac02%EF%BC%89"><span class="toc-number">4.11.</span> <span class="toc-text">系统参数配置（rac01&amp;rac02）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E9%99%90%E5%88%B6%E9%85%8D%E7%BD%AE%EF%BC%88rac01-rac02%EF%BC%89"><span class="toc-number">4.12.</span> <span class="toc-text">系统资源限制配置（rac01&amp;rac02）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE-dev-shm"><span class="toc-number">4.13.</span> <span class="toc-text">配置 &#x2F;dev&#x2F;shm</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E9%85%8D%E7%BD%AE%EF%BC%88rac01-rac02%EF%BC%89"><span class="toc-number">4.14.</span> <span class="toc-text">环境变量配置（rac01&amp;rac02）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%BB%8B%E8%B4%A8%E4%B8%8A%E4%BC%A0%E8%A7%A3%E5%8E%8B%EF%BC%88rac01%EF%BC%89"><span class="toc-number">4.15.</span> <span class="toc-text">安装介质上传解压（rac01）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-Grid-%E8%BD%AF%E4%BB%B6%EF%BC%88rac01%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">安装 Grid 软件（rac01）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-GRID-%E8%BD%AF%E4%BB%B6"><span class="toc-number">5.1.</span> <span class="toc-text">安装 GRID 软件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5%E9%9B%86%E7%BE%A4%E7%8A%B6%E6%80%81%E5%92%8C%E8%A1%A5%E4%B8%81"><span class="toc-number">5.2.</span> <span class="toc-text">检查集群状态和补丁</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-ASM-%E6%95%B0%E6%8D%AE%E7%9B%98"><span class="toc-number">6.</span> <span class="toc-text">创建 ASM 数据盘</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-Oracle-%E8%BD%AF%E4%BB%B6"><span class="toc-number">7.</span> <span class="toc-text">安装 Oracle 软件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">8.</span> <span class="toc-text">创建数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BC%98%E5%8C%96%E9%85%8D%E7%BD%AE%EF%BC%88rac01%EF%BC%89"><span class="toc-number">9.</span> <span class="toc-text">数据库优化配置（rac01）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E5%BD%92%E6%A1%A3%E5%88%A0%E9%99%A4%E5%AE%9A%E6%9C%9F%E4%BB%BB%E5%8A%A1"><span class="toc-number">9.1.</span> <span class="toc-text">配置归档删除定期任务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E4%BD%8E%E7%89%88%E6%9C%AC%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%BF%9E%E6%8E%A5"><span class="toc-number">9.2.</span> <span class="toc-text">配置低版本客户端连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="toc-number">9.3.</span> <span class="toc-text">配置数据库开机自启</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

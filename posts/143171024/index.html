@@ -1,0 +1,1121 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>GBase 8s GDCA 认证课后练习题大全（题库） | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 单选题 多选题 判断题 写在最后 前言 近期，南大通用 GBase 8s 数据库新一期的 GDCA 认证开启火热报名：培训预告 2024十月GBase 8s认证培训班开始报名啦~，到今天为止，培训课程已经学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GBase 8s GDCA 认证课后练习题大全（题库）">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/143171024/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 单选题 多选题 判断题 写在最后 前言 近期，南大通用 GBase 8s 数据库新一期的 GDCA 认证开启火热报名：培训预告 2024十月GBase 8s认证培训班开始报名啦~，到今天为止，培训课程已经学习">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg">
+<meta property="article:published_time" content="2024-10-22T15:11:17.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.450Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="GBase 8s">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"GBase 8s GDCA 认证课后练习题大全（题库）","url":"https://pc-study.github.io/csdn-blog/posts/143171024/","image":"https://pc-study.github.io/csdn-blog/img/covers/database.svg","datePublished":"2024-10-22T15:11:17.000Z","dateModified":"2026-03-20T08:34:08.450Z","description":"大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 单选题 多选题 判断题 写在最后 前言 近期，南大通用 GBase 8s 数据库新一期的 GDCA 认证开启火热报名：培训预告 2024十月GBase 8s认证培训班开始报名啦~，到今天为止，培训课程已经学习","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/143171024/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/143171024/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'GBase 8s GDCA 认证课后练习题大全（题库）',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/database.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">GBase 8s GDCA 认证课后练习题大全（题库）</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">GBase 8s GDCA 认证课后练习题大全（题库）<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-10-22-143171024.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-10-22T15:11:17.000Z" title="发表于 2024-10-22 23:11:17">2024-10-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.450Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">8.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>31分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，分享一些学习国产数据库路上的知识和经验。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#_9">单选题</a></li>
+<li><a href="#_517">多选题</a></li>
+<li><a href="#_940">判断题</a></li>
+<li><a href="#_998">写在最后</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>近期，南大通用 GBase 8s 数据库新一期的 GDCA 认证开启火热报名：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/uKv167z9vreni-9FMmQVwQ">培训预告 | 2024十月GBase 8s认证培训班开始报名啦~</a>，到今天为止，培训课程已经学习完成，我总结了每节课的课后练习题，一共 98 题，分享出来供大家一起查阅。</p>
+<p>当然，配合 GBase 8s 数据库实操练习，效果更佳，GBase 8s 安装部署可以参考：<a target="_blank" rel="noopener" href="https://www.modb.pro/db/1844208953896562688">南大通用 GBASE 8s V8.8 最全安装指南（一网打尽）</a>！</p>
+<h2 id="单选题"><a href="#单选题" class="headerlink" title="单选题"></a>单选题</h2><p><strong>1、GBase 8s的数据库架构是？</strong></p>
+<ul>
+<li>A 单进程、单线程架构</li>
+<li>B 多进程、单线程架构</li>
+<li>C 单进程、多线程架构</li>
+<li>D 多进程、多线程架构</li>
+</ul>
+<p><strong>正确答案:</strong> D</p>
+<p><strong>解析:</strong> GBase 8s 的数据库是基于虚拟处理器的多进程&#x2F;多线程架构。不依赖于操作系统的线程库，更高效的资源利用，高并发场景下更稳定的性能表现。</p>
+<p><strong>2、GBase 8s的停止数据库实例的命令是哪个？</strong></p>
+<ul>
+<li>A shutdown</li>
+<li>B kill</li>
+<li>C onmode</li>
+<li>D oninit</li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析:</strong> GBase 8s 的命令多以 <code>on</code> 开头，启动命令为 <code>oninit</code>，停止命令为 <code>onmode</code>。</p>
+<p><strong>3、查看实例的当前运行模式的命令是哪个？</strong></p>
+<ul>
+<li>A onstat</li>
+<li>B dbstat</li>
+<li>C showmode</li>
+<li>D showstat</li>
+</ul>
+<p><strong>正确答案:</strong> A</p>
+<p><strong>解析:</strong> GBase 8s 的命令多以 <code>on</code> 开头，使用 <code>onstat</code> 命令可以查看数据库当前的运行模式。</p>
+<p><strong>4、GBase 8s 的客户端工具是什么？</strong></p>
+<ul>
+<li>A gbase</li>
+<li>B gbasesql</li>
+<li>C dbaccess</li>
+<li>D dbsql</li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析:</strong> GBase 8s 的客户端工具为 dbaccess。</p>
+<p><strong>5、GBase 8s 的安装命令是什么？</strong></p>
+<ul>
+<li>A setup</li>
+<li>B install</li>
+<li>C ids_setup</li>
+<li>D ids_install</li>
+</ul>
+<p><strong>正确答案:</strong> D</p>
+<p><strong>解析:</strong> GBase 8s 的安装命令是 <code>ids_install</code>。</p>
+<p><strong>6、GBase 8s 的主进程名称有哪些？</strong></p>
+<ul>
+<li>A dbaccess</li>
+<li>B oninit</li>
+<li>C gbased</li>
+<li>D gbasedb</li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析:</strong> 目前版本的 GBase 8s 主进程为 <code>oninit</code>。在 GBase 8s 中，主要的可执行程序多以 <code>on</code> 开头命名。</p>
+<p><strong>7、GBase 8s 超级管理员是什么？</strong></p>
+<ul>
+<li>A gbase8s</li>
+<li>B gbase</li>
+<li>C gbasedbt</li>
+<li>D gbaseadmin</li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析:</strong> 在安装过程中，需要创建一个 <code>gbasedbt</code> 用户，这个用户会作为 GBase 8s 的超级管理员。</p>
+<p><strong>8、GBase 8s 的客户端工具是哪个？</strong></p>
+<ul>
+<li>A sqlplus</li>
+<li>B DIsql</li>
+<li>C dbaccess</li>
+<li>D isql</li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析:</strong> sqlplus 是 Oracle 的客户端工具，isql 是金仓数据库的客户端工具，disql 是达梦数据库的客户端工具，dbaccess 是 GBase 8s 的客户端工具。</p>
+<p><strong>9、如何严格控制在 dbaccess 中执行 SQL 时查询结果中小数点的位数？</strong></p>
+<ul>
+<li>A 不需要控制，dbaccess 自动根据录入时的小数点后数字，并自动进行显示。</li>
+<li>B 通过设置启动 dbaccess 时的环境变量 DBFLTMASK 为一个整数，对小数点进行精确控制。</li>
+<li>C 通过设置启动 dbaccess 时的环境变量 DBDIGITNUM 为一个整数，对小数点进行精确控制。</li>
+<li>D 以上答案都不对。</li>
+</ul>
+<p><strong>正确答案:</strong> D</p>
+<p><strong>解析:</strong> 默认情况下，dbaccess 会尽可能的显示浮点数的小数位数。通过设置环境变量 DBFLTMASK，控制 dbaccess 在输出小数信息时，尽量只显示指定位数的小数。当需要显示的数据超过 dbaccess 的最大显示宽度时，会优先保障整数部分的数字，再尽可能的控制小数部分的输出。</p>
+<p><strong>10、如何在 dbaccess 中查看 SQL 的执行时间？</strong></p>
+<ul>
+<li>A dbaccess 在执行 SQL 后，默认会自动显示出该查询的执行时间，在查询结果后直接查看即可。</li>
+<li>B dbaccess 不支持显示 SQL 的执行时间。</li>
+<li>C dbaccess 默认不支持显示 SQL 的执行时间，但可通过设置环境变量 GL_SHOWTIME 来支持。</li>
+<li>D dbaccess 默认不支持显示 SQL 的执行时间，但可通过设置环境变量 DBACCESS_SHOW_TIME 来支持。</li>
+</ul>
+<p><strong>正确答案:</strong> D</p>
+<p><strong>解析:</strong> 早期的 dbaccess 不支持显示 SQL 的执行时间，目前的版本支持设置环境变量 <code>DBACCESS_SHOW_TIME=1</code> 来显示 SQL 的执行时间。</p>
+<p><strong>11、<code>select len(&#39;ABC&#39;) from dual;</code> 执行结果为()</strong></p>
+<ul>
+<li>A 6</li>
+<li>B 5</li>
+<li>C 4</li>
+<li>D 3</li>
+</ul>
+<p><strong>正确答案:</strong> D</p>
+<p><strong>解析:</strong> len 函数计算字节长度不包含字符串尾部空格，字符串中间的空格会计算。</p>
+<p><strong>12、<code>select Replace(content,&#39;reading&#39;,&#39;writing&#39;) from (select &#39;I like reading&#39; as content from dual) t;</code> 执行结果为()</strong></p>
+<ul>
+<li>A I like reading</li>
+<li>B I like writing</li>
+<li>C writing</li>
+<li>D reading</li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析:</strong> replace 语法 <code>replace(被操作字符串, 被替换子字串, 替换为的子字串)</code>。</p>
+<p><strong>13、删除字符串两边的”*“号，正确的语句是()</strong></p>
+<ul>
+<li>A <code>select Trim(&#39;*Hello world**&#39;,&#39;*&#39;) from dual;</code></li>
+<li>B <code>select Trim(both&#39;*&#39; from&#39;*Hello world**&#39;) from dual;</code></li>
+<li>C <code>select LTrim(both&#39;*&#39; from&#39;*Hello world**&#39;) from dual;</code></li>
+<li>D <code>select RTrim(both&#39;*&#39; from&#39;*Hello world**&#39;) from dual;</code></li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析:</strong> 删除字符串两边字符的语法 <code>trim(both &#39;char&#39; from column_name)</code>。</p>
+<p><strong>14、数据库字符集 utf8, <code>select len(&#39;汉字&#39;) from dual;</code> 执行结果为()</strong></p>
+<ul>
+<li>A 2</li>
+<li>B 4</li>
+<li>C 6</li>
+<li>D 8</li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析:</strong> len(length) 返回字节数，对于 utf8 字符集，每个字符占用 3 个字节。</p>
+<p><strong>15、<code>select round(-5.5) from dual;</code> 执行结果()</strong></p>
+<ul>
+<li>A -6</li>
+<li>B -6.0</li>
+<li>B -5</li>
+<li>B -5.5</li>
+</ul>
+<p><strong>正确答案:</strong> A</p>
+<p><strong>解析:</strong> round 函数返回参数四舍五入后的整数，默认不保留小数点后位数。</p>
+<p><strong>16、<code>select char_length(&#39;汉字&#39;) from dual;</code> 执行结果为()</strong></p>
+<ul>
+<li>A 2</li>
+<li>B 3</li>
+<li>C 4</li>
+<li>D 8</li>
+</ul>
+<p><strong>正确答案:</strong> A</p>
+<p><strong>解析:</strong> <code>char_length</code> 函数返回字符串中的字符数。</p>
+<p><strong>17、<code>DBINFO(&#39;version&#39;,&#39;full&#39;)</code> 函数可以得到()</strong></p>
+<ul>
+<li>A 操作系统版本</li>
+<li>B JDK版本</li>
+<li>C GBase Server Version 12.10.FC4G1TL</li>
+<li>D Python版本</li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析:</strong> <code>DBINFO(&#39;version&#39;,&#39;full&#39;)</code> 函数输出 GBase8s 数据库详细版本信息。</p>
+<p><strong>18、<code>select substr(&#39;abcdefg&#39;, 2, 3) as f_substr from dual;</code> 执行结果()</strong></p>
+<ul>
+<li>A cde</li>
+<li>B c</li>
+<li>C d</li>
+<li>D bcd</li>
+</ul>
+<p><strong>正确答案:</strong> D</p>
+<p><strong>解析:</strong> 语法 <code>substr(字符串, start, len)</code>，第一个字符的索引是 1。</p>
+<p><strong>19、<code>select floor(-5.2) as num2 from dual;</code> 返回结果为()</strong></p>
+<ul>
+<li>A -5</li>
+<li>B -5.0</li>
+<li>C -6</li>
+<li>D -6.0</li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析:</strong> 地板取整，返回小于参数的整数。</p>
+<p><strong>20、<code>select ceil(-5.5) as num2 from dual;</code> 返回结果为()</strong></p>
+<ul>
+<li>A -6</li>
+<li>B -5</li>
+<li>C -5.0</li>
+<li>D -6.0</li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析:</strong> 天花板取整，返回大于参数的整数。</p>
+<p><strong>21、<code>select regexp_replace(f_content,&#39;\d{11}&#39;,&#39;13002231730&#39;) from (select &#39;我的电话号码是13920656789&#39; as f_content from dual) t;</code> 执行结果为()</strong></p>
+<ul>
+<li>A 我的电话号码是13920656789</li>
+<li>B 我的电话号码是13002231730</li>
+<li>C 我的电话号码是</li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析:</strong> 正则替换函数语法 <code>regexp_replace(被操作字符串, 要匹配的正则表达式, 替换为的子串)</code>。</p>
+<p><strong>22、GBase8s SPL变量赋值使用()关键字</strong></p>
+<ul>
+<li>A var</li>
+<li>B let</li>
+<li>C declare</li>
+<li>D 变量前不用任何关键字</li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> 例如 <code>let iScore=100</code>。</p>
+<p><strong>23、GBase8s SPL 异常捕获语句 <code>ON EXCEPTION IN(-206,-217)</code></strong></p>
+<ul>
+<li>A 存储过程内任何语句发生的错误代码</li>
+<li>B 异常捕获代码块中的语句发生的错误代码</li>
+<li>C 自定义函数内任何语句发生的错误代码</li>
+<li>D RAISE EXCEPTION抛出的错误代码</li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> 异常捕获基本语法 <code>ON EXCEPTION[IN(ErrorCode1,ErrorCode2,...)] SET sql_err_num[,isam_err_num]... END EXCEPTION[WITH RESUME]</code>。</p>
+<p><strong>24、GBase 8s 数据库中哪个命令导出的数据，不是文本数据?</strong></p>
+<ul>
+<li>A unload</li>
+<li>B onexport</li>
+<li>C onunload</li>
+<li>D dbexport</li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析：</strong> onunload 导出的数据是二进制格式，可以通过 onload 导入到 GBase 8s 中。</p>
+<p><strong>25、关于 unload 命令的描述，以下哪项是正确的？</strong></p>
+<ul>
+<li>A unload 可以导出查询中的数据到外部文本文件。当数据中包含换行符时，会将换行符转义为 <code>\n</code></li>
+<li>B unload 可以导出查询中的数据到外部文本文件。当数据中包含换行符时，会将数据导出成多行，这样的数据无法再次导入，因此在导出数据前需要替换数据中的换行符。</li>
+<li>C unload 可以导出查询中的数据到外部文本文件。当数据中包含换行符时，会将数据导出成多行，在因数据内换行符而产生换行的行尾,自动加上一个 <code>\</code>，表示这一行没有结束。</li>
+<li>D unload 可以导出查询中的数据到外部文本文件。当数据中包含换行符时，会自动删除数据中的换行符，无需用户处理。</li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析：</strong> GBase 8s 在使用 unload 命令导出数据时，会自动在数据中因包含换行符而导致的行尾追加一个 <code>\</code>，表示这一行还没有结束，下一行还是这行数据的继续。load 工具可以识别这样的数据，并将数据再次加载到数据库中。当原始数据中有 <code>\</code> 时，会对 <code>\</code> 进行转义，以区别 <code>\</code> 的含义。</p>
+<p><strong>26、GBase 8s 数据库中哪个命令导出的数据，不是文本数据?</strong></p>
+<ul>
+<li>A <code>select * from tab_name into out_file</code></li>
+<li>B <code>onunload</code></li>
+<li>C <code>dbexport</code></li>
+<li>D <code>unload</code></li>
+</ul>
+<p><strong>正确答案:</strong> D</p>
+<p><strong>解析：</strong> unload 是一个 SQL 命令，可以导出一个表或查询的数据，<code>select * from tab_name into out_file</code> 不是 GBase 8s 支持的导出数据到文件的语法，onunload 和 dbexport 是命令行工具，不是 SQL 方式。</p>
+<p><strong>27、unload 默认的列分隔符是什么？</strong></p>
+<ul>
+<li>A 空格</li>
+<li>B \t</li>
+<li>C ,</li>
+<li>D |</li>
+</ul>
+<p><strong>正确答案:</strong> D</p>
+<p><strong>解析：</strong> GBase 8s 默认的分隔符中管道符 <code>|</code>。</p>
+<p><strong>28、GBase 8s 中如何查看有哪些数据库？</strong></p>
+<ul>
+<li>A 使用 <code>show databases</code> 命令</li>
+<li>B 连接系统数据库，执行 <code>select * from db;</code></li>
+<li>C 连接系统数据库，执行 <code>select * from databases;</code></li>
+<li>D 连接系统数据库，执行 <code>select * from sysdatabases;</code></li>
+</ul>
+<p><strong>正确答案:</strong> D</p>
+<p><strong>解析：</strong> GBase 8s 的数据库信息保存在系统数据库 systemaster 的 sysdatabases 表中，可以使用 select 语句进行查询。show databases 可以查询 mysql 中的数据库信息。</p>
+<p><strong>29、如何查看表 mytab 有哪些索引？</strong></p>
+<ul>
+<li>A <code>show indexes;</code></li>
+<li>B <code>show indexes for mytab;</code></li>
+<li>C <code>select \* from sysindexes where tabname=&#39;mytab&#39;;</code></li>
+<li>D <code>select \* from sysindexes where tabid in(select tabid from systables where tabname=&#39;mytab&#39;);</code></li>
+</ul>
+<p><strong>正确答案:</strong> D</p>
+<p><strong>解析：</strong> 表的索引信息保存在 sysindexes 表中，需要使用 tabid 进行检索。</p>
+<p><strong>30、如何查看 mydb 数据库中有哪些视图？</strong></p>
+<ul>
+<li>A 在 mydb 数据库中执行 <code>show views;</code></li>
+<li>B 在 mydb 数据库中执行 <code>info views;</code></li>
+<li>C 在 systemaster 数据库中执行 <code>select * from sysviews where dbname=&#39;mydb&#39;;</code></li>
+<li>D 在 mydb 数据库中执行 <code>select * from systables where tabid&gt;= 100 and tabtype=&#39;V&#39;;</code></li>
+</ul>
+<p><strong>正确答案:</strong> D</p>
+<p><strong>解析：</strong> GBase 8s 中的表和视图都保存在当前数据库的 systables 表中，以 tabtype 进行区分。</p>
+<p><strong>31、GBase 8s 由在线模式切换为离线模式的命令是哪个？</strong></p>
+<ul>
+<li>A oninit -k</li>
+<li>B onmode -k</li>
+<li>C onstat -k</li>
+<li>D shutdown now</li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> GBase 8s 可使用 onmode -k 命令，将数据库由在线模式，单用户模式或静态模式，切换为离线模式。</p>
+<p><strong>32、如何将 GBase 8s 从离线模式切换为静态模式？</strong></p>
+<ul>
+<li>A oninit</li>
+<li>B oninit -s</li>
+<li>C oninit -u</li>
+<li>D oninit -j</li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> oninit 是从离线模式切换为在线模式，oninit -j 是离线模式切换为单用户模式，oninit -s 是从离线切换为静态模式，oninit 没有 -u 参数。</p>
+<p><strong>33、<code>create table employee(id serial, name varchar(50))</code>, id 列已有数值 1,2,5 则再执行 <code>insert into employee(id,name)values(5,&#39;gbase&#39;)</code>。</strong></p>
+<ul>
+<li>A 系统提示重复序号</li>
+<li>B 数据 <code>(3,&#39;gbase&#39;)</code> 成功插入</li>
+<li>C 数据 <code>(6,&#39;gbase&#39;)</code> 成功插入</li>
+<li>D 数据 <code>(5,&#39;gbase&#39;)</code> 成功插入</li>
+</ul>
+<p><strong>正确答案:</strong> D</p>
+<p><strong>解析：</strong> 可以插入 serial 列存在的数值。</p>
+<p><strong>34、<code>create table employee(id serial, name varchar(50))</code>，id 列已有数值 1,2,5 则再执行 <code>insert into employee(id,name) values(3,&#39;gbase&#39;)</code>。则()</strong></p>
+<ul>
+<li>A 语法错误</li>
+<li>B 数据 <code>(3,&#39;gbase&#39;)</code> 成功插入</li>
+<li>C 数据 <code>(6,&#39;gbase&#39;)</code> 成功插入</li>
+<li>D 覆盖最大序号的数据</li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> 在提供 Serial 字段数值情况下，新插入记录的 Serial 字段使用提供的数值，不再自动生成新值。</p>
+<p><strong>35、<code>create table employee(id serial, name varchar(50))</code>，id 列已有数值 1, 2, 5 则再执行 <code>insert into employee(name) values(&#39;gbase&#39;)</code>。id 值为()</strong></p>
+<ul>
+<li>A 3</li>
+<li>B 4</li>
+<li>C 6</li>
+<li>D 报错</li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析：</strong> serial 是自增类型，数值自增是最大数累加 1。</p>
+<p><strong>36、<code>create database &#39;CourseWare&#39;</code> 产生的数据库名称()</strong></p>
+<ul>
+<li>A 不敏感</li>
+<li>B 敏感</li>
+<li>C 需要明确使用 nlscasesensitive 或 nlscase insensitive 参数</li>
+</ul>
+<p><strong>正确答案:</strong> A</p>
+<p><strong>解析：</strong> <code>create database &lt;db_name&gt;</code> 产生的数据库名称不敏感。</p>
+<p><strong>37、正确的创建视图 SQL 语句是()</strong></p>
+<ul>
+<li>A <code>create view vTest as select * from student;</code></li>
+<li>B <code>create view vTest select * from student;</code></li>
+<li>C <code>create view vTest (select * from student);</code></li>
+<li>D <code>create table vTest as (select * from student);</code></li>
+</ul>
+<p><strong>正确答案:</strong> A</p>
+<p><strong>解析：</strong> 创建视图的语法 <code>create view[if not exists] &lt;view_name&gt; as &lt;query_define&gt;;</code>。</p>
+<p><strong>38、如何查看 GBase 8s 数据库用户线程?</strong></p>
+<ul>
+<li>A <code>show threads;</code></li>
+<li>B <code>onstat -t</code></li>
+<li>C <code>onstat -u</code></li>
+<li>D <code>onstat -s</code></li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析：</strong> <code>onstat -u</code> 可以打印用户线程信息。<code>onstat -x</code> 打印事务信息。</p>
+<p><strong>39、如何查看 GBase 8s 数据库 Chunk 文件使用信息?</strong></p>
+<ul>
+<li>A <code>onstat -c</code></li>
+<li>B <code>onstat -C</code></li>
+<li>C <code>onstat -d</code></li>
+<li>D <code>onstat --chunk</code></li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析：</strong> <code>onstat -d</code> 可以查看数据库空间和 Chunk 文件使用信息。</p>
+<p><strong>40、如何查看 GBase 8s 数据库当前运行模式?</strong></p>
+<ul>
+<li>A <code>show status</code></li>
+<li>B <code>oninit --status</code></li>
+<li>C <code>onstat -</code></li>
+<li>D <code>onmode -s</code></li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析：</strong> <code>onstat -</code> 可以查看当前的数据库运行模式。</p>
+<p><strong>41、GBase 8s 中如何强制执行一次检查点?</strong></p>
+<ul>
+<li>A <code>oninit -c</code></li>
+<li>B <code>onstat -c</code></li>
+<li>C <code>onmode -c</code></li>
+<li>D <code>chkpt force。</code></li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析：</strong> <code>onmode -c</code> 可以强制执行一次检查点操作。</p>
+<p><strong>42、如何查看 GBase 8s 数据库系统当前运行状态统计?</strong></p>
+<ul>
+<li>A <code>onstat -s</code></li>
+<li>B <code>onstat -p</code></li>
+<li>C <code>onstat -r</code></li>
+<li>D <code>show status</code></li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> <code>onstat -p</code> 显示数据库运行时的一些重要统计信息。</p>
+<p><strong>43、如何查看 GBase 8s 数据库逻辑日志使用状态?</strong></p>
+<ul>
+<li>A <code>onmode -I</code></li>
+<li>B <code>onmode -L</code></li>
+<li>C <code>onstat -l</code></li>
+<li>D <code>onstat -L</code></li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析：</strong> <code>onstat -l</code> 可以查看数据库物理日志和逻辑日志使用状态。</p>
+<p><strong>44、如何查看 GBase 8s 数据库共享内存段的统计信息?</strong></p>
+<ul>
+<li>A <code>onstat -s</code></li>
+<li>B <code>onstat -g seg</code></li>
+<li>C <code>onstat -g shm</code></li>
+<li>D <code>onstat -m</code></li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> <code>onstat -g seg</code> 打印共享内存段的统计信息。</p>
+<p><strong>45、如何查看 GBase 8s 数据库与 SQL 有关的会话信息?</strong></p>
+<ul>
+<li>A <code>onstat -g seq</code></li>
+<li>B <code>onstat -g sql</code></li>
+<li>C <code>onstat -g seg</code></li>
+<li>D <code>onstat -s</code></li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> <code>onstat -g sql</code> 打印与 SQL 有关的会话信息。</p>
+<p><strong>46、GBase 8s 中如何切换逻辑日志?</strong></p>
+<ul>
+<li>A <code>oninit -l</code></li>
+<li>B <code>onmode -l</code></li>
+<li>C <code>onstat -l</code></li>
+<li>D <code>switch log</code></li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> <code>onmode -l</code> 可以将逻辑日志切换到下一个。</p>
+<p><strong>47、如何终止数据库服务器连接会话 12315?</strong></p>
+<ul>
+<li>A <code>kill 12315</code></li>
+<li>B <code>kill -9 12315</code></li>
+<li>C <code>onmode -z 12315</code></li>
+<li>D <code>onmode -k 12315</code></li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析：</strong> <code>kill</code> 是终止操作系统进程的命令，<code>onmode -z</code> 可以终止一个 GBase 8s 的 Session。</p>
+<p><strong>48、如何查看 GBase 8s 数据库服务器信息?</strong></p>
+<ul>
+<li>A <code>show serverinfo</code></li>
+<li>B <code>onstat -g dis</code></li>
+<li>C <code>onstat -s</code></li>
+<li>D <code>onstat -i</code></li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> <code>onstat -g dis</code> 打印数据库服务器信息。</p>
+<p><strong>49、如何查看 GBase 8s 数据库归档状态?</strong></p>
+<ul>
+<li>A <code>onstat -c</code></li>
+<li>B <code>onstat -g arc</code></li>
+<li>C <code>archive list</code></li>
+<li>D <code>show archive</code></li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> <code>onstat -g arc</code> 打印归档状态。</p>
+<p><strong>50、GBase 8s 中如何添加 5 个 CPU 虚拟处理器?</strong></p>
+<ul>
+<li>A <code>oninit -p +5 cpu</code></li>
+<li>B <code>onmode -p +5 cpu</code></li>
+<li>C <code>onstat -p +5 cpu</code></li>
+<li>D <code>oninit add 5 cpu</code></li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> GBase 8s 中使用 <code>onmode -p</code> 可以增加和减少虚拟处理器，命令格式为 <code>onmode -p &lt;+|-&gt;num &lt;vp_class&gt;</code>。</p>
+<h2 id="多选题"><a href="#多选题" class="headerlink" title="多选题"></a>多选题</h2><p><strong>1、GBase 8s共享内存由以下哪些部分组成？</strong></p>
+<ul>
+<li>A 常驻段</li>
+<li>B 虚拟段</li>
+<li>C 消息段</li>
+<li>D SGA段</li>
+</ul>
+<p><strong>正确答案:</strong> ABC</p>
+<p><strong>解析:</strong> 共享内存包括4个部分：常驻内存段、缓冲池段、虚拟内存段、消息段，没有SGA段。</p>
+<p><strong>2、在国内被称为国产数据库四朵金花的厂商有几个？</strong></p>
+<ul>
+<li>A 达梦</li>
+<li>B 金仓</li>
+<li>C 南大通用</li>
+<li>D 华为</li>
+</ul>
+<p><strong>正确答案:</strong> ABC</p>
+<p><strong>解析:</strong> 国内最早做数据库的厂家有武汉达梦，人大金仓，南大通用和神舟通用，被称为国内数据库的四朵金花。华为的高斯数据库也非常不错，但相比前面四家，时间上相对晚一些。</p>
+<p><strong>3、使用脚本 <code>GBaselnit_gbasedbt.sh</code> 初始化实例时，哪些 <code>dbspace</code> 可以创建多个？</strong></p>
+<ul>
+<li>A plogdbs</li>
+<li>B llogdbs</li>
+<li>C datadbs</li>
+<li>D tempdbs</li>
+</ul>
+<p><strong>正确答案:</strong> CD</p>
+<p><strong>解析:</strong> 在 GBase 8s 中，物理日志和逻辑日志通常只使用一个数据库空间。虽然逻辑日志要求使用多个，但这些逻辑日志会保存到一个逻辑日志空间中。对于保存临时数据的数据库空间和保存业务数据的数据库空间，通常需要多个。</p>
+<p><strong>4、GBase 8s 的客户端工具 dbaccess 有哪些工作模式？</strong></p>
+<ul>
+<li>A 静态模式</li>
+<li>B 菜单交互模式</li>
+<li>C 管道模式</li>
+<li>D 指令交互模式</li>
+</ul>
+<p><strong>正确答案:</strong> BCD</p>
+<p><strong>解析:</strong> dbaccess 可以运行在菜单交互模式下，通过菜单选择相应的命令并执行。它也可以使用类似 MySQL 等客户端的指令交互模式，用户输入命令后，回车执行并等待命令的执行结果。用户也可以通过 <code>echo</code> 等操作系统命令将要执行的语句输出到标准输出设备，通过管理作为 dbaccess 的输入，来执行 SQL。静态模式不是 dbaccess 的模式，是数据库的运行模式。</p>
+<p><strong>5、如何进入 dbaccess 的指令交互模式？</strong></p>
+<ul>
+<li>A dbaccess</li>
+<li>B dbaccess db_name</li>
+<li>C dbaccess -</li>
+<li>D dbaccess db_name -</li>
+</ul>
+<p><strong>正确答案:</strong> CD</p>
+<p><strong>解析:</strong> 要进入 dbaccess 的指令交互模式，通常需要为 dbaccess 提供两个参数，且第二个参数为 <code>-</code>，表示输入为 STDIN。</p>
+<p><strong>6、GBase 8s 的运行模式有哪些？</strong></p>
+<ul>
+<li>A 在线模式</li>
+<li>B 离线模式</li>
+<li>C 静态模式</li>
+<li>D 单用户模式</li>
+</ul>
+<p><strong>正确答案:</strong> ABCD</p>
+<p><strong>解析：</strong> GBase 8s 有四种运行模式，分别为离线模式，在线模式，单用户模式（又称为管理员模式）和静态模式（有的文档中也称为静默模式）。</p>
+<p><strong>7、获取当前系统日期，可以使用()</strong></p>
+<ul>
+<li>A date(SYSDATE)</li>
+<li>B date(CURRENT)</li>
+<li>C TODAY</li>
+<li>D date(NOW)</li>
+</ul>
+<p><strong>正确答案:</strong> ABC</p>
+<p><strong>解析:</strong> SYSDATE、CURRENT、TODAY 三个函数类似。</p>
+<p><strong>8、GBase8s 标量函数包括()</strong></p>
+<ul>
+<li>A 数学函数</li>
+<li>B 字符串函数</li>
+<li>C 日期时间函数</li>
+<li>D 聚合函数</li>
+</ul>
+<p><strong>正确答案:</strong> ABC</p>
+<p><strong>解析:</strong> 标量函数输入若干参数返回一个确定类型的标量值，包括数学函数、字符串函数、日期时间函数等。</p>
+<p><strong>9、以下格式化日期时间语句正确的是()</strong></p>
+<ul>
+<li>A <code>select to_char(sysdate,&#39;YYYY/MM/DD hh24:mi:ss&#39;) from dual;</code></li>
+<li>B <code>select to_char(sysdate,&#39;yyyy/mm/dd hh24:mi:ss&#39;) from dual;</code></li>
+<li>C <code>select to_char(sysdate,&#39;yyyy/mm/dd hh12:mi:ss&#39;) from dual;</code></li>
+<li>D <code>select to_char(sysdate,&#39;yy/mm/dd hh24:mi:ss&#39;) from dual;</code></li>
+</ul>
+<p><strong>正确答案:</strong> ABCD</p>
+<p><strong>解析:</strong> 在 SQL 中，<code>to_char</code> 函数用于将日期时间格式化为字符串。选项 A、B、C 和 D 中的格式化字符串都是正确的，它们分别表示不同的日期时间格式。其中：</p>
+<ul>
+<li><code>YYYY</code> 表示四位数的年份。</li>
+<li><code>MM</code> 表示月份。</li>
+<li><code>DD</code> 表示天。</li>
+<li><code>hh24</code> 表示 24 小时制的小时。</li>
+<li><code>mi</code> 表示分钟。</li>
+<li><code>ss</code> 表示秒。</li>
+<li><code>yyyy</code> 是小写的年份格式，与 <code>YYYY</code> 等效。</li>
+<li><code>hh12</code> 表示 12 小时制的小时。</li>
+<li><code>yy</code> 表示两位数的年份。</li>
+</ul>
+<p>因此，所有选项都能正确格式化日期时间。</p>
+<p><strong>10、常用的聚合函数有()</strong></p>
+<ul>
+<li>A COUNT</li>
+<li>B SUM</li>
+<li>C MAX&#x2F;MIN</li>
+<li>D WM_CONCAT</li>
+</ul>
+<p><strong>正确答案:</strong> ABCD</p>
+<p><strong>解析:</strong> WM_CONCAT 是特殊的聚合函数，可以实现某列的字串拼接。</p>
+<p><strong>11、GBase8s SPL中变量赋值正确的是()。</strong></p>
+<ul>
+<li>A let dbName&#x3D;‘8s’;</li>
+<li>B let name&#x3D; functionGetName(1);</li>
+<li>C let eID,eName&#x3D;(select id,name from employee where id&#x3D;1); –id是主键</li>
+<li>D let db1,db2&#x3D;‘8a’,‘8s’;</li>
+</ul>
+<p><strong>正确答案:</strong> ABCD</p>
+<p><strong>解析:</strong> GBase8s SPL 变量赋值有四种形式：单变量赋值、多变量系列赋值、接收自定义函数返回值、接收字段。</p>
+<p><strong>12、GBase8s SPL例程根据是否需要返回值,分为()</strong></p>
+<ul>
+<li>A 存储程序</li>
+<li>B 内置函数</li>
+<li>C 存储过程</li>
+<li>D 自定义函数</li>
+</ul>
+<p><strong>正确答案:</strong> C D</p>
+<p><strong>解析：</strong> GBase8s SPL 例程根据是否需要返回值，分为存储过程和函数。</p>
+<p><strong>13、GBase8s 存储过程和自定义函数由()组成。</strong></p>
+<ul>
+<li>A 开始语句</li>
+<li>B 循环体</li>
+<li>C 语句块</li>
+<li>D 结束语句</li>
+</ul>
+<p><strong>正确答案:</strong> ACD</p>
+<p><strong>解析：</strong> GBase8s SPL（存储过程和自定义函数）由开始语句、语句块、结束语句组成。</p>
+<p><strong>14、GBase8s SPL 容易发生死循环的循环语句是()</strong></p>
+<ul>
+<li>A WHILE</li>
+<li>B LOOP</li>
+<li>C FOR&#x2F;FOREACH</li>
+<li>D GOTO</li>
+</ul>
+<p><strong>正确答案:</strong> AB</p>
+<p><strong>解析：</strong> LOOP…END LOOP、WHILE…END WHILE块中必须有合理的退出循环的条件，否则会出现死循环。</p>
+<p><strong>15、GBase8s SPL退出LOOP循环正确的语句是()。</strong></p>
+<ul>
+<li>A if var &gt; 10 then exit;</li>
+<li>B if var &gt; 10 then break;</li>
+<li>C exit when var &gt; 10;</li>
+<li>D break when var &gt; 10;</li>
+</ul>
+<p><strong>正确答案:</strong> AC</p>
+<p><strong>解析：</strong> GBase8s SPL 退出 LOOP 循环，可以用 if 表达式 then exit 或 exit when 表达式。</p>
+<p><strong>16、GBase8s SPL 循环关键字有()</strong></p>
+<ul>
+<li>A GOTO</li>
+<li>B LOOP</li>
+<li>C FOR</li>
+<li>D FOREACH</li>
+<li>E WHILE</li>
+</ul>
+<p><strong>正确答案:</strong> ABCDE</p>
+<p><strong>解析：</strong> GBase8s SPL循环关键字有 GOTO、LOOP、FOR、FOREACH、WHILE。</p>
+<p><strong>17、数据迁移时需要考虑哪些问题？</strong></p>
+<ul>
+<li>A 数据中包含行分隔符问题。</li>
+<li>B 数据中包含列分隔符问题。</li>
+<li>C 汉字乱码问题。</li>
+<li>D 日期时间格式问题</li>
+</ul>
+<p><strong>正确答案:</strong> ABCD</p>
+<p><strong>解析：</strong> 当数据中包含行分隔符和列分隔符时，导出文本数据可能无法再次加载到数据库中。当文本数据包含汉字时，由于不同的字符集设置，可能导致汉字无法正常显示。不同地区对日期的格式定义不同，需要约定好日期格式。</p>
+<p><strong>18、GBase 8s 进行整库数据迁移时，应使用哪种方式？</strong></p>
+<ul>
+<li>A 使用unload&#x2F;load进行整库数据迁移</li>
+<li>B 使用onload&#x2F;onunload进行整库数据迁移</li>
+<li>C 使用dbexport&#x2F;dbimport进行整库数据迁移</li>
+<li>D 以上方式都可以</li>
+</ul>
+<p><strong>正确答案:</strong> BC</p>
+<p><strong>解析：</strong> unload&#x2F;load 只能进行单表的迁移，onload&#x2F;onunload 可以实现二进制数据的整库数据迁移，dbexport&#x2F;dbimport 可以实现文本数据的整库数据迁移。</p>
+<p><strong>19、下面关于外部表，说法正确的是？</strong></p>
+<ul>
+<li>A 使用外部表，只能从 GBase 8s 中导入数据，不能导出数据到外部表。</li>
+<li>B 外部表是数据迁移时，性能最好的数据迁移方式。</li>
+<li>C 外部表只能实现单表的数据迁移。</li>
+<li>D 外部表只能使用一个外部文件，不能同时使用多个文件。</li>
+</ul>
+<p><strong>正确答案:</strong> B C</p>
+<p><strong>解析：</strong> 外部表创建后，可以从表中查询数据，并插入到其它表中，也可以将其它表中的数据插入外部表。当从其它表中向外部表插入数据时，外部表原来的数据将被清除。外部表方式是数据迁移性能最好的方式，相比其它方式，性能可提升数倍或数十倍。外部表是一个表，所以一次只能进行一个表的数据迁移。创建外部表时，可以同时指定多个格式相同的文件，做为外部表的数据源。</p>
+<p><strong>20、GBase 8s 中使用 ontape 备份时，需要设置哪个参数？</strong></p>
+<ul>
+<li>A BAR_MAX_BACKUP</li>
+<li>B BAR_BSALIB_PATH</li>
+<li>C TAPEDEV</li>
+<li>D LTAPEDEV</li>
+</ul>
+<p><strong>正确答案:</strong> C D</p>
+<p><strong>解析：</strong> 使用 ontape 备份时，需要设置 TAPEDEV 来指定物理备份的保存位置，设置 LTAPEDEV 来指定逻辑日志的保存位置。</p>
+<p><strong>21、GBase 8s 的备份恢复，可以使用哪些工具实现？</strong></p>
+<ul>
+<li>A onbackup</li>
+<li>B ontape</li>
+<li>C onlog</li>
+<li>D onbar</li>
+</ul>
+<p><strong>正确答案:</strong> BD</p>
+<p><strong>解析：</strong> ontape 和 onbar 可以实现 GBase 8s 的备份与恢复。两个工具都可以实现备份的完全恢复，onbar 可以实现基于时间点的不完全恢复。</p>
+<p><strong>22、GBase 8s 中支持哪几个级别的备份与恢复？</strong></p>
+<ul>
+<li>A 0级</li>
+<li>B 1级</li>
+<li>C 2级</li>
+<li>D 3级</li>
+</ul>
+<p><strong>正确答案:</strong> ABC</p>
+<p><strong>解析：</strong> GBase 8s 支持 L0&#x2F;L1&#x2F;L2 共 3 个级别的备份与恢复。L0 是全量备份，L1 和 L2 是增量备份。</p>
+<p><strong>23、如何查看 mydb 数据库中 mytab 表有哪些列？</strong></p>
+<ul>
+<li>A 在mydb数据库中执行 <code>select colname from syscolumns where tabname=&#39;mytab&#39;;</code></li>
+<li>B 在mydb数据库中执行 <code>select colname from syscolumns where tabid in(select tabid from systables where tabname=&#39;mytab&#39;);</code></li>
+<li>C 在systemaster数据库中执行 <code>select colname from syscolumns where dbname=&#39;mydb&#39; and tabname=&#39;mytab&#39;;</code></li>
+<li>D 在mydb数据库中执行 <code>info columns for mytab;</code></li>
+</ul>
+<p><strong>正确答案:</strong> BD</p>
+<p><strong>解析：</strong> 用户数据库的 syscolumns 表中，保存了用户表的列信息，可以通过 <code>select * from syscolumns</code> 查询需要的列信息。<code>info columns for &lt;tab_name&gt;</code> 是一个命令，可以查看表的列信息，其内部实现为查询 syscolumns 的一个 SQL 语句。</p>
+<p><strong>24、关于 GBase 8s 的存储，以下属于物理存储的是()</strong></p>
+<ul>
+<li>A 数据页page</li>
+<li>B 数据块Chunk</li>
+<li>C 表空间Tablespace</li>
+<li>D 数据段Extent</li>
+</ul>
+<p><strong>正确答案:</strong> ABD</p>
+<p><strong>解析：</strong> 表空间 Tablespace 是逻辑存储概念，表空间包含分配到给定表或表分区、已分配给关联索引的所有磁盘空间。</p>
+<p><strong>25、关于 GBase 8s 描述正确的是</strong></p>
+<ul>
+<li>A GBase 8s 是一款事务型数据库，主要应用于一些高并发的业务场景。</li>
+<li>B GBase 8s 是一款获得等保四级安全认证的事务型数据库。</li>
+<li>C GBase 8s 是一款标准的分析型数据库集群，主要用于 OLAP 的数据挖掘场景。</li>
+<li>D GBase 8s 是一款图数据库，主要用于图数据分析。</li>
+</ul>
+<p><strong>正确答案:</strong> AB</p>
+<p><strong>解析：</strong> GBase 8s 是一款事务型数据库，支持严格的 ACID，达到等保四级，是一个标准的安全数据库。虽然 GBase 8s 支持并行处理，可用于一些 OLAP 分析场景，但并不算是一个标准的OLAP数据库集群。GBase 8a 是一个 MPP 集群，用于 OLAP 场景。</p>
+<p><strong>26、如何将 GBase 8s 从在线模式切换为静态模式？</strong></p>
+<ul>
+<li>A onmode -j</li>
+<li>B onmode -s</li>
+<li>C onmode -u</li>
+<li>D onmode -k</li>
+</ul>
+<p><strong>正确答案:</strong> B C</p>
+<p><strong>解析：</strong> <code>onmode -j</code> 是切换为单用户模式，<code>onmode -k</code> 是切换为离线模式，<code>onmode -s</code> 是优雅地切换到静态模式，<code>onmode -u</code> 是立即切换到静态模式。</p>
+<p><strong>27、GBase 8s 的过渡模式有哪些？</strong></p>
+<ul>
+<li>A 初始化(Initialization)。</li>
+<li>B 快速恢复（Fast Recovery)。</li>
+<li>C 离线 (Off Line)。</li>
+<li>D 关闭(Shutting Down)。</li>
+</ul>
+<p><strong>正确答案:</strong> A B D</p>
+<p><strong>解析：</strong> GBase 8s 有三种过渡模式，分别为初始化(Initialization）、快速恢复（Fast Recovery）和关闭(Shutting Down)。</p>
+<p><strong>28、关于 BIGSERIAL 叙述正确的是()</strong></p>
+<ul>
+<li>A 存储二进制数据</li>
+<li>B 占用 8 个字节</li>
+<li>C 不能存储零</li>
+<li>D 数值自增</li>
+</ul>
+<p><strong>正确答案:</strong> BCD</p>
+<p><strong>解析：</strong> BIGSERIAL 存储 8 个字节的非零整数，具有自动增一的功能。</p>
+<p><strong>29、GBase 8s 小数数据类型包括()</strong></p>
+<ul>
+<li>A SMALLFLOAT</li>
+<li>B DECIMAL</li>
+<li>C MONEY</li>
+<li>D FLOAT</li>
+</ul>
+<p><strong>正确答案:</strong> ABCD</p>
+<p><strong>解析：</strong> 这四种数据类型数值都有小数点。</p>
+<p><strong>30、GBase 8s 数据类型的两大类别有()</strong></p>
+<ul>
+<li>A 复杂数据类型</li>
+<li>B 内置数据类型</li>
+<li>C 用户自定义数据类型</li>
+<li>D 扩展数据类型</li>
+</ul>
+<p><strong>正确答案:</strong> BD</p>
+<p><strong>解析：</strong> GBase 8s 两大数据类型内置和扩展数据类型。</p>
+<p><strong>31、GBase 8s rename database 失败的原因有()</strong></p>
+<ul>
+<li>A database closed</li>
+<li>B database不存在</li>
+<li>C 当前正在操作的database</li>
+<li>D 被更名的database处于打开状态。</li>
+</ul>
+<p><strong>正确答案:</strong> BCD</p>
+<p><strong>解析：</strong> 无法删除或重命名当前数据库或任何已打开的数据库。</p>
+<p><strong>32、删除数据库正确的 SQL 语句是()</strong></p>
+<ul>
+<li>A <code>delete database courseware;</code></li>
+<li>B <code>delete databases courseware;</code></li>
+<li>C <code>drop database if exists courseware;</code></li>
+<li>D <code>drop database if exist courseware;</code></li>
+</ul>
+<p><strong>正确答案:</strong> C</p>
+<p><strong>解析：</strong> 删除数据库的语法 <code>drop database[if exists]&lt;db_name&gt;;</code></p>
+<p><strong>33、重命名表中存在列正确的 SQL 语句是()</strong></p>
+<ul>
+<li>A <code>rename student.age to age1;</code></li>
+<li>B <code>rename column student.age to age1;</code></li>
+<li>C <code>rename column&#39;student.age&#39; to&#39;age1&#39;;</code></li>
+<li>D <code>rename column&quot;student.age&quot; to&quot;age1&quot;;</code></li>
+</ul>
+<p><strong>正确答案:</strong> B</p>
+<p><strong>解析：</strong> 重命名表中存在列语法 <code>rename column &lt;tableName&gt;.&lt;oldColumnName&gt; to &lt;newColumnName&gt;;</code>。</p>
+<p><strong>34、以下正确的 Insert（进阶语法）SQL 语句是()</strong></p>
+<ul>
+<li>A <code>insert into t_user2(userid, username) select * from t_user1;</code></li>
+<li>B <code>insert into t_user2 select * from t_user1;</code></li>
+<li>C <code>insert into t_user2(userid, username) select userid, username from t_user1;</code></li>
+<li>D <code>select userid, username into t_user2 from t_user1;</code></li>
+</ul>
+<p><strong>正确答案:</strong> ABC</p>
+<p><strong>解析：</strong> Insert 进阶语法 <code>insert into &lt;table_name| view_name|synonym_name&gt; [column_name1, column_name2,...] select col_name1, col_name2,...;</code>。</p>
+<p><strong>35、正确的 Delete SQL 语句是()</strong></p>
+<ul>
+<li>A <code>select * from t_user where f_userid = 1;</code></li>
+<li>B <code>delete * from t_user where f_userid = 1;</code></li>
+<li>C <code>delete from t_user where f_userid = 1;</code></li>
+<li>D <code>delete t_user where f_userid = 1;</code></li>
+</ul>
+<p><strong>正确答案:</strong> CD</p>
+<p><strong>解析：</strong> Delete 语法 <code>delete from &lt;table_name| view_name|synonym_name&gt; [where condition];</code> <strong>from 可以省略</strong>。</p>
+<p><strong>36、正确的 Alter Table 添加列的 SQL 语句是()</strong></p>
+<ul>
+<li>A <code>alter table student add (Sex smallint);</code></li>
+<li>B <code>alter table student add (age int before Sex);</code></li>
+<li>C <code>alter table student add column (score int);</code></li>
+<li>D <code>alter table student column add (score int);</code></li>
+</ul>
+<p><strong>正确答案:</strong> AB</p>
+<p><strong>解析：</strong> 新增列语法 <code>alter table &lt;tableName| synonymName&gt; add (newColumnName1 data_type1[, newColumnName2 data_type2, ...]) [before oldColumnName];</code>。</p>
+<p><strong>37、正确的创建表 SQL 语句是()</strong></p>
+<ul>
+<li>A <code>create table if not exists student(id int, name varchar(20));</code></li>
+<li>B <code>create table if exists student(id int, name varchar(20));</code></li>
+<li>C <code>create table student(id int, name varchar(20));</code></li>
+<li>D <code>new table student(id int, name varchar(20));</code></li>
+</ul>
+<p><strong>正确答案:</strong> AC</p>
+<p><strong>解析：</strong> 创建表语法 <code>create[standard| raw] table[if not exists] &lt;table_name&gt;(colname1 data_type1, colname2 data_type2,...);</code></p>
+<p><strong>38、如何查看 GBase 8s 数据库表空间信息?</strong></p>
+<ul>
+<li>A <code>onstat --tablespaces</code></li>
+<li>B <code>onstat -t</code></li>
+<li>C <code>show tablespaces</code></li>
+<li>D <code>onstat -T</code></li>
+</ul>
+<p><strong>正确答案:</strong> BD</p>
+<p><strong>解析：</strong> <code>onstat -t</code> 显示活动表空间的表空间信息。<code>onstat -T</code> 显示全部表空间的表空间信息。</p>
+<p><strong>39、如何查看 GBase 8s 数据库系统在线日志最新信息?</strong></p>
+<ul>
+<li>A 使用 <code>onstat --log</code> 查看 online 日志文件的最后部分。</li>
+<li>B 使用 <code>tail</code> 命令查看 online 日志文件的最后部分。</li>
+<li>C 使用 <code>onstat -l</code> 查看 online 日志文件的最后部分。</li>
+<li>D 使用 <code>onstat -m</code> 查看 online 日志文件的最后部分。</li>
+</ul>
+<p><strong>正确答案:</strong> BD</p>
+<p><strong>解析：</strong> 数据库的日志保存在 online 日志中，可以使用 <code>onstat -m</code> 查看数据库在线日志中的最新内容，也可以直接使用操作系统命令 <code>tail</code> 直接查看日志文件中的内容的最后部分。</p>
+<p><strong>40、如何查看 GBase 8s 数据库的 onconfig 文件内容?</strong></p>
+<ul>
+<li>A 使用 <code>onmode -c</code></li>
+<li>B 使用 <code>onstat -c</code></li>
+<li>C 使用 <code>oninit -c</code></li>
+<li>D 使用 cat 命令查看 onconfig 文件</li>
+</ul>
+<p><strong>正确答案:</strong> BD</p>
+<p><strong>解析：</strong> <code>onstat -c</code> 可以直接显示数据库的配置文件内容，也可以进入 GBase 8s 的安装目录中的 etc 目录中，直接查看 onconfig 文件中的内容。GBase 8s 的配置文件保存在一个类似 onconfig.&lt;server_name&gt; 的文本文件中。</p>
+<p><strong>41、在存储过程中定义变量正确的语句是()</strong></p>
+<ul>
+<li>A <code>define x int;</code></li>
+<li>B <code>define x, y int</code></li>
+<li>C <code>int x</code></li>
+<li>D <code>x int</code></li>
+</ul>
+<p><strong>正确答案:</strong> AB</p>
+<p><strong>解析：</strong> 存储过程中定义变量需要有 <code>define</code> 关键字；支持系列定义。</p>
+<h2 id="判断题"><a href="#判断题" class="headerlink" title="判断题"></a>判断题</h2><p><strong>1、在静态模式下，数据库的数据不会发生变化，数据库管理员可以在静态模式下使用 COUNT 函数精确统计每个表有多少条记录？</strong></p>
+<ul>
+<li>正确</li>
+<li>错误</li>
+</ul>
+<p><strong>正确答案:</strong> 错误</p>
+<p><strong>解析:</strong> 在静态模式下，不能执行 SQL 语句。</p>
+<p><strong>2、GBase8s SPL变量支持链式赋值()</strong></p>
+<ul>
+<li>正确</li>
+<li>错误</li>
+</ul>
+<p><strong>正确答案:</strong> 正确</p>
+<p><strong>解析：</strong> 例如 <code>let userid, username = 2021, &#39;gbasedbt&#39;;</code> 就是属于链式赋值。</p>
+<p><strong>3、GBase 8s 提供了两个备份与恢复工具，onbar 可以实现备份数据的完全恢复和基于时间点的恢复，但 ontape 只能进行备份数据的完全恢复，不能进行基于时间点的恢复。</strong></p>
+<ul>
+<li>正确</li>
+<li>错误</li>
+</ul>
+<p><strong>正确答案:</strong> 正确</p>
+<p><strong>解析：</strong> ontape 工具只能进行数据的完全恢复，也可以进行基于备份数据的物理恢复，但不能进行基于时间点的数据恢复。需要实现基于时间点的不完全恢复，只能使用 onbar 实现。、</p>
+<p><strong>4、GBase 8s 自带的两个备份工具(onbar 和 ontape)都可以实现备份数据的完全恢复，这两个备份工具备份出来的数据是兼容的。</strong></p>
+<ul>
+<li>正确</li>
+<li>错误</li>
+</ul>
+<p><strong>正确答案:</strong> 错误</p>
+<p><strong>解析：</strong> 两个工具备份的数据不兼容，不能用 onbar 来恢复由 ontape 备份出来的数据。</p>
+<p><strong>5、GBase 8s 物理日志记录数据被更改后的数据映像，逻辑日志记录数据库服务器对数据的操作记录。</strong></p>
+<ul>
+<li>正确</li>
+<li>错误</li>
+</ul>
+<p><strong>正确答案:</strong> 错误</p>
+<p><strong>解析：</strong> GBase 8s 物理日志记录数据被更改前的映像，逻辑日志记录数据库服务器对数据的操作记录。</p>
+<p><strong>6、只有数据库处于在线模式时，才能对外提供SQL查询功能。</strong></p>
+<ul>
+<li>正确</li>
+<li>错误</li>
+</ul>
+<p><strong>正确答案:</strong> 错误</p>
+<p><strong>解析：</strong> 数据库处于单用户模式时，也可以提供 SQL 查询。</p>
+<p><strong>7、数据类型 <code>numeric(p,s)</code> 中的 p 代表整数位长度，s 代表小数位长度()</strong></p>
+<ul>
+<li>正确</li>
+<li>错误</li>
+</ul>
+<p><strong>正确答案:</strong> 错误</p>
+<p><strong>解析：</strong> <code>numeric(p,s)</code> 中的 p 代表整数和小数长度。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>本文仅记录课后练习题以及对应答案的解析，并非 GDCA 实际考试考题，仅供学习参考。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/143171024/">https://pc-study.github.io/csdn-blog/posts/143171024/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/GBase-8s/">GBase 8s</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/143279733/" title="效率翻倍！达梦数据库 disql 使用技巧全攻略"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">效率翻倍！达梦数据库 disql 使用技巧全攻略</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/143171011/" title="听说 ChatGPT 4o 可以取代初级 Oracle DBA？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">听说 ChatGPT 4o 可以取代初级 Oracle DBA？</div></div><div class="info-2"><div class="info-item-1">前言 今天我突发奇想：如果是一个新手使用 ChatGPT 4o 来运维 Oracle 数据库，可行性高吗？ 为了验证这个想法，于是我用 ChatGPT 4o 问了一个 Oracle DBA 经常会遇到的数据库问题，我们来看看 ChatGPT 4o 是如何回答的？同时，以专业的角度来分析一下在生产环境</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/122452761/" title="[译] Oracle Database 21c 中的数据泵（expdp、impdp）增强功能"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-12</div><div class="info-item-2">[译] Oracle Database 21c 中的数据泵（expdp、impdp）增强功能</div></div><div class="info-2"><div class="info-item-1">原文地址： 原文作者：Tim Hall 目录 环境准备 JSON 数据类型支持 CHECKSUM、CHECKSUM\ALGORITHM、VERIFY\ONLY 和 VERIFY\CHECKSUM 参数 同时支持INCLUDE和EXCLUDE 索引压缩 可传输表空间增强 从 Oracle 自治数据库导</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/140435962/" title="Deepin 20.9 一键安装 Oracle 11GR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-15</div><div class="info-item-2">Deepin 20.9 一键安装 Oracle 11GR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Deepin 20.9 一键安装 Oracle 11GR2 单机版过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 ⭐️ 更多教程参考：Oracle 一键安装脚本实操合集，持续更新中！！！ 前置准备 1、系统组安装好操作系统</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/141429715/" title="Oracle RAC 集群启动顺序"><img class="cover" src="/csdn-blog/images/ff1d85231d99fc674cd3c1395f2da9dc.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-08-22</div><div class="info-item-2">Oracle RAC 集群启动顺序</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 Oracle 11GR2 RAC 集群启动顺序 官方文档 11GR2 12CR2 18C 19C 21C 23ai 往期精彩文章推荐 前言 前几天使用脚本在 RockyLinux 9.4 安装 Oracle 11GR2</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149227585/" title="Oracle 数据库升级踩坑：DBLink ORA-02019 问题解决思路"><img class="cover" src="/csdn-blog/images/a4a952af4f31fc02909c7fad549d22ef.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Oracle 数据库升级踩坑：DBLink ORA-02019 问题解决思路</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 问题复现 问题分析 源库 (9i) 新库 (19c) 问题解决 尝试一：直接 UPDATE GLOBAL\NAME 表 (失败) 尝试二：使用 RENAME 命令 (成功，但有波折) 写在最后 前言 今天协助客户将 Oracl</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139179025/" title="华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 19C 单机 ASM"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 19C 单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 openEuler 22.03 LTS SP3 一键安装 Oracle 19C 单机 ASM（19.23）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139177382/" title="RedHat 7.9 一键安装 Oracle 12C 单机 ASM"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">RedHat 7.9 一键安装 Oracle 12C 单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 RedHat 7.9 一键安装 Oracle 12C 单机 ASM 过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%95%E9%80%89%E9%A2%98"><span class="toc-number">3.</span> <span class="toc-text">单选题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E9%80%89%E9%A2%98"><span class="toc-number">4.</span> <span class="toc-text">多选题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E9%A2%98"><span class="toc-number">5.</span> <span class="toc-text">判断题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">6.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

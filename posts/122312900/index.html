@@ -1,0 +1,306 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Bug 27092508 - Flashback Queries Fails with ORA-08181 Due to Corrupted Timestamp Mappings | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="Bug 27092508 Flashback Queries Fails with ORA-08181 and&#x2F;or ORA-01466 Due to Corrupted Timestamp Mappings in SYS.SMON\SCN\TIME This note gives a brief">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bug 27092508 - Flashback Queries Fails with ORA-08181 Due to Corrupted Timestamp Mappings">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/122312900/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="Bug 27092508 Flashback Queries Fails with ORA-08181 and&#x2F;or ORA-01466 Due to Corrupted Timestamp Mappings in SYS.SMON\SCN\TIME This note gives a brief">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/tech.svg">
+<meta property="article:published_time" content="2022-01-04T14:08:20.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.282Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="dba">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/tech.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Bug 27092508 - Flashback Queries Fails with ORA-08181 Due to Corrupted Timestamp Mappings","url":"https://pc-study.github.io/csdn-blog/posts/122312900/","image":"https://pc-study.github.io/csdn-blog/img/covers/tech.svg","datePublished":"2022-01-04T14:08:20.000Z","dateModified":"2026-03-20T08:34:08.282Z","description":"Bug 27092508 Flashback Queries Fails with ORA-08181 and/or ORA-01466 Due to Corrupted Timestamp Mappings in SYS.SMON\\SCN\\TIME This note gives a brief","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/122312900/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/122312900/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Bug 27092508 - Flashback Queries Fails with ORA-08181 Due to Corrupted Timestamp Mappings',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/tech.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">Bug 27092508 - Flashback Queries Fails with ORA-08181 Due to Corrupted Timestamp Mappings</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Bug 27092508 - Flashback Queries Fails with ORA-08181 Due to Corrupted Timestamp Mappings<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2022-01-04-122312900.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-01-04T14:08:20.000Z" title="发表于 2022-01-04 22:08:20">2022-01-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.282Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">337</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>2分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><h4 id="Bug-27092508-Flashback-Queries-Fails-with-ORA-08181-and-or-ORA-01466-Due-to-Corrupted-Timestamp-Mappings-in-SYS-SMON-SCN-TIME"><a href="#Bug-27092508-Flashback-Queries-Fails-with-ORA-08181-and-or-ORA-01466-Due-to-Corrupted-Timestamp-Mappings-in-SYS-SMON-SCN-TIME" class="headerlink" title="Bug 27092508  Flashback Queries Fails with ORA-08181 and&#x2F;or ORA-01466 Due to Corrupted Timestamp Mappings in SYS.SMON_SCN_TIME"></a>Bug 27092508  Flashback Queries Fails with ORA-08181 and&#x2F;or ORA-01466 Due to Corrupted Timestamp Mappings in SYS.SMON_SCN_TIME</h4><p>This note gives a brief overview of bug 27092508.<br>  The content was last updated on: 03-NOV-2021<br> <em>Click <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1">here</a> for details of each of the sections below.</em></p>
+<h4 id="Affects"><a href="#Affects" class="headerlink" title="Affects:"></a>Affects:</h4><blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Product (<em>Component</em>)</strong></td>
+<td>Oracle Server (Rdbms)</td>
+</tr>
+<tr>
+<td><strong>Range of versions <em>believed</em> to be affected</strong></td>
+<td>Versions &gt;&#x3D; 12.1 but BELOW 18.1</td>
+</tr>
+<tr>
+<td><strong>Versions <em>confirmed</em> as being affected</strong></td>
+<td>* <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1#AFFECTS_12.2.0.1">12.2.0.1 (Base Release)</a> * <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1#AFFECTS_12.1.0.2">12.1.0.2 (Server Patch Set)</a></td>
+</tr>
+<tr>
+<td><strong>Platforms affected</strong></td>
+<td>Generic (all &#x2F; most platforms affected)</td>
+</tr>
+</tbody></table>
+</blockquote>
+<h4 id="Fixed"><a href="#Fixed" class="headerlink" title="Fixed:"></a>Fixed:</h4><blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>The fix for 27092508 is first included in</strong></td>
+<td>* <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1#FIXED_18.1">18.1.0</a> * <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=29757449.8">12.2.0.1.190716 (Jul 2019) Database Jul2019 Release Update (DB RU)</a> * <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1#FIXED_12.1.0.2.200114">12.1.0.2.200114 (Jan 2020) Database Patch Set Update (DB PSU)</a> * <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1#FIXED_12.1.0.2.DBBP:191015">12.1.0.2.191015 (Oct 2019) Database Proactive Bundle Patch</a> * <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1#FIXED_WIN:C201P:190530">12.2.0.1.190530 (May 2019) Bundle Patch for Windows Platforms</a> * <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1#FIXED_WIN:C102P:200114">12.1.0.2.200114 (Jan 2020) Bundle Patch for Windows Platforms</a></td>
+</tr>
+</tbody></table>
+<p><em>Interim patches may be available for earlier versions - click <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?parent=DOCUMENT&sourceId=27092508.8&patchId=27092508">here</a> to check.</em></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Symptoms:</td>
+<td>Related To:</td>
+</tr>
+<tr>
+<td>* ORA-08181 &#x2F; ORA-01466</td>
+<td>* <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1#TAGS_FDA">Flashback Data Archive (Oracle Total Recall)</a> * <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1#TAGS_FLASHBACK">Flashback</a> * <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1#TAGS_PDB">Pluggable Database (PDB) &#x2F; Container</a> * <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1#TAGS_TIMESTAMP">Datatypes (TIMESTAMP)</a></td>
+</tr>
+</tbody></table>
+<h4 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h4><blockquote>
+<p>This bug is only relevant when using Flashback Data Archive (Oracle Total Recall)</p>
+<p>Memory corruption can occur in PDB as a result of corrupted timestamp<br> mappings in SYS.SMON_SCN_TIME, causing one of two errors:</p>
+<p>ORA-08181: specified number is not a valid system change number<br> ORA-01466: unable to read data - table definition has changed</p>
+<p><strong>Rediscovery Notes</strong><br> If ORA-01466 or ORA-08181 is seen while running flashback queries<br> this bug might be encountered.</p>
+<p><strong>Workaround</strong><br> NONE</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Please note:</strong> The above is a summary description only. Actual symptoms can vary. Matching to any symptoms here does not confirm that you are encountering this problem. For questions about this bug please consult Oracle Support.</td>
+</tr>
+</tbody></table>
+<h4 id="References"><a href="#References" class="headerlink" title="References"></a>References</h4><blockquote>
+<p><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/BugDisplay?parent=DOCUMENT&sourceId=27092508.8&id=27092508">Bug:27092508</a> (This link will only work for PUBLISHED bugs)<br> <a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocumentDisplay?parent=DOCUMENT&sourceId=27092508.8&id=245840.1">Note:245840.1</a> Information on the sections in this article</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/122312900/">https://pc-study.github.io/csdn-blog/posts/122312900/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/dba/">dba</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/122318652/" title="Troubleshooting Guide ORA-609 : Opiodr aborting process unknown ospid (Doc ID 1121357.1)"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Troubleshooting Guide ORA-609 : Opiodr aborting process unknown ospid (Doc ID 1121357.1)</div></div><div class="info-2"><div class="info-item-1">In this Document APPLIES TO: PURPOSE TROUBLESHOOTING STEPS REFERENCES APPLIES TO: Oracle Net Services - Version 11.1.0.7 and later Oracle Database - E</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122312848/" title="Query Errors ‘ORA-12850: Could Not Allocate Slaves On All Specified Instances‘ (Doc ID 2388821.1)"><img class="cover" src="/csdn-blog/img/covers/tech.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Query Errors ‘ORA-12850: Could Not Allocate Slaves On All Specified Instances‘ (Doc ID 2388821.1)</div></div><div class="info-2"><div class="info-item-1">In this Document APPLIES TO: SYMPTOMS CAUSE SOLUTION APPLIES TO: Oracle Database Cloud Schema Service - Version N/A and later Oracle Database Exadata</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/143171011/" title="听说 ChatGPT 4o 可以取代初级 Oracle DBA？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-22</div><div class="info-item-2">听说 ChatGPT 4o 可以取代初级 Oracle DBA？</div></div><div class="info-2"><div class="info-item-1">前言 今天我突发奇想：如果是一个新手使用 ChatGPT 4o 来运维 Oracle 数据库，可行性高吗？ 为了验证这个想法，于是我用 ChatGPT 4o 问了一个 Oracle DBA 经常会遇到的数据库问题，我们来看看 ChatGPT 4o 是如何回答的？同时，以专业的角度来分析一下在生产环境</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121311398/" title="3 万字，关系型数据库性能体系，设计和效率提升"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-11-14</div><div class="info-item-2">3 万字，关系型数据库性能体系，设计和效率提升</div></div><div class="info-2"><div class="info-item-1">目录 前言 一、预期的读者和阅读建议 二、数据库模型设计规范 1、数据库建模原则性规范 2、实体型之间关系认定规范 3、范式化 1NF 的规范 4、范式化 2NF 的规范 5、范式化3NF的规范 6、反范式化冗余字段使用规范 7、数据库对象命名基本规范 - 7.1、遵循行业规范 7.2、简单命名原则</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/125083573/" title="实战篇：Oracle 数据库标准版（SE）转换为企业版（EE）"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-01</div><div class="info-item-2">实战篇：Oracle 数据库标准版（SE）转换为企业版（EE）</div></div><div class="info-2"><div class="info-item-1">前言 很多 Oracle 数据库在初始安装的时候选择了标准版，而相对企业版来说就少了：RAC、ASM、DataGuard、闪回功能、分区表等等一些很实用的功能： 那么如何将标准版升级到企业版呢？Oracle 给我们提供了具体方案： How to Convert Database from Stand</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121928611/" title="DBMS_REPAIR SCRIPT (Doc ID 556733.1)"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-14</div><div class="info-item-2">DBMS_REPAIR SCRIPT (Doc ID 556733.1)</div></div><div class="info-2"><div class="info-item-1">APPLIES TO Oracle Database - Enterprise Edition - Version 8.1.5.0 and later Oracle Database Cloud Schema Service - Version N/A and later Gen 1 Exadata</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122318652/" title="Troubleshooting Guide ORA-609 : Opiodr aborting process unknown ospid (Doc ID 1121357.1)"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-05</div><div class="info-item-2">Troubleshooting Guide ORA-609 : Opiodr aborting process unknown ospid (Doc ID 1121357.1)</div></div><div class="info-2"><div class="info-item-1">In this Document APPLIES TO: PURPOSE TROUBLESHOOTING STEPS REFERENCES APPLIES TO: Oracle Net Services - Version 11.1.0.7 and later Oracle Database - E</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122312848/" title="Query Errors ‘ORA-12850: Could Not Allocate Slaves On All Specified Instances‘ (Doc ID 2388821.1)"><img class="cover" src="/csdn-blog/img/covers/tech.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-04</div><div class="info-item-2">Query Errors ‘ORA-12850: Could Not Allocate Slaves On All Specified Instances‘ (Doc ID 2388821.1)</div></div><div class="info-2"><div class="info-item-1">In this Document APPLIES TO: SYMPTOMS CAUSE SOLUTION APPLIES TO: Oracle Database Cloud Schema Service - Version N/A and later Oracle Database Exadata</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Bug-27092508-Flashback-Queries-Fails-with-ORA-08181-and-or-ORA-01466-Due-to-Corrupted-Timestamp-Mappings-in-SYS-SMON-SCN-TIME"><span class="toc-number">1.</span> <span class="toc-text">Bug 27092508  Flashback Queries Fails with ORA-08181 and&#x2F;or ORA-01466 Due to Corrupted Timestamp Mappings in SYS.SMON_SCN_TIME</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Affects"><span class="toc-number">2.</span> <span class="toc-text">Affects:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Fixed"><span class="toc-number">3.</span> <span class="toc-text">Fixed:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Description"><span class="toc-number">4.</span> <span class="toc-text">Description</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#References"><span class="toc-number">5.</span> <span class="toc-text">References</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

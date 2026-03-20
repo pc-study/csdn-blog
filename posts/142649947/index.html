@@ -1,0 +1,489 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>YashanDB 个人版数据库安装部署 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 环境介绍 安装前准备 openssl 检查 关闭防火墙 创建用户和组 创建目录 系统参数配置 资源配置 关闭透明大页 安装步骤（使用yashan用户） 解压安装软件 生成安装配置文件 安装 yasom 安装">
+<meta property="og:type" content="article">
+<meta property="og:title" content="YashanDB 个人版数据库安装部署">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/142649947/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 环境介绍 安装前准备 openssl 检查 关闭防火墙 创建用户和组 创建目录 系统参数配置 资源配置 关闭透明大页 安装步骤（使用yashan用户） 解压安装软件 生成安装配置文件 安装 yasom 安装">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg">
+<meta property="article:published_time" content="2024-09-30T01:50:28.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.434Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="YashanDB">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"YashanDB 个人版数据库安装部署","url":"https://pc-study.github.io/csdn-blog/posts/142649947/","image":"https://pc-study.github.io/csdn-blog/img/covers/database.svg","datePublished":"2024-09-30T01:50:28.000Z","dateModified":"2026-03-20T08:34:08.434Z","description":"大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 环境介绍 安装前准备 openssl 检查 关闭防火墙 创建用户和组 创建目录 系统参数配置 资源配置 关闭透明大页 安装步骤（使用yashan用户） 解压安装软件 生成安装配置文件 安装 yasom 安装","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/142649947/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/142649947/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'YashanDB 个人版数据库安装部署',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/database.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">YashanDB 个人版数据库安装部署</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">YashanDB 个人版数据库安装部署<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-09-30-142649947.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-09-30T01:50:28.000Z" title="发表于 2024-09-30 09:50:28">2024-09-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.434Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，分享一些学习国产数据库路上的知识和经验。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#_9">环境介绍</a></li>
+<li><a href="#_16">安装前准备</a></li>
+<li><ul>
+<li><a href="#openssl__17">openssl 检查</a></li>
+<li><a href="#_77">关闭防火墙</a></li>
+<li><a href="#_84">创建用户和组</a></li>
+<li><a href="#_103">创建目录</a></li>
+<li><a href="#_115">系统参数配置</a></li>
+<li><a href="#_128">资源配置</a></li>
+<li><a href="#_142">关闭透明大页</a></li>
+</ul>
+</li>
+<li><a href="#yashan_189">安装步骤（使用yashan用户）</a></li>
+<li><ul>
+<li><a href="#_196">解压安装软件</a></li>
+<li><a href="#_204">生成安装配置文件</a></li>
+<li><a href="#_yasom_221">安装 yasom</a></li>
+<li><a href="#_yasagent_226">安装 yasagent</a></li>
+<li><a href="#_236">配置环境变量</a></li>
+<li><a href="#_246">连接数据库</a></li>
+<li><a href="#_255">创建用户</a></li>
+</ul>
+</li>
+<li><a href="#_261">配置开机自启</a></li>
+<li><a href="#YashanDB__310">YashanDB 常用命令</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近参加了 YashanDB 数据库证书 YCP 的学习，学习一门数据库第一步应该就是安装部署，有了环境才能动手学习测试。</p>
+<p>本文记录了 YashanDB 23.2 的单机安装部署过程，大部分参照官方文档，其中也有自己的部分解读，希望一起进步。</p>
+<h2 id="环境介绍"><a href="#环境介绍" class="headerlink" title="环境介绍"></a>环境介绍</h2><p>单机部署最小规模配置为 1 台服务器，但无法构建高可用环境。</p>
+<table>
+<thead>
+<tr>
+<th>部署形态</th>
+<th>数据库监听</th>
+<th>yasom</th>
+<th>yasagent</th>
+<th>服务器间通信</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单机部署</td>
+<td>1688</td>
+<td>1675</td>
+<td>1676</td>
+<td>1689</td>
+</tr>
+</tbody></table>
+<h2 id="安装前准备"><a href="#安装前准备" class="headerlink" title="安装前准备"></a>安装前准备</h2><h3 id="openssl-检查"><a href="#openssl-检查" class="headerlink" title="openssl 检查"></a>openssl 检查</h3><p>为保障 YashanDB 的正常安装和运行，请按如下来源及最低版本要求，在所有服务器环境中配置所需依赖项：</p>
+<table>
+<thead>
+<tr>
+<th>动态库名称</th>
+<th>来源</th>
+<th>版本要求</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>libcrypto.so.1.1</td>
+<td>openssl</td>
+<td>1.1.1</td>
+<td>加密</td>
+</tr>
+<tr>
+<td>libssl.so</td>
+<td>openssl</td>
+<td>1.1.1</td>
+<td>网络通信</td>
+</tr>
+<tr>
+<td>libssl.so.1.1</td>
+<td>openssl</td>
+<td>1.1.1</td>
+<td>-</td>
+</tr>
+<tr>
+<td>libgmssl.so.3.1</td>
+<td>gmssl</td>
+<td>3.1.1及以上</td>
+<td>加密</td>
+</tr>
+<tr>
+<td>liblz4.so</td>
+<td>lz4</td>
+<td>1.9.3及以上</td>
+<td>数据压缩和解压缩</td>
+</tr>
+<tr>
+<td>liblz4.so.1</td>
+<td>lz4</td>
+<td>1.9.3及以上</td>
+<td>-</td>
+</tr>
+<tr>
+<td>liblz4.so.1.9.3</td>
+<td>lz4</td>
+<td>1.9.3及以上</td>
+<td>-</td>
+</tr>
+<tr>
+<td>libz.so</td>
+<td>zlib</td>
+<td>1.2.12及以上</td>
+<td>数据压缩</td>
+</tr>
+<tr>
+<td>libz.so.1</td>
+<td>zlib</td>
+<td>1.2.12及以上</td>
+<td>-</td>
+</tr>
+<tr>
+<td>libz.so.1.2.12</td>
+<td>zlib</td>
+<td>1.2.12及以上</td>
+<td>-</td>
+</tr>
+<tr>
+<td>libzstd.so</td>
+<td>zstd</td>
+<td>1.5.2及以上</td>
+<td>数据压缩和解压缩</td>
+</tr>
+<tr>
+<td>libzstd.so.1</td>
+<td>zstd</td>
+<td>1.5.2及以上</td>
+<td>-</td>
+</tr>
+<tr>
+<td>libzstd.so.1.5.2</td>
+<td>zstd</td>
+<td>1.5.2及以上</td>
+<td>-</td>
+</tr>
+<tr>
+<td>monit</td>
+<td>monit</td>
+<td>5.28.0及以上</td>
+<td>守护进程</td>
+</tr>
+</tbody></table>
+<p>YashanDB 在 23.2 版本增加了一个 openssl 的限制，要求版本必须为 1.1.1，否则安装过程可能出错：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs applescript"><span class="hljs-comment">## 需要大于 1.1.1</span><br>openssl <span class="hljs-built_in">version</span><br></code></pre></td></tr></table></figure>
+
+<p>我这里是符合要求的，如果是使用 centos7.9 就需要升级 openssl 版本了，可参考我写的 openssl 升级步骤：<strong><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1836675020644507648">YashanDB openssl 版本过低升级过程</a></strong>。</p>
+<p>还需要注意的一个就是 monit 命令，这个也建议安装，否则在使用 yasboot 命令启动 yasagent&#x2F;yasom 时会报错：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs smali">[yashan@yashandb bin]$ yasboot process yasom start -c yashandb<br>warning: watch yasom error: <span class="hljs-built_in"> monitor </span>failed, stdout: , stderr: bash:行1: monit：未找到命令<br><br>start yasom successfully<br></code></pre></td></tr></table></figure>
+
+<p>在配置数据库开机自启时也会报错：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">[yashan@ymp install]$ yasboot monit start --cluster yashandb<br><span class="hljs-section"> type | uuid             | name             | hostid | index    | status | return_code | progress | cost</span><br><span class="hljs-section">---------------------------------------------------------------------------------------------------------</span><br><span class="hljs-section"> task | e28f8408d39bae22 | MonitParentStart | -      | yashandb | FAILED | 1           | 100      | 1</span><br><span class="hljs-section">------+------------------+------------------+--------+----------+--------+-------------+----------+------</span><br>task completed, status: FAILED<br>retcode: 1<br>stdout: start monit<br>stderr: start monit failed, stdout: , stderr: bash: monit: command not found<br></code></pre></td></tr></table></figure>
+
+<p>关于如何解决 monit 命令找不到的问题，只需要安装 monit 命令即可：<strong><a target="_blank" rel="noopener" href="https://mmonit.com/monit/dist/binary/5.34.0/monit-5.34.0-linux-x64.tar.gz">monit-5.34.0-linux-x64.tar.gz 安装包下载</a></strong>，具体可以参考如下步骤：</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript">[root@ymp ~]<span class="hljs-comment"># mkdir /monit /etc/monit.d</span><br>[root@ymp ~]<span class="hljs-comment"># tar -zxvf /monit/monit-5.34.0-linux-x64.tar.gz -C /monit</span><br>[root@ymp ~]<span class="hljs-comment"># cp /monit/monit-5.34.0/conf/monitrc /etc</span><br>[root@ymp ~]<span class="hljs-comment"># ln -s /monit/monit-5.34.0/bin/monit /usr/bin/monit</span><br><br>[root@ymp ~]<span class="hljs-comment"># monit -V</span><br>This <span class="hljs-keyword">is</span> Monit version <span class="hljs-number">5.34</span><span class="hljs-number">.0</span><br>Built <span class="hljs-keyword">with</span> ssl, <span class="hljs-keyword">with</span> ipv6, <span class="hljs-keyword">with</span> compression, <span class="hljs-keyword">with</span> pam <span class="hljs-keyword">and</span> <span class="hljs-keyword">with</span> large files<br>Copyright (C) <span class="hljs-number">2001</span><span class="hljs-number">-2024</span> Tildeslash Ltd. All Rights Reserved.<br></code></pre></td></tr></table></figure>
+
+<p>确保安装 monit 命令成功即可。</p>
+<h3 id="关闭防火墙"><a href="#关闭防火墙" class="headerlink" title="关闭防火墙"></a>关闭防火墙</h3><p>YashanDB 安装建议关闭防火墙：</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs gauss">systemctl <span class="hljs-keyword">stop</span> firewalld<br>systemctl <span class="hljs-keyword">disable</span> firewalld<br></code></pre></td></tr></table></figure>
+
+<h3 id="创建用户和组"><a href="#创建用户和组" class="headerlink" title="创建用户和组"></a>创建用户和组</h3><p>建议在所有服务器上创建 YashanDB 产品的安装用户，而非使用 root 身份执行安装部署：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 这里增加 YASDBA 组是为了后续配置支持：yasql / as sysdba 系统认证</span><br>groupadd YASDBA<br>useradd -d /home/yashan -m yashan<br>usermod -a -G YASDBA yashan<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;yashan:yashan&quot;</span> | chpasswd<br><span class="hljs-built_in">id</span> yashan<br><br><span class="hljs-comment">## 配置 sudo 免密</span><br><span class="hljs-comment">## 对 root 用户赋权并打开 /etc/sudoers 文件</span><br><span class="hljs-built_in">chmod</span> +w /etc/sudoers<br><span class="hljs-comment">## 在文件的最后添加如下内容</span><br><span class="hljs-built_in">cat</span>&lt;&lt;-<span class="hljs-string">EOF&gt;&gt;/etc/sudoers</span><br><span class="hljs-string">yashan ALL=(ALL)NOPASSWD:ALL</span><br><span class="hljs-string">EOF</span><br><span class="hljs-built_in">chmod</span> -w /etc/sudoers<br></code></pre></td></tr></table></figure>
+
+<h3 id="创建目录"><a href="#创建目录" class="headerlink" title="创建目录"></a>创建目录</h3><p>所有 YashanDB 的实例节点都必须规划以下两个目录：</p>
+<ul>
+<li>HOME 目录：YashanDB 的产品目录，包含 YashanDB 所提供的命令、数据库运行所需的库及各关键组件。该目录由 yashan 用户执行安装部署时输入的 install-path 参数根据一定规则生成并创建。</li>
+<li>DATA 目录：YashanDB 的数据目录，包含数据库的各类系统数据文件、部分日志文件和配置文件，用户数据也缺省存储在该目录下。但对于共享集群，所有的数据文件和 redo 文件均需保存在共享存储上，DATA目录将只用于存储实例运行相关的配置文件、日志文件等数据。该目录由 yashan 用户执行安装部署时输入的 –data-path 参数根据一定规则生成并创建。</li>
+</ul>
+<p>HOME 目录和 DATA 目录均规划在 &#x2F;data&#x2F;yashan 下，yashan 用户需要对该目录拥有全部权限，可执行如下命令授权：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> -p /data/yashan<br><span class="hljs-built_in">chown</span> -R yashan:yashan /data/yashan<br><span class="hljs-built_in">chmod</span> -R 770 /data/yashan<br></code></pre></td></tr></table></figure>
+
+<h3 id="系统参数配置"><a href="#系统参数配置" class="headerlink" title="系统参数配置"></a>系统参数配置</h3><p>当 YashanDB 安装在 Linux 环境中时，为使系统达到更好的性能，建议进行下述配置调整：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 关闭交换分区</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;vm.swappiness = 0&quot;</span> &gt;&gt;/etc/sysctl.conf<br><span class="hljs-comment">## 调整自动分配本地端口范围</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;net.ipv4.ip_local_port_range = 32768 60999&quot;</span> &gt;&gt;/etc/sysctl.conf<br><span class="hljs-comment">## 调整进程的VMA上限</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;vm.max_map_count=2000000&quot;</span> &gt;&gt;/etc/sysctl.conf<br><span class="hljs-comment">## 生效配置</span><br>sysctl -p<br></code></pre></td></tr></table></figure>
+
+<h3 id="资源配置"><a href="#资源配置" class="headerlink" title="资源配置"></a>资源配置</h3><p>将部分资源限制值（使用ulimit -a可查看所有的资源限制值）调整为推荐值或以上。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">cat</span>&lt;&lt;-EOF&gt;&gt;/etc/security/limits.conf<br><span class="hljs-attribute">yashan</span> soft nofile <span class="hljs-number">1048576</span><br><span class="hljs-attribute">yashan</span> hard nofile <span class="hljs-number">1048576</span><br><span class="hljs-attribute">yashan</span> soft nproc <span class="hljs-number">1048576</span><br><span class="hljs-attribute">yashan</span> hard nproc <span class="hljs-number">1048576</span><br><span class="hljs-attribute">yashan</span> soft rss unlimited<br><span class="hljs-attribute">yashan</span> hard rss unlimited<br><span class="hljs-attribute">yashan</span> soft stack <span class="hljs-number">8192</span><br><span class="hljs-attribute">yashan</span> hard stack <span class="hljs-number">8192</span><br><span class="hljs-attribute">EOF</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="关闭透明大页"><a href="#关闭透明大页" class="headerlink" title="关闭透明大页"></a>关闭透明大页</h3><p>YashanDB 建议关闭透明大页，部分操作系统默认开启了透明大页选项，可执行以下命令确认：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># Red Hat Enterprise Linux 内核</span></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash"><span class="hljs-built_in">cat</span> /sys/kernel/mm/redhat_transparent_hugepage/enabled</span><br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># 其他内核</span></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash"><span class="hljs-built_in">cat</span> /sys/kernel/mm/transparent_hugepage/enabled</span><br></code></pre></td></tr></table></figure>
+
+<p>显示结果：</p>
+<ul>
+<li>[always] madvise never：透明大页已开启。</li>
+<li>always [madvise] never：透明大页已开启。</li>
+<li>always madvise [never]：透明大页已关闭。</li>
+</ul>
+<p>修改 &#x2F;etc&#x2F;default&#x2F;grub 文件，在 GRUB_CMDLINE_LINUX 中添加或修改参数 transparent_hugepage&#x3D;never：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gradle">sed -i <span class="hljs-string">&#x27;s/quiet/quiet transparent_hugepage=never/&#x27;</span> <span class="hljs-regexp">/etc/</span><span class="hljs-keyword">default</span>/grub<br></code></pre></td></tr></table></figure>
+
+<p>通过以下指令检查当前系统的引导类型：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">[ -d /sys/firmware/efi ] &amp;&amp; <span class="hljs-built_in">echo</span> UEFI || <span class="hljs-built_in">echo</span> BIOS<br></code></pre></td></tr></table></figure>
+
+<p>两种引导的启动文件路径分别为：</p>
+<ul>
+<li>BIOS：&#x2F;boot&#x2F;grub2&#x2F;grub.cfg</li>
+<li>UEFI：&#x2F;boot&#x2F;efi&#x2F;EFI&#x2F;&lt;distro_name&gt;&#x2F;grub.cfg，distro_name 为系统发行版本名称，例如 ubuntu、fedora、debian 等。</li>
+</ul>
+<p>执行 grub2–mkconfig 指令重新配置 grub.cfg：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># BIOS 引导</span></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">grub2-mkconfig -o /boot/grub2/grub.cfg</span><br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># UEFI 引导</span></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">grub2-mkconfig -o /boot/efi/EFI/&lt;distro_name&gt;/grub.cfg</span><br></code></pre></td></tr></table></figure>
+
+<p>重启操作系统，使配置永久生效：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs 1c"><span class="hljs-meta"># reboot</span><br></code></pre></td></tr></table></figure>
+
+<p>验证透明大页已关闭：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># Red Hat Enterprise Linux 内核</span></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash"><span class="hljs-built_in">cat</span> /sys/kernel/mm/redhat_transparent_hugepage/enabled</span><br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># 其他内核</span></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash"><span class="hljs-built_in">cat</span> /sys/kernel/mm/transparent_hugepage/enabled</span><br></code></pre></td></tr></table></figure>
+
+<p>结果应显示 always madvise [never]。</p>
+<h2 id="安装步骤（使用yashan用户）"><a href="#安装步骤（使用yashan用户）" class="headerlink" title="安装步骤（使用yashan用户）"></a>安装步骤（使用yashan用户）</h2><p>YashanDB 安装可以使用两种方式：</p>
+<ul>
+<li>命令行安装</li>
+<li>可视化安装</li>
+</ul>
+<p>由于本人喜欢使用命令行模式，所以演示也是使用命令行。</p>
+<h3 id="解压安装软件"><a href="#解压安装软件" class="headerlink" title="解压安装软件"></a>解压安装软件</h3><p>安装目录规划在 &#x2F;home&#x2F;yashan&#x2F;install 下，由 yashan 用户执行软件包下载时自行创建。执行安装部署前，请以安装用户（yashan）登录数据库服务器，并进入 &#x2F;home&#x2F;yashan&#x2F;install 安装目录：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment">## 在 yashan 用户下执行</span><br>mkdir -p <span class="hljs-regexp">/home/y</span>ashan/install<br><span class="hljs-comment">## 解压安装包</span><br>tar -zxf <span class="hljs-regexp">/home/y</span>ashan<span class="hljs-regexp">/install/y</span>ashandb-personal-<span class="hljs-number">23.2</span>.<span class="hljs-number">3.100</span>-linux-x86_64.tar.gz<br></code></pre></td></tr></table></figure>
+
+<h3 id="生成安装配置文件"><a href="#生成安装配置文件" class="headerlink" title="生成安装配置文件"></a>生成安装配置文件</h3><p>执行 yasboot package 命令生成配置文件：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli"><span class="hljs-comment">## 注意这里的 yashan 用户密码需要根据自己的环境进行配置，如果安装教程走的话，可以不用修改，密码就是 yashan</span><br><span class="hljs-string">./bin/yasboot</span> package se gen <span class="hljs-params">--cluster</span> yashandb -u yashan -p yashan <span class="hljs-params">--ip</span> 10.211.55.88 <span class="hljs-params">--port</span> 22 <span class="hljs-params">--install-path</span> <span class="hljs-string">/data/yashan/yasdb_home</span> <span class="hljs-params">--data-path</span> <span class="hljs-string">/data/yashan/yasdb_data</span> <span class="hljs-params">--begin-port</span> 1688<br></code></pre></td></tr></table></figure>
+
+<p>参数说明：</p>
+<ul>
+<li><strong>–cluster</strong>：指定数据库集群名称，该名称也将作为初始数据库的名称（database name）</li>
+<li><strong>–port</strong>：指定 SSH 服务端口</li>
+<li><strong>–install-path</strong>：指定数据库安装路径</li>
+<li><strong>–data-path</strong>：指定数据存放目录</li>
+<li><strong>–begin-port</strong>：指定数据库监听端口</li>
+</ul>
+<p>执行完毕后，当前目录下将生成 yashandb.toml 和 hosts.toml 两个配置文件，可手动修改，但不建议删除文件中任何行，否则可能导致后续安装过程报错，或所搭建的环境后续无法进行扩展配置。</p>
+<ul>
+<li>yashandb.toml：数据库集群的配置文件。</li>
+<li>hosts.toml：服务器的配置文件。</li>
+</ul>
+<h3 id="安装-yasom"><a href="#安装-yasom" class="headerlink" title="安装 yasom"></a>安装 yasom</h3><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gradle">.<span class="hljs-regexp">/bin/y</span>asboot <span class="hljs-keyword">package</span> install -t hosts.toml -i <span class="hljs-regexp">/home/y</span>ashan<span class="hljs-regexp">/install/y</span>ashandb-personal-<span class="hljs-number">23.2</span>.<span class="hljs-number">3.100</span>-linux-x86_64.tar.gz<br></code></pre></td></tr></table></figure>
+
+<h3 id="安装-yasagent"><a href="#安装-yasagent" class="headerlink" title="安装 yasagent"></a>安装 yasagent</h3><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli"><span class="hljs-comment">## 安装部署 yasdb，-p 指定的是 sys 用户密码</span><br><span class="hljs-string">./bin/yasboot</span> cluster <span class="hljs-keyword">deploy</span> -t yashandb.toml -p yasdb_123<br><br><span class="hljs-comment">## 也可以部署完成后使用 yasboot 单独配置 sys 用户密码</span><br>yasboot cluster password <span class="hljs-keyword">set</span> -n yasdb_123 -c yashandb<br></code></pre></td></tr></table></figure>
+
+<p>YashanDB 不提供系统初始口令，需使用 yasboot 工具设置数据库 sys 用户的密码，以安装用户登录到服务器并执行如下命令设置密码。</p>
+<h3 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h3><p>部署命令成功执行后将会在 $YASDB_HOME 目录下的 conf 文件夹中生成 &lt;&lt;集群名称&gt;&gt;.bashrc 环境变量文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> /data/yashan/yasdb_home/yashandb/23.2.3.100/conf/<br><span class="hljs-comment"># 如 ~/.bashrc 中已存在 YashanDB 相关的环境变量，将其清除</span><br><span class="hljs-built_in">cat</span> yashandb.bashrc &gt;&gt;~/.bashrc<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;alias ys=&#x27;yasql / as sysdba&#x27;&quot;</span> &gt;&gt; ~/.bashrc<br><span class="hljs-built_in">source</span> ~/.bashrc<br></code></pre></td></tr></table></figure>
+
+<h3 id="连接数据库"><a href="#连接数据库" class="headerlink" title="连接数据库"></a>连接数据库</h3><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs clean">## 系统认证方式登录<br>yasql / <span class="hljs-keyword">as</span> sysdba<br><br>## sys 密码登录<br>yasql sys/password@<span class="hljs-number">192.168</span><span class="hljs-number">.1</span><span class="hljs-number">.2</span>:<span class="hljs-number">1688</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h3><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">user</span> lucifer identified <span class="hljs-keyword">by</span> lucifer;<br><span class="hljs-keyword">grant</span> <span class="hljs-keyword">connect</span> <span class="hljs-keyword">to</span> lucifer;<br></code></pre></td></tr></table></figure>
+
+<h2 id="配置开机自启"><a href="#配置开机自启" class="headerlink" title="配置开机自启"></a>配置开机自启</h2><p>由于每次开机都需要启动 yasom 和 yasagent，然后再启动数据库，比较麻烦，所以建议配置开机自启：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">## 确保已启动 yasom 和 yasagent 进程，若没有可使用以下命令启动<br>[yashan@ymp ~]$ yasboot process yasom start -c yashandb<br>start yasom successfully<br>[yashan@ymp ~]$ yasboot process yasagent start -c yashandb<br>start local agent successfully!<br><br>## 等待 yasom 和 yasagent 进程启动后，才能启动数据库<br>[yashan@ymp ~]$ yasboot cluster start -c yashandb<br><span class="hljs-section"> type | uuid             | name              | hostid | index    | status  | return_code | progress | cost</span><br><span class="hljs-section">-----------------------------------------------------------------------------------------------------------</span><br><span class="hljs-section"> task | 37f4808dd5e7923a | StartYasdbCluster | -      | yashandb | SUCCESS | 0           | 100      | 7</span><br><span class="hljs-section">------+------------------+-------------------+--------+----------+---------+-------------+----------+------</span><br>task completed, status: SUCCESS<br>## 配置 YashanDB 启动守护进程<br>[yashan@ymp install]$ yasboot monit start --cluster yashandb<br><span class="hljs-section"> type | uuid             | name             | hostid | index    | status  | return_code | progress | cost</span><br><span class="hljs-section">----------------------------------------------------------------------------------------------------------</span><br><span class="hljs-section"> task | 66b4fd2fc0bddd62 | MonitParentStart | -      | yashandb | SUCCESS | 0           | 100      | 1</span><br><span class="hljs-section">------+------------------+------------------+--------+----------+---------+-------------+----------+------</span><br>task completed, status: SUCCESS<br></code></pre></td></tr></table></figure>
+
+<p>配置开机自启动，需在 yasagent 进程所在服务器（即每台服务器）中执行以下操作：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs swift">[root<span class="hljs-meta">@ymp</span> <span class="hljs-operator">~</span>]# cat<span class="hljs-operator">&lt;&lt;-</span><span class="hljs-type">EOF</span><span class="hljs-operator">&gt;/</span>etc<span class="hljs-operator">/</span>rc.local<br>su <span class="hljs-operator">-</span> yashan <span class="hljs-operator">-</span>c &#x27;<span class="hljs-regexp">/usr/</span>bin<span class="hljs-regexp">/monit -c /</span>data<span class="hljs-regexp">/yashan/</span>yasdb<span class="hljs-regexp">/yashandb/</span><span class="hljs-number">23.2</span>.<span class="hljs-number">3.100</span><span class="hljs-regexp">/ext/</span>monit<span class="hljs-operator">/</span>monitrc&#x27;<br><span class="hljs-type">EOF</span><br><br>[root<span class="hljs-meta">@ymp</span> <span class="hljs-operator">~</span>]# chmod <span class="hljs-operator">+</span>x <span class="hljs-regexp">/etc/</span>rc.d<span class="hljs-operator">/</span>rc.local<br></code></pre></td></tr></table></figure>
+
+<p>重启主机测试是否会开启：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs awk">[root@ymp ~]<span class="hljs-comment"># reboot</span><br><span class="hljs-comment">## 重启后连接数据库，正常开启</span><br>[root@ymp ~]<span class="hljs-comment"># su - yashan</span><br>Last login: Thu Sep <span class="hljs-number">19</span> <span class="hljs-number">22</span>:<span class="hljs-number">22</span>:<span class="hljs-number">05</span> CST <span class="hljs-number">2024</span><br>[yashan@ymp ~]$ yasql / as sysdba<br>YashanDB SQL Personal Edition Release <span class="hljs-number">23.2</span>.<span class="hljs-number">3.100</span> x86_64<br><br>Connected to:<br>YashanDB Server Personal Edition Release <span class="hljs-number">23.2</span>.<span class="hljs-number">3.100</span> x86_64 - X86 <span class="hljs-number">64</span>bit Linux<br><br>SQL&gt;<br>SQL&gt;<br>SQL&gt; <span class="hljs-keyword">exit</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="YashanDB-常用命令"><a href="#YashanDB-常用命令" class="headerlink" title="YashanDB 常用命令"></a>YashanDB 常用命令</h2><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver"><span class="hljs-comment">## 查看数据库状态</span><br>yasboot cluster status -c yashandb -d<br><span class="hljs-comment">## 开启 yasom</span><br>yasboot <span class="hljs-built_in">process</span> yasom <span class="hljs-built_in">start</span> -c yashandb<br><span class="hljs-comment">## 开启 yasagent</span><br>yasboot <span class="hljs-built_in">process</span> yasagent <span class="hljs-built_in">start</span> -c yashandb<br><span class="hljs-comment">## 关库</span><br>yasboot cluster <span class="hljs-built_in">stop</span> -c yashandb<br><span class="hljs-comment">## 开库</span><br>yasboot cluster <span class="hljs-built_in">start</span> -c yashandb<br><span class="hljs-comment">## 卸载</span><br>yasboot cluster clean <span class="hljs-comment">--cluster yashandb --purge</span><br></code></pre></td></tr></table></figure>
+
+<p>关于 YashanDB AWR 报告一键生成可参考：<strong><a target="_blank" rel="noopener" href="https://www.modb.pro/db/1836962461476470784">《YashanDB AWR 报告一键生成》</a></strong></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/142649947/">https://pc-study.github.io/csdn-blog/posts/142649947/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/YashanDB/">YashanDB</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/142943798/" title="浪潮云峦 KeyarchOS 5.8 一键安装 Oracle 11GR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">浪潮云峦 KeyarchOS 5.8 一键安装 Oracle 11GR2 单机</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 前言 Oracle 一键安装脚本，演示浪潮云峦 KeyarchOS 5.8 一键安装 Oracle 11GR2 单机过程（全程无需人工干预）。 脚本下载：Oracle一键安装脚本 作者微信：Lucifer-0622 安装准备 系统</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142649931/" title="达梦 DM8 数据库单机部署最佳实践"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">达梦 DM8 数据库单机部署最佳实践</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 前言 达梦是国产数据库中第一家上市的公司，在未来信创路上应该会越走越顺，所以对于国产数据库学习比较迷茫的同学，可以考虑先学习达梦数据库。 学习任何一种数据库之前，都需要先安装好数据库环境，所以安装是 DBA 的必备技能之</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/142649883/" title="YashanDB openssl 版本过低升级过程"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-30</div><div class="info-item-2">YashanDB openssl 版本过低升级过程</div></div><div class="info-2"><div class="info-item-1">YashanDB 对 openssl 版本有限制，要求版本为 1.1.1，检查当前系统 openssl 版本： 不满足安装需求，需要升级 openssl，下载地址：OpenSSL 1.1.1l 编译 openssl 需要安装 gcc，所以需要配置软件源： 安装依赖包： 备份自带 openssl： 解</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120318341/" title="Oracle 使用 PL&#x2F;SQL Developer 生成 AWR 报告"><img class="cover" src="/csdn-blog/images/6f3b46e12aca227bb568e5a136e61850.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-15</div><div class="info-item-2">Oracle 使用 PL&#x2F;SQL Developer 生成 AWR 报告</div></div><div class="info-2"><div class="info-item-1">Oracle AWR报告是用来分析数据库故障和性能的重要指标报告！ 生成 awr 报告通常在数据库服务器端，oracle 用户下执行命令： 执行完之后生成一个 html 报告，Linux 服务器无法直接查看，需要从服务器取出！ 但是，事有例外，有些数据库服务器禁止取出文件！咋个办呢？ 这个时候，我们</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139177034/" title="SUSE 12 SP5 一键安装 Oracle 12CR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">SUSE 12 SP5 一键安装 Oracle 12CR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 SUSE 12 SP5 一键安装 Oracle 12CR2 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安装包（安</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139683431/" title="RedHat 9.3 一键安装 Oracle 11GR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-14</div><div class="info-item-2">RedHat 9.3 一键安装 Oracle 11GR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 RedHat 9.3 一键安装 Oracle 11GR2 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安装包（</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121887067/" title="[译] 多租户：Oracle Database 19c 中的 DBCA PDB 重定位"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-12</div><div class="info-item-2">[译] 多租户：Oracle Database 19c 中的 DBCA PDB 重定位</div></div><div class="info-2"><div class="info-item-1">Oracle Database 12c 第 2 版 (12.2) 引入了使用 命令重新定位可插拔数据库 (PDB) 的功能。在 Oracle 19c 中，现在可以使用数据库配置助手 (DBCA) 执行可插拔数据库 (PDB) 的重定位。 一、先决条件 连接到远程 CDB 并准备重定位： 在远程数据库</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142649862/" title="ORA-00600 [25027] [x] [0] 问题分析思路与疑惑"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-30</div><div class="info-item-2">ORA-00600 [25027] [x] [0] 问题分析思路与疑惑</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 问题分析 日志分析 ORA-600 解析 DBLINK 问题？ 解决方案 后记 往期精彩文章推荐 前言 一大早还没上班，客户紧急告知应用频繁报错：，且产线大面积无法使用，需要帮忙分析问题原因以及如何解决。 参考 MOS</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">环境介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%89%8D%E5%87%86%E5%A4%87"><span class="toc-number">4.</span> <span class="toc-text">安装前准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#openssl-%E6%A3%80%E6%9F%A5"><span class="toc-number">4.1.</span> <span class="toc-text">openssl 检查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E9%98%B2%E7%81%AB%E5%A2%99"><span class="toc-number">4.2.</span> <span class="toc-text">关闭防火墙</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%94%A8%E6%88%B7%E5%92%8C%E7%BB%84"><span class="toc-number">4.3.</span> <span class="toc-text">创建用户和组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%9B%AE%E5%BD%95"><span class="toc-number">4.4.</span> <span class="toc-text">创建目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE"><span class="toc-number">4.5.</span> <span class="toc-text">系统参数配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E9%85%8D%E7%BD%AE"><span class="toc-number">4.6.</span> <span class="toc-text">资源配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E9%80%8F%E6%98%8E%E5%A4%A7%E9%A1%B5"><span class="toc-number">4.7.</span> <span class="toc-text">关闭透明大页</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4%EF%BC%88%E4%BD%BF%E7%94%A8yashan%E7%94%A8%E6%88%B7%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">安装步骤（使用yashan用户）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%8E%8B%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6"><span class="toc-number">5.1.</span> <span class="toc-text">解压安装软件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">5.2.</span> <span class="toc-text">生成安装配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-yasom"><span class="toc-number">5.3.</span> <span class="toc-text">安装 yasom</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-yasagent"><span class="toc-number">5.4.</span> <span class="toc-text">安装 yasagent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">5.5.</span> <span class="toc-text">配置环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">5.6.</span> <span class="toc-text">连接数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%94%A8%E6%88%B7"><span class="toc-number">5.7.</span> <span class="toc-text">创建用户</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="toc-number">6.</span> <span class="toc-text">配置开机自启</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YashanDB-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">7.</span> <span class="toc-text">YashanDB 常用命令</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

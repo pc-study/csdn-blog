@@ -1,0 +1,306 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>困扰 MySQL 用户多年的问题，它只用一个插件就解决了！ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="目录 前言 MySQL 数据库 金仓数据库 加载插件 实战演示 写在最后 前言 上周有个朋友问我：“哥，我们刚从 MySQL 8.0 迁到金仓数据库的 MySQL 兼容模式，发现一个很神奇的 BUG”！ 当我在金仓数据库中新建了一个用户以及表，没有对这个用户授权该表的访问权限，但是可以在 表中查询到">
+<meta property="og:type" content="article">
+<meta property="og:title" content="困扰 MySQL 用户多年的问题，它只用一个插件就解决了！">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/155039355/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="目录 前言 MySQL 数据库 金仓数据库 加载插件 实战演示 写在最后 前言 上周有个朋友问我：“哥，我们刚从 MySQL 8.0 迁到金仓数据库的 MySQL 兼容模式，发现一个很神奇的 BUG”！ 当我在金仓数据库中新建了一个用户以及表，没有对这个用户授权该表的访问权限，但是可以在 表中查询到">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/1d5de2aeb7154eb14814781917382294.webp">
+<meta property="article:published_time" content="2025-11-19T14:19:42.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.294Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="mysql">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="金仓数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/1d5de2aeb7154eb14814781917382294.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"困扰 MySQL 用户多年的问题，它只用一个插件就解决了！","url":"https://pc-study.github.io/csdn-blog/posts/155039355/","image":"https://pc-study.github.io/csdn-blog/images/1d5de2aeb7154eb14814781917382294.webp","datePublished":"2025-11-19T14:19:42.000Z","dateModified":"2026-03-20T12:25:39.294Z","description":"目录 前言 MySQL 数据库 金仓数据库 加载插件 实战演示 写在最后 前言 上周有个朋友问我：“哥，我们刚从 MySQL 8.0 迁到金仓数据库的 MySQL 兼容模式，发现一个很神奇的 BUG”！ 当我在金仓数据库中新建了一个用户以及表，没有对这个用户授权该表的访问权限，但是可以在 表中查询到","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/155039355/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/155039355/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '困扰 MySQL 用户多年的问题，它只用一个插件就解决了！',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/1d5de2aeb7154eb14814781917382294.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">困扰 MySQL 用户多年的问题，它只用一个插件就解决了！</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">困扰 MySQL 用户多年的问题，它只用一个插件就解决了！<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-11-19-155039355.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-19T14:19:42.000Z" title="发表于 2025-11-19 22:19:42">2025-11-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.294Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>6分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_2">前言</a></li>
+<li><a href="#MySQL__16">MySQL 数据库</a></li>
+<li><a href="#_42">金仓数据库</a></li>
+<li><ul>
+<li><a href="#_96">加载插件</a></li>
+<li><a href="#_140">实战演示</a></li>
+</ul>
+</li>
+<li><a href="#_218">写在最后</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上周有个朋友问我：“哥，我们刚从 MySQL 8.0 迁到金仓数据库的 MySQL 兼容模式，发现一个很神奇的 BUG”！</p>
+<p>当我在金仓数据库中新建了一个用户以及表，没有对这个用户授权该表的访问权限，但是可以在 <code>sys_class</code> 表中查询到这个表的信息。</p>
+<p><img src="/csdn-blog/images/1d5de2aeb7154eb14814781917382294.webp" alt="困扰 MySQL 用户多年的问题，它只用一个插件就解决了！" loading='lazy'></p>
+<p>也就是说，即使用户没有表的访问权限，也能从系统表（sys_class）查询到该表的存在和元数据信息，这是金仓数据库的 BUG 还是 MySQL 原来就存在这种问题呢？</p>
+<p><strong>其实，这既不是金仓的 BUG，也不是 MySQL 的 BUG，而是一个长期存在的数据库安全设计问题。</strong> 值得一提的是，金仓数据库在近期将会发布一个新的功能插件 <code>security_utils</code>，针对这个问题进行修复，避免元数据的泄露问题，也是对 MySQL 兼容模式的安全增强！</p>
+<p>我这里也是申请到了内测版的安装包，本文将演示一下如何使用 <code>security_utils</code> 插件进行用户的权限隔离，避免元数据泄露！</p>
+<h2 id="MySQL-数据库"><a href="#MySQL-数据库" class="headerlink" title="MySQL 数据库"></a>MySQL 数据库</h2><p>MySQL 数据库确实存在元数据泄露的问题：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-comment">-- 即使用户没有权限，也能查询到表的存在</span><br>  mysql&gt; <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">table_name</span> <span class="hljs-keyword">FROM</span> information_schema.<span class="hljs-keyword">tables</span><br>         <span class="hljs-keyword">WHERE</span> table_schema = <span class="hljs-string">&#x27;mydb&#x27;</span>;<br>  +<span class="hljs-comment">------------+</span><br>  | <span class="hljs-built_in">table_name</span> |<br>  +<span class="hljs-comment">------------+</span><br>  | orders     |<br>  | customers  |<br>  | salaries   |  <span class="hljs-comment">-- 工资表，敏感！</span><br>  +<span class="hljs-comment">------------+</span><br></code></pre></td></tr></table></figure>
+
+<p>这是 MySQL 的默认设计，不是 BUG，但确实是安全隐患。从 MySQL 5.x 版本到 MySQL 8.0+ 版本都有相关的改进：</p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MySQL 5.x</td>
+<td>所有用户可查看所有数据库的表结构</td>
+</tr>
+<tr>
+<td>MySQL 8.0+</td>
+<td>引入部分隔离，但仍可探测表存在性</td>
+</tr>
+</tbody></table>
+<p><strong>但注意</strong>：即使 MySQL 8.0，默认仍可通过 <code>SHOW TABLES</code> 或 <strong>information_schema</strong> 查看未授权表的名称。</p>
+<h2 id="金仓数据库"><a href="#金仓数据库" class="headerlink" title="金仓数据库"></a>金仓数据库</h2><p>正如开头的朋友所说，金仓数据库也是存在这种设计问题，下面我用一个例子进行还原。</p>
+<p>首先，创建一个表以及用户：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">kingbase=# <span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> orders (<br>order_id <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY KEY</span>,<br>customer_id <span class="hljs-type">INT</span>,<br>amount <span class="hljs-type">DECIMAL</span>(<span class="hljs-number">10</span>,<span class="hljs-number">2</span>),<br>order_date <span class="hljs-type">DATE</span>);<br><br>kingbase=# <span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> orders <span class="hljs-keyword">VALUES</span><br>(<span class="hljs-number">1</span>, <span class="hljs-number">1001</span>, <span class="hljs-number">5999.00</span>, <span class="hljs-string">&#x27;2024-11-01&#x27;</span>),<br>(<span class="hljs-number">2</span>, <span class="hljs-number">1002</span>, <span class="hljs-number">3299.00</span>, <span class="hljs-string">&#x27;2024-11-15&#x27;</span>);<br><br>kingbase=# <span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">USER</span> finance <span class="hljs-keyword">with</span> <span class="hljs-keyword">password</span> <span class="hljs-string">&#x27;Finance@123&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>切换到 <code>finance</code> 用户查询：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">kingbase=<span class="hljs-comment"># \c - finance</span><br>用户 finance 的口令：<br>您现在以用户名<span class="hljs-string">&quot;finance&quot;</span>连接到数据库<span class="hljs-string">&quot;kingbase&quot;</span>。<br>kingbase=&gt; select oid,relname from sys_class where relname=&#x27;orders&#x27;;<br>  oid  |<span class="hljs-string"> relname</span><br><span class="hljs-string">-------+---------</span><br><span class="hljs-string"> 16644 </span>|<span class="hljs-string"> orders</span><br><span class="hljs-string"></span><br><span class="hljs-string">kingbase=&gt; select * from orders;</span><br><span class="hljs-string">ERROR:  permission denied for table orders</span><br><span class="hljs-string"></span><br><span class="hljs-string">kingbase=&gt; \dt</span><br><span class="hljs-string">              关联列表</span><br><span class="hljs-string"> 架构模式 </span>|<span class="hljs-string">  名称  </span>|<span class="hljs-string">  类型  </span>|<span class="hljs-string"> 拥有者</span><br><span class="hljs-string">----------+--------+--------+--------</span><br><span class="hljs-string"> public   </span>|<span class="hljs-string"> orders </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string"></span><br><span class="hljs-string">kingbase=&gt; \d orders</span><br><span class="hljs-string">                  数据表 &quot;public.orders&quot;</span><br><span class="hljs-string">    栏位     </span>|<span class="hljs-string">     类型      </span>|<span class="hljs-string"> 校对规则 </span>|<span class="hljs-string">  可空的  </span>|<span class="hljs-string"> 预设</span><br><span class="hljs-string">-------------+---------------+----------+----------+------</span><br><span class="hljs-string"> order_id    </span>|<span class="hljs-string"> integer       </span>|<span class="hljs-string">          </span>|<span class="hljs-string"> not null </span>|<br> customer_id |<span class="hljs-string"> integer       </span>|<span class="hljs-string">          </span>|<span class="hljs-string">          </span>|<br> amount      |<span class="hljs-string"> numeric(10,2) </span>|<span class="hljs-string">          </span>|<span class="hljs-string">          </span>|<br> order_date  |<span class="hljs-string"> date          </span>|<span class="hljs-string">          </span>|<span class="hljs-string">          </span>|<br>索引：<br>    <span class="hljs-string">&quot;orders_pkey&quot;</span> PRIMARY KEY, btree (order_id NULLS FIRST)<br></code></pre></td></tr></table></figure>
+
+<p>可以发现，此时 finance 用户并没有表 orders 的访问权限，但是仍然可以通过 sys_class 查看到 orders 表的元数据，甚至是表结构，这是十分不安全。</p>
+<h3 id="加载插件"><a href="#加载插件" class="headerlink" title="加载插件"></a>加载插件</h3><p>金仓数据库提供用户权限隔离功能，用户权限隔离功能开启后，普通用户只能查看有权访问的对象（表、函数、视图、字段等）。</p>
+<p>用户权限隔离功能开启需要加载插件 <code>security_utils</code>，在使用 <code>security_utils</code> 之前，我们需要将他添加到 <code>kingbase.conf</code> 文件的 <code>shared_preload_libraries</code> 中，并重启 KingbaseES 数据库：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">shared_preload_libraries</span> = <span class="hljs-string">&#x27;security_utils&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/1b1a405a79857a4ed0661c238f93e983.png" alt="困扰 MySQL 用户多年的问题，它只用一个插件就解决了！ - 图2" loading='lazy'></p>
+<p>重启数据库生效：</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs dns">[kingbase@kesv9:/install]$ sys_ctl restart -D /data/<br>等待服务器进程关闭 .... 完成<br>服务器进程已经关闭<br>等待服务器进程启动 ....<span class="hljs-number">2025-08-27</span> <span class="hljs-number">00</span>:<span class="hljs-number">08:29.862</span> CST [<span class="hljs-number">93180</span>] LOG:  config the real archive_command string as soon as possible to archive WAL files<br><span class="hljs-number">2025-08-27</span> <span class="hljs-number">00</span>:<span class="hljs-number">08:29.869</span> CST [<span class="hljs-number">93180</span>] LOG:  sepapower extension initialized<br><span class="hljs-number">2025-08-27</span> <span class="hljs-number">00</span>:<span class="hljs-number">08:29.903</span> CST [<span class="hljs-number">93180</span>] LOG:  starting KingbaseES V009R<span class="hljs-number">003C012</span><br><span class="hljs-number">2025-08-27</span> <span class="hljs-number">00</span>:<span class="hljs-number">08:29.903</span> CST [<span class="hljs-number">93180</span>] LOG:  listening on IPv4 address &quot;<span class="hljs-number">0.0.0.0</span>&quot;, port <span class="hljs-number">54321</span><br><span class="hljs-number">2025-08-27</span> <span class="hljs-number">00</span>:<span class="hljs-number">08:29.903</span> CST [<span class="hljs-number">93180</span>] LOG:  listening on IPv6 address &quot;::&quot;, port <span class="hljs-number">54321</span><br><span class="hljs-number">2025-08-27</span> <span class="hljs-number">00</span>:<span class="hljs-number">08:29.905</span> CST [<span class="hljs-number">93180</span>] LOG:  listening on Unix socket &quot;/tmp/.s.KINGBASE.<span class="hljs-number">54321</span>&quot;<br><span class="hljs-number">2025-08-27</span> <span class="hljs-number">00</span>:<span class="hljs-number">08:29.986</span> CST [<span class="hljs-number">93180</span>] LOG:  redirecting log output to logging collector process<br><span class="hljs-number">2025-08-27</span> <span class="hljs-number">00</span>:<span class="hljs-number">08:29.986</span> CST [<span class="hljs-number">93180</span>] HINT:  Future log output will appear in directory &quot;sys_log&quot;.<br> 完成<br>服务器进程已经启动<br></code></pre></td></tr></table></figure>
+
+<p>开启权限隔离功能：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">kingbase=# \c - <span class="hljs-keyword">system</span><br>您现在以用户名&quot;system&quot;连接到数据库&quot;kingbase&quot;。<br><span class="hljs-comment">-- 开启功能</span><br>kingbase=# <span class="hljs-keyword">create</span> <span class="hljs-keyword">extension</span> kdb_schedule;<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">EXTENSION</span><br>kingbase=# <span class="hljs-keyword">create</span> <span class="hljs-keyword">extension</span> security_utils;<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">EXTENSION</span><br></code></pre></td></tr></table></figure>
+
+<p>至此，用户隔离的插件已开启。</p>
+<h3 id="实战演示"><a href="#实战演示" class="headerlink" title="实战演示"></a>实战演示</h3><p>接下来，演示一下 Kingbase MySQL 兼容模式如何进行用户权限隔离。</p>
+<p>数据库级别开启用户权限隔离：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">kingbase=&gt; \c - <span class="hljs-keyword">system</span><br>用户 <span class="hljs-keyword">system</span> 的口令：<br>您现在以用户名&quot;system&quot;连接到数据库&quot;kingbase&quot;。<br>kingbase=# <span class="hljs-keyword">alter</span> <span class="hljs-keyword">database</span> kingbase <span class="hljs-keyword">enable</span> <span class="hljs-keyword">object</span> <span class="hljs-keyword">isolation</span>;<br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">DATABASE</span><br></code></pre></td></tr></table></figure>
+
+<p>再切换到 <code>finance</code> 用户查询：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs livescript">kingbase=<span class="hljs-comment"># \c - finance</span><br>用户 finance 的口令：<br>您现在以用户名<span class="hljs-string">&quot;finance&quot;</span>连接到数据库<span class="hljs-string">&quot;kingbase&quot;</span>。<br>kingbase=&gt; select oid,relname <span class="hljs-keyword">from</span> sys_<span class="hljs-keyword">class</span> <span class="hljs-title class_">where</span> relname=<span class="hljs-string">&#x27;orders&#x27;</span>;<br> oid | relname<br>-----+---------<br>(<span class="hljs-number">0</span> 行记录)<br><br>kingbase=&gt; <span class="hljs-string">\dt</span><br>Did <span class="hljs-keyword">not</span> find any relations.<br>kingbase=&gt; <span class="hljs-string">\d</span> orders<br>Did <span class="hljs-keyword">not</span> find any relation named <span class="hljs-string">&quot;orders&quot;</span>.<br></code></pre></td></tr></table></figure>
+
+<p>已经无法查询到 sys_class 中 orders 表的信息，包括元数据以及表结构，都已经无法查看。</p>
+<p>如果想要访问以上元数据，则需要人为进行授权该表给用户才行：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">kingbase=&gt; \c - <span class="hljs-keyword">system</span><br>用户 <span class="hljs-keyword">system</span> 的口令：<br>您现在以用户名&quot;system&quot;连接到数据库&quot;kingbase&quot;。<br>kingbase=# <span class="hljs-keyword">grant</span> <span class="hljs-keyword">select</span> <span class="hljs-keyword">on</span> <span class="hljs-keyword">table</span> orders <span class="hljs-keyword">to</span> finance;<br><span class="hljs-keyword">GRANT</span><br></code></pre></td></tr></table></figure>
+
+<p>再切换到 <code>finance</code> 用户查询：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">kingbase=<span class="hljs-comment"># \c - finance</span><br>用户 finance 的口令：<br>您现在以用户名<span class="hljs-string">&quot;finance&quot;</span>连接到数据库<span class="hljs-string">&quot;kingbase&quot;</span>。<br>kingbase=&gt; select oid,relname from sys_class where relname=&#x27;orders&#x27;;<br>  oid  |<span class="hljs-string"> relname</span><br><span class="hljs-string">-------+---------</span><br><span class="hljs-string"> 16644 </span>|<span class="hljs-string"> orders</span><br><span class="hljs-string">(1 行记录)</span><br><span class="hljs-string"></span><br><span class="hljs-string">kingbase=&gt; \dt</span><br><span class="hljs-string">              关联列表</span><br><span class="hljs-string"> 架构模式 </span>|<span class="hljs-string">  名称  </span>|<span class="hljs-string">  类型  </span>|<span class="hljs-string"> 拥有者</span><br><span class="hljs-string">----------+--------+--------+--------</span><br><span class="hljs-string"> public   </span>|<span class="hljs-string"> orders </span>|<span class="hljs-string"> 数据表 </span>|<span class="hljs-string"> system</span><br><span class="hljs-string">(1 行记录)</span><br><span class="hljs-string"></span><br><span class="hljs-string">kingbase=&gt; \d orders</span><br><span class="hljs-string">                  数据表 &quot;public.orders&quot;</span><br><span class="hljs-string">    栏位     </span>|<span class="hljs-string">     类型      </span>|<span class="hljs-string"> 校对规则 </span>|<span class="hljs-string">  可空的  </span>|<span class="hljs-string"> 预设</span><br><span class="hljs-string">-------------+---------------+----------+----------+------</span><br><span class="hljs-string"> order_id    </span>|<span class="hljs-string"> integer       </span>|<span class="hljs-string">          </span>|<span class="hljs-string"> not null </span>|<br> customer_id |<span class="hljs-string"> integer       </span>|<span class="hljs-string">          </span>|<span class="hljs-string">          </span>|<br> amount      |<span class="hljs-string"> numeric(10,2) </span>|<span class="hljs-string">          </span>|<span class="hljs-string">          </span>|<br> order_date  |<span class="hljs-string"> date          </span>|<span class="hljs-string">          </span>|<span class="hljs-string">          </span>|<br>索引：<br>    <span class="hljs-string">&quot;orders_pkey&quot;</span> PRIMARY KEY, btree (order_id NULLS FIRST)<br></code></pre></td></tr></table></figure>
+
+<p>可以发现，金仓数据库通过插件方式实现了开关式的一键开关用户权限隔离功能，十分方便快捷。</p>
+<p>金仓数据库的这个功能，技术底层实现依赖 <strong>行级安全策略</strong>（Row-Level Security, RLS），通过修改数据库状态，为当前数据库<strong>具有 ACL 字段的系统表统一添加配置好的 RLS</strong>，通过 RLS 筛选以实现普通用户只能查看有权访问的对象（表、函数、视图、字段等）的目的。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>在数字化时代，数据安全至关重要，数据库权限管理是核心保障。金仓数据库通过 <code>security_utils</code> 插件提供了超越 MySQL 原生能力的安全特性，补齐了 Oracle 级别的安全特性，通过插件化实现，兼顾灵活性和安全性。</p>
+<p>同时，金仓数据库高度兼容 MySQL 的语法与基本功能，降低应用迁移成本，还在权限管理上实现功能增强，能满足金融、医疗等领域复杂需求，为企业数字化转型提供可靠数据安全支撑。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/155039355/">https://pc-study.github.io/csdn-blog/posts/155039355/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/mysql/">mysql</a><a class="post-meta__tags" href="/csdn-blog/tags/%E9%87%91%E4%BB%93%E6%95%B0%E6%8D%AE%E5%BA%93/">金仓数据库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img class="cover" src="/csdn-blog/img/covers/linux.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">veeam agent 纳管 Ubuntu 20.04 报错解决</div></div><div class="info-2"><div class="info-item-1">前言 昨天 Veeam 纳管一台 Ubuntu 20.04 时遇到了一些问题，先是提示主机需要联外网下载依赖，配置网络之后，agent 安装又失败了，报错： 本文记录一下分析过程以及解决步骤。 问题分析 首先查看主机系统版本： VBR 纳管报错，格式化内容之后如下： 联系网络管理员临时开通外网后，重</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/154742448/" title="EMCC 13.5 安装中断，如何清理 OMS 库？"><img class="cover" src="/csdn-blog/images/906c9e9e996746d92d2a284c33fbf3ac.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">EMCC 13.5 安装中断，如何清理 OMS 库？</div></div><div class="info-2"><div class="info-item-1">前言 昨天安装一套 EMCC13.5，安装过程中 VNC 卡死导致安装失败，清理目录后重新执行安装，结果安装过程中报错了： 应该是 OMS 数据库在前一次安装过程中已经创建了用户以及一些对象，导致 OMS 数据库不干净了，一般建议重建 OMS 数据库，但是时间比较久，今天介绍一下另一种解决这个问题的</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/149572926/" title="昨天去看了电科金仓的发布会，有点东西！"><img class="cover" src="/csdn-blog/images/bd09e71393ba70dd6f50460b6f5a9b53.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-23</div><div class="info-item-2">昨天去看了电科金仓的发布会，有点东西！</div></div><div class="info-2"><div class="info-item-1">前言 昨天（7 月 15 日），我受邀参加了电科金仓的 2025 年度发布会，主题是“融合进化 智领未来”。作为一个跟数据库打了快十年交道的 DBA，我太清楚这个领域现在有多热闹了：国产化势头猛，AI 技术天天变，老一套运维方法快顶不住了。 这次去，我带着学习的态度，真心想看看国产数据库能拿出什么新</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/144215691/" title="金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移"><img class="cover" src="/csdn-blog/images/5a69762ab0f1a6dc43c9e5ae4f82d282.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-03</div><div class="info-item-2">金仓 KDTS 初探：Oracle 到 KingbaseES 一键迁移</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149572992/" title="金仓 KEMCC 非云环境初始化与纳管指南"><img class="cover" src="/csdn-blog/images/e4fda0dab03c7946935f5e2dd565d688.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-23</div><div class="info-item-2">金仓 KEMCC 非云环境初始化与纳管指南</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 非云环境初始化 创建非云平台账号 纳管服务器 注册数据库实例 上传镜像文件 创建数据库实例 问题记录 前言 前文 从零搭建金仓运维利器：KEMCC 安装与初探 介绍了如何快速安装一套 KEMCC 管理平台，本文将演示如何初始化</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120685062/" title="SQL 增删改查：我能玩出这花样儿？"><img class="cover" src="/csdn-blog/images/0d0c859ef6e764f3f19d6d128676e765.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-10</div><div class="info-item-2">SQL 增删改查：我能玩出这花样儿？</div></div><div class="info-2"><div class="info-item-1">📚 前言 SQL是什么？ 官方解释：SQL (Structured Query Language:结构化查询语言) 是用于管理关系数据库管理系统（RDBMS）。 SQL能用来干什么？ 通俗的讲：让您可以访问和处理数据库，包括数据插入、查询、更新和删除。 SQL 对于现在的互联网公司生产 研发 等岗位</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142649750/" title="使用 dbops 快速部署 MySQL 数据库"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-30</div><div class="info-item-2">使用 dbops 快速部署 MySQL 数据库</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 介绍 下载 dbops Gitee 下载 开发版下载 部署 dbops 解压缩 dbops 部署 ansible 使用 dbops 部署单机 连接测试 往期精彩文章推荐 前言 昨天群里有位朋友分享了芬达大佬的 MySQ</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/125873985/" title="学习 MySQL 需要知道的 28 个小技巧"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-19</div><div class="info-item-2">学习 MySQL 需要知道的 28 个小技巧</div></div><div class="info-2"><div class="info-item-1">前言 随着信息技术的不断发展以及互联网行业的高速增长，作为开源数据库的MySQL得到了广泛的应用和发展。目前MySQL已成为关系型数据库领域中非常重要的一员。 无论是运维、开发、测试，还是架构师，数据库技术都是一个 ，那么，一直说学习数据库、学 ，到底是要学习它的哪些东西呢？ 一、如何快速掌握 My</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL-%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">3.</span> <span class="toc-text">MySQL 数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%91%E4%BB%93%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">4.</span> <span class="toc-text">金仓数据库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E6%8F%92%E4%BB%B6"><span class="toc-number">4.1.</span> <span class="toc-text">加载插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E6%88%98%E6%BC%94%E7%A4%BA"><span class="toc-number">4.2.</span> <span class="toc-text">实战演示</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">5.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

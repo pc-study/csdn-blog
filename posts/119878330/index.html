@@ -1,0 +1,296 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持 RAC 集群版本一键安装了！❗️ 依然不支持 Linux 6 系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/119878330/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持 RAC 集群版本一键安装了！❗️ 依然不支持 Linux 6 系统">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/4ae7e82aed5e9ef2b241abc9862fd72c.webp">
+<meta property="article:published_time" content="2021-08-23T13:40:43.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:37.902Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="vagrant">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/4ae7e82aed5e9ef2b241abc9862fd72c.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库","url":"https://pc-study.github.io/csdn-blog/posts/119878330/","image":"https://pc-study.github.io/csdn-blog/images/4ae7e82aed5e9ef2b241abc9862fd72c.webp","datePublished":"2021-08-23T13:40:43.000Z","dateModified":"2026-03-20T12:25:37.902Z","description":"前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持 RAC 集群版本一键安装了！❗️ 依然不支持 Linux 6 系统","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/119878330/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/119878330/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/4ae7e82aed5e9ef2b241abc9862fd72c.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-08-23-119878330.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-08-23T13:40:43.000Z" title="发表于 2021-08-23 21:40:43">2021-08-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:37.902Z" title="更新于 2026-03-20 20:25:37">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>6分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:37&quot;}" hidden></div><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 <code>新手纯享版本</code>，真正一行短命令！</p>
+<p><strong>💡 支持 RAC 集群版本一键安装了！❗️ 依然不支持 Linux 6 系统安装！</strong></p>
+<p><strong>简单总结一下步骤：</strong></p>
+<ul>
+<li>下载项目和安装软件</li>
+<li>上传 oracle 和 grid 安装包</li>
+<li>简单编辑配置文件</li>
+<li>执行启动命令</li>
+<li>连接节点一，执行安装命令</li>
+</ul>
+<p>😄 还不来试试？这要还不会，建议就直接用别人安装好的吧！</p>
+<p><strong>开源项目地址：</strong></p>
+<ul>
+<li>Gitee：<a target="_blank" rel="noopener" href="https://gitee.com/luciferlpc/InstallOracleshell">https://gitee.com/luciferlpc/InstallOracleshell</a></li>
+<li>GitHub：<a target="_blank" rel="noopener" href="https://github.com/pc-study/InstallOracleshell">https://github.com/pc-study/InstallOracleshell</a></li>
+</ul>
+<p>觉好记得点上 <code>star</code> ，项目将持续保持更新！🔥</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><h3 id="下载项目"><a href="#下载项目" class="headerlink" title="下载项目"></a>下载项目</h3><p>使用 git 将项目下载到本地目录：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://gitee.com/luciferlpc/InstallOracleshell.git<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>不会用 Git ？没关系，直接打开项目地址 <a target="_blank" rel="noopener" href="https://gitee.com/luciferlpc/InstallOracleshell">https://gitee.com/luciferlpc/InstallOracleshell</a>，直接下载 ZIP 包也是一样的！</p>
+<p><img src="/csdn-blog/images/6498280d0b8037bd8fce04581e1ee035.webp" alt="《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库" loading='lazy'></p>
+<h3 id="安装软件"><a href="#安装软件" class="headerlink" title="安装软件"></a>安装软件</h3><p>必须使用 <a target="_blank" rel="noopener" href="https://www.vagrantup.com/downloads">vagrant</a> 和 <a target="_blank" rel="noopener" href="https://www.virtualbox.org/wiki/Downloads">virtualbox</a>，请确保你本地安装了它们。</p>
+<h3 id="下载-Oracle-安装包"><a href="#下载-Oracle-安装包" class="headerlink" title="下载 Oracle 安装包"></a>下载 Oracle 安装包</h3><p>新手纯享版本支持 [11GR2&#x2F;12CR2&#x2F;18C&#x2F;19C&#x2F;21C] 版本，本次演示 18C 版本安装，因此需要下载 18C 版本安装包！</p>
+<p>Oracle 安装包下载地址：<a target="_blank" rel="noopener" href="https://www.modb.pro/download/123438">精心整理Oracle数据库各版本（软件安装包+最新补丁包）</a></p>
+<p>下载好之后，将 Oracle 安装包拷贝到项目中的 <code>rac_db/software/18000</code> 目录下。</p>
+<p><strong>📢 注意：</strong> 项目 <code>rac_db/software/18000</code> 目录中有一个 <code>software.txt</code> 文件，内容为你需要上传的 Oracle 安装包。请确保安装包名称与以下名称相同，否则安装 <strong>失败</strong>！</p>
+<h2 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h2><h3 id="编辑-vagrant-yml-文件"><a href="#编辑-vagrant-yml-文件" class="headerlink" title="编辑 vagrant.yml 文件"></a>编辑 vagrant.yml 文件</h3><p>不要害怕，这个文件很简单，所见即所得！调整为如下参数：</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs nix"><span class="hljs-params">env:</span><br>  <span class="hljs-params">box:</span> luciferliu<span class="hljs-symbol">/centos7.9</span><br>  <span class="hljs-params">prefix_name:</span> orcl<br>  <span class="hljs-params">mem_size:</span> <span class="hljs-number">6144</span><br>  <span class="hljs-params">cpus:</span> <span class="hljs-number">4</span><br>  <span class="hljs-params">scan_ip:</span> <span class="hljs-number">192.168</span>.<span class="hljs-number">56.105</span><br>  <span class="hljs-params">non_rotational:</span> &#x27;on&#x27;<br>  <span class="hljs-params">db_version:</span> <span class="hljs-number">18</span><br>  <span class="hljs-params">gi_patch:</span><br>  <span class="hljs-params">grid_password:</span> oracle<br>  <span class="hljs-params">oracle_password:</span> oracle<br>  <span class="hljs-params">oracle_sid:</span> orcl<br>  <span class="hljs-params">install_base:</span> <span class="hljs-symbol">/u01/app</span><br>  <span class="hljs-params">characterset:</span> AL32UTF8<br>  <span class="hljs-params">cdb:</span> <span class="hljs-literal">false</span><br>  <span class="hljs-params">pdb:</span> pdb01<br><br><span class="hljs-params">node1:</span><br>  <span class="hljs-params">vm_name:</span> rac1<br>  <span class="hljs-params">public_ip:</span> <span class="hljs-number">192.168</span>.<span class="hljs-number">56.100</span><br>  <span class="hljs-params">virtual_ip:</span> <span class="hljs-number">192.168</span>.<span class="hljs-number">56.102</span><br>  <span class="hljs-params">private_ip:</span> <span class="hljs-number">1.1</span>.<span class="hljs-number">1.1</span><br><br><span class="hljs-params">node2:</span><br>  <span class="hljs-params">vm_name:</span> rac2<br>  <span class="hljs-params">public_ip:</span> <span class="hljs-number">192.168</span>.<span class="hljs-number">56.101</span><br>  <span class="hljs-params">virtual_ip:</span> <span class="hljs-number">192.168</span>.<span class="hljs-number">56.103</span><br>  <span class="hljs-params">private_ip:</span> <span class="hljs-number">1.1</span>.<span class="hljs-number">1.2</span><br><br><span class="hljs-params">asm:</span><br>  <span class="hljs-params">asmdisk_ocr_name:</span> <span class="hljs-symbol">./asm_ocr.vdi</span><br>  <span class="hljs-params">asmdisk_ocr_size:</span> <span class="hljs-number">40</span><br>  <span class="hljs-params">asmdisk_data_name:</span> <span class="hljs-symbol">./asm_data.vdi</span><br>  <span class="hljs-params">asmdisk_data_size:</span> <span class="hljs-number">20</span><br><br>AI写代码<br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br><span class="hljs-operator">*</span> <span class="hljs-number">2</span><br><span class="hljs-operator">*</span> <span class="hljs-number">3</span><br><span class="hljs-operator">*</span> <span class="hljs-number">4</span><br><span class="hljs-operator">*</span> <span class="hljs-number">5</span><br><span class="hljs-operator">*</span> <span class="hljs-number">6</span><br><span class="hljs-operator">*</span> <span class="hljs-number">7</span><br><span class="hljs-operator">*</span> <span class="hljs-number">8</span><br><span class="hljs-operator">*</span> <span class="hljs-number">9</span><br><span class="hljs-operator">*</span> <span class="hljs-number">10</span><br><span class="hljs-operator">*</span> <span class="hljs-number">11</span><br><span class="hljs-operator">*</span> <span class="hljs-number">12</span><br><span class="hljs-operator">*</span> <span class="hljs-number">13</span><br><span class="hljs-operator">*</span> <span class="hljs-number">14</span><br><span class="hljs-operator">*</span> <span class="hljs-number">15</span><br><span class="hljs-operator">*</span> <span class="hljs-number">16</span><br><span class="hljs-operator">*</span> <span class="hljs-number">17</span><br><span class="hljs-operator">*</span> <span class="hljs-number">18</span><br><span class="hljs-operator">*</span> <span class="hljs-number">19</span><br><span class="hljs-operator">*</span> <span class="hljs-number">20</span><br><span class="hljs-operator">*</span> <span class="hljs-number">21</span><br><span class="hljs-operator">*</span> <span class="hljs-number">22</span><br><span class="hljs-operator">*</span> <span class="hljs-number">23</span><br><span class="hljs-operator">*</span> <span class="hljs-number">24</span><br><span class="hljs-operator">*</span> <span class="hljs-number">25</span><br><span class="hljs-operator">*</span> <span class="hljs-number">26</span><br><span class="hljs-operator">*</span> <span class="hljs-number">27</span><br><span class="hljs-operator">*</span> <span class="hljs-number">28</span><br><span class="hljs-operator">*</span> <span class="hljs-number">29</span><br><span class="hljs-operator">*</span> <span class="hljs-number">30</span><br><span class="hljs-operator">*</span> <span class="hljs-number">31</span><br><span class="hljs-operator">*</span> <span class="hljs-number">32</span><br><span class="hljs-operator">*</span> <span class="hljs-number">33</span><br><span class="hljs-operator">*</span> <span class="hljs-number">34</span><br></code></pre></td></tr></table></figure>
+
+<p>当然，你也可以自定义，参数介绍如下：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">box               : Linux 主机版本，不支持 linux 6 版本，12C 仅支持 Linux 7 版本！<br><br>可选值：<br><span class="hljs-bullet">- </span>luciferliu/centos7.9<br><span class="hljs-bullet">- </span>luciferliu/centos8.3<br><span class="hljs-bullet">- </span>luciferliu/oraclelinux7.9<br><span class="hljs-bullet">- </span>luciferliu/oraclelinux8.3<br><br>prefix<span class="hljs-emphasis">_name    : 主机名，集群名以及scan名称的前缀，根据需要修改，正常默认即可。</span><br><span class="hljs-emphasis">mem_size          : 内存大小，单位是 `MiB`，根据需要修改，正常默认即可。</span><br><span class="hljs-emphasis">cpus              : cpu 个数，根据需要修改，正常默认即可。</span><br><span class="hljs-emphasis">scan_ip      : scan ip，根据需要修改，正常默认即可。</span><br><span class="hljs-emphasis">public_ip         : IP 地址，根据网卡定义修改，正常默认即可。</span><br><span class="hljs-emphasis">non_rotational      : 不用修改值，默认即可。</span><br><span class="hljs-emphasis">db_version        : oracle 数据库版本，根据实际情况填写！</span><br><span class="hljs-emphasis">gi_patch          : Grid PSU/RU 补丁号，根据需要填写，不打补丁可以不填。</span><br><span class="hljs-emphasis">grid_password    : grid 用户密码，默认即可。</span><br><span class="hljs-emphasis">oracle_password     : oracle 用户密码，默认即可。</span><br><span class="hljs-emphasis">oracle_sid        : oracle 数据库实例名，默认即可。</span><br><span class="hljs-emphasis">install_</span>base        : oracle 安装根目录，默认即可。<br>characterset        : 数据库字符集，根据实际需要填写，正常默认即可。<br>cdb               : CDB 模式需要填写 true。<br>pdb               : PDB 名称，开启 CDB 模式后才可生效。<br><br>node1      : 代表节点一的参数配置，禁止修改！<br><span class="hljs-code">  vm_name    : 节点一的虚拟机名称，根据实际需要填写，正常默认即可。	</span><br><span class="hljs-code">  public_ip    : 节点一的 public ip，根据实际需要填写，正常默认即可。	</span><br><span class="hljs-code">  virtual_ip    : 节点一的 virtual ip，根据实际需要填写，正常默认即可。</span><br><span class="hljs-code">  private_ip    : 节点一的 private ip，根据实际需要填写，正常默认即可。</span><br><br>node2      : 代表节点二的参数配置，禁止修改！<br><span class="hljs-code">  vm_name    : 节点二的虚拟机名称，根据实际需要填写，正常默认即可。	</span><br><span class="hljs-code">  public_ip    : 节点二的 public ip，根据实际需要填写，正常默认即可。	</span><br><span class="hljs-code">  virtual_ip    : 节点二的 virtual ip，根据实际需要填写，正常默认即可。</span><br><span class="hljs-code">  private_ip    : 节点二的 private ip，根据实际需要填写，正常默认即可。</span><br><br>asm      : 代表 ASM 磁盘的配置，禁止修改！<br><span class="hljs-code">  asmdisk_ocr_name  : 不用修改值，默认即可。</span><br><span class="hljs-code">  asmdisk_ocr_size  : ASM OCR 磁盘大小，单位是 `GiB`，根据需要修改，正常默认即可。</span><br><span class="hljs-code">  asmdisk_data_name  : 不用修改值，默认即可。</span><br><span class="hljs-code">  asmdisk_data_size  : ASM DATA 磁盘大小，单位是 `GiB`，根据需要修改，正常默认即可。</span><br><br>AI写代码<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br><span class="hljs-bullet">* </span>3<br><span class="hljs-bullet">* </span>4<br><span class="hljs-bullet">* </span>5<br><span class="hljs-bullet">* </span>6<br><span class="hljs-bullet">* </span>7<br><span class="hljs-bullet">* </span>8<br><span class="hljs-bullet">* </span>9<br><span class="hljs-bullet">* </span>10<br><span class="hljs-bullet">* </span>11<br><span class="hljs-bullet">* </span>12<br><span class="hljs-bullet">* </span>13<br><span class="hljs-bullet">* </span>14<br><span class="hljs-bullet">* </span>15<br><span class="hljs-bullet">* </span>16<br><span class="hljs-bullet">* </span>17<br><span class="hljs-bullet">* </span>18<br><span class="hljs-bullet">* </span>19<br><span class="hljs-bullet">* </span>20<br><span class="hljs-bullet">* </span>21<br><span class="hljs-bullet">* </span>22<br><span class="hljs-bullet">* </span>23<br><span class="hljs-bullet">* </span>24<br><span class="hljs-bullet">* </span>25<br><span class="hljs-bullet">* </span>26<br><span class="hljs-bullet">* </span>27<br><span class="hljs-bullet">* </span>28<br><span class="hljs-bullet">* </span>29<br><span class="hljs-bullet">* </span>30<br><span class="hljs-bullet">* </span>31<br><span class="hljs-bullet">* </span>32<br><span class="hljs-bullet">* </span>33<br><span class="hljs-bullet">* </span>34<br><span class="hljs-bullet">* </span>35<br><span class="hljs-bullet">* </span>36<br><span class="hljs-bullet">* </span>37<br><span class="hljs-bullet">* </span>38<br><span class="hljs-bullet">* </span>39<br><span class="hljs-bullet">* </span>40<br><span class="hljs-bullet">* </span>41<br></code></pre></td></tr></table></figure>
+
+<p><strong>如果你不想了解，完全可以跳过！按照上面我给出的参数调整即可！</strong></p>
+<h3 id="开始安装"><a href="#开始安装" class="headerlink" title="开始安装"></a>开始安装</h3><p>返回项目 <code>rac_db</code> 目录下，直接执行 <code>vagrant up</code> 命令：</p>
+<p><img src="/csdn-blog/images/4ae7e82aed5e9ef2b241abc9862fd72c.webp" alt="《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库 - 图4" loading='lazy'></p>
+<p>这一步是为了创建操作系统和共享磁盘，并且生成一键安装的脚本命令。</p>
+<p><strong>📢 注意：所有密码默认都是 oracle！⭐️</strong></p>
+<p><strong>连接节点一主机，切换至 root 用户，开始安装：</strong></p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs stata">vagrant ssh node1<br><span class="hljs-keyword">su</span> - root<br><span class="hljs-keyword">cd</span> /soft<br><span class="hljs-keyword">sh</span> rac_install.<span class="hljs-keyword">sh</span><br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br></code></pre></td></tr></table></figure>
+
+<p>(｀ﾍ´)&#x3D;3 然后，让子弹飞一会儿，耐心等待安装成功吧！の 大概 1-2 小时左右！</p>
+<p><img src="/csdn-blog/images/3e1afe3e7b5603e3abc203fd15812c68.webp" alt="《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库 - 图5" loading='lazy'></p>
+<p>出现上述提示，即安装成功！如何使用？</p>
+<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>这里有三种方式来操作主机。</p>
+<h3 id="连接主机"><a href="#连接主机" class="headerlink" title="连接主机"></a>连接主机</h3><p>1、使用 <code>ssh root@192.168.56.100</code> 来连接，root 用户密码是 oracle ，使用 Xshell 等连接工具也可连接；</p>
+<p>2、使用 <code>vagrant ssh</code> 来连接，注意要在 <code>rac_db</code> 目录下执行，连接进去是 vagrant 用户，使用 <code>su - oracle</code> 来<br>切换<br>即可。</p>
+<p>3、使用 Virtualbox 虚拟机直接打开访问。</p>
+<p><img src="/csdn-blog/images/867399e33f62c9cd03ac0e3cfd013c02.webp" alt="《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库 - 图6" loading='lazy'></p>
+<h3 id="关闭主机"><a href="#关闭主机" class="headerlink" title="关闭主机"></a>关闭主机</h3><p>1、在主机中，执行 <code>init 0</code> 等关机命令关闭主机。</p>
+<p>2、使用 Virtualbox 虚拟机右键关闭。</p>
+<p>3、进入 <code>rac_db</code> 目录下执行 <code>vagrant halt</code> 关闭。</p>
+<p><img src="/csdn-blog/images/8599eb5091032ccea0f71928377b0352.webp" alt="《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库 - 图7" loading='lazy'></p>
+<h3 id="开启主机"><a href="#开启主机" class="headerlink" title="开启主机"></a>开启主机</h3><p>1、直接打开 Virtualbox 虚拟机，右键打开。</p>
+<p>2、进入 <code>rac_db</code> 目录下执行 <code>vagrant up</code>。</p>
+<h3 id="销毁主机"><a href="#销毁主机" class="headerlink" title="销毁主机"></a>销毁主机</h3><p>用完了，不需要使用了怎么办？</p>
+<p>1、直接打开 Virtualbox 虚拟机，右键删除。</p>
+<p>2、进入 <code>rac_db</code> 目录下执行 <code>vagrant destory</code> 销毁它。</p>
+<p><img src="/csdn-blog/images/6e8f31fd3ffc2245987dfea0b7454fab.webp" alt="《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库 - 图8" loading='lazy'></p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>这要是还不会，我就爱莫能助啦！</p>
+<p>本项目唯一的优势 👉🏻 在于可以自定义几乎大部分安装参数，包括 PSU&#x2F;RU 补丁的安装！</p>
+<p>如果使用官方的 rpm 安装方式或者<br>docker<br> 这类的方法，就无法做到这么灵活！</p>
+<hr>
+<p>本次分享到此结束啦~</p>
+<p>如果觉得文章对你有帮助，<strong>点赞、收藏、关注、评论</strong>，一键四连支持，你的支持就是我创作最大的动力。</p>
+<p>❤️ 技术交流可以 关注公众号：<strong>Lucifer三思而后行</strong> ❤️<br> <img src="/csdn-blog/images/a5829b29aa86fb44efc1b7370bb96345.webp" alt="Lucifer三思而后行" loading='lazy'></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/119878330/">https://pc-study.github.io/csdn-blog/posts/119878330/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/vagrant/">vagrant</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/119878365/" title="《零基础安装 Oracle 数据库》RAC集群系列 ❹ 简单两步快速安装 Oracle 19C RAC 数据库"><img class="cover" src="/csdn-blog/images/4ae7e82aed5e9ef2b241abc9862fd72c.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">《零基础安装 Oracle 数据库》RAC集群系列 ❹ 简单两步快速安装 Oracle 19C RAC 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持 RAC 集群版本一键安装了！❗️ 依然不支持 Linux 6 系统</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119878261/" title="《零基础安装 Oracle 数据库》RAC集群系列 ❷ 简单两步快速安装 Oracle 12CR2 RAC 数据库"><img class="cover" src="/csdn-blog/images/f0b76787497ac9c46eaf5e8b261b97e8.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">《零基础安装 Oracle 数据库》RAC集群系列 ❷ 简单两步快速安装 Oracle 12CR2 RAC 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持 RAC 集群版本一键安装了！❗️ 依然不支持 Linux 6 系统</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/119878261/" title="《零基础安装 Oracle 数据库》RAC集群系列 ❷ 简单两步快速安装 Oracle 12CR2 RAC 数据库"><img class="cover" src="/csdn-blog/images/f0b76787497ac9c46eaf5e8b261b97e8.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-23</div><div class="info-item-2">《零基础安装 Oracle 数据库》RAC集群系列 ❷ 简单两步快速安装 Oracle 12CR2 RAC 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持 RAC 集群版本一键安装了！❗️ 依然不支持 Linux 6 系统</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119843603/" title="《零基础安装 Oracle 数据库》单机系列 ② 一键快速安装 Oracle 12CR2 数据库"><img class="cover" src="/csdn-blog/images/644c43399983590f415749804cc0f3b4.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-21</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机系列 ② 一键快速安装 Oracle 12CR2 数据库</div></div><div class="info-2"><div class="info-item-1">目录 前言 安装 下载项目 安装软件 下载 Oracle 安装包 安装 编辑 vagrant.yml 文件 开始安装 使用方式 连接主机 关闭主机 开启主机 销毁主机 写在最后 前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + she</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119855024/" title="《零基础安装 Oracle 数据库》单机ASM系列 4️⃣ 一键快速安装 Oracle 19C 数据库"><img class="cover" src="/csdn-blog/images/fa884e3673745745f10f85d12f63db26.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-22</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机ASM系列 4️⃣ 一键快速安装 Oracle 19C 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持单机集群版本一键安装了！❗️ 但不支持 Linux 6 系统安装！</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119854975/" title="《零基础安装 Oracle 数据库》单机ASM系列 2️⃣ 一键快速安装 Oracle 12CR2 数据库"><img class="cover" src="/csdn-blog/images/7ee41c205dea5f4fcdae2c7f8c21b31f.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-22</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机ASM系列 2️⃣ 一键快速安装 Oracle 12CR2 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持单机集群版本一键安装了！❗️ 但不支持 Linux 6 系统安装！</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119863415/" title="《零基础安装 Oracle 数据库》RAC集群系列 ❶ 简单两步快速安装 Oracle 11GR2 RAC 数据库"><img class="cover" src="/csdn-blog/images/4ae7e82aed5e9ef2b241abc9862fd72c.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-23</div><div class="info-item-2">《零基础安装 Oracle 数据库》RAC集群系列 ❶ 简单两步快速安装 Oracle 11GR2 RAC 数据库</div></div><div class="info-2"><div class="info-item-1">目录 前言 安装 下载项目 安装软件 下载 Oracle 安装包 安装 编辑 vagrant.yml 文件 开始安装 使用方式 连接主机 关闭主机 开启主机 销毁主机 写在最后 前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + she</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119878435/" title="《零基础安装 Oracle 数据库》RAC集群系列 ❺ 简单两步快速安装 Oracle 21C RAC 数据库"><img class="cover" src="/csdn-blog/images/ff0f8dc8ae3a18d481d8e5f616e29730.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-23</div><div class="info-item-2">《零基础安装 Oracle 数据库》RAC集群系列 ❺ 简单两步快速安装 Oracle 21C RAC 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持 RAC 集群版本一键安装了！❗️ 依然不支持 Linux 6 系统</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">2.</span> <span class="toc-text">安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E9%A1%B9%E7%9B%AE"><span class="toc-number">2.1.</span> <span class="toc-text">下载项目</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6"><span class="toc-number">2.2.</span> <span class="toc-text">安装软件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD-Oracle-%E5%AE%89%E8%A3%85%E5%8C%85"><span class="toc-number">2.3.</span> <span class="toc-text">下载 Oracle 安装包</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-1"><span class="toc-number">3.</span> <span class="toc-text">安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%BE%91-vagrant-yml-%E6%96%87%E4%BB%B6"><span class="toc-number">3.1.</span> <span class="toc-text">编辑 vagrant.yml 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E5%AE%89%E8%A3%85"><span class="toc-number">3.2.</span> <span class="toc-text">开始安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">4.</span> <span class="toc-text">使用方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E4%B8%BB%E6%9C%BA"><span class="toc-number">4.1.</span> <span class="toc-text">连接主机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E4%B8%BB%E6%9C%BA"><span class="toc-number">4.2.</span> <span class="toc-text">关闭主机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%90%AF%E4%B8%BB%E6%9C%BA"><span class="toc-number">4.3.</span> <span class="toc-text">开启主机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%80%E6%AF%81%E4%B8%BB%E6%9C%BA"><span class="toc-number">4.4.</span> <span class="toc-text">销毁主机</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">5.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

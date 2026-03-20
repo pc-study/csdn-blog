@@ -1,0 +1,399 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>实战篇：Oracle 配置透明网关访问 MySQL 详细教程 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="前言 从 Oracle 无法直接访问 Mysql 数据库，需要配置透明网关后通过 DBLink 实现访问。 今天搞了一下午透明网关配置，流程比较复杂，并且有一些坑，这不立刻来给大家排排坑，说不定以后就用的着呢！ 废话不多说，直接实战走起~ 一、环境准备 本次环境准备了 3 台主机，分别是 Oracl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实战篇：Oracle 配置透明网关访问 MySQL 详细教程">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/121364429/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="前言 从 Oracle 无法直接访问 Mysql 数据库，需要配置透明网关后通过 DBLink 实现访问。 今天搞了一下午透明网关配置，流程比较复杂，并且有一些坑，这不立刻来给大家排排坑，说不定以后就用的着呢！ 废话不多说，直接实战走起~ 一、环境准备 本次环境准备了 3 台主机，分别是 Oracl">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/59071a743bc5d45570c9dbca6353b4cd.webp">
+<meta property="article:published_time" content="2021-11-18T06:36:53.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.318Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="pycharm">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="爬虫">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/59071a743bc5d45570c9dbca6353b4cd.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"实战篇：Oracle 配置透明网关访问 MySQL 详细教程","url":"https://pc-study.github.io/csdn-blog/posts/121364429/","image":"https://pc-study.github.io/csdn-blog/images/59071a743bc5d45570c9dbca6353b4cd.webp","datePublished":"2021-11-18T06:36:53.000Z","dateModified":"2026-03-20T12:25:38.318Z","description":"前言 从 Oracle 无法直接访问 Mysql 数据库，需要配置透明网关后通过 DBLink 实现访问。 今天搞了一下午透明网关配置，流程比较复杂，并且有一些坑，这不立刻来给大家排排坑，说不定以后就用的着呢！ 废话不多说，直接实战走起~ 一、环境准备 本次环境准备了 3 台主机，分别是 Oracl","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/121364429/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/121364429/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '实战篇：Oracle 配置透明网关访问 MySQL 详细教程',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/59071a743bc5d45570c9dbca6353b4cd.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">实战篇：Oracle 配置透明网关访问 MySQL 详细教程</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">实战篇：Oracle 配置透明网关访问 MySQL 详细教程<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-11-18-121364429.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-11-18T06:36:53.000Z" title="发表于 2021-11-18 14:36:53">2021-11-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.318Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>从 Oracle 无法直接访问 Mysql 数据库，需要配置透明网关后通过 DBLink 实现访问。</p>
+<p>今天搞了一下午透明网关配置，流程比较复杂，并且有一些坑，这不立刻来给大家排排坑，说不定以后就用的着呢！</p>
+<p>废话不多说，直接实战走起~</p>
+<h2 id="一、环境准备"><a href="#一、环境准备" class="headerlink" title="一、环境准备"></a>一、环境准备</h2><p>本次环境准备了 3 台主机，分别是 Oracle 数据库，MySQL 数据库，透明网关。</p>
+<ul>
+<li><strong>⭐️ Linux 主机安装教程可参考：<a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/118558758">实战篇：VMware Workstation 虚拟机安装 Linux 系统</a></strong></li>
+<li><strong>⭐️ Oracle 单机安装教程可参考：<a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/118529918">实战篇：Linux 安装 Oracle 11GR2 数据库保姆级教程</a></strong></li>
+<li><strong>⭐️ Oracle RAC 安装教程可参考：<a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/117857145">实战篇：一步步教你 Linux 7 安装 Oracle 11GR2 RAC</a></strong></li>
+<li><strong>⭐️ Oracle 脚本一键安装可参考：<a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/119843551">开源项目：Install Oracle Database By Scripts！</a></strong></li>
+<li><strong>⭐️ MySQL 安装教程可参考：<a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/117754442">实战篇：手把手教你Linux安装Mysql（细致入微）</a></strong></li>
+</ul>
+<blockquote>
+<p><strong>❤️ Oracle 安装包合集和补丁下载地址：<a target="_blank" rel="noopener" href="https://www.modb.pro/download/210188">2021年Oracle第三季度补丁合集</a></strong></p>
+</blockquote>
+<p>环境信息：</p>
+<table>
+<thead>
+<tr>
+<th>用途</th>
+<th>主机名</th>
+<th>IP地址</th>
+<th>主机版本</th>
+<th>数据库版本</th>
+<th>DB名称</th>
+<th>端口号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Oracle 数据库</td>
+<td>orcl</td>
+<td>10.211.55.100</td>
+<td>RHEL7.6</td>
+<td>11GR2</td>
+<td>orcl</td>
+<td>1521</td>
+</tr>
+<tr>
+<td>MySQL 数据库</td>
+<td>mysql</td>
+<td>10.211.55.101</td>
+<td>RHEL7.6</td>
+<td>8.0.26</td>
+<td>lucifer</td>
+<td>3306</td>
+</tr>
+<tr>
+<td>透明网关主机</td>
+<td>gateway</td>
+<td>10.211.55.102</td>
+<td>RHEL7.6</td>
+<td>11GR2</td>
+<td>无</td>
+<td>1521</td>
+</tr>
+</tbody></table>
+<p><strong>为什么透明网关需要单独配置一台主机？</strong></p>
+<ul>
+<li>不影响数据库主机的正常运行</li>
+<li>便于安装配置以及管理</li>
+<li>数据库迁移时不需要重新配置透明网关</li>
+<li>RAC 环境下，无需重复安装配置多个节点</li>
+</ul>
+<p><strong>📢 注意：</strong> 透明网关主机的配置不需要很高，无需安装 Oracle 数据库，仅安装透明网关即可！</p>
+<h2 id="二、实战演示"><a href="#二、实战演示" class="headerlink" title="二、实战演示"></a>二、实战演示</h2><h3 id="1、介质装备"><a href="#1、介质装备" class="headerlink" title="1、介质装备"></a>1、介质装备</h3><p>首先，需要下载 GateWay 和 MySQL ODBC安装包：</p>
+<ul>
+<li>mysql-connector-odbc-8.0.27-1.el7.x86_64.rpm</li>
+<li>p13390677_112040_Linux-x86-64_5of7.zip</li>
+</ul>
+<p>方便大家学习，我直接上传到百度网盘供大家下载：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs gams">链接: https:<span class="hljs-comment">//pan.baidu.com/s/1ybJGu1JCbOgRbjCTqtl9TA </span><br>提取码: l062<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2、安装透明网关"><a href="#2、安装透明网关" class="headerlink" title="2、安装透明网关"></a>2、安装透明网关</h3><h4 id="2-1、主机-环境配置"><a href="#2-1、主机-环境配置" class="headerlink" title="2.1、主机 环境配置"></a>2.1、主机 环境配置</h4><p>下载上述安装介质并上传透明网关主机：</p>
+<p><img src="/csdn-blog/images/da6a8f19cba333cc711ba4e4f725de41.webp" alt="实战篇：Oracle 配置透明网关访问 MySQL 详细教程" loading='lazy'></p>
+<p><strong>📢 注意：</strong> 安装透明网关之前需要配置环境和创建用户等等，可以参照<br>Linux<br> 安装单机 Oracle 的环境配置步骤，这里就不再详述了！</p>
+<p>使用 Oracle 一键安装脚本配置即可：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">cd</span> /soft<br>./OracleShellInstall.<span class="hljs-keyword">sh</span> -i 10.211.55.102 -txh Y<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/59071a743bc5d45570c9dbca6353b4cd.webp" alt="实战篇：Oracle 配置透明网关访问 MySQL 详细教程 - 图2" loading='lazy'></p>
+<p><strong>📢 注意：</strong> 由于主机安装时选择了最小化安装，并且安装透明网关需要图形化，因此加上 <code>-txh Y</code> 安装图形化界面！</p>
+<p><strong>稍许等待几分钟之后，即可配置完成，由于没有上传 DB 安装包，这个报错是正常！</strong></p>
+<h4 id="2-2、正式安装"><a href="#2-2、正式安装" class="headerlink" title="2.2、正式安装"></a>2.2、正式安装</h4><p>主机配置完成后，开始安装透明网关：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs stata">## 首先 root 用户下，授权 oracle 访问 /soft 目录<br>chown -R oracle:oinstall /soft<br>## 切换到 oracle 用户下<br><span class="hljs-keyword">su</span> - oracle<br>## 解压透明网关安装包<br>unzip -q p13390677_112040_Linux-x86-64_5of7.<span class="hljs-keyword">zip</span><br>## 配置 vnc 访问图形化界面<br>vncserver<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/c7455cf39959d662dac2ce9aaf69fde4.webp" alt="实战篇：Oracle 配置透明网关访问 MySQL 详细教程 - 图3" loading='lazy'></p>
+<p>使用 VNC 客户端连接：</p>
+<p><img src="/csdn-blog/images/33fbb7ca87245c741984125612a2c34c.webp" alt="实战篇：Oracle 配置透明网关访问 MySQL 详细教程 - 图4" loading='lazy'></p>
+<p>开始安装：</p>
+<p>确认安装位置：</p>
+<p><img src="/csdn-blog/images/017c04ada4a9107d5fec18c3a900fbe4.webp" alt="实战篇：Oracle 配置透明网关访问 MySQL 详细教程 - 图5" loading='lazy'></p>
+<p><img src="/csdn-blog/images/ec83cb7cb0d68225c21164cf5868ea4e.webp" alt="实战篇：Oracle 配置透明网关访问 MySQL 详细教程 - 图6" loading='lazy'></p>
+<p>这里选择 <code>for ODBC</code> 即可：</p>
+<p>开始安装，静待结束：</p>
+<p><code>root</code> 用户下执行 <code>root.sh</code> 脚本：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs stata">/u01/<span class="hljs-keyword">app</span>/oraInventory/orainstRoot.<span class="hljs-keyword">sh</span><br>/u01/<span class="hljs-keyword">app</span>/oracle/product/11.2.0/<span class="hljs-keyword">db</span>/root.<span class="hljs-keyword">sh</span><br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br></code></pre></td></tr></table></figure>
+
+<p>配置监听：</p>
+<p><img src="/csdn-blog/images/6ee5893e784dce0cd4ec88941f27990c.webp" alt="实战篇：Oracle 配置透明网关访问 MySQL 详细教程 - 图7" loading='lazy'></p>
+<p><strong>至此，透明网关安装结束！</strong></p>
+<h4 id="2-3、安装-mysql-connector"><a href="#2-3、安装-mysql-connector" class="headerlink" title="2.3、安装 mysql-connector"></a>2.3、安装 mysql-connector</h4><p>首先需要安装 <code>unixODBC</code> 依赖，否则报错：</p>
+<p>安装 <code>unixODBC</code> 依赖后安装 <code>mysql-connector</code>：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs stata">yum install -y unixODBC*<br>rpm -ivh mysql-connector-<span class="hljs-keyword">odbc</span>-8.0.27-1.el7.x86_64.rpm<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/1e11e633a4915804f0136140d8323696.webp" alt="实战篇：Oracle 配置透明网关访问 MySQL 详细教程 - 图8" loading='lazy'></p>
+<p><strong>📢 注意：</strong> 透明网关的安装到这里就全都结束了，接下来就是配置部分了。</p>
+<h3 id="3、透明网关配置"><a href="#3、透明网关配置" class="headerlink" title="3、透明网关配置"></a>3、透明网关配置</h3><p>透明网关安装好之后，自然是需要配置才能使用的。</p>
+<h4 id="3-1、配置-odbc-ini"><a href="#3-1、配置-odbc-ini" class="headerlink" title="3.1、配置 odbc.ini"></a>3.1、配置 odbc.ini</h4><p><code>odbc.ini</code> 文件用来存放 MySQL 数据库相关信息，默认不存在，<code>root</code> 用户下手动创建即可：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs abnf">cat&lt;&lt;EOF&gt;/etc/odbc.ini<br>[lucifer]<br><span class="hljs-attribute">Description</span>     <span class="hljs-operator">=</span> ODBC for MySQL<br><span class="hljs-attribute">Driver</span>          <span class="hljs-operator">=</span> /usr/lib64/libmyodbc8w.so<br><span class="hljs-attribute">Server</span>          <span class="hljs-operator">=</span> <span class="hljs-number">10.211</span>.<span class="hljs-number">55.101</span><br><span class="hljs-attribute">Port</span>            <span class="hljs-operator">=</span> <span class="hljs-number">3306</span><br><span class="hljs-attribute">User</span>            <span class="hljs-operator">=</span> lucifer<br><span class="hljs-attribute">Password</span>        <span class="hljs-operator">=</span> lucifer<br><span class="hljs-attribute">Database</span>        <span class="hljs-operator">=</span> lucifer <br>EOF<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br>* <span class="hljs-number">6</span><br>* <span class="hljs-number">7</span><br>* <span class="hljs-number">8</span><br>* <span class="hljs-number">9</span><br>* <span class="hljs-number">10</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/2e0911559eb4eb519308c6c9fb763add.webp" alt="实战篇：Oracle 配置透明网关访问 MySQL 详细教程 - 图10" loading='lazy'></p>
+<p>配置文件中的配置信息如下：</p>
+<ul>
+<li><strong>[lucifer]</strong> 可以理解为是一个 SID 名称，可以自定义，后面配置需要用到；</li>
+<li><strong>Server</strong> 是指 MySQL 数据库主机的 IP 地址；</li>
+<li><strong>Port</strong> 是指 MySQL 数据库的端口；</li>
+<li><strong>User</strong> 是指 Oracle 需要访问的用户名；</li>
+<li><strong>Password</strong> 是指被访问用户的登录密码；</li>
+<li><strong>Database</strong> 是指需要 MySQL 数据库需要被访问的 DB 名称；</li>
+</ul>
+<p><strong>📢 注意：</strong> 如果有多个 MySQL 数据库需要配置，则填写多个即可！</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs abnf">[lucifer]<br><span class="hljs-attribute">Description</span>     <span class="hljs-operator">=</span> ODBC for MySQL<br><span class="hljs-attribute">Driver</span>          <span class="hljs-operator">=</span> /usr/lib64/libmyodbc8w.so<br><span class="hljs-attribute">Server</span>          <span class="hljs-operator">=</span> <span class="hljs-number">10.211</span>.<span class="hljs-number">55.101</span><br><span class="hljs-attribute">Port</span>            <span class="hljs-operator">=</span> <span class="hljs-number">3306</span><br><span class="hljs-attribute">User</span>            <span class="hljs-operator">=</span> lucifer<br><span class="hljs-attribute">Password</span>        <span class="hljs-operator">=</span> lucifer<br><span class="hljs-attribute">Database</span>        <span class="hljs-operator">=</span> lucifer <br><br>[lucifer1]<br><span class="hljs-attribute">Description</span>     <span class="hljs-operator">=</span> ODBC for MySQL<br><span class="hljs-attribute">Driver</span>          <span class="hljs-operator">=</span> /usr/lib64/libmyodbc8w.so<br><span class="hljs-attribute">Server</span>          <span class="hljs-operator">=</span> <span class="hljs-number">10.211</span>.<span class="hljs-number">55.105</span><br><span class="hljs-attribute">Port</span>            <span class="hljs-operator">=</span> <span class="hljs-number">3306</span><br><span class="hljs-attribute">User</span>            <span class="hljs-operator">=</span> lucifer1<br><span class="hljs-attribute">Password</span>        <span class="hljs-operator">=</span> lucifer1<br><span class="hljs-attribute">Database</span>        <span class="hljs-operator">=</span> lucifer1<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br>* <span class="hljs-number">4</span><br>* <span class="hljs-number">5</span><br>* <span class="hljs-number">6</span><br>* <span class="hljs-number">7</span><br>* <span class="hljs-number">8</span><br>* <span class="hljs-number">9</span><br>* <span class="hljs-number">10</span><br>* <span class="hljs-number">11</span><br>* <span class="hljs-number">12</span><br>* <span class="hljs-number">13</span><br>* <span class="hljs-number">14</span><br>* <span class="hljs-number">15</span><br>* <span class="hljs-number">16</span><br>* <span class="hljs-number">17</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-2、配置-init-SID-ora"><a href="#3-2、配置-init-SID-ora" class="headerlink" title="3.2、配置 init[SID].ora"></a>3.2、配置 init[SID].ora</h4><p>切换至 <code>oracle</code> 用户，进入 <code>$ORACLE_HOME/hs/admin</code> 目录下，新建一个 <strong>init[SID].ora</strong> 文件：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">cat</span>&lt;&lt;EOF&gt;<span class="hljs-variable">$ORACLE_HOME</span>/hs/admin/initlucifer.ora<br>##HS Configuration<br>HS_FDS_CONNECT_INFO = lucifer<br>HS_FDS_TRACE_LEVEL = debug<br>HS_FDS_SHAREABLE_NAME = /usr/lib64/libodbc.<span class="hljs-keyword">so</span><br>HS_FDS_SUPPORT_STATISTICS=FALSE<br>HS_LANGUAGE=AMERICAN_AMERICA.UTF8<br>HS_NLS_NCHAR = UCS2<br>##<span class="hljs-keyword">ODBC</span> Configuration<br><span class="hljs-keyword">set</span> ODBCINI=/etc/<span class="hljs-keyword">odbc</span>.ini<br>EOF<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br></code></pre></td></tr></table></figure>
+
+<p>这里 initSID.ora 中的 <strong>SID</strong> 名称和文件中 <strong>HS_FDS_CONNECT_INFO</strong> 参数值，就是上一步中我们配置 <strong>odbc.ini</strong> 文件中的 <code>[lucifer]</code> 名称。</p>
+<p><strong>📢 注意：</strong> 如果有多个 MySQL 数据库需要配置，则创建多个 <strong>init[SID].ora 文件</strong> 即可！</p>
+<h4 id="3-3、配置监听"><a href="#3-3、配置监听" class="headerlink" title="3.3、配置监听"></a>3.3、配置监听</h4><p>oracle 用户下，进入 <code>$TNS_ADMIN</code> 配置 listener.ora 文件：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">cat</span>&lt;&lt;EOF&gt;&gt;<span class="hljs-variable">$TNS_ADMIN</span>/listener.ora<br>SID_LIST_LISTENER =<br>(SID_LIST =<br>  (SID_DESC=<br>  (SID_NAME=lucifer)<br>  (ORACLE_HOME=/u01/<span class="hljs-keyword">app</span>/oracle/product/11.2.0/<span class="hljs-keyword">db</span>)<br>  (<span class="hljs-keyword">PROGRAM</span>=dg4odbc)<br>  )<br>)<br>EOF<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/0e79a82d315c73e85349b8b896609903.webp" alt="实战篇：Oracle 配置透明网关访问 MySQL 详细教程 - 图14" loading='lazy'></p>
+<p><strong>📢 注意：</strong> 如果有多个 MySQL 数据库需要配置，则写成如下格式！</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">cat</span>&lt;&lt;EOF&gt;&gt;<span class="hljs-variable">$TNS_ADMIN</span>/listener.ora<br>SID_LIST_LISTENER =<br>(SID_LIST =<br>  (SID_DESC =<br>  (SID_NAME = lucifer)<br>  (ORACLE_HOME=/u01/<span class="hljs-keyword">app</span>/oracle/product/11.2.0/<span class="hljs-keyword">db</span>)<br>  (<span class="hljs-keyword">PROGRAM</span>=dg4odbc)<br>  )<br>  (SID_DESC =<br>  (SID_NAME = lucifer1)<br>  (ORACLE_HOME=/u01/<span class="hljs-keyword">app</span>/oracle/product/11.2.0/<span class="hljs-keyword">db</span>)<br>  (<span class="hljs-keyword">PROGRAM</span>=dg4odbc)<br>  )<br>)<br>EOF<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br><span class="hljs-comment">* 13</span><br><span class="hljs-comment">* 14</span><br><span class="hljs-comment">* 15</span><br></code></pre></td></tr></table></figure>
+
+<p>重启监听：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">lsnrctl stop<br>lsnrctl start<br>lsnrctl status<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br><span class="hljs-bullet">* </span>3<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/2ac0380758c8446548e741428bd4320a.webp" alt="实战篇：Oracle 配置透明网关访问 MySQL 详细教程 - 图16" loading='lazy'></p>
+<p><strong>配置完成之后，测试是否可以连接 MySQL 数据库：</strong></p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">isql lucifer<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br></code></pre></td></tr></table></figure>
+
+<p><strong>成功连接 MySQL 数据库，至此透明网关配置完成！</strong></p>
+<h3 id="4、Oracle-数据库配置"><a href="#4、Oracle-数据库配置" class="headerlink" title="4、Oracle 数据库配置"></a>4、Oracle 数据库配置</h3><p>透明网关配置完成后，就只需要配置 Oracle 数据库来连接透明网关。</p>
+<h4 id="4-1、配置-TNS"><a href="#4-1、配置-TNS" class="headerlink" title="4.1、配置 TNS"></a>4.1、配置 TNS</h4><p>通过配置 TNS 来连接透明网关，进入 TNS 配置文件目录 <code>$TNS_ADMIN</code> 配置 TNS：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">cat&lt;&lt;EOF&gt;&gt;$TNS<span class="hljs-emphasis">_ADMIN/tnsnames.ora</span><br><span class="hljs-emphasis">lucifer =</span><br><span class="hljs-emphasis">  (DESCRIPTION =</span><br><span class="hljs-emphasis">    (ADDRESS_LIST =</span><br><span class="hljs-emphasis">      (ADDRESS = (PROTOCOL = TCP)(HOST = 10.211.55.102)(PORT = 1521))</span><br><span class="hljs-emphasis">    )</span><br><span class="hljs-emphasis">    (CONNECT_</span>DATA =<br><span class="hljs-code">      (SID = lucifer)</span><br><span class="hljs-code">    )</span><br><span class="hljs-code">   (HS = OK)</span><br><span class="hljs-code">  )</span><br>EOF<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br><span class="hljs-bullet">* </span>3<br><span class="hljs-bullet">* </span>4<br><span class="hljs-bullet">* </span>5<br><span class="hljs-bullet">* </span>6<br><span class="hljs-bullet">* </span>7<br><span class="hljs-bullet">* </span>8<br><span class="hljs-bullet">* </span>9<br><span class="hljs-bullet">* </span>10<br><span class="hljs-bullet">* </span>11<br><span class="hljs-bullet">* </span>12<br></code></pre></td></tr></table></figure>
+
+<p>通过 <code>tnsping</code> 测试后，发现访问没有问题！</p>
+<h4 id="4-2、配置-DBLink-连接-MySQL-数据库"><a href="#4-2、配置-DBLink-连接-MySQL-数据库" class="headerlink" title="4.2、配置 DBLink 连接 MySQL 数据库"></a>4.2、配置 DBLink 连接 MySQL 数据库</h4><p>接下来只需要创建你 DBLink 即可连接 MySQL 数据库：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">create</span> <span class="hljs-built_in">public</span> <span class="hljs-keyword">database</span> link lucifer <span class="hljs-keyword">connect</span> <span class="hljs-keyword">to</span> &quot;lucifer&quot; identified <span class="hljs-keyword">by</span> &quot;lucifer&quot; <span class="hljs-keyword">using</span> <span class="hljs-string">&#x27;lucifer&#x27;</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>测试连接操作 MySQL 数据库：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> &quot;lucifer&quot;<span class="hljs-variable">@lucifer</span> <span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> &quot;id&quot;;<br><span class="hljs-keyword">delete</span> <span class="hljs-keyword">from</span> &quot;lucifer&quot;<span class="hljs-variable">@lucifer</span> <span class="hljs-keyword">where</span> &quot;id&quot;<span class="hljs-operator">=</span><span class="hljs-number">1</span>;<br><br>AI写代码<span class="hljs-keyword">sql</span><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br><span class="hljs-operator">*</span> <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>至此，整个 Oracle 配置透明网关访问 MySQL 就完成了！</strong></p>
+<h2 id="三、最后总结"><a href="#三、最后总结" class="headerlink" title="三、最后总结"></a>三、最后总结</h2><p>如果按照我的步骤来操作，整个流程走下来应该会比较顺畅，下面罗列一下我操作过程中遇到的一些报错：</p>
+<p>1、<strong>init[sid].ora</strong> 配置文件的 <code>HS_FDS_SHAREABLE_NAME = /usr/lib64/libodbc.so</code> 不正确，应该是 ODBC 的 Lib包：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs subunit"><span class="hljs-keyword">ERROR </span>at line 1:<br>ORA<span class="hljs-string">-28500</span>: connection from ORACLE to a non-Oracle system returned this message:<br>ORA<span class="hljs-string">-02063</span>: preceding line from DLK<br><br>AI写代码bash<br><br>* 1<br>* 2<br>* 3<br></code></pre></td></tr></table></figure>
+
+<p>2、<strong>init[sid].ora</strong> 里配置的 <code>HS_LANGUAGE=AMERICAN_AMERICA.zhs16gbk</code> 字符集不正确或者没有配置，应该是 <code>Oracle</code> 数据库字符集：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs subunit"><span class="hljs-keyword">ERROR </span>at line 1:<br>ORA<span class="hljs-string">-28500</span>: connection from ORACLE to a non-Oracle system returned this message:<br><span class="hljs-string">[</span><br><span class="hljs-string"></span><br><span class="hljs-string">AI写代码bash</span><br><span class="hljs-string"></span><br><span class="hljs-string">* 1</span><br><span class="hljs-string">* 2</span><br><span class="hljs-string">* 3</span><br></code></pre></td></tr></table></figure>
+
+<p>3、执行查询操作时，表名需要带双引号，因为 MySQL 默认表名是区分大小写，而 Oracle 是不区分大小写的：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">ERROR</span> at <span class="hljs-keyword">line</span> 1:<br>ORA-00942: <span class="hljs-keyword">table</span> or <span class="hljs-keyword">view</span> does not exist<br>[MySQL][<span class="hljs-keyword">ODBC</span> 8.0(w) Driver][mysqld-5.7.18-<span class="hljs-keyword">log</span>]<span class="hljs-keyword">Table</span> &#x27;<span class="hljs-keyword">test</span>.T1&#x27; doesn&#x27;t exist<br>&#123;42S02,NativeErr = 1146&#125;<br>ORA-02063: preceding 2 lines from DLK<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br></code></pre></td></tr></table></figure>
+
+<p>4、Oracle 数据库配置 TNS 时，没有加 <code>(HS = OK)</code>：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs subunit"><span class="hljs-keyword">ERROR </span>at line 1:<br>ORA<span class="hljs-string">-28546</span>: connection initialization failed, probable Net8 admin error<br>ORA<span class="hljs-string">-02063</span>: preceding line from LUCIFER<br><br>AI写代码bash<br><br>* 1<br>* 2<br>* 3<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>本文部分内容参考文档：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/rangle/p/8967643.html">Oracle透明网关访问MySQL数据库</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/121364429/">https://pc-study.github.io/csdn-blog/posts/121364429/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/python/">python</a><a class="post-meta__tags" href="/csdn-blog/tags/%E7%88%AC%E8%99%AB/">爬虫</a><a class="post-meta__tags" href="/csdn-blog/tags/pycharm/">pycharm</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/117474325/" title="实战篇：生产库升级，容灾库 Oracle DataGuard 如何升级？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">实战篇：生产库升级，容灾库 Oracle DataGuard 如何升级？</div></div><div class="info-2"><div class="info-item-1">前言 随着 Oracle 数据库的普遍应用，DataGuard 这个成员基本成为了数据库容灾环境的标配！ 一、介绍 当需要升级 Oracle 数据库的同时，也需要考虑同时升级 DataGuard 数据库版本，那么如何快捷安全的升级？ 推荐方案： 升级至NON-CDB模式： 首先关闭 ADG 同步，升</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/117754442/" title="实战篇：手把手教你 Linux 安装 MySQL 详细教程"><img class="cover" src="/csdn-blog/images/77a378f5d649ee919a4bc4fb2c8dd30b.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">实战篇：手把手教你 Linux 安装 MySQL 详细教程</div></div><div class="info-2"><div class="info-item-1">前言 如何在 Linux 主机一步一步安装 MySQL 数据库？看这篇准没错！ 一、Linux 服务器安装 安装Linux服务器可选择：Centos，Redhat，Oracle Linux。 ： 参考官网文档，本次实战环境配置为： Redhat 7.9 x86\_64 内存2G 硬盘50G ⭐️ L</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/122525287/" title="PyGame每日一练——五子棋小游戏"><img class="cover" src="/csdn-blog/img/covers/tech.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-16</div><div class="info-item-2">PyGame每日一练——五子棋小游戏</div></div><div class="info-2"><div class="info-item-1">前言 PyGame 是一个专门设计来进行 游戏开发 设计的 Python 模块，允许实时电子游戏研发而无需被低级语言（如机器语言和汇编语言）束缚，使用起来非常的简单，非常适合新手拿来玩耍，本教程源码均基于 Python 3.x 版本。 点我跳转文末 ，关注公众号，回复 “五子棋” 获取完整源码！ 五</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/123064282/" title="Python 零基础入门必看，这些知识点你都掌握了吗？"><img class="cover" src="/csdn-blog/images/faa7e015851afbda44fedf55021f1af5.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-25</div><div class="info-item-2">Python 零基础入门必看，这些知识点你都掌握了吗？</div></div><div class="info-2"><div class="info-item-1">导读 Python 作为当今最受欢迎的编程语言之一，几乎各个领域都会涉及到，所以学习 Python 自然刻不容缓！作为一个没有接触过 Python 的小白，一开始要想的不是如何使用以及各种高深莫测的玩法，从最基础的了解以及构建环境才是正道。 点我跳转文末 抽奖领书，价值 99 元，新出版的 《Pyt</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122475262/" title="今年支付宝的集福字就靠这个了，天天不重样"><img class="cover" src="/csdn-blog/images/3e37c40db8f4d257f3985f01888176a1.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-19</div><div class="info-item-2">今年支付宝的集福字就靠这个了，天天不重样</div></div><div class="info-2"><div class="info-item-1">前言 2022 虎年大吉，共迎新春，新的一年，我希望通过”万虎“拼福字以及”万福“拼萌虎的方式，给大家带来好运，祝大家虎虎生威，顺风顺水，人生如意，财源滚滚！恭喜完了，下面就要亮 技术 了~ 一、爬取福虎 通过 Python 爬虫技术，我们可以很方便快捷的从百度图片爬取到大量虎和福的图片，下面演示一</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/123732698/" title="Oracle SQL 字段是如何做到 “四大皆空“（BUG）"><img class="cover" src="/csdn-blog/img/covers/tech.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-25</div><div class="info-item-2">Oracle SQL 字段是如何做到 “四大皆空“（BUG）</div></div><div class="info-2"><div class="info-item-1">问题分析 首先，我们看一张图，我称之为 “四大皆空”，此图来源于 刘晨 的视频分享 Oracle中新增字段的点点滴滴，很有意思，从图中可以发现两段 SQL，看看一下这张图有什么奇怪的地方！ 本文参考资料： 非空字段空值对查询的影响 非空字段空值的产生 Oracle中新增字段的点点滴滴 SQL 分析</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148737645/" title="统治编程世界！AI时代，Python已是编程语言独一档"><img class="cover" src="/csdn-blog/images/4714e6dafbfae119ce29abed2e083ec1.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-18</div><div class="info-item-2">统治编程世界！AI时代，Python已是编程语言独一档</div></div><div class="info-2"><div class="info-item-1">2025年5月，Python与第二名 C++ 之间的市场份额差距首次超过了 15%，创造了TIOBE榜单历史。 这意味着 Python 不再只是“热门”，而是遥遥领先，成为编程世界统治级别的语言。从现实情况来看，Python 在数据科学、自动化测试等确实已形成压倒性优势。 随着AI浪潮的到来，Pyt</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/141211888/" title="一篇文章让你彻底掌握 Python"><img class="cover" src="/csdn-blog/img/covers/tech.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-08-15</div><div class="info-item-2">一篇文章让你彻底掌握 Python</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer 三思而后行，专注于提升数据库运维效率。 目录 一篇文章让你彻底掌握 Python 解释器 注释 数据类型 操作符 - 算术运算符 比较运算符 赋值运算符 位运算符 逻辑运算符 成员运算符 身份运算符 运算符优先级 控制语句 - 条件语句 循环语句 while for</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">2.</span> <span class="toc-text">一、环境准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%AE%9E%E6%88%98%E6%BC%94%E7%A4%BA"><span class="toc-number">3.</span> <span class="toc-text">二、实战演示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E4%BB%8B%E8%B4%A8%E8%A3%85%E5%A4%87"><span class="toc-number">3.1.</span> <span class="toc-text">1、介质装备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E5%AE%89%E8%A3%85%E9%80%8F%E6%98%8E%E7%BD%91%E5%85%B3"><span class="toc-number">3.2.</span> <span class="toc-text">2、安装透明网关</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1%E3%80%81%E4%B8%BB%E6%9C%BA-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="toc-number">3.2.1.</span> <span class="toc-text">2.1、主机 环境配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2%E3%80%81%E6%AD%A3%E5%BC%8F%E5%AE%89%E8%A3%85"><span class="toc-number">3.2.2.</span> <span class="toc-text">2.2、正式安装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3%E3%80%81%E5%AE%89%E8%A3%85-mysql-connector"><span class="toc-number">3.2.3.</span> <span class="toc-text">2.3、安装 mysql-connector</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E9%80%8F%E6%98%8E%E7%BD%91%E5%85%B3%E9%85%8D%E7%BD%AE"><span class="toc-number">3.3.</span> <span class="toc-text">3、透明网关配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1%E3%80%81%E9%85%8D%E7%BD%AE-odbc-ini"><span class="toc-number">3.3.1.</span> <span class="toc-text">3.1、配置 odbc.ini</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2%E3%80%81%E9%85%8D%E7%BD%AE-init-SID-ora"><span class="toc-number">3.3.2.</span> <span class="toc-text">3.2、配置 init[SID].ora</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3%E3%80%81%E9%85%8D%E7%BD%AE%E7%9B%91%E5%90%AC"><span class="toc-number">3.3.3.</span> <span class="toc-text">3.3、配置监听</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93%E9%85%8D%E7%BD%AE"><span class="toc-number">3.4.</span> <span class="toc-text">4、Oracle 数据库配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1%E3%80%81%E9%85%8D%E7%BD%AE-TNS"><span class="toc-number">3.4.1.</span> <span class="toc-text">4.1、配置 TNS</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2%E3%80%81%E9%85%8D%E7%BD%AE-DBLink-%E8%BF%9E%E6%8E%A5-MySQL-%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">3.4.2.</span> <span class="toc-text">4.2、配置 DBLink 连接 MySQL 数据库</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%9C%80%E5%90%8E%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">三、最后总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

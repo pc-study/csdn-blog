@@ -1,0 +1,318 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>比SQL还好用，又一门国产数据库语言诞生了 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="前言 自 SQL 语言出现之后，一直是一门很受欢迎的语言；那么问题来了，发展了这么多年，有没有比 SQL 好用的语言呢？答案是肯定的，SPL 应时而生。 数据库语言的目标 要说清这个目标，先要理解数据库是做什么的。 数据库这个软件，名字中有个“库”字，会让人觉得它主要是为了存储的。其实不然，数据库实">
+<meta property="og:type" content="article">
+<meta property="og:title" content="比SQL还好用，又一门国产数据库语言诞生了">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/123635262/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="前言 自 SQL 语言出现之后，一直是一门很受欢迎的语言；那么问题来了，发展了这么多年，有没有比 SQL 好用的语言呢？答案是肯定的，SPL 应时而生。 数据库语言的目标 要说清这个目标，先要理解数据库是做什么的。 数据库这个软件，名字中有个“库”字，会让人觉得它主要是为了存储的。其实不然，数据库实">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/tech.svg">
+<meta property="article:published_time" content="2022-03-22T01:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.286Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="SPL">
+<meta property="article:tag" content="SQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/tech.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"比SQL还好用，又一门国产数据库语言诞生了","url":"https://pc-study.github.io/csdn-blog/posts/123635262/","image":"https://pc-study.github.io/csdn-blog/img/covers/tech.svg","datePublished":"2022-03-22T01:00:00.000Z","dateModified":"2026-03-20T08:34:08.286Z","description":"前言 自 SQL 语言出现之后，一直是一门很受欢迎的语言；那么问题来了，发展了这么多年，有没有比 SQL 好用的语言呢？答案是肯定的，SPL 应时而生。 数据库语言的目标 要说清这个目标，先要理解数据库是做什么的。 数据库这个软件，名字中有个“库”字，会让人觉得它主要是为了存储的。其实不然，数据库实","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/123635262/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/123635262/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '比SQL还好用，又一门国产数据库语言诞生了',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/tech.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">比SQL还好用，又一门国产数据库语言诞生了</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">比SQL还好用，又一门国产数据库语言诞生了<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2022-03-22-123635262.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-03-22T01:00:00.000Z" title="发表于 2022-03-22 09:00:00">2022-03-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.286Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">4.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>14分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自 SQL 语言出现之后，一直是一门很受欢迎的语言；那么问题来了，发展了这么多年，有没有比 SQL 好用的语言呢？答案是肯定的，SPL 应时而生。</p>
+<h2 id="数据库语言的目标"><a href="#数据库语言的目标" class="headerlink" title="数据库语言的目标"></a>数据库语言的目标</h2><p>要说清这个目标，先要理解数据库是做什么的。</p>
+<p>数据库这个软件，名字中有个“库”字，会让人觉得它主要是为了存储的。其实不然，数据库实现的重要功能有两条：<strong>计算、事务</strong>！也就是我们常说的 <code>OLAP</code> 和 <code>OLTP</code>，数据库的存储都是为这两件事服务的，单纯的存储并不是数据库的目标。</p>
+<p>我们知道，SQL 是目前数据库的主流语言。那么，用 SQL 做这两件事是不是很方便呢？</p>
+<p>事务类功能主要解决数据在写入和读出时要保持的一致性，实现这件事的难度并不小，但对于应用程序的接口却非常简单，用于操纵数据库读写的代码也很简单。如果假定目前关系数据库的逻辑存储模式是合理的（也就是用数据表和记录来存储数据，其合理性与否是另一个复杂问题，不在这里展开了），那么 SQL 在描述事务类功能时没什么大问题，因为并不需要描述多复杂的动作，复杂性都在数据库内部解决了。</p>
+<p>但计算类功能却不一样了。</p>
+<p>这里说的计算是个更广泛的概念，并不只是简单的加加减减，查找、关联都可以看成是某种计算。</p>
+<p>什么样的计算体系才算好呢？</p>
+<p>还是两条：<strong>写着简单、跑得快</strong>。</p>
+<p>写着简单，很好理解，就是让程序员很快能写出来代码来，这样单位时间内可以完成更多的工作；跑得快就更容易理解，我们当然希望更短时间内获得计算结果。</p>
+<p>其实 SQL 中的 Q 就是查询的意思，发明它的初衷主要是为了做查询（也就是计算），这才是 SQL 的主要目标。然而，SQL 在描述计算任务时，却很难说是很胜任的。</p>
+<h2 id="SQL为什么不行"><a href="#SQL为什么不行" class="headerlink" title="SQL为什么不行"></a>SQL为什么不行</h2><p>先看写着简单的问题。</p>
+<p>SQL 写出来很象英语，有些查询可以当英语来读和写（网上多得很，就不举例了），这应当算是满足写着简单这一条了吧。</p>
+<p>且慢！我们在教科书上看到的 SQL 经常只有两三行，这些 SQL 确实算是写着简单的，但如果我们尝试一些稍复杂化的问题呢？</p>
+<p>这是一个其实还不算很复杂的例子：计算一支股票最长连续上涨了多少天？用 SQL 写出来是这样的：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> max (consecutive_day)<br><span class="hljs-keyword">from</span> (<span class="hljs-keyword">select</span> count(*) (consecutive_day<br>  <span class="hljs-keyword">from</span> (<span class="hljs-keyword">select</span> sum(rise_mark) <span class="hljs-keyword">over</span>(<span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> trade_date) days_no_gain<br>    <span class="hljs-keyword">from</span> (<span class="hljs-keyword">select</span> trade_date,<br>        <span class="hljs-keyword">case</span> <span class="hljs-keyword">when</span> closing_price&gt;lag(closing_price) <span class="hljs-keyword">over</span>(<span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> trade_date)    <br>           <span class="hljs-keyword">then</span> <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span> <span class="hljs-keyword">END</span> rise_mark <br>      <span class="hljs-keyword">from</span> stock_price ) ) <br>  <span class="hljs-keyword">group</span> <span class="hljs-keyword">by</span> days_no_gain)<br></code></pre></td></tr></table></figure>
+
+<p>这个语句的工作原理就不解释了，反正有点绕，同学们可以自己尝试一下。</p>
+<p>这是润乾公司的招聘考题，通过率不足 20%；因为太难，后来被改成另一种方式：把 SQL 语句写出来让应聘者解释它在算什么，通过率依然不高。</p>
+<p>这说明什么？说明情况稍有复杂，SQL 就变得即难懂又难写！</p>
+<p>再看跑得快的问题，还是一个经常拿出来的简单例子：1 亿条数据中取前 10 名。这个任务用 SQL 写出来并不复杂：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">SELECT</span> <span class="hljs-attribute">TOP</span> <span class="hljs-number">10</span> <span class="hljs-attribute">x</span> <span class="hljs-selector-tag">FROM</span> T <span class="hljs-attribute">ORDER</span> BY <span class="hljs-attribute">x</span> DESC<br></code></pre></td></tr></table></figure>
+
+<p>但是，这个语句对应的执行逻辑是先对所有数据进行大排序，然后再取出前 10 个，后面的不要了。大家知道，排序是一个很慢的动作，会多次遍历数据，如果数据量大到内存装不下，那还需要外存做缓存，性能还会进一步急剧下降。如果严格按这句 SQL 体现的逻辑去执行，这个运算无论如何是跑不快的。然而，很多程序员都知道这个运算并不需要大排序，也用不着外存缓存，一次遍历用一点点内存就可以完成，也就是存在更高性能的算法。可惜的是，用 SQL 却写不出这样的算法，只能寄希望于数据库的优化器足够聪明，能把这句 SQL 转换成高性能算法执行，但情况复杂时数据库的优化器也未必靠谱。</p>
+<p>看样子，SQL 在这两方面做得都不够好。这两个并不复杂的问题都是这样，现实中数千行的 SQL 代码中，这种难写且跑不快的情况比比皆是。</p>
+<p>为什么 SQL 不行呢？</p>
+<p>要回答这个问题，我们要分析一下用程序代码实现计算到底是在干什么。</p>
+<p>本质上讲，编写程序的过程，就是<strong>把解决问题的思路翻译成计算机可执行的精确化形式语言的过程</strong>。举例来说，就象小学生解应用题，分析问题想出解法之后，还要列出四则运算表达式。用程序计算也是一样，不仅要想出解决问题的方法，还要把解法翻译成计算机能理解执行的动作才算完成。</p>
+<p>用于描述计算方法的形式语言，其核心在于所采用的代数体系。所谓代数体系，简单说就是一些数据类型和其上的运算规则，比如小学学到的算术，就是整数和加减乘除运算。有了这套东西，我们就能把想做的运算用这个代数体系约定的符号写出来，也就是代码，然后计算机就可以执行了。</p>
+<p>如果这个代数体系设计时考虑不周到，提供的数据类型和运算不方便，那就会导致描述算法非常困难。这时候会发生一个怪现象：<strong>翻译解法到代码的难度远远超过解决问题本身。</strong></p>
+<p>举个例子，我们从小学习用阿拉伯数字做日常计算，做加减乘除都很方便，所有人都天经地义认为数值运算就该是这样的。其实未必！估计很多人都知道还有一种叫做罗马数字的东西，你知道用罗马数字该怎么做加减乘除吗？古罗马人又是如何上街买菜的？</p>
+<p><strong>代码难写很大程度是代数的问题。</strong></p>
+<p>再看跑不快的原因。</p>
+<p>软件没办法改变硬件的性能，CPU 和硬盘该多快就是多快。不过，我们可以设计出低复杂度的算法，也就是计算量更小的算法，这样计算机执行的动作变少，自然也就会快了。但是，光想出算法还不够，还要把这个算法用某种形式语言写得出来才行，否则计算机不会执行。而且，写起来还要比较简单，都要写很长很麻烦，也没有人会去用。所以呢，对于程序来讲，<strong>跑得快和写着简单其实是同一个问题</strong>，背后还是这个形式语言采用的代数的问题。如果这个代数不好，就会导致高性能算法很难实现甚至实现不了，也就没办法跑得快了。就象上面说的，用 SQL 写不出我们期望的小内存单次遍历算法，能不能跑得快就只能寄希望于优化器。</p>
+<p>我们再做个类比：</p>
+<p>上过小学的同学大概都知道高斯计算 1+2+3+…+100 的小故事。普通人就是一步步地硬加 100 次，高斯小朋友很聪明，发现 1+100&#x3D;101、2+99&#x3D;101、…、50+51&#x3D;101，结果是 50 乘 101，很快算完回家午饭了。</p>
+<p>听过这个故事，我们都会感慨高斯很聪明，能想到这么巧妙的办法，即简单又迅速。这没有错，但是，大家容易忽略一点：在高斯的时代，人类的算术体系（也是一个代数）中已经有了乘法！象前面所说，我们从小学习四则运算，会觉得乘法是理所当然的，然而并不是！乘法是后于加法被发明出来的。如果高斯的年代还没有乘法，即使有聪明的高斯，也没办法快速解决这个问题。</p>
+<p>目前主流数据库是关系数据库，之所以这么叫，是因为它的数学基础被称为<strong>关系代数</strong>，SQL 也就是关系代数理论上发展出来的形式语言。</p>
+<p>现在我们能回答，为什么 SQL 在期望的两个方面做得不够好？<strong>问题出在关系代数上</strong>，关系代数就像一个只有加法还没发明乘法的算术体系，很多事做不好是必然的。</p>
+<p>关系代数已经发明五十年了，五十年前的应用需求以及硬件环境，和今天比的差异是很巨大了，继续延用五十年前的理论来解决今天的问题，听着就感觉太陈旧了？然而现实就是这样，由于存量用户太多，而且也还没有成熟的新技术出现，基于关系代数的 SQL，今天仍然是最重要的数据库语言。虽然这几十年来也有一些改进完善，但根子并没有变，面对当代的复杂需求和硬件环境，SQL 不胜任也是情理之中的事。</p>
+<p>而且，不幸的是，这个问题是理论上的，在工程上无论如何优化也无济于事，只能有限改善，不能根除。不过，绝大部分的数据库开发者并不会想到这一层，或者说为了照顾存量用户的兼容性，也没打算想到这一层。于是，主流数据库界一直在这个圈圈里打转转。</p>
+<h2 id="SPL为什么能行"><a href="#SPL为什么能行" class="headerlink" title="SPL为什么能行"></a>SPL为什么能行</h2><p>那么该怎样让计算写着更简单、跑得更快呢？</p>
+<p><strong>发明新的代数</strong>！有“乘法”的代数。在其基础上再设计新的语言。</p>
+<p>这就是 SPL 的由来。它的理论基础不再是关系代数，称为<strong>离散数据集</strong>。基于这个新代数设计的形式语言，起名为<strong>SPL</strong>（Structured Process Language)。</p>
+<p>SPL 针对 SQL 的不足（更确切地说法是，离散数据集针对关系代数的各种缺陷）进行了革新。SPL 重新定义了并扩展许多结构化数据中的运算，增加了离散性、强化了有序计算、实现了彻底的集合化、支持对象引用、提倡分步运算。</p>
+<p>限于篇幅，这里不能介绍 SPL（离散数据集）的全貌。我们在这里列举 SPL（离散数据集）针对 SQL（关系代数）的部分差异化改进：</p>
+<h3 id="游离记录"><a href="#游离记录" class="headerlink" title="游离记录"></a>游离记录</h3><p>离散数据集中的记录是一种基本数据类型，它可以不依赖于数据表而独立存在。数据表是记录构成的集合，而构成某个数据表的记录还可以用于构成其它数据表。比如过滤运算就是用原数据表中满足条件的记录构成新数据表，这样，无论空间占用还是运算性能都更有优势。</p>
+<p>关系代数没有可运算的数据类型来表示记录，单记录实际上是只有一行的数据表，不同数据表中的记录也不能共享。比如，过滤运算时会复制出新记录来构成新数据表，空间和时间成本都变大。</p>
+<p>特别地，因为有游离记录，离散数据集允许记录的字段取值是某个记录，这样可以更方便地实现外键连接。</p>
+<h3 id="有序性"><a href="#有序性" class="headerlink" title="有序性"></a>有序性</h3><p>关系代数是基于无序集合设计的，集合成员没有序号的概念，也没有提供定位计算以及相邻引用的机制。SQL 实践时在工程上做了一些局部完善，使得现代 SQL 能方便地进行一部分有序运算。</p>
+<p>离散数据集中的集合是有序的，集合成员都有序号的概念，可以用序号访问成员，并定义了定位运算以返回成员在集合中的序号。离散数据集提供了符号以在集合运算中实现相邻引用，并支持针对集合中某个序号位置进行计算。</p>
+<p>有序运算很常见，却一直是 SQL 的困难问题，即使在有了窗口函数后仍然很繁琐。SPL 则大大改善了这个局面，前面那个股票上涨的例子就能说明问题。</p>
+<h3 id="离散性与集合化"><a href="#离散性与集合化" class="headerlink" title="离散性与集合化"></a>离散性与集合化</h3><p>关系代数中定义了丰富的集合运算，即能将集合作为整体参加运算，比如聚合、分组等。这是 SQL 比 Java 等高级语言更为方便的地方。</p>
+<p>但关系代数的离散性非常差，没有游离记录。而 Java 等高级语言在这方面则没有问题。</p>
+<p>离散数据集则相当于将离散性和集合化结合起来了，既有集合数据类型及相关的运算，也有集合成员游离在集合之外单独运算或再组成其它集合。可以说 SPL 集中了 SQL 和 Java 两者的优势。</p>
+<p>有序运算是典型的离散性与集合化的结合场景。次序的概念只有在集合中才有意义，单个成员无所谓次序，这里体现了集合化；而有序计算又需要针对某个成员及其相邻成员进行计算，需要离散性。</p>
+<p>在离散性的支持下才能获得更彻底的集合化，才能解决诸如有序计算类型的问题。</p>
+<p>离散数据集是即有离散性又有集合化的代数体系，关系代数只有集合化。</p>
+<h3 id="分组理解"><a href="#分组理解" class="headerlink" title="分组理解"></a>分组理解</h3><p>分组运算的本意是将一个大集合按某种规则拆成若干个子集合，关系代数中没有数据类型能够表示集合的集合，于是强迫在分组后做聚合运算。</p>
+<p>离散数据集中允许集合的集合，可以表示合理的分组运算结果，分组和分组后的聚合被拆分成相互独立的两步运算，这样可以针对分组子集再进行更复杂的运算。</p>
+<p>关系代数中只有一种等值分组，即按分组键值划分集合，等值分组是个完全划分。</p>
+<p>离散数据集认为任何拆分大集合的方法都是分组运算，除了常规的等值分组外，还提供了与有序性结合的有序分组，以及可能得到不完全划分结果的对位分组。</p>
+<h3 id="聚合理解"><a href="#聚合理解" class="headerlink" title="聚合理解"></a>聚合理解</h3><p>关系代数中没有显式的集合数据类型，聚合计算的结果都是单值，分组后的聚合运算也是这样，只有 SUM、COUNT、MAX、MIN 等几种。特别地，关系代数无法把 TOPN 运算看成是聚合，针对全集的 TOPN 只能在输出结果集时排序后取前 N 条，而针对分组子集则很难做到 TOPN，需要转变思路拼出序号才能完成。</p>
+<p>离散数据集提倡普遍集合，聚合运算的结果不一定是单值，仍然可能是个集合。在离散数据集中，TOPN 运算和 SUM、COUNT 这些是地位等同的，即可以针对全集也可以针对分组子集。</p>
+<p>SPL 把 TOPN 理解成聚合运算后，在工程实现时还可以避免全量数据的排序，从而获得高性能。而 SQL 的 TOPN 总是伴随 ORDER BY 动作，理论上需要大排序才能实现，需要寄希望于数据库在工程实现时做优化。<br> 有序支持的高性能</p>
+<p>离散数据集特别强调有序集合，利用有序的特征可以实施很多高性能算法。这是基于无序集合的关系代数无能为力的，只能寄希望于工程上的优化。</p>
+<p>下面是部分利用有序特征后可以实施的低复杂度运算：</p>
+<ul>
+<li>数据表对主键有序，相当于天然有一个索引。对键字段的过滤经常可以快速定位，以减少外存遍历量。随机按键值取数时也可以用二分法定位，在同时针对多个键值取数时还能重复利用索引信息。</li>
+<li>通常的分组运算是用 HASH 算法实现的，如果我们确定地知道数据对分组键值有序，则可以只做相邻对比，避免计算 HASH 值，也不会有 HASH 冲突的问题，而且非常容易并行。</li>
+<li>数据表对键有序，两个大表之间对位连接可以执行更高性能的归并算法，只要对数据遍历一次，不必缓存，对内存占用很小；而传统的 HASH 值分堆方法不仅比较复杂度高，需要较大内存并做外部缓存，还可能因 HASH 函数不当而造成二次 HASH 再缓存。</li>
+<li>大表作为外键表的连接。事实表小时，可以利用外键表有序，快速从中取出关联键值对应的数据实现连接，不需要做 HASH 分堆动作。事实表也很大时，可以将外键表用分位点分成多个逻辑段，再将事实表按逻辑段进行分堆，这样只需要对一个表做分堆，而且分堆过程中不会出现 HASH 分堆时的可能出现的二次分堆，计算复杂度能大幅下降。</li>
+</ul>
+<p>其中 3 和 4 利用了离散数据集对连接运算的改造，如果仍然延用关系代数的定义（可能产生多对多），则很难实现这种低复杂的算法。</p>
+<p>除了理论上的差异， SPL 还有许多工程层面的优势，比如更易于编写并行代码、大内存预关联提高外键连接性能等、特有的列存机制以支持随意分段并行等。</p>
+<p>再把前面的问题用 SPL 重写一遍有个直接感受。</p>
+<p>一支股票最长连续上涨多少天：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus">stock_price<span class="hljs-selector-class">.sort</span>(trade_date).group@<span class="hljs-selector-tag">i</span>(closing_price&lt;closing_price<span class="hljs-selector-attr">[-1]</span>)<span class="hljs-selector-class">.max</span>(~<span class="hljs-selector-class">.len</span>())<br></code></pre></td></tr></table></figure>
+
+<p>计算思路和前面的 SQL 相同，但因为引入了有序性后，表达起来容易多了，不再绕了。</p>
+<p>1 亿条数据中取前 10 名：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">T<span class="hljs-selector-class">.groups</span>(;<span class="hljs-attribute">top</span>(-<span class="hljs-number">10</span>,<span class="hljs-attribute">x</span>))<br></code></pre></td></tr></table></figure>
+
+<p>SPL 有更丰富的集合数据类型，容易描述单次遍历上实施简单聚合的高效算法，不涉及大排序动作。</p>
+<h2 id="SPL下载-开源"><a href="#SPL下载-开源" class="headerlink" title="SPL下载&#x2F;开源"></a>SPL下载&#x2F;开源</h2><p>看完上面的例子，有没有对 SPL 产生一些兴趣呢？可以下载来试试：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://c.raqsoft.com.cn/article/1595816810031">SPL下载地址：http://c.raqsoft.com.cn/article/1595816810031</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/SPLWare/esProc">SPL开源地址：https://github.com/SPLWare/esProc</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/123635262/">https://pc-study.github.io/csdn-blog/posts/123635262/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/SQL/">SQL</a><a class="post-meta__tags" href="/csdn-blog/tags/SPL/">SPL</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/123732698/" title="Oracle SQL 字段是如何做到 “四大皆空“（BUG）"><img class="cover" src="/csdn-blog/img/covers/tech.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Oracle SQL 字段是如何做到 “四大皆空“（BUG）</div></div><div class="info-2"><div class="info-item-1">问题分析 首先，我们看一张图，我称之为 “四大皆空”，此图来源于 刘晨 的视频分享 Oracle中新增字段的点点滴滴，很有意思，从图中可以发现两段 SQL，看看一下这张图有什么奇怪的地方！ 本文参考资料： 非空字段空值对查询的影响 非空字段空值的产生 Oracle中新增字段的点点滴滴 SQL 分析</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/123637987/" title="大数据生态圈如何入门？"><img class="cover" src="/csdn-blog/images/d831398d329330292db1d0f000c2ae5b.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">大数据生态圈如何入门？</div></div><div class="info-2"><div class="info-item-1">大数据平台架构 大数据技术已经被应用到各行各业，涉及人们生活的方方面面。大数据技术大大提高了数据存储和计算能力，从而为企业快速决策提供了数据支撑，能够助力企业改进业务流程、控制成本、提高产品质量，应用大数据技术为企业核心竞争力的提升打下了坚实的基础。 大数据技术在企业项目开发中主要涉及数据采集、数据</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AF%AD%E8%A8%80%E7%9A%84%E7%9B%AE%E6%A0%87"><span class="toc-number">2.</span> <span class="toc-text">数据库语言的目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%A1%8C"><span class="toc-number">3.</span> <span class="toc-text">SQL为什么不行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPL%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E8%A1%8C"><span class="toc-number">4.</span> <span class="toc-text">SPL为什么能行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%B8%E7%A6%BB%E8%AE%B0%E5%BD%95"><span class="toc-number">4.1.</span> <span class="toc-text">游离记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%89%E5%BA%8F%E6%80%A7"><span class="toc-number">4.2.</span> <span class="toc-text">有序性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A6%BB%E6%95%A3%E6%80%A7%E4%B8%8E%E9%9B%86%E5%90%88%E5%8C%96"><span class="toc-number">4.3.</span> <span class="toc-text">离散性与集合化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E7%BB%84%E7%90%86%E8%A7%A3"><span class="toc-number">4.4.</span> <span class="toc-text">分组理解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%9A%E5%90%88%E7%90%86%E8%A7%A3"><span class="toc-number">4.5.</span> <span class="toc-text">聚合理解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPL%E4%B8%8B%E8%BD%BD-%E5%BC%80%E6%BA%90"><span class="toc-number">5.</span> <span class="toc-text">SPL下载&#x2F;开源</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

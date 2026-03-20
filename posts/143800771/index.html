@@ -1,0 +1,471 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>YashanDB YAC 入门指南与技术详解 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="YashanDB YAC 入门指南与技术详解">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/143800771/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg">
+<meta property="article:published_time" content="2024-11-15T07:40:42.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:13:19.898Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="yashandb">
+<meta property="article:tag" content="yashandb体验官">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/database.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"YashanDB YAC 入门指南与技术详解","url":"https://pc-study.github.io/csdn-blog/posts/143800771/","image":"https://pc-study.github.io/csdn-blog/img/covers/database.svg","datePublished":"2024-11-15T07:40:42.000Z","dateModified":"2026-03-20T12:13:19.898Z","description":"大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/143800771/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/143800771/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'YashanDB YAC 入门指南与技术详解',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/database.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">YashanDB YAC 入门指南与技术详解</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">YashanDB YAC 入门指南与技术详解<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-11-15-143800771.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-11-15T07:40:42.000Z" title="发表于 2024-11-15 15:40:42">2024-11-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:13:19.898Z" title="更新于 2026-03-20 20:13:19">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">7.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>22分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:13:19&quot;}" hidden></div><blockquote>
+<p>大家好，这里是公众号 <strong>DBA学习之路</strong>，分享一些学习国产数据库路上的知识和经验。</p>
+</blockquote>
+<h2 id="社群交流"><a href="#社群交流" class="headerlink" title="社群交流"></a>社群交流</h2><p>为了给大家提供一些技术交流的平台，目前已成立的技术交流群：</p>
+<ul>
+<li>Oracle 数据库交流群</li>
+<li>国产数据库交流群</li>
+<li>Linux 技术交流群</li>
+<li>ChatGPT 4o 免费体验群</li>
+</ul>
+<p>需要进群（<strong>均已超过 200 人，需要邀请</strong>）可以添加号主微信：<strong>Lucifer-0622</strong>，备注对应的群名即可。</p>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_2">社群交流</a></li>
+<li><a href="#_13">前言</a></li>
+<li><a href="#_22">介绍</a></li>
+<li><a href="#YCK_39">YCK</a></li>
+<li><a href="#YCS_47">YCS</a></li>
+<li><ul>
+<li><a href="#YCS__64">YCS 实例</a></li>
+<li><a href="#YCS__69">YCS 配置</a></li>
+<li><a href="#_77">集群共享文件</a></li>
+</ul>
+</li>
+<li><a href="#YFS_84">YFS</a></li>
+<li><ul>
+<li><a href="#_109">磁盘管理</a></li>
+<li><a href="#DiskGroup_114">磁盘组（DiskGroup）</a></li>
+<li><a href="#FailureGroup_121">故障组（FailureGroup）</a></li>
+<li><a href="#Disk_132">磁盘设备（Disk）</a></li>
+<li><a href="#_141">存储高可用</a></li>
+<li><ul>
+<li><a href="#_146">多副本</a></li>
+<li><a href="#Redundancy_159">冗余度（Redundancy）</a></li>
+<li><a href="#Allocate_Unit_165">分配单元（Allocate Unit）</a></li>
+</ul>
+</li>
+<li><a href="#_177">文件及目录管理</a></li>
+<li><ul>
+<li><a href="#_182">目录</a></li>
+<li><a href="#_189">文件</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_194">集群数据库高可用</a></li>
+<li><ul>
+<li><a href="#_208">文件系统高可用</a></li>
+<li><ul>
+<li><a href="#_211">数据高可用</a></li>
+<li><a href="#_218">服务高可用</a></li>
+<li><a href="#_223">主备复制</a></li>
+</ul>
+</li>
+<li><a href="#_246">集群服务高可用</a></li>
+<li><ul>
+<li><a href="#_249">心跳机制</a></li>
+<li><a href="#IO_Fence__270">I&#x2F;O Fence 功能</a></li>
+<li><a href="#_273">投票仲裁</a></li>
+</ul>
+</li>
+<li><a href="#_280">实例故障在线恢复</a></li>
+<li><a href="#_294">透明应用程序故障转移</a></li>
+</ul>
+</li>
+<li><a href="#_299">写在最后</a></li>
+<li><a href="#_304">往期精彩文章</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>深圳计算科学研究院拟于 2024 年 11 月 14 日在深圳五洲宾馆举办“2024 国产数据库创新生态大会”。本次大会以“核心替代 新质金融”为主题，汇聚数据管理领域院士专家、顶尖学者以及金融行业资深技术大咖超百位业内专业人士，围绕国产数据库系统产业变革的机遇与前景，深入探讨核心业务系统软件的国产化创新路径和发展趋势！</p>
+<p>同天 YashanDB 发布了一个新的 LTS 版本 <strong>23.3</strong>，了解崖山的朋友都知道，这个数据库跟 Oracle 十分相似，兼容性极高。</p>
+<p>我之前参加过崖山的 YCA&#x2F;YCP 培训，体验过个人版的单机部署，总体来说还算不错。当时由于学习时间紧张，一直没有接触 YashanDB 共享集群（YAC），最近有时间正好可以学习一下，本文先了解一下 YAC 的概念。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>YashanDB 共享集群（YAC）是一款单库多实例的多活数据库系统，所有节点之间以强一致性方式实现并发读写，为高端核心业务提供了应用透明的透明多写、高可用、高扩展、高性能的数据库能力。对等 Oracle RAC&#x2F;DB2 的集群产品，基于国产中间件&#x2F;芯片&#x2F;服务器&#x2F;存储，构建高端核心交易场景的完整全栈替代方案。</p>
+<p><strong>产品架构</strong>：</p>
+<p>共享集群基于YashanDB内核持续演进，硬件上依赖共享存储实现shared-Disk的架构，同时引入了Cohesive Memory核心技术实现Shared-Cache能力，可在集群数据库多个实例之间协同数据页的读写访问以及各种非数据类资源的并发控制，主要特点包括：</p>
+<ul>
+<li>共享集群是一个单库多实例的多活数据库系统，用户连接任意实例都可以访问同一个数据库，多个数据库实例可以并发读写同一份数据，且保证实例之间读写的强一致性，具备高可用、高扩展、高性能等特性。</li>
+<li>共享集群的核心组件主要包括崖山集群内核 <strong>YCK</strong>（Yashan Cluster Kernel）、崖山集群服务 <strong>YCS</strong>（Yashan Cluster Service）和崖山文件系统 <strong>YFS</strong>（Yashan File System）。</li>
+<li>共享集群支持在线故障自动切换和故障自动恢复，集群实例异常故障不影响剩余存活实例对外提供服务。</li>
+<li>通过客户端 TAF 技术，客户端应用可以在故障时自动切换连接到存活的实例，故障对业务透明无感知。</li>
+</ul>
+<p>YashanDB 在共享集群部署形态下，在硬件上需依赖共享存储，在软件上也引入新的基础设施，包括崖山集群服务 YCS 和崖山文件系统 YFS，分别提供集群管理和并行文件服务的能力。</p>
+<h2 id="YCK"><a href="#YCK" class="headerlink" title="YCK"></a>YCK</h2><p><strong>YCK</strong> 通过聚合内存（Cohesive Memory）技术，聚合多实例对数据资源和非数据资源的并发访问。</p>
+<ul>
+<li><strong>GRC（Global Resource Catalog）</strong>：负责管理全局资源状态信息，例如一个数据块当前持有者是哪个实例、是以读&#x2F;写哪种模式持有、哪些实例请求正在排队等。GRC 相关元数据采用了一致性哈希算法平均分配到所有实例，任一资源的元数据信息在集群内只有一份。由 GRC 线程组负责处理多实例对全局资源的并发访问控制，并提供排队服务。</li>
+<li><strong>GCS（Global Cache Service）</strong>：负责管理数据块类全局资源的调度，GCS 在 GRC 提供的能力基础上实现实例之间数据块请求的完整流程，包括路由请求消息、数据传输以及状态维护等，由 GCS 线程组提供相应的服务。</li>
+<li><strong>GLS（Global Lock Service）</strong>：负责管理非数据块类全局资源的调度，主要是各种类型的锁，GLS 在 GRC 提供的能力基础上实现实例之间申请全局锁的完整流程，由 GLS 线程组提供相应的服务。</li>
+</ul>
+<h2 id="YCS"><a href="#YCS" class="headerlink" title="YCS"></a>YCS</h2><p>崖山集群服务（后续简称 YCS）是 YashanDB 的一个集群管理组件，提供包括服务器管理、资源管理、集群监控、集群高可用等能力，支撑 YashanDB 共享集群从部署到启停的完整形态的稳定运行。</p>
+<p>下图是集群数据库的物理部署示意图，硬件上包括两台服务器和一台共享存储，每台服务器视为集群的一个节点；其中 YFS 运行期无独立进程，由 YCS 进程看护，不同服务器之间的 YCS 通过网络互联；数据库实例运行期有独立进程，不同服务器之间的实例进程通过网络互联；在同一个服务器上，数据库实例使用 UDS 方式连接到 YCS 和 YFS。</p>
+<p>崖山集群服务 YCS 采用客户端服务端架构，整体架构如下：</p>
+<p>客户端命令行工具可执行配置、查询等命令，相关命令发送到服务端处理后返回结果给客户端。</p>
+<p>YCS 负责管理共享集群数据库，包括集群服务器配置管理，集群资源配置管理，启停、监控服务器以及资源，提供查询服务器资源拓扑状态能力，在各种故障时负责投票仲裁并重组集群。</p>
+<p>YCS 是高可用的关键部件，通过网络心跳和磁盘心跳来确认其他服务器以及服务器上运行的资源是否正常。监控任务感知到资源运行状态异常时，会进行投票仲裁决定允许留在集群中的幸存者列表，并通知所有服务器的所有资源采取必要的重组动作。</p>
+<h3 id="YCS-实例"><a href="#YCS-实例" class="headerlink" title="YCS 实例"></a>YCS 实例</h3><p>YCS 实例采用单进程、多线程的服务架构（进程名为 yascs），包括负责监听、心跳、监控以及服务客户端的代理线程。在 YCS 进程中会以内嵌方式运行 YFS 实例，后者同样也包括一系列线程。</p>
+<p>共享集群每台服务器上会部署 YCS 实例（一组为 YCS 服务的线程称为一个 YCS 实例）和数据库实例，同一集群中不同服务器上运行的 YCS 实例和数据库实例完全一样，并通过内网互联。</p>
+<h3 id="YCS-配置"><a href="#YCS-配置" class="headerlink" title="YCS 配置"></a>YCS 配置</h3><p>在共享集群运行前，需要先完成集群服务配置，涉及以下三层概念：</p>
+<ul>
+<li><strong>集群</strong>：当我们要初始化安装一套共享集群数据库时，需要先使用YCS客户端工具完成集群的配置，包括指定集群名、参与集群的服务器以及服务器上的资源等。在同一个集群配置表磁盘上只能创建一套集群，如果以覆盖方式创建集群，则之前的集群配置会丢失。</li>
+<li><strong>服务器</strong>：一个集群应至少部署两台服务器，每台服务器分别运行YCS实例提供集群服务。有效保障发生单点故障时至少还有一台服务器提供服务，达到高可用的目标。每台服务器上需要运行配置一套YCS实例，除此之外还需要配置资源信息，包括数据库等。</li>
+<li><strong>资源</strong>：每个服务器需要管理一系列的资源，通过对资源的管理（包括监控和启停），实现高可用的集群服务给上层应用使用。资源包括内嵌资源和外部资源，配置资源的启停脚本后，可以通过 YCS 的客户端工具来启停相关资源：<ul>
+<li>YFS 是集群数据库运行时依赖的并行文件系统，作为内嵌资源随 YCS 启动，该资源对使用者透明。</li>
+<li>YashanDB 的数据库服务端作为外部资源由 YCS 进行管理。</li>
+</ul>
+</li>
+</ul>
+<h3 id="集群共享文件"><a href="#集群共享文件" class="headerlink" title="集群共享文件"></a>集群共享文件</h3><p>YCS 要求在共享存储上划分至少三块盘，是用作配置的 <strong>YCR File</strong> 和 <strong>Voting File</strong>，所有服务器上的 YCS 实例和数据库实例均可读写这三块盘。</p>
+<p><strong>集群共享文件分为以下两类：</strong></p>
+<ul>
+<li><strong>集群配置表（YCR，Yashan Cluster Registry）</strong>：保存集群服务的配置信息，包括服务器配置、资源配置等，YCR必须保存在共享存储上，所有YCS实例和数据库实例运行期需要能够正常访问YCR，以确保获得一致的集群服务配置信息。</li>
+<li><strong>集群投票文件（Voting file）</strong>：是所有服务器运行期会周期性写入状态信息的磁盘文件。在故障发生时，需要在集群投票文件进行投票并决定哪些服务器幸存而哪些服务器被逐出集群，无法访问投票文件则无法获得最新集群状态信息，相关YCS实例和数据库实例无法正常运行。</li>
+</ul>
+<h2 id="YFS"><a href="#YFS" class="headerlink" title="YFS"></a>YFS</h2><p>崖山集群文件系统（后续简称 YFS）是 YashanDB 的一个用户态存储服务组件，提供了文件系统以及磁盘组管理能力，用于管理共享磁阵。</p>
+<p>通过 YFS，用户可实现共享磁阵上基本的文件&#x2F;文件夹的创建、删除、浏览等功能。此外，YFS 还提供了管理 diskgroup（磁盘组）、failuregroup（故障组）等重要特性，以支持共享集群的存储高可用。</p>
+<p>崖山文件系统 YFS 是 YashanDB 的专用并行文件系统，提供存储设备管理、存储高可用、文件系统接口等功能。</p>
+<p>共享集群中每一个服务器上运行的一组 YFS 相关线程称为一个 YFS 实例，YFS 实例与 YCS 实例运行在同一进程（YCS 进程）中。生产环境下，通常每台服务器只会运行一个 YFS 实例。</p>
+<p>数据库服务端核心进程 YASDB 是 YFS 实例的客户端（Client），只与同服务器的 YFS 实例通信。YASDB 进程通过 Unix Domain Socket 向 YFS 实例发起元数据变更请求，YFS 实例更新共享内存中的元数据缓存，并将元数据变更持久化到共享存储。YASDB 进程读取共享内存中的元数据，直接对磁盘进行读写，无需通过 YFS 实例，IO 性能接近直接读写裸设备。</p>
+<p>YFS实例管理全局存储元数据，通过事务保证操作的原子性，各YFS服务之间通过网络同步元数据，通过一致性协议保证全局一致性，确保YFS各实例看到的文件状态没有差别。</p>
+<p>在共享集群部署中，必须依赖 YFS 进行所有文件操作，包括但不限于控制文件、数据文件、日志文件等的增删改操作。</p>
+<p>与通用文件系统相比，YFS 的差异主要有：</p>
+<ul>
+<li>YFS 分配空间的最小单元较大，以确保文件分区表（FAT）信息占用空间较小，并能够常驻内存。此外，YFS 采用共享内存技术，以供数据库实例直连访问，从而降低时延。</li>
+<li>并行文件系统对于元数据修改会在共享集群所有实例上实时同步，所有数据库实例能够访问到一致的目录文件元数据信息。</li>
+</ul>
+<p>YFS 无独立进程，作为内嵌资源与 YCS 实例同进程运行，随 YCS 启动而启动，无需用户干预。</p>
+<h3 id="磁盘管理"><a href="#磁盘管理" class="headerlink" title="磁盘管理"></a>磁盘管理</h3><p>YFS 具备磁盘管理能力，将磁盘裸设备（disk）划分为磁盘组、故障组等逻辑概念，以层级结构管理。</p>
+<h3 id="磁盘组（DiskGroup）"><a href="#磁盘组（DiskGroup）" class="headerlink" title="磁盘组（DiskGroup）"></a>磁盘组（DiskGroup）</h3><p>磁盘组（DiskGroup）是 YFS 管理磁盘设备的最顶层逻辑单元，一个 DiskGroup 应该至少包含 1 个 FailureGroup。</p>
+<p>YFS 中可能存在多个 DiskGroup，各 DiskGroup 分别管理一些 disk，各 DiskGroup 之间资源隔离、故障隔离。不同 DiskGroup 可以执行差异化存储管理，指定不同规格，例如为不同 DiskGroup 配置不同的副本数。每个 DiskGroup 的属性在创建时指定，一旦创建不可更改。</p>
+<p>DiskGroup 的主要属性包括冗余度（Redundancy Level，也叫冗余级别）和分配单元大小（AU size）。</p>
+<h3 id="故障组（FailureGroup）"><a href="#故障组（FailureGroup）" class="headerlink" title="故障组（FailureGroup）"></a>故障组（FailureGroup）</h3><p>YFS 将有可能同时故障的 disk 划分为故障组 FailureGroup，配合“多副本”实现数据（包括元数据以及文件数据）冗余，支持存储高可用。</p>
+<p>每个 FailureGroup 包含一个或多个 disk，它们可能是：</p>
+<ul>
+<li>同一磁阵中一些 LUN</li>
+<li>同一机柜的磁盘</li>
+<li>同一电源供电的多个存储设备</li>
+<li>同一机房的多个存储设备</li>
+</ul>
+<p>FailureGroup 没有绝对的划分标准，而是在特定的运维条件下根据各 disk 故障概率的相关性，将它们进行适当分组，确保不同的 FailureGroup（大概率）不会同时故障。</p>
+<h3 id="磁盘设备（Disk）"><a href="#磁盘设备（Disk）" class="headerlink" title="磁盘设备（Disk）"></a>磁盘设备（Disk）</h3><p>YFS 的所有数据都按指定策略保存在 disk 上，包括 YFS 自身的元数据、YFS 文件以及目录的元数据、用户数据等。</p>
+<p>一个最小可用的 YFS 需要以下两个 disk：</p>
+<ul>
+<li>1 个 BOOT_DISK：用于存储 YFS 自身元数据，建议容量 500MB 以上。YFS 依赖该 disk 完成启动和初始化，用户可在 YFS 配置中指定该磁盘。</li>
+<li>1 个用户数据 disk：即 YFS 的数据盘，可以配置多个数据盘，用于保存用户数据，需在创建磁盘组时指定。</li>
+</ul>
+<p>YFS 仅支持 Direct IO 模式读写，加入 YFS 的磁盘至少应支持块大小 512B~64MB 的 DIO 模式读写。同一个磁盘不能在 YFS 中复用，可能丢失数据。</p>
+<h3 id="存储高可用"><a href="#存储高可用" class="headerlink" title="存储高可用"></a>存储高可用</h3><p>在创建 DiskGroup 时，可以通过指定冗余度配置该 DiskGroup 的副本数。数据副本会保存在不同的 FailureGroup 中，只要至少一个副本完整，数据便可用。</p>
+<p>不同 FailureGroup 下的 disk 之间故障是独立事件，同时故障的概率极低，因此数据损坏的概率极低，保证了数据高可用。</p>
+<h4 id="多副本"><a href="#多副本" class="headerlink" title="多副本"></a>多副本</h4><p>副本数指数据保存的份数，例如 1 副本表示 YFS 中只存在 1 份数据，3 副本表示 YFS 中存在 3 份相同的数据。</p>
+<p>副本数具体可分为用户数据副本数和 YFS 元数据副本数。在 FailureGroup 数大于数据副本数时，系统会自动为元数据创建更多副本，进一步加强 YFS 的可靠性。</p>
+<p>使用多副本保护数据的前提是正确规划 FailureGroup，确保数据副本之间故障概率独立：所有副本应分布在不同的 FailureGroup，因此需满足 <strong>FailureGroup 个数 &gt;&#x3D; 用户数据副本数</strong>。</p>
+<p>各冗余级别下 YFS 元数据副本数是推荐值，如果 FailureGroup 数量小于元数据副本数要求，元数据副本数将被调整为与 FailureGroup 数量相同的值。</p>
+<p>YFS 会妥善安排各副本数据的保存位置，保证各副本保存在不同 FailureGroup 的不同 disk。</p>
+<blockquote>
+<p>注意：YFS 中数据的多副本不能跨越 DiskGroup，因为各 DiskGroup 的资源是完全隔离的。</p>
+</blockquote>
+<h4 id="冗余度（Redundancy）"><a href="#冗余度（Redundancy）" class="headerlink" title="冗余度（Redundancy）"></a>冗余度（Redundancy）</h4><p>YFS 支持 3 种冗余级别：</p>
+<ul>
+<li><strong>EXTERNAL</strong>：该级别表示无数据冗余，用户数据副本数为 1，YFS 元数据副本数为 1。配置本级别的情况下，数据的可靠性依赖外部能力实现，例如 RAID。</li>
+<li><strong>NORMAL</strong>：一般级别的数据冗余，用户数据副本数为 2，YFS 元数据副本最小为 2，最大为 3。</li>
+<li><strong>HIGH</strong>：高级别的数据冗余，用户数据副本数为 3，YFS 元数据副本数最小为 3，最大为 5。</li>
+</ul>
+<h4 id="分配单元（Allocate-Unit）"><a href="#分配单元（Allocate-Unit）" class="headerlink" title="分配单元（Allocate Unit）"></a>分配单元（Allocate Unit）</h4><p>YFS 将 disk 划分为等大小的分配单元（AU，Allocate Unit）进行管理，AU size 是 YFS 分配磁盘空间的最小单元。</p>
+<p>YFS 支持的 AU size 颗粒度有：1M（默认值）、4M、8M、16M、32M，用户可以在创建 DiskGroup 时指定该 DiskGroup 的 AU size，或使用默认的 AU size。</p>
+<p>AU size 决定了 YFS 管理磁盘空间的颗粒度，更大的 AU size 可以使 YFS 创建更大的文件、获得更好的连续 IO 性能，但也会消耗更多内存，浪费一些磁盘空间。用户应根据业务特征选择合适的 AU size，不合适的 AU size 可能影响 YFS 的运行性能。</p>
+<p><strong>对 AU size 的配置建议如下：</strong></p>
+<ul>
+<li>系统中以小文件为主时，建议选择较小的 AU size。</li>
+<li>系统中以大文件为主时，建议选择较大的 AU size。</li>
+<li>当 AU size 大于等于绝大多数 IO size 时，可以获得更好的性能。</li>
+</ul>
+<h3 id="文件及目录管理"><a href="#文件及目录管理" class="headerlink" title="文件及目录管理"></a>文件及目录管理</h3><p>YFS 提供了一组文件操作 API，抽象底层存储管理细节，语义兼容大多数文件系统操作，具备文件、目录、路径等文件系统基本概念。</p>
+<p>YFS 还提供专用的管理终端 <code>yfscmd</code>，提供与 Linux Shell 类似的文件管理界面，例如常见的 cd、ls、mv、cp 等命令。</p>
+<h4 id="目录-1"><a href="#目录-1" class="headerlink" title="目录"></a>目录</h4><p>YFS 以目录树的形式组织、管理文件。YFS 的路径构成为 <code>+DG_NAME/DIR/PATH/file.name</code>。</p>
+<p>YFS 的根是 <code>+</code>，一级目录是磁盘组的名称，其他次级才是一般意义上的目录和文件名。磁盘组目录是虚拟目录，无法直接增&#x2F;删&#x2F;改，需通过增&#x2F;删磁盘组间接修改。</p>
+<p>可以通过绝对路径中的根识别文件系统类型，以 <code>+</code> 开头的是 YFS 路径，以 <code>/</code> 开头的是系统本地路径。yfscmd cp 指令通过根路径字符识别文件所在文件系统，实现YFS和本地文件系统的交叉复制。</p>
+<h4 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h4><p>YFS 文件除用户数据外，还包含一些精简的属性信息，例如创建时间、文件大小等。由于 YFS 仅支持 Direct IO 读写，YFS 文件大小都是 512 字节的整倍数。</p>
+<p>文件实际占据的磁盘空间可能大于文件大小，约为 <code>Round(FileSize/AuSize) * Redundancy</code>，文件的元数据也会额外占据一些空间，但相对较少。</p>
+<h2 id="集群数据库高可用"><a href="#集群数据库高可用" class="headerlink" title="集群数据库高可用"></a>集群数据库高可用</h2><p>集群数据库的高可用，表示在集群中任意一个服务器发生故障时，系统拥有故障转移和恢复的能力，连接到故障服务器的用户会被自动转移到其他活跃服务器，且用户不感知这种变化。</p>
+<p><strong>在共享集群中可能发生故障的场景有：</strong></p>
+<ul>
+<li>YFS 自身故障，如磁盘损坏、数据损坏等。</li>
+<li>YCS 自身故障，如网络中断、进程异常等。</li>
+<li>上述故障，以及数据库本身的故障，都将引起数据库实例故障，用户连接被断开。</li>
+</ul>
+<p>YashanDB 建立了故障模式库，对各类故障进行检测，并在发生故障时进行自动处理：</p>
+<ul>
+<li><strong>文件系统高可用</strong>：实现了对 YFS 故障的自动处理和恢复能力。</li>
+<li><strong>集群服务高可用</strong>：实现了服务器自动选主和切换能力。</li>
+<li><strong>实例故障在线恢复</strong>：实现了对故障实例的数据恢复能力。</li>
+<li><strong>透明应用程序故障转移</strong>：实现了客户端自动切换到集群活跃实例的能力。</li>
+</ul>
+<h3 id="文件系统高可用"><a href="#文件系统高可用" class="headerlink" title="文件系统高可用"></a>文件系统高可用</h3><p>YFS 通过 diskgroup 和多副本技术实现数据的高可用，通过集群化部署实现服务的高可用。</p>
+<h4 id="数据高可用"><a href="#数据高可用" class="headerlink" title="数据高可用"></a>数据高可用</h4><p>YFS 通过 diskgroup 隔离内部资源，进行差异化管理。</p>
+<p>diskgroup 内按磁盘故障率的相关性，划分为若干 failuregroup，多个 failuregroup 同时故障的概率极低。数据多副本分散在不同 failuregroup，当发生故障时，只要 YFS 中还存在 1 个有效副本，数据就依然可用。</p>
+<p>如果 failuregroup 足够，YFS 特别对自身元数据做了加强保障，相比用户数据创建更多副本，进一步保障 YFS 自身的可用性。</p>
+<h4 id="服务高可用"><a href="#服务高可用" class="headerlink" title="服务高可用"></a>服务高可用</h4><p>以集群模式部署YFS，当服务器数量发生变化或某个服务器发生故障无法服务时，YFS自动重构，恢复服务。只要集群中至少还有1个可用服务器，YFS集群服务就可用。</p>
+<p>另外，YFS利用redo和checkpoint机制确保了数据的一致性和可靠性，当发生极端故障时，重启YFS是通过回放redo日志恢复到有效状态。</p>
+<h4 id="主备复制"><a href="#主备复制" class="headerlink" title="主备复制"></a>主备复制</h4><p>YFS 集群状态的一致性非常重要，YFS 主实例向所有备实例的实时数据复制，通过传送 redo 日志实现，如下图：</p>
+<p><strong>1、日志插入</strong></p>
+<p>YFS 集群至少包含 1 个主实例（Primary）和若干备实例（Standby）。主实例负责处理所有元数据变更，同时将产生对应的 redo log，插入 Log Cache。</p>
+<p><strong>2、日志刷盘</strong></p>
+<p>YFS 自身的 redo file 也由 YFS 管理，受 YFS 多副本技术保护。</p>
+<p>redo log 被持久化到 redo file，这些数据保存在共享存储上，确保恢复时所有 YFS 实例都可以访问该文件。</p>
+<p><strong>3、日志发送</strong></p>
+<p>主实例将本机日志发送给所有备实例，由于 YFS 的元数据变更数据量很少，这里采用同步发送。</p>
+<p><strong>4、日志回放</strong></p>
+<p>备实例收到日志后，通过重演主实例 redo log 更新元数据页面，最终备实例状态与主实例状态同步一致。</p>
+<h3 id="集群服务高可用"><a href="#集群服务高可用" class="headerlink" title="集群服务高可用"></a>集群服务高可用</h3><p>集群服务高可用指的是当软件、硬件或者操作失误等原因导致集群中服务器发生故障时，该服务器将被踢出集群，服务器上承载的业务迁移到其他服务器，保证数据库服务能够正常进行。同时，当该服务器的故障恢复后，将其重新纳入集群中。</p>
+<h4 id="心跳机制"><a href="#心跳机制" class="headerlink" title="心跳机制"></a>心跳机制</h4><p>YCS 通过心跳机制来监控故障的发生与恢复，当检测到故障时，进入对应的故障处理流程；当检测到故障恢复时，将服务器或者资源重新纳入集群管理之中。</p>
+<p>为确保及时感知服务器和资源的状态变化，YCS 建立了多种心跳机制，包括：</p>
+<p><strong>1、磁盘心跳</strong></p>
+<p>主服务器定时将心跳序号写入投票盘，其他服务器读取磁盘心跳，根据是否及时写入的情况判断主服务器是否异常。当主服务器发生异常时，其他存活服务器中将会仲裁出一个服务器来接管主服务器的工作。</p>
+<p>配置参数 DISK_HB_KEEP_ALIVE 决定了其他服务器对主服务器进行探活的超时时间，一旦在 DISK_HB_KEEP_ALIVE 配置的时间内，主服务器都没有写入磁盘心跳，则接管主服务器成为新的主服务器。</p>
+<p><strong>2、网络心跳</strong></p>
+<p>包括网络心跳一和网络心跳二：</p>
+<ul>
+<li>网络心跳一：所有 YCS 服务器，两两之间都会定时发送心跳，一旦不能及时收到心跳，会认为服务器异常。</li>
+<li>网络心跳二：DB 通过 UDS 连接，定时发送心跳给 YCS 服务端，一旦不能及时收到心跳，会认为该资源异常。</li>
+</ul>
+<p>配置参数 NETWORK_HB_TIMEOUT 决定了判定资源异常的等待时间，当资源在 NETWORK_HB_TIMEOUT 设置的时间之间内没有心跳，则认为该资源异常，并启动异常处理流程。</p>
+<h4 id="I-O-Fence-功能"><a href="#I-O-Fence-功能" class="headerlink" title="I&#x2F;O Fence 功能"></a>I&#x2F;O Fence 功能</h4><p>当集群服务器发生故障时，会进入投票仲裁流程，经过仲裁处理后，如果某个服务器被驱逐出集群，那么与它相关联的数据库会检测到这一信息，会阻断新的 IO 请求，并在旧的 IO 处理完成后退出集群。同时如果集群服务器在备升主的场景下，会等待被驱逐服务器退出集群且旧的 IO 处理完成，再执行备升主的动作，以防止双主错误。</p>
+<h4 id="投票仲裁"><a href="#投票仲裁" class="headerlink" title="投票仲裁"></a>投票仲裁</h4><p>当集群无主或任意节点连续丢失网络心跳（由NETWORK_HB_TIMEOUT的配置决定）或者磁盘心跳（由DISK_HB_KEEP_ALIVE配置决定）直到超时，集群会进入投票仲裁流程，将故障服务器驱逐并决出最优子集群和集群的主节点。</p>
+<p>投票流程会首先选出计票服务器，然后由计票服务器根据每个节点的网络可见列表及其他信息判断旧集群是否因为网络隔离被划分为多个子集群。若是，计票服务器会选择成员数最多或有旧主的子集群幸存并决出主节点，然后驱逐劣势子集群的节点；若否，仅集群内异常的节点会被驱逐，并在必要时选出新主。</p>
+<h3 id="实例故障在线恢复"><a href="#实例故障在线恢复" class="headerlink" title="实例故障在线恢复"></a>实例故障在线恢复</h3><p>共享集群部署中，一旦某个服务器上的数据库实例发生故障，登录到该故障实例的所有连接将被断开，该实例上的未提交事务被执行回滚。此时，其他活跃实例上的会话请求可以继续执行，但当会话请求涉及全局资源访问时，该会话请求将被阻塞，直到对全局资源进行恢复后方可继续执行；不涉及全局资源访问的会话请求则正常运行不会阻塞。无论哪种情况，集群中所有活跃实例上的会话请求最终都可以正常完成，保障业务不受影响。</p>
+<p>YashanDB 的实例故障在线恢复用于处理实例故障发生时的全局资源恢复，该工作由集群中当前的主实例完成，主要的处理逻辑按顺序列示如下：</p>
+<ol>
+<li>收集需要在线恢复的故障实例信息。</li>
+<li>暂停访问全局资源的业务。</li>
+<li>根据剩余的活跃实例，重新构建全局资源信息。</li>
+<li>对故障实例的 redo 日志进行分析，锁定需要恢复的全局资源。</li>
+<li>恢复全局资源访问的业务。</li>
+<li>回放 redo 日志，相关全局资源恢复完毕，放开对该全局资源的访问。</li>
+<li>结束在线恢复流程。</li>
+</ol>
+<p>在线恢复在实例发生故障时自动触发，无须人工触发或干预，但如用户在此期间执行表空间 DDL 操作将无法成功。</p>
+<h3 id="透明应用程序故障转移"><a href="#透明应用程序故障转移" class="headerlink" title="透明应用程序故障转移"></a>透明应用程序故障转移</h3><p>透明应用程序故障转移（TAF，Transparent Application Failover）是当数据库服务端发生故障时，应用程序能够自动重连或切换到活跃实例的一种技术。通过 TAF 功能，连接切换的过程无需人为介入和感知，但切换时的当前语句将会被终止且未提交事务将回滚。</p>
+<p>TAF 属于客户端侧的功能，开发者可自由选择是否使用，通过 TAF 能最大程度保障业务的连续性和可用性，降低运维负担和等待人工干预引起的时延，提升应用程序最终用户的使用体验。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>下一篇写 YAC 的安装部署。</p>
+<p>如果有遗漏或者不足的地方，欢迎评论区补充或者投稿，感谢阅读！</p>
+<h2 id="往期精彩文章"><a href="#往期精彩文章" class="headerlink" title="往期精彩文章"></a>往期精彩文章</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/gjQBBvjIFsHC1rtEjn30nw">达梦数据库安装最详细教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/hapMuAF9xg8fbdlKJpsN6A">一招教你学会达梦数据库的免密登录</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/pZIcZiICY1pUiTAWQRtUKg">一文讲透达梦数据库的大小写敏感</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/MWQeqdvIfo9D2d8_vi7BTg">效率翻倍！达梦数据库 disql 使用技巧全攻略</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/5EvUN21PZ3Oc0tDnygr7rw">达梦数据库参数配置与一键优化指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/4vl88Oj9Nal-goeoijAqWg">达梦 AWR 报告快速上手指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Yd3gkFki_OJsCfCFKf1Ttw">金仓数据库 KingbaseES V9 单机安装指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/u7HK4soHUght3p0tzHPanA">KingbaseES KSQL 免密登录的几种方式</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vdsFR2aPNp8Gys1G4qX5cQ">KingbaseES 控制文件冗余与恢复秘籍</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/MwmvwR7sUQ6VuoftHM19mA">南大通用 GBASE 8s V8.8 数据库最全安装指南</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/zt6Jhv0liO5EsvWyc6YrOg">GBase 8a MPP 集群部署最佳实践</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/XL2jYOPEf9x_bXW0VFE6kg">GBase 8s GDCA 认证课后练习题大全（题库）</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/oIEWt5pzK0KfhUq3GUNGCA">GBase 8s 数据库巡检报告及一键巡检脚本</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/i-L_tAF-XIIY_d4YCn0MIw">YashanDB 一键生成 AWR 报告</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/sgB3WQ6A8mGl3QaIJj5v1A">YashanDB 数据库安装部署</a></p>
+</blockquote>
+<hr>
+<p>「喜欢这篇文章，您的关注和赞赏是给作者最好的鼓励」</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/143800771/">https://pc-study.github.io/csdn-blog/posts/143800771/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/yashandb/">yashandb</a><a class="post-meta__tags" href="/csdn-blog/tags/yashandb%E4%BD%93%E9%AA%8C%E5%AE%98/">yashandb体验官</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/143841948/" title="GBase 8a GDCA 认证课后练习题大全（题库）"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">GBase 8a GDCA 认证课后练习题大全（题库）</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/143719255/" title="SQLark：让 Oracle 迁移到达梦变得简单高效！"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">SQLark：让 Oracle 迁移到达梦变得简单高效！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/144257216/" title="YashanDB 23.2 YAC 共享集群部署实战：轻松上手！"><img class="cover" src="/csdn-blog/images/070d4114b2dcac70155c94fa58da3c2f.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-05</div><div class="info-item-2">YashanDB 23.2 YAC 共享集群部署实战：轻松上手！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 社群交流 为了给大家提供一些技术交流的平台，目前已成立的技术交流群： Oracle 数据库交流群 国产数据库交流群 Linux 技术交流群 ChatGPT 4o 免费体验群 需要进群（均已超过 200 人，需要邀请）可以</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/144546449/" title="崖山 YashanDB SQLab：SQL 学习与分享平台"><img class="cover" src="/csdn-blog/images/dc46c600976e394ac98e6ab2c3add19b.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-17</div><div class="info-item-2">崖山 YashanDB SQLab：SQL 学习与分享平台</div></div><div class="info-2"><div class="info-item-1">前言 记得之前不少朋友问我有没有一些在线的 SQL 实验网站，用来学习一些 SQL 基础语法和学习测试。今天发现一款崖山数据库的在线 SQL 学习与分享平台： SQLab： 🎈 轻松上手，无需安装： 直接在线体验 YashanDB，无需安装任何软件，即可编写和运行 SQL 和 PL/SQL 脚本。</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142949185/" title="Yashandb YMP 安装部署"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-15</div><div class="info-item-2">Yashandb YMP 安装部署</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 介绍 安装前准备 关闭防火墙 用户数参数配置 创建用户 依赖包安装 配置 JAVA8 环境 YMP 安装 OCI 环境准备（可选） YMP 安装包解压 安装参数调整 默认内置库安装 YMP（推荐方案） 查看运</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142949253/" title="YashanDB AWR 报告一键生成"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-15</div><div class="info-item-2">YashanDB AWR 报告一键生成</div></div><div class="info-2"><div class="info-item-1">前言 最近在学习 YashanDB 数据库，免费考一下 YCP 证书，在学习过程中发现 YashanDB 也有 AWR 报告功能。于是，打开官方文档学习了一下，使用方式有点一言难尽，感觉开发有点不上心，花点时间封装一下应该不难吧。 介绍 DBMS\AWR 包提供了一组内置的存储过程/函数，用于实现性</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BE%E7%BE%A4%E4%BA%A4%E6%B5%81"><span class="toc-number">1.</span> <span class="toc-text">社群交流</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">目录</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YCK"><span class="toc-number">4.</span> <span class="toc-text">YCK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YCS"><span class="toc-number">5.</span> <span class="toc-text">YCS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#YCS-%E5%AE%9E%E4%BE%8B"><span class="toc-number">5.1.</span> <span class="toc-text">YCS 实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#YCS-%E9%85%8D%E7%BD%AE"><span class="toc-number">5.2.</span> <span class="toc-text">YCS 配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E5%85%B1%E4%BA%AB%E6%96%87%E4%BB%B6"><span class="toc-number">5.3.</span> <span class="toc-text">集群共享文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YFS"><span class="toc-number">6.</span> <span class="toc-text">YFS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E7%AE%A1%E7%90%86"><span class="toc-number">6.1.</span> <span class="toc-text">磁盘管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E7%BB%84%EF%BC%88DiskGroup%EF%BC%89"><span class="toc-number">6.2.</span> <span class="toc-text">磁盘组（DiskGroup）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%85%E9%9A%9C%E7%BB%84%EF%BC%88FailureGroup%EF%BC%89"><span class="toc-number">6.3.</span> <span class="toc-text">故障组（FailureGroup）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E8%AE%BE%E5%A4%87%EF%BC%88Disk%EF%BC%89"><span class="toc-number">6.4.</span> <span class="toc-text">磁盘设备（Disk）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="toc-number">6.5.</span> <span class="toc-text">存储高可用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E5%89%AF%E6%9C%AC"><span class="toc-number">6.5.1.</span> <span class="toc-text">多副本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%97%E4%BD%99%E5%BA%A6%EF%BC%88Redundancy%EF%BC%89"><span class="toc-number">6.5.2.</span> <span class="toc-text">冗余度（Redundancy）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E9%85%8D%E5%8D%95%E5%85%83%EF%BC%88Allocate-Unit%EF%BC%89"><span class="toc-number">6.5.3.</span> <span class="toc-text">分配单元（Allocate Unit）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8F%8A%E7%9B%AE%E5%BD%95%E7%AE%A1%E7%90%86"><span class="toc-number">6.6.</span> <span class="toc-text">文件及目录管理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95-1"><span class="toc-number">6.6.1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E4%BB%B6"><span class="toc-number">6.6.2.</span> <span class="toc-text">文件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E6%95%B0%E6%8D%AE%E5%BA%93%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="toc-number">7.</span> <span class="toc-text">集群数据库高可用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="toc-number">7.1.</span> <span class="toc-text">文件系统高可用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="toc-number">7.1.1.</span> <span class="toc-text">数据高可用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="toc-number">7.1.2.</span> <span class="toc-text">服务高可用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BB%E5%A4%87%E5%A4%8D%E5%88%B6"><span class="toc-number">7.1.3.</span> <span class="toc-text">主备复制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E6%9C%8D%E5%8A%A1%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="toc-number">7.2.</span> <span class="toc-text">集群服务高可用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6"><span class="toc-number">7.2.1.</span> <span class="toc-text">心跳机制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#I-O-Fence-%E5%8A%9F%E8%83%BD"><span class="toc-number">7.2.2.</span> <span class="toc-text">I&#x2F;O Fence 功能</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8A%95%E7%A5%A8%E4%BB%B2%E8%A3%81"><span class="toc-number">7.2.3.</span> <span class="toc-text">投票仲裁</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E4%BE%8B%E6%95%85%E9%9A%9C%E5%9C%A8%E7%BA%BF%E6%81%A2%E5%A4%8D"><span class="toc-number">7.3.</span> <span class="toc-text">实例故障在线恢复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%8F%E6%98%8E%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB"><span class="toc-number">7.4.</span> <span class="toc-text">透明应用程序故障转移</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">8.</span> <span class="toc-text">写在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%80%E6%9C%9F%E7%B2%BE%E5%BD%A9%E6%96%87%E7%AB%A0"><span class="toc-number">9.</span> <span class="toc-text">往期精彩文章</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

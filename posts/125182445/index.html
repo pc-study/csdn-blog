@@ -1,0 +1,328 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>经典的数据湖“不可能三角”，如何有效解决？ | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="数据湖是什么？ 提到数据湖就要先说一下数据仓库，数据仓库是集成多业务系统数据、面向主题的、专门用于数据查询分析的数据组织形式。当业务系统数据量不断增大、业务系统数量不断增多以后，数据仓库的出现就会成为必然。原始数据入仓时需要经过一系列清洗转换，以及深度组织才能满足业务的需要。因此数据仓库要解决的核心">
+<meta property="og:type" content="article">
+<meta property="og:title" content="经典的数据湖“不可能三角”，如何有效解决？">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/125182445/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="数据湖是什么？ 提到数据湖就要先说一下数据仓库，数据仓库是集成多业务系统数据、面向主题的、专门用于数据查询分析的数据组织形式。当业务系统数据量不断增大、业务系统数量不断增多以后，数据仓库的出现就会成为必然。原始数据入仓时需要经过一系列清洗转换，以及深度组织才能满足业务的需要。因此数据仓库要解决的核心">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/f77db16dc77749f94e1efb1e341370b6.webp">
+<meta property="article:published_time" content="2022-06-08T05:05:59.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.410Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="big data">
+<meta property="article:tag" content="数据仓库">
+<meta property="article:tag" content="数据挖掘">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/f77db16dc77749f94e1efb1e341370b6.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"经典的数据湖“不可能三角”，如何有效解决？","url":"https://pc-study.github.io/csdn-blog/posts/125182445/","image":"https://pc-study.github.io/csdn-blog/images/f77db16dc77749f94e1efb1e341370b6.webp","datePublished":"2022-06-08T05:05:59.000Z","dateModified":"2026-03-20T12:25:38.410Z","description":"数据湖是什么？ 提到数据湖就要先说一下数据仓库，数据仓库是集成多业务系统数据、面向主题的、专门用于数据查询分析的数据组织形式。当业务系统数据量不断增大、业务系统数量不断增多以后，数据仓库的出现就会成为必然。原始数据入仓时需要经过一系列清洗转换，以及深度组织才能满足业务的需要。因此数据仓库要解决的核心","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/125182445/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/125182445/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '经典的数据湖“不可能三角”，如何有效解决？',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/f77db16dc77749f94e1efb1e341370b6.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">经典的数据湖“不可能三角”，如何有效解决？</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">经典的数据湖“不可能三角”，如何有效解决？<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2022-06-08-125182445.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-06-08T05:05:59.000Z" title="发表于 2022-06-08 13:05:59">2022-06-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.410Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><h3 id="数据湖是什么？"><a href="#数据湖是什么？" class="headerlink" title="数据湖是什么？"></a>数据湖是什么？</h3><p>提到数据湖就要先说一下数据仓库，数据仓库是集成多业务系统数据、面向主题的、专门用于数据查询分析的数据组织形式。当业务系统数据量不断增大、业务系统数量不断增多以后，数据仓库的出现就会成为必然。原始数据入仓时需要经过一系列清洗转换，以及深度组织才能满足业务的需要。因此数据仓库要解决的<strong>核心问题</strong>是：回答业务中已有的问题，这些问题必须事先定义好。</p>
+<p>那么事先没想到的问题（潜在数据价值）怎么办？如果按照数据仓库的解决思路，需要业务先提出问题，再基于该问题进一步建模。这样发现问题、提出问题、解决问题的链路就会很长，而且由于数据仓库的数据是高度组织的，如果要回答新问题涉及的数据粒度较细就需要再从原始数据加工获得，代价很大。如果这样的情况很多，整个过程就吃不消了。</p>
+<p><strong>基于这样的背景，数据湖出现了。</strong></p>
+<p>数据湖是为了满足海量原始数据存储分析的一项技术（方案），尽量多的原始数据“入湖”，并尽量保持原有的信息量，再基于全量数据理论上就可以发掘任意数据价值。说到这里，数据湖的两个主要作用呼之欲出，一个是数据存储，数据湖需要保留全量原始数据；另一个是数据分析，从技术上来讲就是数据计算，即数据变现的过程。</p>
+<p><strong>那么现在数据湖建设在这两方面表现的怎么样呢？</strong></p>
+<p>由于数据湖存储的是全量原始数据，结构化数据、半结构化数据、非结构化数据，无论何种类型都要原封不动地存进数据湖，因此本质上面临的是海量数据存储问题。这与数据仓库大多使用数据库存储结构化数据有很大不同。而且，数据入湖越快越好，这样不仅有助于充分发掘各种主题数据的关联价值，在数据安全性、完整性等方面也能得到很好保障。</p>
+<p>可喜的是，这种海量原始数据存储需求受益于硬件存储与云平台技术的长足进步，已经不再是问题，无论采用自建的存储集群，还是云厂商提供的存储服务，都能很好满足。</p>
+<p>现在难的是<strong>数据处理</strong>！数据湖数据五花八门，各种类型的数据处理方式也不尽相同。其中最核心也最麻烦的是结构化数据处理，无论是历史沉淀还是业务新增，结构化数据处理仍然是重中之重，甚至很多半结构化和非结构化数据计算最后都会转到结构化数据计算上。</p>
+<p>目前结构化数据处理的主要方式仍然是以 <code>SQL</code> 为主的数据库相关技术，就是原来数据仓库的那些能力。换句话说，数据湖上的结构化数据计算仍然要依靠数据仓库（数据库）才能完成。现在几乎所有数据湖也是这么干的，建设数据湖解决了原始全量数据存储问题以后，在此基础上再建设数据仓库完善贴合业务的数据处理能力，这就需要将数据湖数据再经 <code>ETL</code> 导入数据仓库。更先进一点的做法是采用一些自动化机制，识别数据湖中哪些数据需要入仓，在系统空闲的时候将数据从数据湖导入数据仓库，这就是现在喊的很热的“湖仓一体”的主要功能。其实不管数据入仓采用何种形式（还有数仓通过外部表的方式访问数据湖数据的，但效率很差），当前数据湖的组成大概是这样：数据湖&#x3D;海量数据存储+数据仓库+其他引擎（如非结构化数据处理）。</p>
+<p><img src="/csdn-blog/images/ea1a03d182a424dc113d19147e1c6608.webp" alt="经典的数据湖“不可能三角”，如何有效解决？" loading='lazy'></p>
+<p><strong>那么通过这种方式构建的数据湖会有啥问题呢？</strong></p>
+<h3 id="数据湖的不可能三角"><a href="#数据湖的不可能三角" class="headerlink" title="数据湖的不可能三角"></a>数据湖的不可能三角</h3><p>数据湖有三个重要满足点，既要<code>保持数据的原样</code>（全量信息入湖），也要可以<code>方便计算使用</code>（数据变现），还希望<code>建设成本低廉</code>（显然的）。但是，当前的技术方案无法同时满足这三点。</p>
+<p>保有原信息是数据湖建设的初衷，只有数据原样入湖保持原汁原味才能发挥最大价值。达到这个目标最简单的方法是数据湖保持一套与数据源完全一致的数据存储介质，原来是 <code>MySQL 数据湖</code> 中就有一个 MySQL 对应，原来是 MongoDB 数据湖中就有一个 MongoDB… 。这样就可以充分保证原始数据不变，还可以沿用各类数据源的计算能力。虽然很难跨源计算，但自身数据的计算都能完成，基本能够达到可计算的目标（图 ① 部分）。</p>
+<p>但这样做的缺点也很明显，数据湖建设成本太高。不仅要准备多个与原来相同的介质，将多年积累的数据源全部复制一遍，这个工作量太大了；而且如果数据来源商业软件，付费再采购岂不是更加推高建设成本。好一点的做法可以使用相同类型的介质，比如 Oracle 数据可以采用 MySQL 存储，这样成本会降低一些，但代价依然很高。而且这样做以后原来能计算的情况很可能就做不了或很难完成。</p>
+<p>那么退一步，不要求数据信息与原始一模一样，将数据存储在数据库中从而达到可计算的目的同时又能满足低成本的建设要求（图 ② 部分），这样是否可以呢？答案仍然是否定的。这种方案极度依赖于关系数据库，要将数据都整理到一个数据库中从而达到可计算的目的。</p>
+<p>然而，数据整理过程中很容易造成信息丢失，导致不满足数据湖建设的目标（全量信息入湖）。比如将MongoDB数据转存到MySQL&#x2F;Hive中就会发现实现很困难。MongoDB 中的很多数据类型和集合之间的关系在MySQL中并不存在，比如嵌入式的数据结构、数组和哈希等集合类型、多对多关系的实现。这些问题并不是简单通过数据迁移就能解决的，而需要在迁移之前先对部分数据结构进行重构，这就要进行一系列精细整理才能实现，但这又不符合低成本的要求了，需要事先投入相当人工和时间成本去梳理业务并设计目标数据组织方式。如果不进行精细整理就会丢失信息，进一步导致后续的分析统计错误，有些错误很隐蔽很难发现。</p>
+<p>更常见的做法是采用文件存储（或者数据库中的大字段）。将原始数据原封不动地导出到文件，这时丢失的信息量并不大，基本可容忍，数据还能保持完整。文件存储有很多好处，比如使用更加灵活，拥有更强的开放性，I&#x2F;O效率更高等。而且使用文件（系统）存储同时也符合低成本的建设目标。</p>
+<p>但文件存储的问题是文件没有计算能力（大字段也类似），基于文件存储就无法达到可计算的目标。不可能三角的确很难突破。</p>
+<p>无论如何，当前数据湖建设总会面临全量信息的存储和使用矛盾：在低技术成本（数据能快速入湖）的要求下，要全信息量就不能算，要算就不能保有全信息量。这与数据湖要达到的开放性背道而驰。</p>
+<p>这个问题本质上是数据库开放性不足和强约束性之间的矛盾，数据库要计算数据就必须入库才行，入库就要满足数据库的各类约束，需要经过一些列数据整理，信息就会丢失。不用数据库（比如文件）又无法满足强计算需求，当然自己硬编码的确也可以实现这些计算，但复杂度过高，远没有数据库方便。</p>
+<p>其实，如果有一个开放的计算引擎就可以解决这个问题，具备足够强的计算能力对未经整理的多样性数据进行实时计算，包括混合跨源计算。</p>
+<h3 id="开放的数据湖计算引擎SPL"><a href="#开放的数据湖计算引擎SPL" class="headerlink" title="开放的数据湖计算引擎SPL"></a>开放的数据湖计算引擎SPL</h3><p>开源SPL就是这样一个可应用在数据湖中提供开放计算能力的结构化数据计算引擎。借助SPL的多源混算能力就可以直接基于多种原始（原汁原味）数据进行计算，无论数据湖构建时采用与数据源一致的类型，还是通过文件存储都可以直接计算。而数据整理可以逐步进行，数据湖构建可以更加从容。</p>
+<h4 id="开放且完善的计算能力"><a href="#开放且完善的计算能力" class="headerlink" title="开放且完善的计算能力"></a>开放且完善的计算能力</h4><h5 id="多数据源混合计算"><a href="#多数据源混合计算" class="headerlink" title="多数据源混合计算"></a>多数据源混合计算</h5><p>SPL支持多种数据源，RDB、NoSQL、JSON&#x2F;XML、CSV、Webservice等都可以连接，并进行混合计算。这样数据湖存储的各类原始数据就可以直接利用起来，无需整理就可以发挥数据价值，节省“入库”动作，保证数据使用的灵活与高效性，符合数据湖灵活性要求。</p>
+<p>有了这个能力以后，数据湖构建之初就能为应用提供数据服务，而不用等原来数据整理、入库、建模等一系列长链路长周期过程完成后才能服务。而且这种方式更加灵活，可以根据业务需要提供实时响应。</p>
+<h5 id="文件计算支持"><a href="#文件计算支持" class="headerlink" title="文件计算支持"></a>文件计算支持</h5><p>特别地，SPL对文件的很好支持使得文件也拥有强计算能力，这样将数据湖数据存储在文件系统中也可以获得与数据库接近甚至超越的计算能力。即在前述不可能三角的第③部分基础上增加数据计算能力，从而让不可能三角变得可能。</p>
+<p><img src="/csdn-blog/images/b5986d3c0b1f2cd1ccba7094ffbfe094.webp" alt="经典的数据湖“不可能三角”，如何有效解决？ - 图2" loading='lazy'></p>
+<p>除了文本文件，SPL还可以天然支持JSON等多层数据格式处理，这样NoSQL以及RESTful等数据不用转换就可以直接使用，非常方便。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>A</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>&#x3D;json(file(“&#x2F;data&#x2F;EO.json”).read())</td>
+</tr>
+<tr>
+<td>2</td>
+<td>&#x3D;A1.conj(Orders)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>&#x3D;A2.select(Amount&gt;1000 &amp;&amp; Amount&lt;&#x3D;3000 &amp;&amp; like@c(Client,“<em>s</em>”))</td>
+</tr>
+<tr>
+<td>4</td>
+<td>&#x3D;A2.groups(year(OrderDate);sum(Amount))</td>
+</tr>
+<tr>
+<td>5</td>
+<td>&#x3D;A1.new(Name,Gender,Dept,Orders.OrderID,Orders.Client,Orders.Client,Orders.SellerId,Orders.Amount,Orders.OrderDate)</td>
+</tr>
+</tbody></table>
+<h5 id="完善的计算能力"><a href="#完善的计算能力" class="headerlink" title="完善的计算能力"></a>完善的计算能力</h5><p>SPL提供了完善的计算能力，基于离散数据集（而非关系代数）模型可以获得与SQL一样的完备计算性，同时在SPL敏捷语法与过程计算支持下数据处理比SQL更简单。</p>
+<p><img src="/csdn-blog/images/f77db16dc77749f94e1efb1e341370b6.webp" alt="SPL丰富的计算类库" loading='lazy'></p>
+<h5 id="直接访问源数据"><a href="#直接访问源数据" class="headerlink" title="直接访问源数据"></a>直接访问源数据</h5><p>再将SPL的开放能力延伸一下。如果数据源与数据湖的数据同步没完成但还需要使用这部分数据怎么办？原来就只能等着了，现在有了SPL我们甚至可以直接对接数据源进行计算，或者与数据湖中已有数据进行混合计算都可以。逻辑上可以把数据源作为数据湖的一部分使用，这样可以获得更高的灵活性。</p>
+<h4 id="数据整理后的高性能计算"><a href="#数据整理后的高性能计算" class="headerlink" title="数据整理后的高性能计算"></a>数据整理后的高性能计算</h4><p>引入SPL以后，数据仓库就变成可选项了。SPL自身拥有完善的强计算能力，同时还提供了基于文件的高性能存储。将原始数据ETL后存储在SPL存储中还可以获得更高的性能，同时文件系统具备使用灵活、易于并行等特性。</p>
+<p>SPL提供了两种高性能文件存储类型：集文件和组表。<strong>集文件</strong>采用了压缩技术（占用空间更小读取更快），存储了数据类型（无需解析数据类型读取更快），支持可追加数据的倍增分段机制，利用分段策略很容易实现并行计算，保证计算性能。<strong>组表</strong>支持列式存储，在参与计算的列数（字段）较少时会有巨大优势。组表上还实现了minmax索引，同时支持倍增分段，这样不仅能享受到列存的优势，也更容易并行提升计算性能。</p>
+<p>SPL也很容易实施并行计算，发挥多CPU的优势。SPL有很多计算函数都提供并行机制，如文件读取、过滤、排序只要增加一个@m选项就可以自动实施并行计算，同时也可以显示编写并行程序，通过多线程并行提升计算性能。</p>
+<p>特别地，SPL能支持很多SQL无法支持的高性能算法。比如常见的TopN运算，在SPL中TopN被理解为聚合运算，这样可以将高复杂度的排序转换成低复杂度的聚合运算，而且还能扩展应用范围。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>A</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>&#x3D;file(“data.ctx”).create().cursor()</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>&#x3D;A1.groups(;top(10,amount))</td>
+<td>金额在前 10 名的订单</td>
+</tr>
+<tr>
+<td>3</td>
+<td>&#x3D;A1.groups(area;top(10,amount))</td>
+<td>每个地区金额在前 10 名的订单</td>
+</tr>
+</tbody></table>
+<p>这里的语句中没有排序字样，也不会产生大排序的动作，在全集还是分组中计算TopN的语法基本一致，而且都会有较高的性能，类似的算法在SPL中还有很多。</p>
+<p>通过这些机制，SPL可以跑出超过传统数据仓库数量级的计算性能。整理后数据的存储和计算问题得以很好解决，数据仓库在数据湖中就真地不再是必需品了。</p>
+<p>更进一步，使用SPL还可以针对整理好的数据和未整理原始数据进行混合计算充分发挥各种类型的数据价值，而不用等所有数据整理好才能计算使用，数据湖的灵活性得以充分扩展。</p>
+<p>有了SPL以后，数据湖建设的很多步骤就可以并行了，原来只能串行（先导入、再整理、再使用等等），数据整理与数据使用可以同时进行，面对原始不规范的各类数据也能直接计算。边使用，边整理，只有这样循序渐近的模式才能建设好数据湖。</p>
+<blockquote>
+<p><strong>原文链接</strong>：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/lWqCPmXZJiuSCeyRk0EeOw">数据湖的不可能三角</a>，已经过作者授权原创发布！</p>
+</blockquote>
+<h3 id="SPL资料"><a href="#SPL资料" class="headerlink" title="SPL资料"></a>SPL资料</h3><ul>
+<li><a target="_blank" rel="noopener" href="http://www.scudata.com.cn/">SPL官网</a></li>
+<li><a target="_blank" rel="noopener" href="http://c.raqsoft.com.cn/article/1595816810031">SPL下载</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/SPLWare/esProc">SPL源代码</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/125182445/">https://pc-study.github.io/csdn-blog/posts/125182445/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/big-data/">big data</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/">数据挖掘</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/">数据仓库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/125249792/" title="单机：Oracle单机数据库一键安装（11GR2/12C/18C/19C/21C）"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">单机：Oracle单机数据库一键安装（11GR2/12C/18C/19C/21C）</div></div><div class="info-2"><div class="info-item-1">前言 使用脚本安装 Oracle 数据库是一件省时又省事的事情，接下来我演示一下整个过程，11GR2/12C/18C/19C/21C 通用。 📢：脚本下载地址：，需要申请才能访问，请添加微信： 申请访问。 安装前准备 本脚本最初仅用于安装 Oracle 数据库，不支持操作系统的安装，请提前安装好 L</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/125083573/" title="实战篇：Oracle 数据库标准版（SE）转换为企业版（EE）"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">实战篇：Oracle 数据库标准版（SE）转换为企业版（EE）</div></div><div class="info-2"><div class="info-item-1">前言 很多 Oracle 数据库在初始安装的时候选择了标准版，而相对企业版来说就少了：RAC、ASM、DataGuard、闪回功能、分区表等等一些很实用的功能： 那么如何将标准版升级到企业版呢？Oracle 给我们提供了具体方案： How to Convert Database from Stand</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/122363166/" title="数据中台怎么选型？终于有人讲明白了"><img class="cover" src="/csdn-blog/img/covers/tech.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-07</div><div class="info-item-2">数据中台怎么选型？终于有人讲明白了</div></div><div class="info-2"><div class="info-item-1">导读：数据中台选型主要包括数据仓库选型、调度平台选型、BI工具选型3个方面，好的工具可以大幅提升开发效率，降低运维工作量。 点我跳转文末 领书，新出版的 《高效使用Greenplum》！ 本篇文章 + + ！皆可参与送书活动！ 01 数据仓库选型 数据仓库选型是整个数据中台项目的重中之重，是一切开发</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121954831/" title="初识 Vertica ，看完白皮书，我都发现了啥【文末赠书】"><img class="cover" src="/csdn-blog/images/694d1aa4e504d24e1b2c786b74df3a8b.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-15</div><div class="info-item-2">初识 Vertica ，看完白皮书，我都发现了啥【文末赠书】</div></div><div class="info-2"><div class="info-item-1">前言 我们已经进入大数据实时分析时代。 点我跳转文末 领书，价值 118 元的 《Python商业数据挖掘（第6版）》！ 用Python展示数据挖掘的理论、技术和应用，大数据必备书籍！ 今天聊聊一种列式数据库，基于 MPP 和真正列式数据库 技术 ，创建了面向大数据实时分析的全新架构：。 本篇文章</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/123063938/" title="手把手教你绘制数据治理实施路线图"><img class="cover" src="/csdn-blog/images/1e27ed78abc90c8292b657ecf7fb2b14.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-22</div><div class="info-item-2">手把手教你绘制数据治理实施路线图</div></div><div class="info-2"><div class="info-item-1">导读 很多企业知道数据治理很重要，但是却不清楚如何做好数据治理。有的企业开展数据治理是“摸着石头过河”，还有一部分企业是"想过河但是不知道该摸哪一块石头”。 数据治理成熟度评估为企业提供了一个数据治理的切入点，通过发现企业数据治理中存在的问题，找到与业界领先企业的差距，绘制出符合企业现状和需求的数据</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/123560637/" title="“东数西算”国家工程全面启动，你想知道的全在这儿"><img class="cover" src="/csdn-blog/images/4379af945c63d524badd8f6c35cdfded.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-18</div><div class="info-item-2">“东数西算”国家工程全面启动，你想知道的全在这儿</div></div><div class="info-2"><div class="info-item-1">导读 日前，国家发改委、中央网信办、工信部和国家能源局联合印发通知，同意在京津冀、长三角、粤港澳大湾区、成渝、内蒙古、贵州、甘肃、宁夏等8地启动建设国家算力枢纽节点，并规划了10个国家数据中心集群。至此，全国一体化大数据中心体系完成总体布局设计，“东数西算”工程正式全面启动。 来源：文章来源于网络</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120413557/" title="Oracle 数据库监听日志过大，怎么清除？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-22</div><div class="info-item-2">Oracle 数据库监听日志过大，怎么清除？</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库的监听日志用于保留连接数据库的一些记录以及问题等 信息 ！ 当数据库运行长时间之后，日志文件就会一直变大，这时就需要定时清理！如果不清理，当日志大小达到 4G 左右的时候，可能会导致数据库宕机，无法使用！ 以 为例，以下为清除监听日志的详细步骤： 1、查询监听日志的位置 如图框中</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120344062/" title="Oracle 数据库管理员SYS&#x2F;SYSTEM密码忘记了，怎么破？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-17</div><div class="info-item-2">Oracle 数据库管理员SYS&#x2F;SYSTEM密码忘记了，怎么破？</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库在创建之初，就默认有两个管理员用户，权限之大，无人能及，分别为 SYS/SYSTEM！ 管理员用户的密码通常掌握在管理数据库的人员手中，是在创建数据库时进行 配置 的，如果 SYS/SYSTEM 密码丢失了，也不用害怕，可以通过如下方式进行修改！ 登录数据库服务端主机，这个很重要</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%B9%96%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">数据湖是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%B9%96%E7%9A%84%E4%B8%8D%E5%8F%AF%E8%83%BD%E4%B8%89%E8%A7%92"><span class="toc-number">2.</span> <span class="toc-text">数据湖的不可能三角</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E6%94%BE%E7%9A%84%E6%95%B0%E6%8D%AE%E6%B9%96%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8ESPL"><span class="toc-number">3.</span> <span class="toc-text">开放的数据湖计算引擎SPL</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%80%E6%94%BE%E4%B8%94%E5%AE%8C%E5%96%84%E7%9A%84%E8%AE%A1%E7%AE%97%E8%83%BD%E5%8A%9B"><span class="toc-number">3.1.</span> <span class="toc-text">开放且完善的计算能力</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E6%B7%B7%E5%90%88%E8%AE%A1%E7%AE%97"><span class="toc-number">3.1.1.</span> <span class="toc-text">多数据源混合计算</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E8%AE%A1%E7%AE%97%E6%94%AF%E6%8C%81"><span class="toc-number">3.1.2.</span> <span class="toc-text">文件计算支持</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%8C%E5%96%84%E7%9A%84%E8%AE%A1%E7%AE%97%E8%83%BD%E5%8A%9B"><span class="toc-number">3.1.3.</span> <span class="toc-text">完善的计算能力</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%9B%B4%E6%8E%A5%E8%AE%BF%E9%97%AE%E6%BA%90%E6%95%B0%E6%8D%AE"><span class="toc-number">3.1.4.</span> <span class="toc-text">直接访问源数据</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%95%B4%E7%90%86%E5%90%8E%E7%9A%84%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97"><span class="toc-number">3.2.</span> <span class="toc-text">数据整理后的高性能计算</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SPL%E8%B5%84%E6%96%99"><span class="toc-number">4.</span> <span class="toc-text">SPL资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

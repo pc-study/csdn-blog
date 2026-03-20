@@ -1,0 +1,263 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>保姆级教程：手把手教你升级 Windows 11 系统 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="目录 📚 前言 💻 安装 Windows 11 企业版 确保本地拥有 Windows 10 系统 升级为 Windows 11 系统 🌲 写在最后 📚 前言 Windows 11 发布于 2021 年 6 月 24 日，2021 年 10 月 5 日正式发行！ 这不，国庆期间正式版发行了，很多人都用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="保姆级教程：手把手教你升级 Windows 11 系统">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/120684777/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="目录 📚 前言 💻 安装 Windows 11 企业版 确保本地拥有 Windows 10 系统 升级为 Windows 11 系统 🌲 写在最后 📚 前言 Windows 11 发布于 2021 年 6 月 24 日，2021 年 10 月 5 日正式发行！ 这不，国庆期间正式版发行了，很多人都用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/720fe34ef3d554d101c5dfcaf62843f5.webp">
+<meta property="article:published_time" content="2021-10-13T02:02:34.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.286Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="windows">
+<meta property="article:tag" content="windows11">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/720fe34ef3d554d101c5dfcaf62843f5.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"保姆级教程：手把手教你升级 Windows 11 系统","url":"https://pc-study.github.io/csdn-blog/posts/120684777/","image":"https://pc-study.github.io/csdn-blog/images/720fe34ef3d554d101c5dfcaf62843f5.webp","datePublished":"2021-10-13T02:02:34.000Z","dateModified":"2026-03-20T12:25:38.286Z","description":"目录 📚 前言 💻 安装 Windows 11 企业版 确保本地拥有 Windows 10 系统 升级为 Windows 11 系统 🌲 写在最后 📚 前言 Windows 11 发布于 2021 年 6 月 24 日，2021 年 10 月 5 日正式发行！ 这不，国庆期间正式版发行了，很多人都用","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/120684777/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/120684777/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '保姆级教程：手把手教你升级 Windows 11 系统',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/720fe34ef3d554d101c5dfcaf62843f5.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">保姆级教程：手把手教你升级 Windows 11 系统</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">保姆级教程：手把手教你升级 Windows 11 系统<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-10-13-120684777.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-10-13T02:02:34.000Z" title="发表于 2021-10-13 10:02:34">2021-10-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.286Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E5%B7%A5%E5%85%B7%E4%B8%8E%E6%95%88%E7%8E%87/">工具与效率</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">576</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>1分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#__1">📚 前言</a></li>
+<li><a href="#__Windows_11__28">💻 安装 Windows 11 企业版</a></li>
+<li><ul>
+<li><a href="#_Windows_10__30">确保本地拥有 Windows 10 系统</a></li>
+<li><a href="#_Windows_11__38">升级为 Windows 11 系统</a></li>
+</ul>
+</li>
+<li><a href="#__64">🌲 写在最后</a></li>
+</ul>
+<h2 id="📚-前言"><a href="#📚-前言" class="headerlink" title="📚 前言"></a>📚 前言</h2><p><strong>Windows 11</strong> 发布于 2021 年 6 月 24 日，2021 年 10 月 5 日正式发行！</p>
+<p><strong>这不，国庆期间正式版发行了，很多人都用上了，那我不得来造一波嘛 😄！</strong></p>
+<p><strong>首先</strong>，分享一波<br><strong>Windows 11 ISO</strong> 正式版镜像下载链接🔗：</p>
+<p><a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1mK-2TK3YM1qjrfhdgiGK3w">https://pan.baidu.com/s/1mK-2TK3YM1qjrfhdgiGK3w</a></p>
+<p><a href="#jump99"><strong>点我跳转文末</strong></a> 可以获取<br><strong>提取码</strong> 以及博主的联系方式</p>
+<p>为了庆祝全新 Windows 11 操作<br>系统<br>的发布， 微软“点亮”了世界第一高楼 —— 迪拜哈利法塔， 利用整栋楼的灯光展现 Windows 11。<br> <img src="/csdn-blog/images/720fe34ef3d554d101c5dfcaf62843f5.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统" loading='lazy'><br> <strong>❤️ 废话不多说，开始正式教程！ヾ(◍°∇°◍)ﾉﾞ</strong></p>
+<h2 id="💻-安装-Windows-11-企业版"><a href="#💻-安装-Windows-11-企业版" class="headerlink" title="💻 安装 Windows 11 企业版"></a>💻 安装 Windows 11 企业版</h2><p>接下来就教大家如何安装 Windows 10 并升级为 Windows 11 操作系统！没有金刚钻，不揽瓷器活~</p>
+<h3 id="确保本地拥有-Windows-10-系统"><a href="#确保本地拥有-Windows-10-系统" class="headerlink" title="确保本地拥有 Windows 10 系统"></a>确保本地拥有 Windows 10 系统</h3><p><strong>Windows 11 的安装分为两种方式：</strong></p>
+<ul>
+<li>1、Windows 10 升级为 Windows 11系统</li>
+<li>2、虚拟机直接安装 Windows 11 系统</li>
+</ul>
+<p>这里我写了篇文章，介绍了一下 macOS 如何安装 Windows！当然，如果电脑本身就是 <code>Windows 10</code> 的用户，完全可以跳过这一步！<br> <img src="/csdn-blog/images/f41b854a419be33ed20d4879ac71de70.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统 - 图2" loading='lazy'><strong>📢注意：</strong> 关于<br>虚拟机<br>的选择使用，大家可以自由搭配，不做拘泥！</p>
+<h3 id="升级为-Windows-11-系统"><a href="#升级为-Windows-11-系统" class="headerlink" title="升级为 Windows 11 系统"></a>升级为 Windows 11 系统</h3><p>首先，解压刚下载好的 Windows 11 ISO 镜像：<br> 删除 <code>sources</code> 目录下的 <code>appraiserres.dll</code> 文件！<br> <img src="/csdn-blog/images/cd1d96b38fe99d093c75fda4f03d74fc.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统 - 图3" loading='lazy'><br> <strong>为什么要删？</strong> 因为部分<br>电脑配置<br>要求不够，无法进行升级，所以需要绕过检查！</p>
+<p><strong>如果执行 <code>setup</code> 不报错如下，则可以忽略上一步。</strong><br> <img src="/csdn-blog/images/2850ffc3d01fdbd32bd89421d6d42dcd.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统 - 图4" loading='lazy'><br> <img src="/csdn-blog/images/405bdc8cb2f4ef7af06445ce3ba68680.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统 - 图5" loading='lazy'><br> 双击执行 <code>setup</code> 安装：<br> <img src="/csdn-blog/images/1369be70f43b1ea56b27f05ddbd84ea8.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统 - 图6" loading='lazy'><br> <img src="/csdn-blog/images/dd6d29d74d8a9c74f7692d09fb57187e.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统 - 图7" loading='lazy'><br> <img src="/csdn-blog/images/05874700de3c9549097312dda27ff3a1.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统 - 图8" loading='lazy'><br> 正式开始升级 Windows 11：<br> <img src="/csdn-blog/images/5ddbbc1d965dd5518396af7f90cc2c2b.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统 - 图9" loading='lazy'><br> 升级过程比较漫长，需要耐心等待…<br> <img src="/csdn-blog/images/baf9b40741c876fed0c172713b343400.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统 - 图10" loading='lazy'><br> <strong>至此，Windows 11 已经成功升级完成！🎉</strong><br> <img src="/csdn-blog/images/48033c7535696c7b3b7a1a5e63cf0689.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统 - 图11" loading='lazy'>  </p>
+<h2 id="🌲-写在最后"><a href="#🌲-写在最后" class="headerlink" title="🌲 写在最后"></a>🌲 写在最后</h2><p>本文只讲解如何升级为 Windows 11 版本，后面还会写文章教大家如何打造一个完美的 Windows 11 系统！<br> <img src="/csdn-blog/images/1030e81a6cc088fd52a0f211e90d2967.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统 - 图12" loading='lazy'><br> <strong>比如：</strong></p>
+<ul>
+<li>如何永久关闭更新</li>
+<li>安装好用的必备软件</li>
+<li>美化你的终端命令操作 powershell</li>
+</ul>
+<p>等等小技巧和性能优化！</p>
+<p>最后，放一张博主美化后的 <code>Powershell</code> 命令行界面：<br> <img src="/csdn-blog/images/5edda4c4885cffd023dcc7f0766ae1cd.webp" alt="保姆级教程：手把手教你升级 Windows 11 系统 - 图13" loading='lazy'></p>
+<p>👇🏻<br><strong>验证码</strong> 可通过搜索下方<br><strong>公众号</strong> 回复<br><strong>Windows11正式版</strong> 获取 👇🏻</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/120684777/">https://pc-study.github.io/csdn-blog/posts/120684777/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/windows/">windows</a><a class="post-meta__tags" href="/csdn-blog/tags/windows11/">windows11</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/120791629/" title="最受DBA欢迎的250篇学习文档"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">最受DBA欢迎的250篇学习文档</div></div><div class="info-2"><div class="info-item-1">墨天轮是国内比较专业的数据库平台，帮助读者整理了很多优秀的文档！ 我挑选了其中最受欢迎的 250 篇下载，现在分享给大家 😄！ 点我跳转文末 可以获取 提取码 以及博主的联系方式 📚 前言 作为一个DBA，必须要精通 SQL 命令 、各种数据库架构、数据库管理和维护、数据库调优！必要的时候，还需要为</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120685062/" title="SQL 增删改查：我能玩出这花样儿？"><img class="cover" src="/csdn-blog/images/0d0c859ef6e764f3f19d6d128676e765.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">SQL 增删改查：我能玩出这花样儿？</div></div><div class="info-2"><div class="info-item-1">📚 前言 SQL是什么？ 官方解释：SQL (Structured Query Language:结构化查询语言) 是用于管理关系数据库管理系统（RDBMS）。 SQL能用来干什么？ 通俗的讲：让您可以访问和处理数据库，包括数据插入、查询、更新和删除。 SQL 对于现在的互联网公司生产 研发 等岗位</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/118087577/" title="实战篇：使用 StarWind 配置 ISCSI 共享存储"><img class="cover" src="/csdn-blog/images/53fdf417204e087f843bced406d5b8d5.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-31</div><div class="info-item-2">实战篇：使用 StarWind 配置 ISCSI 共享存储</div></div><div class="info-2"><div class="info-item-1">前言 之前讲过一篇文章 一步步教你Linux7安装Oracle RAC（11GR2版本） 教大家如何安装 Oracle RAC。 有朋友希望将共享存储配置这一块详细讲一讲，因此便写了这篇。 一、介绍 （Internet Small Computer System Interface，Internet</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119977285/" title="达梦 DM8 数据库安装详细手册（Windows+Linux+Docker）"><img class="cover" src="/csdn-blog/images/e9401aff6af7455f73ff7c72105b3640.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-08</div><div class="info-item-2">达梦 DM8 数据库安装详细手册（Windows+Linux+Docker）</div></div><div class="info-2"><div class="info-item-1">目录 🌲 前言 💬 介绍 💦 安装介质下载 🔥 达梦8安装包 💥 Centos7 box 🏆 Linux 下 DM 的安装 🍭 Centos7 环境安装 - vagrant 启动 centos7 上传安装介质 初始化配置 🍰 安装前准备 - 检查Linux(Unix)系统信息 创建安装用户 创建安装</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/118558758/" title="实战篇：VMware Workstation 虚拟机安装 Linux 系统"><img class="cover" src="/csdn-blog/images/b7beb7fac967ce2b945808fec2304770.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-11-04</div><div class="info-item-2">实战篇：VMware Workstation 虚拟机安装 Linux 系统</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友工作学习中需要在 Windows 上安装 Linux 系统，最常用的就是使用 VMware Workstation 虚拟机。 本文将讲解如何在 VMware Workstation 上安装 Linux 主机！ 一、安装前准备 1、下载 VMware Workstation 📢 注意：</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/117903774/" title="推荐 21 款博主常用 Windows 软件"><img class="cover" src="/csdn-blog/images/aaf003ce652703d43d54795ed7e8caea.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-09</div><div class="info-item-2">推荐 21 款博主常用 Windows 软件</div></div><div class="info-2"><div class="info-item-1">目录 📚 前言 ☀️ 软件介绍 🏈 火绒 🏀 IDM 🎾 Bandizip for Windows ⚽️ Geek Uninstaller 🎱 PotPlayer ⚾️ 元气壁纸 🏄 Microsoft Edge 🏊 Everything Toolbar 🎿 Memreduct 📛 Ditto 🎻</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/122705749/" title="虚拟机玩转 Veritas NetBackup（NBU）之 Windows 配置 NBU 客户端"><img class="cover" src="/csdn-blog/images/e5f4ac339663bb44125ceb280af17deb.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-01-26</div><div class="info-item-2">虚拟机玩转 Veritas NetBackup（NBU）之 Windows 配置 NBU 客户端</div></div><div class="info-2"><div class="info-item-1">前言 NBU 的使用需要在客户端安装配置，否则无法使用，NBU 客户端支持 Linux、Window 以及 AIX 三个平台，安装过程都比较简单，本文介绍下如何在 Windows 下配置 NBU 客户端。 一、上传并解压客户端安装包 首先下载 Windows 的 NBU 客户端软件： NetBack</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9A-%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">📚 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%92%BB-%E5%AE%89%E8%A3%85-Windows-11-%E4%BC%81%E4%B8%9A%E7%89%88"><span class="toc-number">3.</span> <span class="toc-text">💻 安装 Windows 11 企业版</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AE%E4%BF%9D%E6%9C%AC%E5%9C%B0%E6%8B%A5%E6%9C%89-Windows-10-%E7%B3%BB%E7%BB%9F"><span class="toc-number">3.1.</span> <span class="toc-text">确保本地拥有 Windows 10 系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%87%E7%BA%A7%E4%B8%BA-Windows-11-%E7%B3%BB%E7%BB%9F"><span class="toc-number">3.2.</span> <span class="toc-text">升级为 Windows 11 系统</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%B2-%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text">🌲 写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

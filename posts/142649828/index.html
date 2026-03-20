@@ -1,0 +1,390 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Oracle 官方文档整理以及阅读指南 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 资源分享 阅读官方文档 Database Concepts Administrator&#39;s Guide Database Reference Install and Upgrade Development Perfor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Oracle 官方文档整理以及阅读指南">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/142649828/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 资源分享 阅读官方文档 Database Concepts Administrator&#39;s Guide Database Reference Install and Upgrade Development Perfor">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/oracle.svg">
+<meta property="article:published_time" content="2024-09-30T01:46:13.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:13:19.874Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/oracle.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Oracle 官方文档整理以及阅读指南","url":"https://pc-study.github.io/csdn-blog/posts/142649828/","image":"https://pc-study.github.io/csdn-blog/img/covers/oracle.svg","datePublished":"2024-09-30T01:46:13.000Z","dateModified":"2026-03-20T12:13:19.874Z","description":"大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 资源分享 阅读官方文档 Database Concepts Administrator's Guide Database Reference Install and Upgrade Development Perfor","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/142649828/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/142649828/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Oracle 官方文档整理以及阅读指南',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/oracle.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">Oracle 官方文档整理以及阅读指南</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Oracle 官方文档整理以及阅读指南<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-09-30-142649828.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-09-30T01:46:13.000Z" title="发表于 2024-09-30 09:46:13">2024-09-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:13:19.874Z" title="更新于 2026-03-20 20:13:19">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/">Oracle 数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:13:19&quot;}" hidden></div><blockquote>
+<p>大家好，这里是 <strong>Lucifer三思而后行</strong>，专注于提升数据库运维效率。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#_7">资源分享</a></li>
+<li><a href="#_48">阅读官方文档</a></li>
+<li><ul>
+<li><a href="#Database_Concepts_62">Database Concepts</a></li>
+<li><a href="#Administrators_Guide_75">Administrator’s Guide</a></li>
+<li><a href="#Database_Reference_86">Database Reference</a></li>
+<li><a href="#Install_and_Upgrade_95">Install and Upgrade</a></li>
+<li><a href="#Development_110">Development</a></li>
+<li><a href="#Performance_117">Performance</a></li>
+</ul>
+</li>
+<li><a href="#_128">往期精彩文章推荐</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在看 <strong>Thomas Kyte</strong> 的《Oracle编程艺术 深入理解数据库体系结构》，对 Oracle 官方文档的探索重新有了兴趣，顺便整理了一下，目前官方只有 11~23 的在线文档，其他更早的版本需要从其他渠道进行收集，经过一番努力，总算是收集的七七八八了，也就分享出来供大家一起查阅，共同进步。</p>
+<h2 id="资源分享"><a href="#资源分享" class="headerlink" title="资源分享"></a>资源分享</h2><p>首先，列了一些学习使用 Oracle 数据库比较常用的网址：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://edelivery.oracle.com/">Oracle Software Delivery Cloud</a></li>
+<li><a target="_blank" rel="noopener" href="http://docs.oracle.com/en/database/">Oracle Database 官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/">My Oracle Support（MOS）&#x2F;metalink</a></li>
+<li><a target="_blank" rel="noopener" href="https://updates.oracle.com/Orion/QuickLinks/process_form?type=nonapps">Quick Links（下载安装包）</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=742060.1">Release Schedule of Current Database Releases (Doc ID 742060.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.oracle.com/cn/database/technologies/oracle-database-software-downloads.html#19c">Oracle Database Software Downloads 19C</a></li>
+<li><a target="_blank" rel="noopener" href="https://updates.oracle.com/download/6880880.html">Patch 6880880</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2118136.2">Assistant: Download Reference for Oracle Database&#x2F;GI Update, Revision, PSU, SPU(CPU), Bundle Patches, Patchsets and Base Releases (Doc ID 2118136.2)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=888.1">Primary Note for Database Proactive Patch Program (Doc ID 888.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2285559.1">Database 11.2.0.4 Proactive Patch Information (Doc ID 2285559.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2285557.1">Database 12.2.0.1 Proactive Patch Information (Doc ID 2285557.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2521164.1">Oracle Database 19c Proactive Patch Information (Doc ID 2521164.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2485457.1">AutoUpgrade Tool (文档 ID 2485457.1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.oracle.com/epmos/faces/DocContentDisplay?id=2550798.1">Autonomous Health Framework (AHF) - Including TFA and ORAchk&#x2F;EXAchk (文档 ID 2550798.1)</a></li>
+</ul>
+<p><strong>Oracle Database 官方在线文档汇总列表：</strong></p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>下载链接</th>
+<th>在线浏览地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Oracle 23ai Book</td>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/23/zip/oracle-database_23.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/23/index.html">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 21c Book</td>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/21/zip/oracle-database_21.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/21/index.html">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 19c Book</td>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/19/zip/oracle-database_19.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/19/index.html">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 18c Book</td>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/18/zip/oracle-database_18.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/18/index.html">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 12.2 Book</td>
+<td><a target="_blank" rel="noopener" href="http://download.oracle.com/docs/cds/database/122.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="http://docs.oracle.com/database/122/index.html">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 12.1 Book</td>
+<td><a target="_blank" rel="noopener" href="http://download.oracle.com/docs/cds/database/121.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="http://docs.oracle.com/database/121/index.htm">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 11.2 Book</td>
+<td><a target="_blank" rel="noopener" href="http://download.oracle.com/docs/cds/E11882_01.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="http://docs.oracle.com/cd/E11882_01/index.htm">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 11.1 Book</td>
+<td><a target="_blank" rel="noopener" href="http://download.oracle.com/docs/cds/B28359_01.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="http://docs.oracle.com/cd/B28359_01/index.htm">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 10.2 Book</td>
+<td><a target="_blank" rel="noopener" href="http://download.oracle.com/docs/cds/B19306_01.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="https://www.dba86.com/docs/oracle/10.2/index.htm">在线浏览</a></td>
+</tr>
+<tr>
+<td>Concepts 中文版 10g R2</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="http://www.zw1840.com/oracle/translation/concepts/">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 10.1 Book</td>
+<td><a target="_blank" rel="noopener" href="http://download.oracle.com/docs/cds/B14117_01.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="http://docs.oracle.com/cd/B12037_01/nav/portal_3.htm">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 9.2 Book</td>
+<td><a target="_blank" rel="noopener" href="http://download.oracle.com/docs/cds/B10501_01.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="http://www.oracle.com/pls/db92/homepage">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 9.0 Book</td>
+<td><a target="_blank" rel="noopener" href="http://download.oracle.com/docs/cds/B31081_01.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/cd/B31081_01/index.htm">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 8.1.7 Book</td>
+<td>-</td>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/pls/tahiti/homepage">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 8.1.6 Book</td>
+<td><a target="_blank" rel="noopener" href="https://download.oracle.com/docs/cds/A83908_02.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/cd/A83908_02/NT816EE/DOC/products.htm">在线浏览</a></td>
+</tr>
+<tr>
+<td>Oracle 7.3.4 Book</td>
+<td><a target="_blank" rel="noopener" href="http://download.oracle.com/docs/cds/A57673_01.zip">下载</a></td>
+<td><a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/documentation/oracle7-091910.html">在线浏览</a></td>
+</tr>
+</tbody></table>
+<p>⭐️ 偷懒的也可以花费 25 墨值直接在墨天轮网站下载博主整理好的 <a target="_blank" rel="noopener" href="https://www.modb.pro/doc/135182">Oracle 官方手册离线版合集（7~23ai）</a>。</p>
+<h2 id="阅读官方文档"><a href="#阅读官方文档" class="headerlink" title="阅读官方文档"></a>阅读官方文档</h2><p>要想在上万页的 Oracle 文档中快速精准的找到想要的内容，首先就要先了解官方文档的结构，由哪些部分组成，本文以当前支持的长期版本 19C 为例：</p>
+<p>打开 Oracle Database 19C Book 文档，映入眼帘的就是如下这个界面：</p>
+<p>查看左侧的列表，有很多选项，我挑选一些 DBA 和开发人员比较常用到的进行讲解：</p>
+<ul>
+<li>Install and Upgrade：安装与升级</li>
+<li>Administration：数据库管理</li>
+<li>Development：数据库开发</li>
+<li>Performance：性能优化</li>
+<li>High Availability：高可用</li>
+</ul>
+<h3 id="Database-Concepts"><a href="#Database-Concepts" class="headerlink" title="Database Concepts"></a>Database Concepts</h3><p>首先作为 Oracle 入门学习者来说，<strong>《Oracle Database Concepts》</strong> 是必读文档，详细的介绍了 Oracle 数据库的基础概念和体系结构，是一本很好的入门读物，建议精读。</p>
+<p>在 【Administration】下可以看到 【Database Concepts】：</p>
+<p>打开之后，可以通过对应的章节查询需要了解的信息，比如我要查看数据库内存结构相关的部分：</p>
+<p>这样就可以快速精准的找到我们想看的内容。</p>
+<h3 id="Administrator’s-Guide"><a href="#Administrator’s-Guide" class="headerlink" title="Administrator’s Guide"></a>Administrator’s Guide</h3><p>作为 Oracle DBA，<strong>《Oracle Database Administrator’s Guide》</strong> 是必须要看的一本书，建议精读。</p>
+<p>这本书介绍了各种管理 Oracle 数据库的场景，包括管理表，索引，表空间，控制文件，redo，undo 等等。比如，我们想要查询如何管理控制文件：</p>
+<p>关于控制文件管理的相关信息都列在这里了，只需要静心研究即可。</p>
+<h3 id="Database-Reference"><a href="#Database-Reference" class="headerlink" title="Database Reference"></a>Database Reference</h3><p>《Database Reference》详述了 Oracle 的所有初始化参数，数据字典，动态性能视图，Oracle 自带的用于数据库管理的 SQL 脚本，Oracle 等待事件，Oracle 统计信息等知识。建议粗读一遍，了解大概即可，在需要用到的时候能快速找到想要的内容即可。</p>
+<p>比如我们想要快速找到 db_block_size 相关的介绍：</p>
+<h3 id="Install-and-Upgrade"><a href="#Install-and-Upgrade" class="headerlink" title="Install and Upgrade"></a>Install and Upgrade</h3><p>作为每一个 Oracle DBA 都避不过的一件事就是安装和升级 Oracle 数据库，在这方面，Oracle 提供了非常全面的详细的文档：《Install and Upgrade》，这本书里面囊括了各种操作系统的安装手册和注意事项。</p>
+<p>比如我现在需要在 Linux 主机上安装一套 Oracle 19C 的数据库，安装前我发现对数据库所需的配置和依赖包不太了解，这时就可以查询官方文档：</p>
+<p>选择对应的章节【Operating System Requirements for x86-64 Linux Platforms】：</p>
+<p>这里非常细致的写出了所需的配置以及依赖包。</p>
+<h3 id="Development"><a href="#Development" class="headerlink" title="Development"></a>Development</h3><p>如果你是开发人员，这本书《Development》就非常适合你了，详细的介绍数据库中各种开发相关的语言，包括 SQL、PL&#x2F;SQL 和 JAVA 等等：</p>
+<p>作为开发，对一些特性的了解能够让应用开发事半功倍。</p>
+<h3 id="Performance"><a href="#Performance" class="headerlink" title="Performance"></a>Performance</h3><p>这两本书《Database Performance Tuning Guide》和《SQL Tuning Guide》详细地介绍了如何优化 Oracle 数据库和 SQL。</p>
+<p>不管是 DBA 还是开发人员，都建议精读这两本书，如果你想成为一名大牛，加油研究吧。</p>
+<p>Oracle Database 官方文档实在是太庞大了，如果一个个介绍，这篇文章会很长很长，所以就不多赘述了。相信通过以上的介绍之后，大家可以举一反三，快速掌握如何阅读官方文档的技巧。愿此微薄之力，可助君一二。</p>
+<hr>
+<h2 id="往期精彩文章推荐"><a href="#往期精彩文章推荐" class="headerlink" title="往期精彩文章推荐"></a>往期精彩文章推荐</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/9NSZQlzcODE5fqmgYECf4w">Oracle 数据库启动过程之 nomount 详解</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/oKtZgbh5uLO2dyNtaGYp3w">Oracle RAC 修改系统时区避坑指南（深挖篇）</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/_srbpbXyQHSQow_5U_aUHw">Ubuntu 22.04 一键安装 Oracle 11G RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/j9H5D1YVz2IketkmCqQKkA">使用 dbops 快速部署 MySQL 数据库</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/8Iab3QpvdIMCCsDycJ-kkA">Oracle RAC 启动顺序，你真的了解吗？</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/DvowNh7ncV1OWs_Vpv5SSg">达梦数据库一键安装脚本（免费）</a><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/eH4oe3VfP3QQpqHsH620kQ">一篇文章让你彻底掌握 Python</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/eH4oe3VfP3QQpqHsH620kQ">一篇文章让你彻底掌握 Python</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/GmSqHJiBToncvcpFAJUZbw">一篇文章让你彻底掌握 Shell</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0W-53x2eGIY9uaX_RQrI2g">Oracle 监控 EMCC 13.5 安装部署超详细教程</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0xFe5m1DQ0ucT2_266hsrA">Oracle 一键巡检自动生成 Word 报告</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/gv6t97FFyMsd6e4GH1HAwQ">Oracle一键安装脚本的 21 个疑问与解答</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/4zI73auIUhwSRb7qL3UIfw">Oracle一键巡检脚本的 21 个疑问与解答</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/UL0BSMCAZrOQgCoWpDMGew">全网首发：Oracle 23ai 一键安装脚本</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/T7GbpwhnMugzk7PB6hAoJQ">Oracle 19C 最新 RU 补丁 19.24 ，一键安装！</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/uicyzHfgS2TwleocXJEIrA">Oracle Linux 6 一键安装 Oracle 11GR2 RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/dT4tFMYVZ3mh49CI6V3YEA">Oracle Linux 7.9 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/FHXYiZBPn3XpKOM6ZqlU1A">Oracle Linux 8.9 一键安装 Oracle 19C RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/cTuTUE-oaO-tKZ72F2WjAA">Oracle Linux 9.4(aarch64) 一键安装 Oracle 19C</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/uJwEPOG22fhQcC6cTLfN1Q">openEuler 20.03 LTS SP4 一键安装 Oracle 19C</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/sx1E4GIvIeQXp2vGMmVr2A">openEuler 22.03 LTS SP4 一键安装 Oracle 19C RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/mUHqU5hQ9GdH2bKuClPt5A">RHEL 7.9 一键安装 Oracle 19C 19.23 RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/fnuHKotjj_S8_0EfUkWI4Q">Redhat 8.4 一键安装 Oracle 11GR2</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/cQJ6gP1bM_7m0H5-Dha4TA">RedHat 9.4(aarch64) 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/bJtBpzyG_NAhU-0vov1WmQ">龙蜥 Anolis 7.9 一键安装 Oracle 19C 19.23</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/_4-anPhn9wThtdAqqHIH5w">龙蜥 Anolis OS 8.8 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/N2J9JxZ7l9elG1L1NV7ynA">SUSE 15 SP5 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/SSmLvx2wDzhzsQY6f5Q5Rg">统信 UOS V20 1070(a) 一键安装 Oracle 11GR2</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0-q9mLR48abGUbZUODj7xw">Ubuntu 22.04 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Y6fFi3Nth0NA5HGq2LjubQ">Ubuntu 14.04 一键安装 Oracle 19C</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/EVNaKhH53YN885gk_Ik_Xg">银河麒麟 Kylin V10 SP3 一键安装 Oracle 19C</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/IZ_VYoDOxzSLzsQo8aJTIw">银河麒麟 Kylin V10 SP3 一键安装 Oracle 11GR2 RAC</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Trt7gYkQVoL5A803WlDL6Q">Oracle DataGuard GAP 修复手册</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/DysIcb-p11j56d3YtlqpcQ">优化 Oracle：最佳实践与开发规范</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/SmncWuYAubj0tnOw35aJGA">DBA 必备：Linux 软件源配置全攻略</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/yvth1vorP3JjUp3g3vPBAQ">Linux 一键配置时钟同步全攻略</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/xjYZmGcwshbJBICcr0xvBw">Starwind 配置 ISCSI 共享存储</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/JMMzOa6dN6ytAUkcy7I2jQ">SUSE 15 SP3 安装 Oracle 19C RAC 数据库</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/KEobA1FAx4Uod3uBGkJ9-A">达梦 8 数据库安装手册</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/KlP4IM4O7sHVvSNJ9rNXEA">Oracle 12CR2 RAC 安装避坑宝典</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vNZbH5QsiSWrdtJcqP2MWg">Linux7 安装 Oracle 19C RAC 详细图文教程</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/mA5MPcykF-eytChoUAhwnA">Oracle ADG 搭建 RAC to Single 详细教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Trt7gYkQVoL5A803WlDL6Q">Oracle DataGuard GAP 修复手册</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/NYQ8TPMktc6u8jMtnI_Gpg">Oracle 分区表之在线重定义</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ebpMdmozKOR6XZSMKsG2DQ">AutoUpgrade 快速升级 Oracle 数据库</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vLtJ2zH_TnyQxKyVddzMRg">Oracle 数据库巡检命令手册</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0w66O5Ugx-TX7e_trE5ZBQ">Oracle 数据坏块的 N 种修复方式</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/92mBTibjSGNywnwOYIFuqg">数据库 SQL 开发入门教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/UwVlWxEUBE4OEq4a91dyfg">超全 Linux 基础命令总结</a> 🔥<br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/-gTiGVWFZV0tkw0yZyI2bQ">VMware 虚拟机安装 Linux 系统</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/dHSaDSrUqxFG9E2dMuTmxg">Linux 安装 MySQL 详细教程</a><br> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/KaxEN6qxLDJWb7paOvcffw">教你玩转 SQLPLUS，工作效率提升 200%</a></p>
+</blockquote>
+<hr>
+<p>感谢您的阅读，这里是 <strong>Lucifer三思而后行</strong>，欢迎 <strong>点赞+关注</strong>，我会持续分享数据库知识、运维技巧。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/142649828/">https://pc-study.github.io/csdn-blog/posts/142649828/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/142649862/" title="ORA-00600 [25027] [x] [0] 问题分析思路与疑惑"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">ORA-00600 [25027] [x] [0] 问题分析思路与疑惑</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 问题分析 日志分析 ORA-600 解析 DBLINK 问题？ 解决方案 后记 往期精彩文章推荐 前言 一大早还没上班，客户紧急告知应用频繁报错：，且产线大面积无法使用，需要帮忙分析问题原因以及如何解决。 参考 MOS</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142649802/" title="Oracle 数据库启动过程之 mount 详解"><img class="cover" src="/csdn-blog/img/covers/database.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Oracle 数据库启动过程之 mount 详解</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 mount 阶段 控制文件 Checkpoint 分析 10046 分析 控制文件内容 - immediate trace name CONTROLF backup controlfile to trace 总结 往期</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/139177079/" title="SUSE 12 SP5 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">SUSE 12 SP5 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 SUSE 12 SP5 一键安装 Oracle 19C 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安装包（安装基</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/148435505/" title="DBA 必看：Oracle 许可合规性检查终极指南"><img class="cover" src="/csdn-blog/images/2bf6cf00ed5f0c266a14d09e28cf1e55.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-04</div><div class="info-item-2">DBA 必看：Oracle 许可合规性检查终极指南</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 数据库版本确认 组件安装状态检查 查看已安装组件 功能使用情况监控 DBA\FEATURE\USAGE\STATISTICS MMON 的采样机制解析 组件使用分析 Oracle Text Oracle Workspace M</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/145697128/" title="一文掌握 Oracle OPatch 实用技巧"><img class="cover" src="/csdn-blog/images/0e5055ff7722d7e6e2a06ce17656caec.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-18</div><div class="info-item-2">一文掌握 Oracle OPatch 实用技巧</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 OPatch 更新 OPatch 下载 OPatch 备份 OPatch 更新 OPatch OPatch 常用命令 OPatch 常见问题 写在最后 前言 OPatch 是什么？ 对于 Oracle DBA</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/146025423/" title="什么，oracle 主机用户被删了？原来是虚惊一场！"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-04</div><div class="info-item-2">什么，oracle 主机用户被删了？原来是虚惊一场！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是公众号 DBA学习之路，分享一些学习国产数据库路上的知识和经验。 目录 前言 问题分析 解决方案 重建家目录 恢复环境变量 恢复互信 恢复计划任务 写在最后 前言 今天突然有个客户找我，说 家目录不见了： 好家伙，我咋一看猜测是 oracle 用户被删了，这是个大动作啊，赶忙连上远程看</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/151115930/" title="震惊！Oracle 23ai RAC 部署竟然可以这么简单"><img class="cover" src="/csdn-blog/img/covers/database.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-02</div><div class="info-item-2">震惊！Oracle 23ai RAC 部署竟然可以这么简单</div></div><div class="info-2"><div class="info-item-1">前言 在企业级数据库部署领域，Oracle RAC 一直以其复杂的安装配置流程著称。传统的手工部署方式不仅耗时长、易出错，还需要DBA具备深厚的技术功底。 今天为大家介绍一款强大的 Oracle 一键安装工具 —— OracleShellInstall，它能够将原本需要数小时的部署工作压缩到30分钟</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/142649873/" title="Oracle 篇：为什么 SQL 要使用绑定变量？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-30</div><div class="info-item-2">Oracle 篇：为什么 SQL 要使用绑定变量？</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 Lucifer三思而后行，专注于提升数据库运维效率。 目录 前言 为什么使用绑定变量？ 共享池 硬解析与软解析 查看 SQL 绑定变量的几种方式 首先获取 SQL\ID v$sql\bind\capture 方式 V$SQL 配合 dbms\sqltune.extract\bind</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E5%88%86%E4%BA%AB"><span class="toc-number">3.</span> <span class="toc-text">资源分享</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"><span class="toc-number">4.</span> <span class="toc-text">阅读官方文档</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Database-Concepts"><span class="toc-number">4.1.</span> <span class="toc-text">Database Concepts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Administrator%E2%80%99s-Guide"><span class="toc-number">4.2.</span> <span class="toc-text">Administrator’s Guide</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Database-Reference"><span class="toc-number">4.3.</span> <span class="toc-text">Database Reference</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Install-and-Upgrade"><span class="toc-number">4.4.</span> <span class="toc-text">Install and Upgrade</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Development"><span class="toc-number">4.5.</span> <span class="toc-text">Development</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Performance"><span class="toc-number">4.6.</span> <span class="toc-text">Performance</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%80%E6%9C%9F%E7%B2%BE%E5%BD%A9%E6%96%87%E7%AB%A0%E6%8E%A8%E8%8D%90"><span class="toc-number">5.</span> <span class="toc-text">往期精彩文章推荐</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>DBA 必备：Linux 软件源配置全攻略 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="文章目录 前言 操作系统 配置本地软件源 挂载 ISO 镜像 RHEL 系 - 6~7 全系 8~9 全系 kylinV10&#x2F;NingOS&#x2F;红旗asianux&#x2F;中科方德NFS SUSE - SUSE 12 全系 SUSE 15 全系 华为欧拉 openEuler 统信 UOS A 系 C 系 D 系">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DBA 必备：Linux 软件源配置全攻略">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/140376539/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="文章目录 前言 操作系统 配置本地软件源 挂载 ISO 镜像 RHEL 系 - 6~7 全系 8~9 全系 kylinV10&#x2F;NingOS&#x2F;红旗asianux&#x2F;中科方德NFS SUSE - SUSE 12 全系 SUSE 15 全系 华为欧拉 openEuler 统信 UOS A 系 C 系 D 系">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/img/covers/oracle.svg">
+<meta property="article:published_time" content="2024-07-12T05:17:24.000Z">
+<meta property="article:modified_time" content="2026-03-20T08:34:08.410Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="华为">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/img/covers/oracle.svg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"DBA 必备：Linux 软件源配置全攻略","url":"https://pc-study.github.io/csdn-blog/posts/140376539/","image":"https://pc-study.github.io/csdn-blog/img/covers/oracle.svg","datePublished":"2024-07-12T05:17:24.000Z","dateModified":"2026-03-20T08:34:08.410Z","description":"文章目录 前言 操作系统 配置本地软件源 挂载 ISO 镜像 RHEL 系 - 6~7 全系 8~9 全系 kylinV10/NingOS/红旗asianux/中科方德NFS SUSE - SUSE 12 全系 SUSE 15 全系 华为欧拉 openEuler 统信 UOS A 系 C 系 D 系","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/140376539/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/140376539/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'DBA 必备：Linux 软件源配置全攻略',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/img/covers/oracle.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">DBA 必备：Linux 软件源配置全攻略</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">DBA 必备：Linux 软件源配置全攻略<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2024-07-12-140376539.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-07-12T05:17:24.000Z" title="发表于 2024-07-12 13:17:24">2024-07-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T08:34:08.410Z" title="更新于 2026-03-20 16:34:08">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/">Oracle 数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>10分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 16:34:08&quot;}" hidden></div><h4 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h4><ul>
+<li><a href="#_2">前言</a></li>
+<li><a href="#_11">操作系统</a></li>
+<li><a href="#_35">配置本地软件源</a></li>
+<li><ul>
+<li><a href="#_ISO__37">挂载 ISO 镜像</a></li>
+<li><a href="#RHEL__57">RHEL 系</a></li>
+<li><ul>
+<li><a href="#67__69">6~7 全系</a></li>
+<li><a href="#89__86">8~9 全系</a></li>
+</ul>
+</li>
+<li><a href="#kylinV10NingOSasianuxNFS_109">kylinV10&#x2F;NingOS&#x2F;红旗asianux&#x2F;中科方德NFS</a></li>
+<li><a href="#SUSE_126">SUSE</a></li>
+<li><ul>
+<li><a href="#SUSE_12__128">SUSE 12 全系</a></li>
+<li><a href="#SUSE_15__137">SUSE 15 全系</a></li>
+</ul>
+</li>
+<li><a href="#_openEuler_148">华为欧拉 openEuler</a></li>
+<li><a href="#_UOS_167">统信 UOS</a></li>
+<li><a href="#A__168">A 系</a></li>
+<li><a href="#C__172">C 系</a></li>
+<li><a href="#D__177">D 系</a></li>
+<li><a href="#E__192">E 系</a></li>
+</ul>
+</li>
+<li><a href="#_215">配置网络软件源</a></li>
+<li><ul>
+<li><a href="#_EulerOS_V2__218">华为欧拉 EulerOS V2 全系</a></li>
+<li><a href="#Fedora__238">Fedora 全系</a></li>
+<li><a href="#ARCH__261">ARCH 全系</a></li>
+<li><a href="#Deb__274">Deb 系</a></li>
+<li><ul>
+<li><a href="#Debian_282">Debian</a></li>
+<li><ul>
+<li><a href="#Debian_810_283">Debian 8~10</a></li>
+<li><a href="#Debian_1112_301">Debian 11~12</a></li>
+</ul>
+</li>
+<li><a href="#Ubuntu__316">Ubuntu 全系</a></li>
+<li><a href="#Deepin__331">Deepin 全系</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 操作系统安装软件比较常用的一些命令 <code>yum</code>、<code>dnf</code>、<code>apt-get</code>、<code>zypper</code> 以及 <code>pacman</code>。这些命令分别对应不同的操作系统，大致可以分为 <code>RHEL</code>，<code>DEB</code>，<code>SUSE</code> 和 <code>ARCH</code> 四种。</p>
+<p>Linux 系统安装软件必须要配置软件源，可以分为网络和本地两种方式。</p>
+<ul>
+<li><strong>网络源</strong>：必须要连接外网，连接到软件源 REPO 进行软件的下载安装。</li>
+<li><strong>本地源</strong>：使用安装的镜像文件（ISO）配置本地软件源，无需联网，比较适合内网使用，安全可控。</li>
+</ul>
+<p>因为之前编写 <strong><a target="_blank" rel="noopener" href="https://www.modb.pro/course/148">Oracle 一键安装脚本</a></strong> 的缘故，对市面上 90% 的 Linux 操作系统都有安装过，比较熟悉，所以分享下如何在不同的 Linux 操作系统上快速的配置软件源，也方便大家进行查阅。</p>
+<h2 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h2><p>本文主要介绍以下 Linux 操作系统如何配置软件源（<strong>点击链接可以下载 ISO 镜像</strong>）：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developers.redhat.com/products/rhel/download">RedHat 6&#x2F;7&#x2F;8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://yum.oracle.com/oracle-linux-isos.html">OracleLinux 6&#x2F;7&#x2F;8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/centos/">Centos 6&#x2F;7&#x2F;8 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://rockylinux.org/download">Rocky Linux 8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://almalinux.org/get-almalinux">AlmaLinux 8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.suse.com/download/sles/">SUSE 12&#x2F;15 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/openeuler/">华为欧拉 openEuler 20~24 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://tools.mindspore.cn/productrepo/iso/euleros/x86_64/">华为欧拉 EulerOS V2 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://openanolis.cn/download">阿里龙蜥 openAnolis 7&#x2F;8 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://sx.ygwid.cn:4431/">银河麒麟 Kylin V10 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://sx.ygwid.cn:4431/">中标麒麟 NeoKylin V7 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://cdimage-download.chinauos.com/">统信 UOS V20 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.h3c.com/cn/Service/Document_Software/Software_Download/Server/Catalog/system/system/NingOS/">NingOS</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.opencloudos.tech/ospages/downloadISO">OpenCloudOS 7&#x2F;8&#x2F;9 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/debian-cd/">Debian 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/deepin-cd/">Deepin 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/">Ubuntu 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/">ArchLinux</a></li>
+<li><a target="_blank" rel="noopener" href="https://fedoraproject.org/zh-Hans/server/download/">Fedora 13~39 全系</a></li>
+<li><a target="_blank" rel="noopener" href="https://bbs.chinaredflag.cn/?download2.htm">红旗 asianux</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.nfschina.com/index.php?catid=24">中科方德</a></li>
+</ul>
+<h2 id="配置本地软件源"><a href="#配置本地软件源" class="headerlink" title="配置本地软件源"></a>配置本地软件源</h2><p>配置本地软件源的方式需要先挂载本地 ISO 安装镜像，所以先介绍下如何在操作系统快速挂载 ISO 安装镜像。</p>
+<h3 id="挂载-ISO-镜像"><a href="#挂载-ISO-镜像" class="headerlink" title="挂载 ISO 镜像"></a>挂载 ISO 镜像</h3><p><strong>挂载分为两种方式：</strong></p>
+<p>1、上传 iso 安装镜像到服务器主机指定目录下，以 <code>/iso</code> 为例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">mount -o loop /iso/iso镜像包名称 /mnt<br></code></pre></td></tr></table></figure>
+
+<p>2、直接虚拟机或者物理主机层面挂载 iso 安装镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">mount /dev/sr0 /mnt<br></code></pre></td></tr></table></figure>
+
+<p>挂载完之后，通过 <code>df -Th /mnt</code> 查看挂载情况：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">df</span> -Th /mnt<br></code></pre></td></tr></table></figure>
+
+<p>以上两种方式都可以实现挂载，具体看情况使用即可。</p>
+<p>下面命令均为一键配置本地软件源方式，默认 ISO 安装镜像挂载在 <code>/mnt</code> 目录下，直接复制使用即可。</p>
+<h3 id="RHEL-系"><a href="#RHEL-系" class="headerlink" title="RHEL 系"></a>RHEL 系</h3><p>RHEL 系有以下操作系统：</p>
+<ul>
+<li>Centos</li>
+<li>RedHat</li>
+<li>OracleLinux</li>
+<li>RockyLinux</li>
+<li>AlmaLinux</li>
+<li>OpenCloudOS</li>
+<li>阿里龙蜥 Anolis</li>
+<li>中标麒麟 NeoKylin V7</li>
+</ul>
+<p>RHEL 系的操作系统软件源配置目录均为：<code>/etc/yum.repos.d</code>。</p>
+<h4 id="6-7-全系"><a href="#6-7-全系" class="headerlink" title="6~7 全系"></a>6~7 全系</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 备份系统初始配置文件</span><br><span class="hljs-built_in">mkdir</span> -p /etc/yum.repos.d/bak<br><span class="hljs-built_in">mv</span> /etc/yum.repos.d/* /etc/yum.repos.d/bak<br><span class="hljs-comment">## 一键配置软件源，默认 ISO 安装镜像挂载在 /mnt 目录下</span><br><span class="hljs-built_in">cat</span>&lt;&lt;-<span class="hljs-string">EOF&gt;/etc/yum.repos.d/local.repo</span><br><span class="hljs-string">[server]</span><br><span class="hljs-string">name=server</span><br><span class="hljs-string">baseurl=file:///mnt</span><br><span class="hljs-string">enabled=1</span><br><span class="hljs-string">gpgcheck=0</span><br><span class="hljs-string">EOF</span><br><span class="hljs-comment">## 查看配置好的软件源</span><br><span class="hljs-built_in">cat</span> /etc/yum.repos.d/local.repo<br></code></pre></td></tr></table></figure>
+
+<h4 id="8-9-全系"><a href="#8-9-全系" class="headerlink" title="8~9 全系"></a>8~9 全系</h4><p>rhel 从 8 版本开始，安装命令从 <code>yum</code> 替换为 <code>dnf</code>，但是 <code>yum</code> 命令还是可以使用。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 备份系统初始配置文件</span><br><span class="hljs-built_in">mkdir</span> -p /etc/yum.repos.d/bak<br><span class="hljs-built_in">mv</span> /etc/yum.repos.d/* /etc/yum.repos.d/bak<br><span class="hljs-comment">## 一键配置软件源，默认 ISO 安装镜像挂载在 /mnt 目录下</span><br><span class="hljs-built_in">cat</span> &lt;&lt;-<span class="hljs-string">EOF &gt; /etc/yum.repos.d/local.repo</span><br><span class="hljs-string">[BaseOS]</span><br><span class="hljs-string">name=BaseOS</span><br><span class="hljs-string">baseurl=file:///mnt/BaseOS</span><br><span class="hljs-string">enabled=1</span><br><span class="hljs-string">gpgcheck=0</span><br><span class="hljs-string">[AppStream]</span><br><span class="hljs-string">name=AppStream</span><br><span class="hljs-string">baseurl=file:///mnt/AppStream</span><br><span class="hljs-string">enabled=1</span><br><span class="hljs-string">gpgcheck=0</span><br><span class="hljs-string">EOF</span><br><span class="hljs-comment">## 查看配置好的软件源</span><br><span class="hljs-built_in">cat</span> /etc/yum.repos.d/local.repo<br></code></pre></td></tr></table></figure>
+
+<h3 id="kylinV10-NingOS-红旗asianux-中科方德NFS"><a href="#kylinV10-NingOS-红旗asianux-中科方德NFS" class="headerlink" title="kylinV10&#x2F;NingOS&#x2F;红旗asianux&#x2F;中科方德NFS"></a>kylinV10&#x2F;NingOS&#x2F;红旗asianux&#x2F;中科方德NFS</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 备份系统初始配置文件</span><br><span class="hljs-built_in">mkdir</span> -p /etc/yum.repos.d/bak<br><span class="hljs-built_in">mv</span> /etc/yum.repos.d/* /etc/yum.repos.d/bak<br><span class="hljs-comment">## 一键配置软件源，默认 ISO 安装镜像挂载在 /mnt 目录下</span><br><span class="hljs-built_in">cat</span>&lt;&lt;-<span class="hljs-string">EOF&gt;/etc/yum.repos.d/local.repo</span><br><span class="hljs-string">[server]</span><br><span class="hljs-string">name=server</span><br><span class="hljs-string">baseurl=file:///mnt</span><br><span class="hljs-string">enabled=1</span><br><span class="hljs-string">gpgcheck=0</span><br><span class="hljs-string">EOF</span><br><span class="hljs-comment">## 查看配置好的软件源</span><br><span class="hljs-built_in">cat</span> /etc/yum.repos.d/local.repo<br></code></pre></td></tr></table></figure>
+
+<h3 id="SUSE"><a href="#SUSE" class="headerlink" title="SUSE"></a>SUSE</h3><p>SUSE 系的操作系统软件源配置目录均为：<code>/etc/zypp/repos.d/</code>。</p>
+<h4 id="SUSE-12-全系"><a href="#SUSE-12-全系" class="headerlink" title="SUSE 12 全系"></a>SUSE 12 全系</h4><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment">## 备份系统初始配置文件</span><br>mkdir -p <span class="hljs-regexp">/etc/</span>zypp<span class="hljs-regexp">/repos.d/</span>bak<br>mv <span class="hljs-regexp">/etc/</span>zypp<span class="hljs-regexp">/repos.d/</span>* <span class="hljs-regexp">/etc/</span>zypp<span class="hljs-regexp">/repos.d/</span>bak<br><span class="hljs-comment">## 一键配置软件源，默认 ISO 安装镜像挂载在 /mnt 目录下</span><br>zypper ar -f /mnt sles<br></code></pre></td></tr></table></figure>
+
+<h4 id="SUSE-15-全系"><a href="#SUSE-15-全系" class="headerlink" title="SUSE 15 全系"></a>SUSE 15 全系</h4><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment">## 备份系统初始配置文件</span><br>mkdir -p <span class="hljs-regexp">/etc/</span>zypp<span class="hljs-regexp">/repos.d/</span>bak<br>mv <span class="hljs-regexp">/etc/</span>zypp<span class="hljs-regexp">/repos.d/</span>* <span class="hljs-regexp">/etc/</span>zypp<span class="hljs-regexp">/repos.d/</span>bak<br><span class="hljs-comment">## 一键配置软件源，默认 ISO 安装镜像挂载在 /mnt 目录下</span><br>zypper ar -f <span class="hljs-regexp">/mnt/</span>Module-Basesystem sles<br>zypper ar -f <span class="hljs-regexp">/mnt/</span>Module-Legacy sles-Legacy<br>zypper ar -f <span class="hljs-regexp">/mnt/</span>Module-Development-Tools sles-Tools<br></code></pre></td></tr></table></figure>
+
+<h3 id="华为欧拉-openEuler"><a href="#华为欧拉-openEuler" class="headerlink" title="华为欧拉 openEuler"></a>华为欧拉 openEuler</h3><p>openEuler 软件源配置全版本通用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 备份系统初始配置文件</span><br><span class="hljs-built_in">mkdir</span> -p /etc/yum.repos.d/bak<br><span class="hljs-built_in">mv</span> /etc/yum.repos.d/* /etc/yum.repos.d/bak<br><span class="hljs-comment">## 一键配置软件源，默认 ISO 安装镜像挂载在 /mnt 目录下</span><br><span class="hljs-built_in">cat</span> &lt;&lt;-<span class="hljs-string">EOF &gt; /etc/yum.repos.d/local.repo</span><br><span class="hljs-string">[openEuler]</span><br><span class="hljs-string">name=openeuler</span><br><span class="hljs-string">baseurl=file://mnt</span><br><span class="hljs-string">enabled=1</span><br><span class="hljs-string">gpgcheck=1</span><br><span class="hljs-string">gpgkey=file://mnt/RPM-GPG-KEY-openEuler</span><br><span class="hljs-string">EOF</span><br><span class="hljs-comment">## 查看配置好的软件源</span><br><span class="hljs-built_in">cat</span> /etc/yum.repos.d/local.repo<br></code></pre></td></tr></table></figure>
+
+<h3 id="统信-UOS"><a href="#统信-UOS" class="headerlink" title="统信 UOS"></a>统信 UOS</h3><h3 id="A-系"><a href="#A-系" class="headerlink" title="A 系"></a>A 系</h3><p>A 系采用的是 openAnolis 技术路线，使用命令方面：在线安装是 dnf 或 yum 命令，离线安装包是 rpm 包。</p>
+<p>配置方式参考 RHEL 系。</p>
+<h3 id="C-系"><a href="#C-系" class="headerlink" title="C 系"></a>C 系</h3><p>C 系基于 CentOS 社区发行版进行二次商业化发行的 Linux 操作系统。使用命令方面：在线安装是 dnf 或 yum 命令，离线安装包是 rpm 包。</p>
+<p>配置方式参考 RHEL 系。</p>
+<h3 id="D-系"><a href="#D-系" class="headerlink" title="D 系"></a>D 系</h3><p>D 系采用的是 Debian 技术路线，使用命令方面：在线安装是 apt 命令，离线安装包是 deb 包。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">uos_codename=$(grep -oP <span class="hljs-string">&#x27;^VERSION_CODENAME=&quot;?(\K[^&quot;]+|[^&quot;]+$)&#x27;</span> /etc/os-release)<br><span class="hljs-comment">## 备份系统初始配置文件</span><br><span class="hljs-built_in">mkdir</span> -p /etc/apt/bak<br><span class="hljs-built_in">mv</span> /etc/apt/sources.list /etc/apt/bak<br><span class="hljs-comment">## 一键配置软件源，默认 ISO 安装镜像挂载在 /mnt 目录下</span><br><span class="hljs-built_in">cat</span> &lt;&lt;-<span class="hljs-string">EOF &gt; /etc/apt/sources.list</span><br><span class="hljs-string">deb [trusted=yes] file:///mnt $uos_codename main</span><br><span class="hljs-string">EOF</span><br><span class="hljs-comment">## 查看配置好的软件源</span><br><span class="hljs-built_in">cat</span> /etc/apt/sources.list<br></code></pre></td></tr></table></figure>
+
+<h3 id="E-系"><a href="#E-系" class="headerlink" title="E 系"></a>E 系</h3><p>E 系采用的是 openEuler 技术路线，使用命令方面：在线安装是 dnf 或 yum 命令，离线安装包是 rpm 包。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 备份系统初始配置文件</span><br><span class="hljs-built_in">mkdir</span> -p /etc/yum.repos.d/bak<br><span class="hljs-built_in">mv</span> /etc/yum.repos.d/* /etc/yum.repos.d/bak<br><span class="hljs-comment">## 一键配置软件源，默认 ISO 安装镜像挂载在 /mnt 目录下</span><br><span class="hljs-built_in">cat</span> &lt;&lt;-<span class="hljs-string">EOF &gt; /etc/yum.repos.d/local.repo</span><br><span class="hljs-string">[BaseOS]</span><br><span class="hljs-string">name=BaseOS</span><br><span class="hljs-string">baseurl=file:///mnt/BaseOS</span><br><span class="hljs-string">enabled=1</span><br><span class="hljs-string">gpgcheck=0</span><br><span class="hljs-string">[AppStream]</span><br><span class="hljs-string">name=AppStream</span><br><span class="hljs-string">baseurl=file:///mnt/AppStream</span><br><span class="hljs-string">enabled=1</span><br><span class="hljs-string">gpgcheck=0</span><br><span class="hljs-string">EOF</span><br><span class="hljs-comment">## 查看配置好的软件源</span><br><span class="hljs-built_in">cat</span> /etc/yum.repos.d/local.repo<br></code></pre></td></tr></table></figure>
+
+<h2 id="配置网络软件源"><a href="#配置网络软件源" class="headerlink" title="配置网络软件源"></a>配置网络软件源</h2><p>Linux 有部分操作系统的 ISO 安装镜像包不全，所以需要配置网络软件源，主要为 <code>Deb</code> 系、<code>ARCH</code> 系、<code>华为 euleros</code>以及 <code>Fedora</code>。</p>
+<h3 id="华为欧拉-EulerOS-V2-全系"><a href="#华为欧拉-EulerOS-V2-全系" class="headerlink" title="华为欧拉 EulerOS V2 全系"></a>华为欧拉 EulerOS V2 全系</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment">## 获取版本号</span><br>euler_codename=$(grep -oP <span class="hljs-string">&#x27;(?&lt;=release )\d+\.&#x27;</span> <span class="hljs-regexp">/etc/</span>euleros-release)$(grep -oP <span class="hljs-string">&#x27;(?&lt;=SP)\d+&#x27;</span> <span class="hljs-regexp">/etc/</span>euleros-release)<br><span class="hljs-comment">## 备份系统初始配置文件</span><br>mkdir -p <span class="hljs-regexp">/etc/yum</span>.repos.d/bak<br>mv <span class="hljs-regexp">/etc/yum</span>.repos.d<span class="hljs-regexp">/ /</span>etc<span class="hljs-regexp">/yum.repos.d/</span>bak<br><span class="hljs-comment">## 一键配置软件源</span><br>cat &lt;&lt;-EOF &gt; <span class="hljs-regexp">/etc/yum</span>.repos.d/EulerOS-base.repo<br>[base]<br>name=EulerOS<br>baseurl=http:<span class="hljs-regexp">//mi</span>rrors.huaweicloud.com<span class="hljs-regexp">/euler/</span><span class="hljs-variable">$euler_codename</span><span class="hljs-regexp">/os/</span>x86_64/<br>enabled=<span class="hljs-number">1</span><br>gpgcheck=<span class="hljs-number">1</span><br>gpgkey=http:<span class="hljs-regexp">//mi</span>rrors.huaweicloud.com<span class="hljs-regexp">/euler/</span><span class="hljs-variable">$euler_codename</span><span class="hljs-regexp">/os/</span>RPM-GPG-KEY-EulerOS<br>EOF<br><span class="hljs-comment">## 查看配置好的软件源</span><br>cat <span class="hljs-regexp">/etc/yum</span>.repos.d/EulerOS-base.repo<br></code></pre></td></tr></table></figure>
+
+<h3 id="Fedora-全系"><a href="#Fedora-全系" class="headerlink" title="Fedora 全系"></a>Fedora 全系</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment">## 获取 cpu 类型和版本号</span><br><span class="hljs-attribute">cpu_type</span>=$(uname -m)<br><span class="hljs-attribute">releasever</span>=$(grep -oP <span class="hljs-string">&#x27;^VERSION_ID=&quot;?(\K[^&quot;]+|[^&quot;]+$)&#x27;</span> /etc/os-release)<br><span class="hljs-comment">## 备份系统初始配置文件</span><br>mkdir -p /etc/yum.repos.d/bak<br>mv /etc/yum.repos.d/ /etc/yum.repos.d/bak<br><span class="hljs-comment">## 一键配置软件源</span><br>cat &lt;&lt;-EOF &gt; /etc/yum.repos.d/fedora.repo<br>[fedora]<br><span class="hljs-attribute">name</span>=Fedora<br><span class="hljs-attribute">failovermethod</span>=priority<br><span class="hljs-attribute">baseurl</span>=http://mirrors.tuna.tsinghua.edu.cn/fedora/releases/$releasever/Everything/$cpu_type/os/<br><span class="hljs-attribute">metadata_expire</span>=28d<br><span class="hljs-attribute">gpgcheck</span>=1<br><span class="hljs-attribute">gpgkey</span>=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$cpu_type<br><span class="hljs-attribute">skip_if_unavailable</span>=<span class="hljs-literal">False</span><br>EOF<br><span class="hljs-comment">## 查看配置好的软件源</span><br>cat /etc/yum.repos.d/fedora.repo<br></code></pre></td></tr></table></figure>
+
+<h3 id="ARCH-全系"><a href="#ARCH-全系" class="headerlink" title="ARCH 全系"></a>ARCH 全系</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 备份系统初始配置文件</span><br><span class="hljs-built_in">mkdir</span> -p /etc/pacman.d/bak<br><span class="hljs-built_in">mv</span> -f /etc/pacman.d/mirrorlist /etc/pacman.d/bak<br><span class="hljs-comment">## 一键配置软件源</span><br><span class="hljs-built_in">cat</span> &lt;&lt;-<span class="hljs-string">EOF &gt; /etc/pacman.d/mirrorlist</span><br><span class="hljs-string">Server = http://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch&quot;</span><br><span class="hljs-string">EOF</span><br><span class="hljs-comment">## 查看配置好的软件源</span><br><span class="hljs-built_in">cat</span> /etc/pacman.d/mirrorlist<br></code></pre></td></tr></table></figure>
+
+<h3 id="Deb-系"><a href="#Deb-系" class="headerlink" title="Deb 系"></a>Deb 系</h3><p>Deb 系有以下操作系统：</p>
+<ul>
+<li>Debian</li>
+<li>Ubuntu</li>
+<li>Deepin</li>
+</ul>
+<p>Deb 系的操作系统软件源配置文件均为：<code>/etc/apt/sources.list</code>。</p>
+<h4 id="Debian"><a href="#Debian" class="headerlink" title="Debian"></a>Debian</h4><h5 id="Debian-8-10"><a href="#Debian-8-10" class="headerlink" title="Debian 8~10"></a>Debian 8~10</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 获取版本号</span><br>debs_codename=$(grep DISTRIB_CODENAME /etc/lsb-release | <span class="hljs-built_in">cut</span> -d <span class="hljs-string">&#x27;=&#x27;</span> -f2)<br><span class="hljs-comment">## 首先安装 Freexian 的 APT 源密钥</span><br>wget http://deb.freexian.com/extended-lts/archive-key.gpg -O /tmp/elts-archive-key.gpg<br><span class="hljs-built_in">mv</span> -f /tmp/elts-archive-key.gpg /etc/apt/trusted.gpg.d/freexian-archive-extended-lts.gpg<br><span class="hljs-comment">## 备份系统初始配置文件</span><br><span class="hljs-built_in">mkdir</span> -p /etc/apt/bak<br><span class="hljs-built_in">mv</span> /etc/apt/sources.list /etc/apt/bak<br><span class="hljs-comment">## 一键配置软件源</span><br><span class="hljs-built_in">cat</span> &lt;&lt;-<span class="hljs-string">EOF &gt; /etc/apt/sources.list</span><br><span class="hljs-string">deb http://mirrors4.tuna.tsinghua.edu.cn/debian-elts $debs_codename main contrib non-free</span><br><span class="hljs-string">EOF</span><br><span class="hljs-comment">## 查看配置好的软件源</span><br><span class="hljs-built_in">cat</span> /etc/apt/sources.list<br></code></pre></td></tr></table></figure>
+
+<h5 id="Debian-11-12"><a href="#Debian-11-12" class="headerlink" title="Debian 11~12"></a>Debian 11~12</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 获取版本号</span><br>debs_codename=$(grep DISTRIB_CODENAME /etc/lsb-release | <span class="hljs-built_in">cut</span> -d <span class="hljs-string">&#x27;=&#x27;</span> -f2)<br><span class="hljs-comment">## 备份系统初始配置文件</span><br><span class="hljs-built_in">mkdir</span> -p /etc/apt/bak<br><span class="hljs-built_in">mv</span> /etc/apt/sources.list /etc/apt/bak<br><span class="hljs-comment">## 一键配置软件源</span><br><span class="hljs-built_in">cat</span> &lt;&lt;-<span class="hljs-string">EOF &gt; /etc/apt/sources.list</span><br><span class="hljs-string">deb http://mirrors4.tuna.tsinghua.edu.cn/debian/ $debs_codename main contrib non-free</span><br><span class="hljs-string">EOF</span><br><span class="hljs-comment">## 查看配置好的软件源</span><br><span class="hljs-built_in">cat</span> /etc/apt/sources.list<br></code></pre></td></tr></table></figure>
+
+<h4 id="Ubuntu-全系"><a href="#Ubuntu-全系" class="headerlink" title="Ubuntu 全系"></a>Ubuntu 全系</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 获取版本号</span><br>debs_codename=$(grep DISTRIB_CODENAME /etc/lsb-release | <span class="hljs-built_in">cut</span> -d <span class="hljs-string">&#x27;=&#x27;</span> -f2)<br><span class="hljs-comment">## 备份系统初始配置文件</span><br><span class="hljs-built_in">mkdir</span> -p /etc/apt/bak<br><span class="hljs-built_in">mv</span> /etc/apt/sources.list /etc/apt/bak<br><span class="hljs-comment">## 一键配置软件源</span><br><span class="hljs-built_in">cat</span> &lt;&lt;-<span class="hljs-string">EOF &gt; /etc/apt/sources.list</span><br><span class="hljs-string">deb http://mirrors4.tuna.tsinghua.edu.cn/ubuntu/ $debs_codename main restricted universe multiverse</span><br><span class="hljs-string">EOF</span><br><span class="hljs-comment">## 查看配置好的软件源</span><br><span class="hljs-built_in">cat</span> /etc/apt/sources.list<br></code></pre></td></tr></table></figure>
+
+<h4 id="Deepin-全系"><a href="#Deepin-全系" class="headerlink" title="Deepin 全系"></a>Deepin 全系</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 获取版本号</span><br>debs_codename=$(grep DISTRIB_CODENAME /etc/lsb-release | <span class="hljs-built_in">cut</span> -d <span class="hljs-string">&#x27;=&#x27;</span> -f2)<br><span class="hljs-comment">## 备份系统初始配置文件</span><br><span class="hljs-built_in">mkdir</span> -p /etc/apt/bak<br><span class="hljs-built_in">mv</span> /etc/apt/sources.list /etc/apt/bak<br><span class="hljs-comment">## 一键配置软件源</span><br><span class="hljs-built_in">cat</span> &lt;&lt;-<span class="hljs-string">EOF &gt; /etc/apt/sources.list</span><br><span class="hljs-string">deb https://community-packages.deepin.com/deepin/ $debs_codename main contrib non-free</span><br><span class="hljs-string">EOF</span><br><span class="hljs-comment">## 查看配置好的软件源</span><br><span class="hljs-built_in">cat</span> /etc/apt/sources.list<br></code></pre></td></tr></table></figure>
+
+<p>本次分享到此结束。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/140376539/">https://pc-study.github.io/csdn-blog/posts/140376539/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E5%8D%8E%E4%B8%BA/">华为</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/140400728/" title="Deepin 20.9 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Deepin 20.9 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 Deepin 20.9 一键安装 Oracle 19C 单机版过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 ⭐️ 更多教程参考：Oracle 一键安装脚本实操合集，持续更新中！！！ 前置准备 1、系统组安装好操作系统（支</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/140317247/" title="华为欧拉 openEuler 22.03 LTS SP3(aarch64) 一键安装 Oracle 19C ARM 单机 ASM"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">华为欧拉 openEuler 22.03 LTS SP3(aarch64) 一键安装 Oracle 19C ARM 单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示华为欧拉 openEuler 22.03 LTS SP3(aarch64) 一键安装 Oracle 19C ARM 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 ⭐️ 更多教程参考：Oracle 一键安装脚本实操合集，持续</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/138160364/" title="openEuler 22.03 LTS SP3（华为欧拉）一键安装 Oracle 11GR2 RAC（231017）"><img class="cover" src="/csdn-blog/images/68e3af6ca3ddc9081765fb0d411106b7.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-24</div><div class="info-item-2">openEuler 22.03 LTS SP3（华为欧拉）一键安装 Oracle 11GR2 RAC（231017）</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 openEuler 22.03 LTS SP3 一键安装 Oracle 11GR2 RAC（231017）过程（全程无需人工干预）：（脚本包括 ORALCE PSU/OJVM 等补丁自动安装） ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 脚本第三</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/138160408/" title="openEuler 22.03 LTS SP3（华为欧拉）一键安装 Oracle 11GR2 单机 ASM（231017）"><img class="cover" src="/csdn-blog/images/40d822e7e9e548b242299f301c3f0f75.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-24</div><div class="info-item-2">openEuler 22.03 LTS SP3（华为欧拉）一键安装 Oracle 11GR2 单机 ASM（231017）</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 openEuler 22.03 LTS SP3 一键安装 Oracle 11GR2 单机 ASM（231017）过程（全程无需人工干预）：（脚本包括 ORALCE PSU/OJVM 等补丁自动安装） ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 脚</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/140317247/" title="华为欧拉 openEuler 22.03 LTS SP3(aarch64) 一键安装 Oracle 19C ARM 单机 ASM"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-10</div><div class="info-item-2">华为欧拉 openEuler 22.03 LTS SP3(aarch64) 一键安装 Oracle 19C ARM 单机 ASM</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示华为欧拉 openEuler 22.03 LTS SP3(aarch64) 一键安装 Oracle 19C ARM 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 ⭐️ 更多教程参考：Oracle 一键安装脚本实操合集，持续</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139176540/" title="银河麒麟 Kylin V10 SP3 一键安装 Oracle 11GR2 RAC"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">银河麒麟 Kylin V10 SP3 一键安装 Oracle 11GR2 RAC</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 麒麟 Kylin V10 SP3 一键安装 Oracle 11GR2 RAC（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139179054/" title="华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 21C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-24</div><div class="info-item-2">华为欧拉 openEuler 22.03 LTS SP3 一键安装 Oracle 21C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 openEuler 22.03 LTS SP3 一键安装 Oracle 21C 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120236145/" title="Oracle 查看数据库文件 SQL语句"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-11</div><div class="info-item-2">Oracle 查看数据库文件 SQL语句</div></div><div class="info-2"><div class="info-item-1">Oracle 数据库文件主要分为： 表空间数据文件（包括临时表空间和UNDO表空间） 控制文件 日志文件（包括重做日志和standby日志） 可以通过 SQL 来 查询 ： 本次分享到此结束啦~ 如果觉得文章对你有帮助，点赞、收藏、关注、评论，一键四连支持，你的支持就是我创作最大的动力。 ❤️ 技术</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"><span class="toc-number">3.</span> <span class="toc-text">操作系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0%E8%BD%AF%E4%BB%B6%E6%BA%90"><span class="toc-number">4.</span> <span class="toc-text">配置本地软件源</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%82%E8%BD%BD-ISO-%E9%95%9C%E5%83%8F"><span class="toc-number">4.1.</span> <span class="toc-text">挂载 ISO 镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RHEL-%E7%B3%BB"><span class="toc-number">4.2.</span> <span class="toc-text">RHEL 系</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#6-7-%E5%85%A8%E7%B3%BB"><span class="toc-number">4.2.1.</span> <span class="toc-text">6~7 全系</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-9-%E5%85%A8%E7%B3%BB"><span class="toc-number">4.2.2.</span> <span class="toc-text">8~9 全系</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kylinV10-NingOS-%E7%BA%A2%E6%97%97asianux-%E4%B8%AD%E7%A7%91%E6%96%B9%E5%BE%B7NFS"><span class="toc-number">4.3.</span> <span class="toc-text">kylinV10&#x2F;NingOS&#x2F;红旗asianux&#x2F;中科方德NFS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SUSE"><span class="toc-number">4.4.</span> <span class="toc-text">SUSE</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#SUSE-12-%E5%85%A8%E7%B3%BB"><span class="toc-number">4.4.1.</span> <span class="toc-text">SUSE 12 全系</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SUSE-15-%E5%85%A8%E7%B3%BB"><span class="toc-number">4.4.2.</span> <span class="toc-text">SUSE 15 全系</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8E%E4%B8%BA%E6%AC%A7%E6%8B%89-openEuler"><span class="toc-number">4.5.</span> <span class="toc-text">华为欧拉 openEuler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9F%E4%BF%A1-UOS"><span class="toc-number">4.6.</span> <span class="toc-text">统信 UOS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#A-%E7%B3%BB"><span class="toc-number">4.7.</span> <span class="toc-text">A 系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%B3%BB"><span class="toc-number">4.8.</span> <span class="toc-text">C 系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#D-%E7%B3%BB"><span class="toc-number">4.9.</span> <span class="toc-text">D 系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#E-%E7%B3%BB"><span class="toc-number">4.10.</span> <span class="toc-text">E 系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E7%BD%91%E7%BB%9C%E8%BD%AF%E4%BB%B6%E6%BA%90"><span class="toc-number">5.</span> <span class="toc-text">配置网络软件源</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8E%E4%B8%BA%E6%AC%A7%E6%8B%89-EulerOS-V2-%E5%85%A8%E7%B3%BB"><span class="toc-number">5.1.</span> <span class="toc-text">华为欧拉 EulerOS V2 全系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fedora-%E5%85%A8%E7%B3%BB"><span class="toc-number">5.2.</span> <span class="toc-text">Fedora 全系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ARCH-%E5%85%A8%E7%B3%BB"><span class="toc-number">5.3.</span> <span class="toc-text">ARCH 全系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Deb-%E7%B3%BB"><span class="toc-number">5.4.</span> <span class="toc-text">Deb 系</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Debian"><span class="toc-number">5.4.1.</span> <span class="toc-text">Debian</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Debian-8-10"><span class="toc-number">5.4.1.1.</span> <span class="toc-text">Debian 8~10</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Debian-11-12"><span class="toc-number">5.4.1.2.</span> <span class="toc-text">Debian 11~12</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Ubuntu-%E5%85%A8%E7%B3%BB"><span class="toc-number">5.4.2.</span> <span class="toc-text">Ubuntu 全系</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Deepin-%E5%85%A8%E7%B3%BB"><span class="toc-number">5.4.3.</span> <span class="toc-text">Deepin 全系</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

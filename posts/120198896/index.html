@@ -1,0 +1,362 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Oracle spfile 参数文件 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="目录 📚 前言 ☀️ spfile 介绍 ⭐️ spfile 参数文件位置 🌛 启动优先级 ❄️ 实例讲解 ① 从 pfile 切换为 spfile 启动数据库 ② 使用 spfile 启动数据库后修改参数错误，导致数据库无法启动 - 问题重现 解决步骤 📚 前言 上篇讲了 Oracle pfile">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Oracle spfile 参数文件">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/120198896/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="目录 📚 前言 ☀️ spfile 介绍 ⭐️ spfile 参数文件位置 🌛 启动优先级 ❄️ 实例讲解 ① 从 pfile 切换为 spfile 启动数据库 ② 使用 spfile 启动数据库后修改参数错误，导致数据库无法启动 - 问题重现 解决步骤 📚 前言 上篇讲了 Oracle pfile">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/713a48fff1e82c2ef441c968a7b74bb4.webp">
+<meta property="article:published_time" content="2021-09-09T04:41:03.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.258Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="oracle">
+<meta property="article:tag" content="spfile">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/713a48fff1e82c2ef441c968a7b74bb4.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Oracle spfile 参数文件","url":"https://pc-study.github.io/csdn-blog/posts/120198896/","image":"https://pc-study.github.io/csdn-blog/images/713a48fff1e82c2ef441c968a7b74bb4.webp","datePublished":"2021-09-09T04:41:03.000Z","dateModified":"2026-03-20T12:25:38.258Z","description":"目录 📚 前言 ☀️ spfile 介绍 ⭐️ spfile 参数文件位置 🌛 启动优先级 ❄️ 实例讲解 ① 从 pfile 切换为 spfile 启动数据库 ② 使用 spfile 启动数据库后修改参数错误，导致数据库无法启动 - 问题重现 解决步骤 📚 前言 上篇讲了 Oracle pfile","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/120198896/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/120198896/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Oracle spfile 参数文件',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/713a48fff1e82c2ef441c968a7b74bb4.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">Oracle spfile 参数文件</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Oracle spfile 参数文件<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-09-09-120198896.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-09-09T04:41:03.000Z" title="发表于 2021-09-09 12:41:03">2021-09-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.258Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/">Oracle 数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>6分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div><h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#__1">📚 前言</a></li>
+<li><a href="#_spfile__8">☀️ spfile 介绍</a></li>
+<li><a href="#_spfile__30">⭐️ spfile 参数文件位置</a></li>
+<li><a href="#__40">🌛 启动优先级</a></li>
+<li><a href="#__117">❄️ 实例讲解</a></li>
+<li><ul>
+<li><a href="#__pfile__spfile__118">① 从 pfile 切换为 spfile 启动数据库</a></li>
+<li><a href="#__spfile__152">② 使用 spfile 启动数据库后修改参数错误，导致数据库无法启动</a></li>
+<li><ul>
+<li><a href="#_156">问题重现</a></li>
+<li><a href="#_163">解决步骤</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="📚-前言"><a href="#📚-前言" class="headerlink" title="📚 前言"></a>📚 前言</h2><p>上篇讲了 <a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/article/details/120198832">Oracle pfile 参数文件</a> ，这篇讲讲 spfile 参数文件！</p>
+<p>Oracle数据库启动时，第一步<br>开启<br>到nomount状态，需要使用到参数文件。</p>
+<p>spfile 也是参数文件的一种，全称：<strong>服务器参数文件（Server Parameter Files）</strong>！</p>
+<h2 id="☀️-spfile-介绍"><a href="#☀️-spfile-介绍" class="headerlink" title="☀️ spfile 介绍"></a>☀️ spfile 介绍</h2><p><strong>spfileSID.ora 文件就是 spfile 参数文件，是二进制文件。</strong></p>
+<p>从<br>Oracle<br> 9i 开始，Oracle 引入 <code>spfile</code> 文件，使用spfile用户可以通过 ALTER SYSTEM 或者 ALTER SESSION 来修改参数，而不再需要通过手工修改。</p>
+<p><strong>使用 spfile 参数文件有以下好处：</strong></p>
+<ul>
+<li>动态参数的更改可以立即生效，用户可以选择使更改只应用于当前实例还是应用到spfile，或者都应用；</li>
+<li>可以彻底告别手工修改初始化参数文件，也就大大减少了人为错误的发生；</li>
+<li>spfile 是一个二进制文件，可以使用rman进行备份，增加数据库的安全，便于恢复；</li>
+</ul>
+<p>所以，现在<strong>基本都是默认使用 spfile 来启动数据库</strong>，但是如果由于 spfile 修改参数数据库无法启动时，就只能使用 pfile 修改参数进行启动。</p>
+<p><strong>如何查看当前数据库使用的是不是 spfile 启动？</strong></p>
+<p>连接数据库之后，执行以下命令：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">show</span> <span class="hljs-keyword">parameter</span> spfile<br><br><br>AI写代码<span class="hljs-keyword">sql</span><br><br><br><br><span class="hljs-operator">*</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/7b11cbda50649ee2a0107dc8898fa8c9.webp" alt="Oracle spfile 参数文件" loading='lazy'></p>
+<p>如果以下框选的地方不为空，则代表当前数据库使用 spfile 启动，否则是 pfile 启动。</p>
+<h2 id="⭐️-spfile-参数文件位置"><a href="#⭐️-spfile-参数文件位置" class="headerlink" title="⭐️ spfile 参数文件位置"></a>⭐️ spfile 参数文件位置</h2><p>单机数据库，spfile 参数文件通常存在于以下目录下：</p>
+<ul>
+<li><strong>Windows：</strong> $ORACLE_HOME&#x2F;database</li>
+<li><strong>Linux：</strong> $ORACLE_HOME&#x2F;dbs</li>
+</ul>
+<p>RAC 集群，spfile 通常是存放在 ASM 磁盘中，以上目录仅存放 pfile 文件。  </p>
+<blockquote>
+<ul>
+<li><strong>pfile 文件格式为：</strong><code>initSID.ora</code></li>
+<li><strong>spfile 文件格式为：</strong><code>spfileSID.ora</code></li>
+</ul>
+</blockquote>
+<h2 id="🌛-启动优先级"><a href="#🌛-启动优先级" class="headerlink" title="🌛 启动优先级"></a>🌛 启动优先级</h2><p>如果同时有 pfile 和 spfile 文件，数据库启动的优先级是如何的？</p>
+<p><img src="/csdn-blog/images/205c8965057ae52d193e12eecb4b1d4e.webp" alt="Oracle spfile 参数文件 - 图2" loading='lazy'></p>
+<p><strong>官方说法： <code>spfileSID.ora &gt; initorcl.ora</code></strong></p>
+<p><strong>⭐️ 拓展：</strong></p>
+<p>我看到网上一个有趣的说法，如果使用 spfileSID.ora<br>文件复制<br>出一个 spfile.ora 文件，那么优先级顺序是：<code>spfileSID.ora &gt; spfile.ora &gt; initorcl.ora</code>。</p>
+<p><strong>所以，我做了个小测试：</strong></p>
+<p><strong>1、首先关闭数据库：</strong></p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs awk">sqlplus / as sysdba<br>shutdown immediate<br><span class="hljs-keyword">exit</span><br><br><br>AI写代码bash<br><br><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br>* <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>2、从 spfileSID.ora 复制一个 spfile.ora 文件：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$ORACLE_HOME</span>/dbs<br><span class="hljs-built_in">cp</span> spfileorcl.ora spfile.ora<br><br><br>AI写代码bash<br><br><br><br>* 1<br>* 2<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/97986bd4c9b129c6febc433f555a0cce.webp" alt="Oracle spfile 参数文件 - 图3" loading='lazy'></p>
+<p>3、重新启动数据库</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs gams">sqlplus / as sysdba<br>startup<br>show <span class="hljs-keyword">parameter</span> spfile<br><br><br>AI写代码bash<br><br><br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/713a48fff1e82c2ef441c968a7b74bb4.webp" alt="Oracle spfile 参数文件 - 图4" loading='lazy'></p>
+<p>从上图可以看出，优先级最高的是 spfileSID.ora，验证没有问题。</p>
+<p>4、删除 spfileSID.ora 文件，重启数据库</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">cd</span> <span class="hljs-variable">$ORACLE_HOME</span>/dbs<br><span class="hljs-keyword">rm</span> -rf spfileorcl.ora<br>sqlplus / <span class="hljs-keyword">as</span> sysdba<br>shutdown immediate<br>startup<br>show parameter spfile<br><br><br>AI写代码<br><br><br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/3c81c5d5f10ad54f1522e6a575d929dc.webp" alt="Oracle spfile 参数文件 - 图5" loading='lazy'><br> 根据上图所示，居然真的优先识别到的是 spfile.ora 文件，那就有一个问题，如果是随便 export 一个 ORACLE_SID，是不是也能启动呢？</p>
+<p>5、先关闭当前数据库，设置一个新的 ORACLE_SID，启动数据库</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">export</span> <span class="hljs-attribute">ORACLE_SID</span>=lucifer<br>sqlplus / as sysdba<br>startup<br><br><br>AI写代码bash<br><br><br><br>* 1<br>* 2<br>* 3<br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/2919da0df34bf87244481eaaa47c32e0.webp" alt="Oracle spfile 参数文件 - 图6" loading='lazy'></p>
+<p>根据上图实验，实例名为 lucifer，数据库也是可以成功启动😂。</p>
+<p>所以，如果 ORACLE_SID 设置错误的情况下，如果存在 spfile.ora 文件，那么优先级会跳过 spfileSID.ora 文件，直接优先选择 spfile.ora 文件来启动数据库。</p>
+<p>6、最后删除所有 spfile 文件，重启数据库</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs stata">source ~/.bash_profile<br><span class="hljs-keyword">rm</span> -rf spfile*<br>sqlplus / <span class="hljs-keyword">as</span> sysdba<br>shutdown immediate<br>startup<br><br><br>AI写代码bash<br><br><br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/b21ef6d542fa4404e1977ab149c40ca5.webp" alt="Oracle spfile 参数文件 - 图7" loading='lazy'></p>
+<p>当没有 spfile 文件时，最后只能选择 initSID.ora 文件来进行启动数据库。</p>
+<p><strong>因此，优先级顺序：<code>spfileSID.ora &gt; spfile.ora &gt; initorcl.ora</code> 是没有问题的。</strong></p>
+<h2 id="❄️-实例讲解"><a href="#❄️-实例讲解" class="headerlink" title="❄️ 实例讲解"></a>❄️ 实例讲解</h2><h3 id="①-从-pfile-切换为-spfile-启动数据库"><a href="#①-从-pfile-切换为-spfile-启动数据库" class="headerlink" title="① 从 pfile 切换为 spfile 启动数据库"></a>① 从 pfile 切换为 spfile 启动数据库</h3><p>有一些特殊情况下需要切换使用参数文件，如何切换使用 pfile 和 spfile？</p>
+<p><strong>1、首先，使用 pfile 参数文件启动数据库：</strong></p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs gams">sqlplus / as sysdba<br>startup pfile=<span class="hljs-symbol">$</span>ORACLE_HOME/dbs/initorcl.ora<br><br><br>AI写代码bash<br><br><br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>2、为了测试会生成 spfile 参数文件，我提前删除它：</strong></p>
+<p><img src="/csdn-blog/images/f7bc3872ac3033c786d0003725b1914d.webp" alt="Oracle spfile 参数文件 - 图8" loading='lazy'></p>
+<p><strong>3、确保当前数据库环境是由 pfile 文件启动，连接 sqlplus：</strong></p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">sqlplus / <span class="hljs-keyword">as</span> sysdba<br><span class="hljs-keyword">create</span> spfile <span class="hljs-keyword">from</span> pfile<span class="hljs-punctuation">;</span><br><br><br>AI写代码bash<br><br><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p>执行以上命令，可以根据 pfile 生成 spfile 文件，保存在默认的参数文件目录下。</p>
+<p><strong>4、重启数据库，默认会使用 spfile 文件启动：</strong></p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs stata">sqlplus / <span class="hljs-keyword">as</span> sysdba<br>shutdown immediate<br>startup<br><br><br>AI写代码bash<br><br><br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br></code></pre></td></tr></table></figure>
+
+<p>此时，数据库已经使用 spfile 启动。</p>
+<h3 id="②-使用-spfile-启动数据库后修改参数错误，导致数据库无法启动"><a href="#②-使用-spfile-启动数据库后修改参数错误，导致数据库无法启动" class="headerlink" title="② 使用 spfile 启动数据库后修改参数错误，导致数据库无法启动"></a>② 使用 spfile 启动数据库后修改参数错误，导致数据库无法启动</h3><p><strong>一般什么情况下必须用到 pfile 参数文件？</strong></p>
+<h4 id="问题重现"><a href="#问题重现" class="headerlink" title="问题重现"></a>问题重现</h4><p>比如，你在数据库中通过 alter system 设置了数据库参数，关闭数据库后，重新打开数据库时报错无法打开。</p>
+<p>此时，由于 spfile 是二进制文件，无法直接打开修改，因此需要通过手动生成 pfile 文件进行修改启动。</p>
+<h4 id="解决步骤"><a href="#解决步骤" class="headerlink" title="解决步骤"></a>解决步骤</h4><p><strong>1、手动生成 pfile 文件</strong></p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">sqlplus / <span class="hljs-keyword">as</span> sysdba<br><span class="hljs-keyword">create</span> pfile <span class="hljs-keyword">from</span> spfile<span class="hljs-punctuation">;</span><br><br><br>AI写代码bash<br><br><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/39689dccd82f9e1c1229a08c3a95fe49.webp" alt="Oracle spfile 参数文件 - 图9" loading='lazy'></p>
+<p><strong>注意：以上命令可以在未开启数据库时进行执行，pfile生成路径也可以指定：pfile&#x3D;生成路径&#x2F;pfile文件名。</strong></p>
+<p><strong>2、编辑 pfile 文件，修改错误设置的参数</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$ORACLE_HOME</span>/dbs<br>vi initorcl.ora<br><br><br>AI写代码bash<br><br><br><br>* 1<br>* 2<br></code></pre></td></tr></table></figure>
+
+<p>打开之后，修改 processes 参数为正确✅的数值即可。</p>
+<p><strong>3、使用修改后的 pfile 参数文件启动数据库</strong></p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs gams">sqlplus / as sysdba<br>startup pfile=<span class="hljs-symbol">$</span>ORACLE_HOME/dbs/initorcl.ora<br><br><br>AI写代码bash<br><br><br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/csdn-blog/images/22d2654cb7bc68da877c70a7c5c22ba8.webp" alt="Oracle spfile 参数文件 - 图10" loading='lazy'></p>
+<p>此时，数据库已经成功打开。</p>
+<p><strong>4、数据库启动成功后，切换回 spfile 重新启动数据库</strong><br> 由于当前数据库是使用 pfile 进行启动，需要修改为spfile启动。</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">sqlplus / <span class="hljs-keyword">as</span> sysdba<br><span class="hljs-keyword">create</span> spfile <span class="hljs-keyword">from</span> pfile<span class="hljs-punctuation">;</span><br><br><br>AI写代码bash<br><br><br><br>* <span class="hljs-number">1</span><br>* <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<p>修改完之后，重启数据库生效：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs stata">sqlplus / <span class="hljs-keyword">as</span> sysdba<br>shutdown immediate<br>startup<br><br><br>AI写代码bash<br><br><br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br></code></pre></td></tr></table></figure>
+
+<p>如上，数据库已经成功恢复为 spfile 启动，并且当前数据库参数也是正确的。</p>
+<p><strong>5、注意点</strong></p>
+<p>如果是 RAC 集群操作时，由于 RAC 的 spfile 文件是保存在 ASM 磁盘中，所以是跟 pfile 文件配合进行使用。</p>
+<p><strong>比如，下方的 RAC 集群示例：</strong></p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs stata"># ASM磁盘下的 spfile 文件<br>ASMCMD&gt; <span class="hljs-keyword">pwd</span><br>+data/orcl<br>ASMCMD&gt; <span class="hljs-keyword">ls</span> spfile*<br>spfileorcl.ora<br><br># 一节点 ORACLE_HOME/dbs 目录下的 pfile 文件<br>[oracle@orcl1 dbs]$ <span class="hljs-keyword">cat</span> initorcl1.ora <br>SPFILE=&#x27;+DATA/orcl/spfileorcl.ora&#x27;<br><br><br>AI写代码bash<br><br><br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br></code></pre></td></tr></table></figure>
+
+<p>通过上述示例可以发现，RAC 实际上使用的还是 pfile 去启动的，但是将 spfile 路径写在 pfile 文件中。</p>
+<p><strong>❤️ 注意：</strong></p>
+<p>因此，在最后生成 spfile 时，需要手动指定 spfile 的路径为 ASM 磁盘中的路径！</p>
+<p><strong>需要注意 $ORACLE_HOME&#x2F;dbs 目录下不能存在 spfile[ORACLE_SID].ora 文件</strong>，否则启动时优先选择 $ORACLE_HOME&#x2F;dbs 下的 spfile 文件。</p>
+<hr>
+<p>本次分享到此结束啦~</p>
+<p>如果觉得文章对你有帮助，<strong>点赞、收藏、关注、评论</strong>，一键四连支持，你的支持就是我创作最大的动力。</p>
+<p>❤️ 技术交流可以 关注公众号：<strong>Lucifer三思而后行</strong> ❤️</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/120198896/">https://pc-study.github.io/csdn-blog/posts/120198896/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/oracle/">oracle</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/spfile/">spfile</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/120205135/" title="Linux 设置主机名（5/6/7/8）"><img class="cover" src="/csdn-blog/img/covers/linux.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Linux 设置主机名（5/6/7/8）</div></div><div class="info-2"><div class="info-item-1">Linux 5/6 版本 临时生效： 永久生效： 需要打开 文件，添加一行： Linux 7/8 版本 临时生效： 永久生效： 本次分享到此结束啦~ 如果觉得文章对你有帮助，点赞、收藏、关注、评论，一键四连支持，你的支持就是我创作最大的动力。 ❤️ 技术 交流可以 关注公众号：Lucifer三思而后</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120198832/" title="Oracle pfile 参数文件"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Oracle pfile 参数文件</div></div><div class="info-2"><div class="info-item-1">目录 📚 前言 ☀️ pfile 介绍 ⭐️ 参数文件位置 🌛 实例讲解 ① 使用 pfile 启动数据库后修改参数，数据库重启后参数失效 📚 前言 Oracle数据库启动时，第一步开启到nomount状态，需要使用到参数文件。 pfile 就是参数文件的一种，全称：初始化参数文件（Initiali</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/136869718/" title="麒麟 V10 一键安装 Oracle 19C 19.22 单机版"><img class="cover" src="/csdn-blog/images/e13d749bb9b86b7acc48d4b954919e06.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-20</div><div class="info-item-2">麒麟 V10 一键安装 Oracle 19C 19.22 单机版</div></div><div class="info-2"><div class="info-item-1">Oracle 一键安装脚本，演示 麒麟 V10 一键安装 Oracle 19C 19.22 单机版过程（全程无需人工干预）：（脚本包括 ORALCE PSU/OJVM 等补丁自动安装） ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 脚本第三代支持 N 节点一键安装，不限制节点数！ 安装准</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139777549/" title="统信 UOS V20 1050(d) 一键安装 Oracle 11GR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-18</div><div class="info-item-2">统信 UOS V20 1050(d) 一键安装 Oracle 11GR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 统信 UOS V20 1050(d) 一键安装 Oracle 11GR2 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139777727/" title="统信 UOS V20 1070(e) 一键安装 Oracle 19C 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-18</div><div class="info-item-2">统信 UOS V20 1070(e) 一键安装 Oracle 19C 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示 统信 UOS V20 1070(e) 一键安装 Oracle 19C 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/121188558/" title="实战篇：SUSE 15 SP3 安装 Oracle 19C RAC 数据库"><img class="cover" src="/csdn-blog/images/46046eb887e3f953cf417768712ace57.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-11-08</div><div class="info-item-2">实战篇：SUSE 15 SP3 安装 Oracle 19C RAC 数据库</div></div><div class="info-2"><div class="info-item-1">前言 这两天看到交流群里有朋友咨询 SUSE 15 SP3 安装 Oracle 19C RAC 遇到点问题，趁着周末有时间，抱着学习的心态，研究了一下如何安装，接下来就分享一下从零开始部署的流程！ 总体来说，和 RHEL 部署流程上大同小异，主要是有一些命令不一样，废话不多说直接开始了~ 目录 前言</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/118529918/" title="实战篇：Linux 安装 Oracle 11GR2 数据库保姆级教程"><img class="cover" src="/csdn-blog/images/93381df57cbc43f199aa2c215f2f3070.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-12</div><div class="info-item-2">实战篇：Linux 安装 Oracle 11GR2 数据库保姆级教程</div></div><div class="info-2"><div class="info-item-1">前言 相信大家第一次接触Oracle，大都是在windows上安装，比较方便快捷，基本上是一直下一步就可以安装成功。然而企业级的数据库，基本上都是安装在Linux服务器上，安全且高效。 没接触Linux的朋友不用害怕，跟着本篇文章一步步操作，安装Oracle如喝水般简单且标准。 下面我就来手把手教大</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/147408947/" title="避坑指南｜Oracle RAC 补丁安装踩坑实录，你中招几个？"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-22</div><div class="info-item-2">避坑指南｜Oracle RAC 补丁安装踩坑实录，你中招几个？</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 下载补丁 安装过程 检查 OPatch 坑一 更新 OPatch 解压 24396050 补丁包 安装前检查 坑二 坑三 安装补丁 写在最后 前言 上篇文章 《Oracle RAC 触发 BUG，crsd 无限重启！》 中提到通</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9A-%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">📚 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%98%80%EF%B8%8F-spfile-%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">☀️ spfile 介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%AD%90%EF%B8%8F-spfile-%E5%8F%82%E6%95%B0%E6%96%87%E4%BB%B6%E4%BD%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">⭐️ spfile 参数文件位置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%9B-%E5%90%AF%E5%8A%A8%E4%BC%98%E5%85%88%E7%BA%A7"><span class="toc-number">5.</span> <span class="toc-text">🌛 启动优先级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9D%84%EF%B8%8F-%E5%AE%9E%E4%BE%8B%E8%AE%B2%E8%A7%A3"><span class="toc-number">6.</span> <span class="toc-text">❄️ 实例讲解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%91%A0-%E4%BB%8E-pfile-%E5%88%87%E6%8D%A2%E4%B8%BA-spfile-%E5%90%AF%E5%8A%A8%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">6.1.</span> <span class="toc-text">① 从 pfile 切换为 spfile 启动数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%91%A1-%E4%BD%BF%E7%94%A8-spfile-%E5%90%AF%E5%8A%A8%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8E%E4%BF%AE%E6%94%B9%E5%8F%82%E6%95%B0%E9%94%99%E8%AF%AF%EF%BC%8C%E5%AF%BC%E8%87%B4%E6%95%B0%E6%8D%AE%E5%BA%93%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8"><span class="toc-number">6.2.</span> <span class="toc-text">② 使用 spfile 启动数据库后修改参数错误，导致数据库无法启动</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E9%87%8D%E7%8E%B0"><span class="toc-number">6.2.1.</span> <span class="toc-text">问题重现</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%AD%A5%E9%AA%A4"><span class="toc-number">6.2.2.</span> <span class="toc-text">解决步骤</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

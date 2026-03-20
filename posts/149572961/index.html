@@ -1,0 +1,409 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>从零搭建金仓运维利器：KEMCC 安装与初探 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 KEMCC 介绍 环境信息 安装前检查 关闭防火墙 创建用户 创建安装目录 系统参数配置 配置系统编码 crontab 权限检查 时钟检查 JDK 版本检查 配置环境变量 KEMCC 安装 安装包解压 图形化安装 KEMCC 启">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从零搭建金仓运维利器：KEMCC 安装与初探">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/149572961/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 KEMCC 介绍 环境信息 安装前检查 关闭防火墙 创建用户 创建安装目录 系统参数配置 配置系统编码 crontab 权限检查 时钟检查 JDK 版本检查 配置环境变量 KEMCC 安装 安装包解压 图形化安装 KEMCC 启">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/02b7f7a058f9aae37e037dfd4e2b7091.webp">
+<meta property="article:published_time" content="2025-07-23T07:29:02.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:39.266Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="Kingbase">
+<meta property="article:tag" content="运维">
+<meta property="article:tag" content="金仓数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/02b7f7a058f9aae37e037dfd4e2b7091.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"从零搭建金仓运维利器：KEMCC 安装与初探","url":"https://pc-study.github.io/csdn-blog/posts/149572961/","image":"https://pc-study.github.io/csdn-blog/images/02b7f7a058f9aae37e037dfd4e2b7091.webp","datePublished":"2025-07-23T07:29:02.000Z","dateModified":"2026-03-20T12:25:39.266Z","description":"大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 KEMCC 介绍 环境信息 安装前检查 关闭防火墙 创建用户 创建安装目录 系统参数配置 配置系统编码 crontab 权限检查 时钟检查 JDK 版本检查 配置环境变量 KEMCC 安装 安装包解压 图形化安装 KEMCC 启","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/149572961/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/149572961/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '从零搭建金仓运维利器：KEMCC 安装与初探',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/02b7f7a058f9aae37e037dfd4e2b7091.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">从零搭建金仓运维利器：KEMCC 安装与初探</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">从零搭建金仓运维利器：KEMCC 安装与初探<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2025-07-23-149572961.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-23T07:29:02.000Z" title="发表于 2025-07-23 15:29:02">2025-07-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:39.266Z" title="更新于 2026-03-20 20:25:39">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/">Linux 运维</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>12分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:39&quot;}" hidden></div><blockquote>
+<p>大家好，这里是 <strong>DBA学习之路</strong>，专注于提升数据库运维效率。</p>
+</blockquote>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li><a href="#_4">前言</a></li>
+<li><a href="#KEMCC__9">KEMCC 介绍</a></li>
+<li><a href="#_20">环境信息</a></li>
+<li><a href="#_37">安装前检查</a></li>
+<li><ul>
+<li><a href="#_38">关闭防火墙</a></li>
+<li><a href="#_47">创建用户</a></li>
+<li><a href="#_61">创建安装目录</a></li>
+<li><a href="#_69">系统参数配置</a></li>
+<li><a href="#_107">配置系统编码</a></li>
+<li><a href="#crontab__133">crontab 权限检查</a></li>
+<li><a href="#_149">时钟检查</a></li>
+<li><a href="#JDK__161">JDK 版本检查</a></li>
+<li><a href="#_172">配置环境变量</a></li>
+</ul>
+</li>
+<li><a href="#KEMCC__183">KEMCC 安装</a></li>
+<li><ul>
+<li><a href="#_184">安装包解压</a></li>
+<li><a href="#_197">图形化安装</a></li>
+</ul>
+</li>
+<li><a href="#KEMCC__271">KEMCC 启停</a></li>
+<li><ul>
+<li><a href="#_274">启动服务</a></li>
+</ul>
+</li>
+<li><a href="#_KEMCC_370">访问 KEMCC</a></li>
+<li><a href="#_383">写在最后</a></li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>过几天，金仓的管理平台 KEMCC 应该会上线，我这里有幸拿到了内测体验资格，提前测试了一把，给大家分享一下整体的一个测试过程和使用体验，当然还是以实战为主。</p>
+<p>本文主要介绍 KEMCC 平台如何安装部署，以及一些简单的功能介绍和使用，让大家可以快速得云体验一下 KEMCC 平台。</p>
+<h2 id="KEMCC-介绍"><a href="#KEMCC-介绍" class="headerlink" title="KEMCC 介绍"></a>KEMCC 介绍</h2><p>KEMCC（Kingbase Enterprise Manager Cloud Control）作为金仓全栈产品的企业级统一管理平台，为企业级用户提供关于数据库全生命周期管理能力及解决方案，通过一套可视化管控平台，实现了统一管理、极简运维的自动化运维全新体检。</p>
+<p><img src="/csdn-blog/images/02b7f7a058f9aae37e037dfd4e2b7091.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探" loading='lazy'></p>
+<p>KEMCC 底层对接和支持了多种云平台资源，对外展现为统一的 UI 交互界面。可以很方便的基于第三方云平台构建数据库开发和生产云环境，完成大批量 KES 数据库实例的安装、部署、升级、备份、授权管理等生命周期工作。</p>
+<p>当客户场景中存在大量的离线 KES 数据库实例时，可以使用 KEMCC 的非云纳管能力，将这些离线的 KES 数据库实例统管起来，提高针对大批量数据库实例的运维管理效率。</p>
+<p>当客户环境存在并且已经有成熟的 K8S 等开源云平台方案时，可以部署 KEMCC 并且基于已有的云资源环境，构建内部私有数据库云。</p>
+<h2 id="环境信息"><a href="#环境信息" class="headerlink" title="环境信息"></a>环境信息</h2><table>
+<thead>
+<tr>
+<th>IP</th>
+<th>主机名</th>
+<th>系统</th>
+<th>内存</th>
+<th>磁盘空间</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>192.168.6.53</td>
+<td>kemcc</td>
+<td>KylinV10 SP3</td>
+<td>16G</td>
+<td>200G</td>
+</tr>
+</tbody></table>
+<p>KEMCC 目前支持运行 Linux 操作系统的服务器：</p>
+<ul>
+<li>内存要求：16GB</li>
+<li>软件包的磁盘空间要求：2GB</li>
+<li>安装路径中的磁盘空间要求：3GB + 5GB* 被管理实例数量</li>
+</ul>
+<p>KEMCC 默认使用的端口如下：</p>
+<p><img src="/csdn-blog/images/65c3be49e4e657a4970e5658e03e637e.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图2" loading='lazy'></p>
+<p>如果以上端口与本地端口存在冲突，可在安装程序中修改 KEMCC 程序使用的端口。</p>
+<h2 id="安装前检查"><a href="#安装前检查" class="headerlink" title="安装前检查"></a>安装前检查</h2><h3 id="关闭防火墙"><a href="#关闭防火墙" class="headerlink" title="关闭防火墙"></a>关闭防火墙</h3><p>建议关闭防火墙：</p>
+<figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs nsis">[root@kemcc ~]<span class="hljs-comment"># systemctl stop firewalld</span><br>[root@kemcc ~]<span class="hljs-comment"># systemctl disable firewalld</span><br>Removed /etc/<span class="hljs-params">system</span>d/<span class="hljs-params">system</span>/multi-<span class="hljs-literal">user</span>.target.wants/firewalld.service.<br>Removed /etc/<span class="hljs-params">system</span>d/<span class="hljs-params">system</span>/dbus-org.fedoraproject.FirewallD1.service.<br></code></pre></td></tr></table></figure>
+
+<h3 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h3><p>麒麟 V1O 系统有密码复杂性要求，如果不想设置密码太复杂的话，可以取消密码复杂度：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs swift">[root<span class="hljs-meta">@kemcc</span> <span class="hljs-operator">~</span>]# sed <span class="hljs-operator">-</span>i &#x27;s<span class="hljs-regexp">/^password\+[[:space:]]\+requisite[[:space:]]\+pam_pwquality.so/</span>#<span class="hljs-operator">&amp;/</span>g&#x27; <span class="hljs-regexp">/etc/</span>pam.d<span class="hljs-operator">/</span>system<span class="hljs-operator">-</span>auth<br>[root<span class="hljs-meta">@kemcc</span> <span class="hljs-operator">~</span>]# sed <span class="hljs-operator">-</span>i &#x27;s<span class="hljs-regexp">/use_authtok$/</span><span class="hljs-regexp">/&#x27; /</span>etc<span class="hljs-regexp">/pam.d/</span>system<span class="hljs-operator">-</span>auth<br></code></pre></td></tr></table></figure>
+
+<p>KEMCC 部署之前，需要建立独立的运行用户 kemcc：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs autoit">[root<span class="hljs-symbol">@kemcc</span> ~]<span class="hljs-meta"># useradd -d /home/kemcc -m kemcc</span><br>[root<span class="hljs-symbol">@kemcc</span> ~]<span class="hljs-meta"># echo <span class="hljs-string">&quot;kemcc:kemcc&quot;</span> | chpasswd</span><br>[root<span class="hljs-symbol">@kemcc</span> ~]<span class="hljs-meta"># id kemcc</span><br>用户id=<span class="hljs-number">1000</span>(kemcc) 组id=<span class="hljs-number">1000</span>(kemcc) 组=<span class="hljs-number">1000</span>(kemcc)<br></code></pre></td></tr></table></figure>
+
+<h3 id="创建安装目录"><a href="#创建安装目录" class="headerlink" title="创建安装目录"></a>创建安装目录</h3><p>KEMCC 安装过程中有默认的安装目录&#x2F;opt&#x2F;KEMCC，如直接使用 kemcc 用户安装，安装过程中会提示没有权限，需要将安装目录的权限赋予 kemcc 用户：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs autoit"><span class="hljs-meta">## 自定义安装路径</span><br>[root<span class="hljs-symbol">@kemcc</span> ~]<span class="hljs-meta"># mkdir -p /kemcc</span><br>[root<span class="hljs-symbol">@kemcc</span> ~]<span class="hljs-meta"># chown -R kemcc:kemcc /kemcc</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="系统参数配置"><a href="#系统参数配置" class="headerlink" title="系统参数配置"></a>系统参数配置</h3><p>因 KEMCC 在运行时，会需要打开大量的文件句柄，所以需要检查一下系统相关的 ulimit 属性参数是否能够满足要求：</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs scss"><span class="hljs-selector-attr">[root@kemcc ~]</span># su - kemcc<br><span class="hljs-selector-attr">[kemcc@kemcc ~]</span>$ ulimit -<span class="hljs-selector-tag">a</span> <br>core file size          (blocks, -c) unlimited<br>data seg size           (kbytes, -d) unlimited<br>scheduling priority             (-e) <span class="hljs-number">0</span><br>file size               (blocks, -f) unlimited<br>pending signals                 (-i) <span class="hljs-number">58859</span><br>max locked memory       (kbytes, -l) <span class="hljs-number">64</span><br>max memory size         (kbytes, -m) unlimited<br>open files                      (-n) <span class="hljs-number">1024</span><br>pipe size            (<span class="hljs-number">512</span> bytes, -p) <span class="hljs-number">8</span><br>POSIX message queues     (bytes, -q) <span class="hljs-number">819200</span><br>real-<span class="hljs-selector-tag">time</span> priority              (-r) <span class="hljs-number">0</span><br>stack size              (kbytes, -s) <span class="hljs-number">8192</span><br>cpu <span class="hljs-selector-tag">time</span>               (seconds, -t) unlimited<br>max user processes              (-u) <span class="hljs-number">58859</span><br>virtual memory          (kbytes, -v) unlimited<br>file locks                      (-x) unlimited<br></code></pre></td></tr></table></figure>
+
+<p>KEMCC 进程涉及的几个限制包括：</p>
+<ul>
+<li>最大文件句柄数（open files）</li>
+<li>允许创建的最大进程数量（max user processes）</li>
+</ul>
+<p>根据以上输出，open files 的参数值不符合运营配置要求，可通过修改 <code>/etc/security/ limits.conf</code> 配置文件进行调整，在文件末尾添加以下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## root 用户执行</span><br>[root@kemcc ~]# <span class="hljs-built_in">cat</span>&lt;&lt;-<span class="hljs-string">EOF&gt;&gt;/etc/security/limits.conf</span><br><span class="hljs-string">kemcc - nofile 65535</span><br><span class="hljs-string">EOF</span><br></code></pre></td></tr></table></figure>
+
+<p>完成修改后，切换到 kemcc 用户再次通过命令 <code>ulimit -a</code> 检查配置是否生效。</p>
+<p><img src="/csdn-blog/images/49b8fa298849855a8691a3bd34ff980f.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图3" loading='lazy'></p>
+<h3 id="配置系统编码"><a href="#配置系统编码" class="headerlink" title="配置系统编码"></a>配置系统编码</h3><p>在安装前需要检查当前系统的编码类型设置当前系统的编码为 <code>UTF-8</code>：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs makefile">[kemcc@kemcc ~]$ locale<br>LANG=zh_CN.UTF-8<br>LC_CTYPE=<span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span><br>LC_NUMERIC=<span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span><br>LC_TIME=<span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span><br>LC_COLLATE=<span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span><br>LC_MONETARY=<span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span><br>LC_MESSAGES=<span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span><br>LC_PAPER=<span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span><br>LC_NAME=<span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span><br>LC_ADDRESS=<span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span><br>LC_TELEPHONE=<span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span><br>LC_MEASUREMENT=<span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span><br>LC_IDENTIFICATION=<span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span><br>LC_ALL=<br></code></pre></td></tr></table></figure>
+
+<p>如果 LANG 和 LC_* 变量中包含“UTF-8”，则说明当前系统的字符编码为 UTF-8。否则，可尝试如下方式修改：</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig"><span class="hljs-comment">## 非必要不执行</span><br>[<span class="hljs-string">kemcc</span>@<span class="hljs-string">kemcc</span> ~]$ <span class="hljs-string">localectl</span> <span class="hljs-built_in">set-locale</span> <span class="hljs-string">LANG</span>=<span class="hljs-string">zh_CN</span>.<span class="hljs-string">UTF-8</span><br></code></pre></td></tr></table></figure>
+
+<p>运行成功后可再进行检查，验证操作是否生效。</p>
+<h3 id="crontab-权限检查"><a href="#crontab-权限检查" class="headerlink" title="crontab 权限检查"></a>crontab 权限检查</h3><p>程序启动需要用户具有 crontab 权限，可以输入以下命令检查是否有 crontab 权限：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">[kemcc<span class="hljs-meta">@kemcc</span> ~]$ crontab -l<br><span class="hljs-title function_">You</span> <span class="hljs-params">(kemcc)</span> are not allowed to use <span class="hljs-built_in">this</span> <span class="hljs-title function_">program</span> <span class="hljs-params">(crontab)</span><br>See <span class="hljs-title function_">crontab</span><span class="hljs-params">(<span class="hljs-number">1</span>)</span> <span class="hljs-keyword">for</span> more information<br></code></pre></td></tr></table></figure>
+
+<p>如果当前用户没有 crontab 权限，可以通过以下方式授予用户 crontab 权限，需要使用 sudo 或者 root 用户操作：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs autoit"><span class="hljs-meta">## root 用户执行</span><br>[root<span class="hljs-symbol">@kemcc</span> ~]<span class="hljs-meta"># echo <span class="hljs-string">&quot;kemcc&quot;</span> &gt;&gt; /etc/cron.allow</span><br></code></pre></td></tr></table></figure>
+
+<p>检查是否存在 &#x2F;etc&#x2F;cron.deny 文件，如果存在该文件，则将当前用户名从该文件中移除。</p>
+<p><img src="/csdn-blog/images/f6ffe94dd9fb3b8697226b542007248f.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图4" loading='lazy'></p>
+<h3 id="时钟检查"><a href="#时钟检查" class="headerlink" title="时钟检查"></a>时钟检查</h3><p>查看程序部署所在机器的当前系统时间，需要保证与现实时间一致，否则可能会造成程序工作异常：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs crystal">[kemcc<span class="hljs-variable">@kemcc</span> ~]<span class="hljs-variable">$ </span>date<br><span class="hljs-number">2025</span>年 <span class="hljs-number">0</span>5月 <span class="hljs-number">16</span>日 星期五 <span class="hljs-number">16</span>:<span class="hljs-number">0</span>5:<span class="hljs-number">0</span>8 CST<br></code></pre></td></tr></table></figure>
+
+<p>如果时间不一致，需要修改系统时间：</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig"><span class="hljs-string">timedatectl</span> <span class="hljs-built_in">set-time</span> <span class="hljs-string">&quot;2025-05-16 16:05:08&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>或者配置 TNS 服务自动同步时间。</p>
+<h3 id="JDK-版本检查"><a href="#JDK-版本检查" class="headerlink" title="JDK 版本检查"></a>JDK 版本检查</h3><p>检查当前系统 java 环境与版本：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-comment">## jdk 版本需要 8 及以上</span><br>[kemcc@kemcc ~]$ <span class="hljs-keyword">java </span>-version<br>openjdk version <span class="hljs-string">&quot;1.8.0_312&quot;</span><br>OpenJDK Runtime Environment <span class="hljs-keyword">Bisheng </span>(<span class="hljs-keyword">build </span><span class="hljs-number">1</span>.<span class="hljs-number">8</span>.<span class="hljs-number">0</span>_312-<span class="hljs-keyword">b07)</span><br><span class="hljs-keyword"></span>OpenJDK <span class="hljs-number">64</span>-<span class="hljs-keyword">Bit </span>Server VM <span class="hljs-keyword">Bisheng </span>(<span class="hljs-keyword">build </span><span class="hljs-number">25</span>.<span class="hljs-number">312</span>-<span class="hljs-keyword">b07, </span>mixed mode)<br></code></pre></td></tr></table></figure>
+
+<p>如果部署的系统中不存在 java 环境，则程序会使用安装包中自带的 java 运行程序。如果此时安装程序启动出现错误，请尝试手动安装该系统适配的 java 环境。</p>
+<h3 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h3><p>为了方便使用 kemcc 命令，建议配置环境变量：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">[kemcc@kemcc ~]$ <span class="hljs-built_in">cat</span>&lt;&lt;-\EOF&gt;&gt;/home/kemcc/.bash_profile<br><span class="hljs-built_in">export</span> KEMCC_HOME=/kemcc<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$KEMCC_HOME</span>/bin:/usr/sbin:<span class="hljs-variable">$PATH</span><br><span class="hljs-built_in">export</span> PS1=<span class="hljs-string">&quot;[`whoami`@`hostname`:&quot;</span><span class="hljs-string">&#x27;$PWD]$ &#x27;</span><br>EOF<br>[kemcc@kemcc ~]$ <span class="hljs-built_in">source</span> /home/kemcc/.bash_profile<br></code></pre></td></tr></table></figure>
+
+<h2 id="KEMCC-安装"><a href="#KEMCC-安装" class="headerlink" title="KEMCC 安装"></a>KEMCC 安装</h2><h3 id="安装包解压"><a href="#安装包解压" class="headerlink" title="安装包解压"></a>安装包解压</h3><p>使用 kemcc 用户，上传安装包并解压：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs tap">[root@kemcc ~]<span class="hljs-comment"># chown -R kemcc:kemcc /soft/</span><br>[root@kemcc ~]<span class="hljs-comment"># su - kemcc</span><br>[kemcc@kemcc ~]$ cd /soft/<br>[kemcc@kemcc soft]$ tar -xf KEMCC-V003R001C002B0006-x86.tar.gz<br>[kemcc@kemcc soft]$ ll<br>-rw-------<span class="hljs-number"> 1 </span>kemcc kemcc<span class="hljs-number"> 1331287028 </span> 5月<span class="hljs-number"> 16 </span>15:05 KEMCC-V003R001C002B0006-x86.tar.gz<br>drwxr-xr-x<span class="hljs-number"> 2 </span>kemcc kemcc       <span class="hljs-number"> 110 </span> 5月<span class="hljs-number"> 13 </span>18:17 setup<br>-rwxr-xr-x<span class="hljs-number"> 1 </span>kemcc kemcc      <span class="hljs-number"> 3020 </span> 5月<span class="hljs-number"> 13 </span>18:17 setup.sh<br></code></pre></td></tr></table></figure>
+
+<h3 id="图形化安装"><a href="#图形化安装" class="headerlink" title="图形化安装"></a>图形化安装</h3><p>老样子，试用 vnc 调用图形化界面安装，打开新终端，进入安装程序中 setup.sh 所在目录，执行如下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 图形化安装</span><br>./setup.sh<br><span class="hljs-comment">## 命令行安装</span><br>./setup.sh -console<br></code></pre></td></tr></table></figure>
+
+<p>本文选择图形化安装：</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs aspectj">[kemcc<span class="hljs-meta">@kemcc</span> ~]$ cd /<span class="hljs-keyword">soft</span>/<br>[kemcc<span class="hljs-meta">@kemcc</span> <span class="hljs-keyword">soft</span>]$ ./setup.sh <br><span class="hljs-keyword">true</span><br>Now launch installer...<br></code></pre></td></tr></table></figure>
+
+<p>Linux 安装过程，包含如下步骤：</p>
+<ol>
+<li>启动安装程序</li>
+<li>欢迎页面</li>
+<li>授权许可</li>
+<li>选择安装组件</li>
+<li>安装路径设置</li>
+<li>服务信息配置</li>
+<li>安装概览</li>
+<li>安装</li>
+<li>启动服务</li>
+<li>创建快捷方式</li>
+<li>安装完成</li>
+<li>执行 root.sh</li>
+</ol>
+<p><img src="/csdn-blog/images/3a9e4361b05bd31135bbe16ddbbe17c7.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图5" loading='lazy'></p>
+<p><img src="/csdn-blog/images/71507a82cee2bbd8a4c2857ecff3e4e8.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图6" loading='lazy'></p>
+<p><img src="/csdn-blog/images/76e5c36ddf1f29c478ad10f0a42c843a.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图7" loading='lazy'></p>
+<p><img src="/csdn-blog/images/c73465676f68464348c1f77dca56d5e2.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图8" loading='lazy'></p>
+<p>其中 <code>Collertor 监听 IP</code> 与 <code>LAC 弹性 IP</code> 需要填写能够被外部访问的本机 IP：</p>
+<p><img src="/csdn-blog/images/68d695436b5fa7983a9081e00fa524dc.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图9" loading='lazy'></p>
+<p><img src="/csdn-blog/images/30d396bad67b784667e267c08861d40c.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图10" loading='lazy'></p>
+<p><img src="/csdn-blog/images/7ef60976fedf0dd7d7a03dae137bde9d.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图11" loading='lazy'></p>
+<p><img src="/csdn-blog/images/1f28372870e49653d0cf25ee13bcf449.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图12" loading='lazy'></p>
+<p><img src="/csdn-blog/images/592e9b3bd30f70992b46e4c0c5f34833.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图13" loading='lazy'></p>
+<p><img src="/csdn-blog/images/3c69f26f8756e82bcd3dd7dc06d6f893.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图14" loading='lazy'></p>
+<p><img src="/csdn-blog/images/126905e023f089a41aac95f405591ba0.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图15" loading='lazy'></p>
+<p>执行 root.sh 脚本：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs routeros">[root@kemcc ~]# /kemcc/scripts/root.sh <br>[Unit]<br><span class="hljs-attribute">Description</span>=Start KEMCC<span class="hljs-built_in"> Service</span><br><span class="hljs-built_in"></span><span class="hljs-attribute">After</span>=network.target<br><br>[Service]<br><span class="hljs-attribute">Type</span>=forking<br><span class="hljs-attribute">ExecStart</span>=/kemcc/bin/restart_all.sh<br><span class="hljs-attribute">ExecStop</span>=/kemcc/bin/stop_all.sh<br><span class="hljs-attribute">User</span>=kemcc<br><span class="hljs-attribute">Group</span>=kemcc<br><br>[Install]<br><span class="hljs-attribute">WantedBy</span>=multi-user.target<br>Created symlink /etc/systemd/system/multi-user.target.wants/kemcc.service → /etc/systemd/system/kemcc.service.<br>已将KEMCC注册为系统服务<br></code></pre></td></tr></table></figure>
+
+<p>Linux 中执行 root.sh 成功后，安装过程完整结束。</p>
+<h2 id="KEMCC-启停"><a href="#KEMCC-启停" class="headerlink" title="KEMCC 启停"></a>KEMCC 启停</h2><p>金仓企业级统一管控平台服务的启动与停止通过可以通过命令行方式或者桌面端快捷方式操作。</p>
+<h3 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h3><p>正常安装完成后，管控平台服务会自行启动。</p>
+<p>命令行停止管控平台：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs gams">[kemcc@kemcc:/home/kemcc]<span class="hljs-symbol">$</span> stop_all.sh <br>openjdk version <span class="hljs-string">&quot;1.8.0_312&quot;</span><br>OpenJDK Runtime Environment Bisheng (build <span class="hljs-number">1.8</span><span class="hljs-number">.0</span>_312-b07)<br>OpenJDK <span class="hljs-number">64</span>-Bit Server VM Bisheng (build <span class="hljs-number">25.312</span>-b07, mixed mode)<br><span class="hljs-function"><span class="hljs-title">Stopping</span></span> KEMCC......<br><span class="hljs-function"><span class="hljs-title">KEMCC</span></span> is running, stopping KEMCC......<br>.KEMCC stop success.<br><span class="hljs-function"><span class="hljs-title">Stopping</span></span> KES......<br>等待服务器进程关闭 .... 完成<br>服务器进程已经关闭<br><span class="hljs-function"><span class="hljs-title">Stopping</span></span> LAC......<br><span class="hljs-function"><span class="hljs-title">waiting</span></span> <span class="hljs-keyword">for</span> server to shut down.... done<br>server stopped<br>sys_ctl: 正在运行服务器进程(PID: <span class="hljs-number">40993</span>)<br>/kemcc/lac/db/bin/kingbase <span class="hljs-string">&quot;-D&quot;</span> <span class="hljs-string">&quot;/kemcc/lac/bin/../db/data&quot;</span><br>等待服务器进程关闭 .... 完成<br>服务器进程已经关闭<br><span class="hljs-function"><span class="hljs-title">Stopping</span></span> Collector......<br>openjdk version <span class="hljs-string">&quot;1.8.0_312&quot;</span><br>OpenJDK Runtime Environment Bisheng (build <span class="hljs-number">1.8</span><span class="hljs-number">.0</span>_312-b07)<br>OpenJDK <span class="hljs-number">64</span>-Bit Server VM Bisheng (build <span class="hljs-number">25.312</span>-b07, mixed mode)<br><span class="hljs-function"><span class="hljs-title">now</span></span> stop collector...<br><span class="hljs-function"><span class="hljs-title">stop</span></span> collector success...<br><span class="hljs-function"><span class="hljs-title">Stopping</span></span> KStudio......<br><span class="hljs-keyword">Using</span> CATALINA_BASE:   /kemcc/kstudio/apache-tomcat-kstudio<br><span class="hljs-keyword">Using</span> CATALINA_HOME:   /kemcc/kstudio/apache-tomcat-kstudio<br><span class="hljs-keyword">Using</span> CATALINA_TMPDIR: /kemcc/kstudio/apache-tomcat-kstudio/temp<br><span class="hljs-keyword">Using</span> JRE_HOME:        /usr<br><span class="hljs-keyword">Using</span> CLASSPATH:       /kemcc/kstudio/apache-tomcat-kstudio/bin/bootstrap.jar:/kemcc/kstudio/apache-tomcat-kstudio/bin/tomcat-juli.jar<br><span class="hljs-keyword">Using</span> CATALINA_OPTS:   <br><span class="hljs-keyword">Using</span> CATALINA_PID:    /kemcc/kstudio/apache-tomcat-kstudio/logs/catalina.pid<br>Tomcat stopped.<br></code></pre></td></tr></table></figure>
+
+<p>命令行启动管控平台：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs clean">[kemcc@kemcc:/home/kemcc]$ restart_all.sh <br>Waiting for start kes<br>Starting KES......<br>等待服务器进程启动 .... 完成<br>服务器进程已经启动<br>. kes start successful.<br><br>Starting LAC ################################################################################<br>openjdk version <span class="hljs-string">&quot;1.8.0_312&quot;</span><br>OpenJDK Runtime Environment Bisheng (build <span class="hljs-number">1.8</span><span class="hljs-number">.0</span>_312-b07)<br>OpenJDK <span class="hljs-number">64</span>-Bit Server VM Bisheng (build <span class="hljs-number">25.312</span>-b07, mixed mode)<br>LAC Server 端口号为 <span class="hljs-number">11234</span><br>lac_ctl: PID file <span class="hljs-string">&quot;/kemcc/lac/bin//lac_server.pid&quot;</span> does not exist<br>Is server running?<br>trying to start server anyway<br>Successfully set/update lac_server scheduled attempt to start.<br>sys_ctl:没有服务器进程正在运行<br>等待服务器进程启动 ...<span class="hljs-number">.2025</span><span class="hljs-number">-05</span><span class="hljs-number">-16</span> <span class="hljs-number">16</span>:<span class="hljs-number">49</span>:<span class="hljs-number">59.930</span> CST [<span class="hljs-number">42033</span>] 日志:  sepapower extension initialized<br><span class="hljs-number">2025</span><span class="hljs-number">-05</span><span class="hljs-number">-16</span> <span class="hljs-number">16</span>:<span class="hljs-number">49</span>:<span class="hljs-number">59.934</span> CST [<span class="hljs-number">42033</span>] 日志:  正在启动 KingbaseES V001R001C001B0038 on x86_64-pc-linux-gnu, compiled by gcc (GCC) <span class="hljs-number">4.8</span><span class="hljs-number">.5</span> <span class="hljs-number">20150623</span> (Red Hat <span class="hljs-number">4.8</span><span class="hljs-number">.5</span><span class="hljs-number">-28</span>), <span class="hljs-number">64</span>-bit<br><span class="hljs-number">2025</span><span class="hljs-number">-05</span><span class="hljs-number">-16</span> <span class="hljs-number">16</span>:<span class="hljs-number">49</span>:<span class="hljs-number">59.934</span> CST [<span class="hljs-number">42033</span>] 日志:  在Unix套接字 <span class="hljs-string">&quot;/kemcc/lac/bin/../db/data/.s.KINGBASE.64321&quot;</span>上侦听<br><span class="hljs-number">2025</span><span class="hljs-number">-05</span><span class="hljs-number">-16</span> <span class="hljs-number">16</span>:<span class="hljs-number">49</span>:<span class="hljs-number">59.987</span> CST [<span class="hljs-number">42033</span>] 日志:  日志输出重定向到日志收集进程<br><span class="hljs-number">2025</span><span class="hljs-number">-05</span><span class="hljs-number">-16</span> <span class="hljs-number">16</span>:<span class="hljs-number">49</span>:<span class="hljs-number">59.987</span> CST [<span class="hljs-number">42033</span>] 提示:  后续的日志输出将出现在目录 <span class="hljs-string">&quot;sys_log&quot;</span>中.<br> 完成<br>服务器进程已经启动<br>waiting for server to start...<br>[<span class="hljs-number">2025</span><span class="hljs-number">-05</span><span class="hljs-number">-16</span> <span class="hljs-number">16</span>:<span class="hljs-number">50</span>:<span class="hljs-number">00</span>] [INFO] [<span class="hljs-number">140460108008768</span>] configpath = /kemcc/lac/bin<span class="hljs-comment">//lac_server.conf</span><br>[<span class="hljs-number">2025</span><span class="hljs-number">-05</span><span class="hljs-number">-16</span> <span class="hljs-number">16</span>:<span class="hljs-number">50</span>:<span class="hljs-number">00</span>] [NOTICE] [<span class="hljs-number">140460108008768</span>] redirecting logging output to <span class="hljs-string">&quot;/kemcc/lac/bin//../log/lac_server.log&quot;</span><br><br> done<br>lac server started<br>Starting KEMCC ###############################################################################<br>openjdk version <span class="hljs-string">&quot;1.8.0_312&quot;</span><br>OpenJDK Runtime Environment Bisheng (build <span class="hljs-number">1.8</span><span class="hljs-number">.0</span>_312-b07)<br>OpenJDK <span class="hljs-number">64</span>-Bit Server VM Bisheng (build <span class="hljs-number">25.312</span>-b07, mixed mode)<br>Waiting for start KEMCC<br>........ KEMCC start successful.<br><br>Starting KMonitor collector ##########################################################################<br>openjdk version <span class="hljs-string">&quot;1.8.0_312&quot;</span><br>OpenJDK Runtime Environment Bisheng (build <span class="hljs-number">1.8</span><span class="hljs-number">.0</span>_312-b07)<br>OpenJDK <span class="hljs-number">64</span>-Bit Server VM Bisheng (build <span class="hljs-number">25.312</span>-b07, mixed mode)<br>now restart collector...<br>restart collector success...<br>Starting KStudio ############################################################################<br>openjdk version <span class="hljs-string">&quot;1.8.0_312&quot;</span><br>OpenJDK Runtime Environment Bisheng (build <span class="hljs-number">1.8</span><span class="hljs-number">.0</span>_312-b07)<br>OpenJDK <span class="hljs-number">64</span>-Bit Server VM Bisheng (build <span class="hljs-number">25.312</span>-b07, mixed mode)<br>Updating KStudio port： <span class="hljs-number">8081</span><br>KStudio port: <span class="hljs-number">8081</span><br>(Not all processes could be identified, non-owned process info<br> will not be shown, you would have to be root to see it all.)<br>Starting KStudio...<br>.KStudio start successful, PID: <span class="hljs-number">42533</span><br>KStudio listening on port: <span class="hljs-number">8081</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="访问-KEMCC"><a href="#访问-KEMCC" class="headerlink" title="访问 KEMCC"></a>访问 KEMCC</h2><p>启动管控平台后：</p>
+<blockquote>
+<p>默认登录地址为：<code>http://管控平台所在机器 IP 地址:19000/</code><br> 默认帐号密码为：<code>admin/Kingbase@2024</code>。</p>
+</blockquote>
+<p><img src="/csdn-blog/images/bbcfcacdf949db32da167ac47b0d665c.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图16" loading='lazy'></p>
+<p>当页面成功显示信息时，即表示 KEMCC 安装完成：</p>
+<p><img src="/csdn-blog/images/762e800b40faa1f8b1ac9e0ab78d0b9b.webp" alt="从零搭建金仓运维利器：KEMCC 安装与初探 - 图17" loading='lazy'></p>
+<p>至此，KEMCC 安装部署完成。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>KEMCC 安装部署比较简单，但是篇幅也不短，一篇文章不宜过长，否则读感不好，所以就写到这，下一篇讲讲如何使用 KEMCC。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/149572961/">https://pc-study.github.io/csdn-blog/posts/149572961/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/%E8%BF%90%E7%BB%B4/">运维</a><a class="post-meta__tags" href="/csdn-blog/tags/%E9%87%91%E4%BB%93%E6%95%B0%E6%8D%AE%E5%BA%93/">金仓数据库</a><a class="post-meta__tags" href="/csdn-blog/tags/Kingbase/">Kingbase</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/149572992/" title="金仓 KEMCC 非云环境初始化与纳管指南"><img class="cover" src="/csdn-blog/images/e4fda0dab03c7946935f5e2dd565d688.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">金仓 KEMCC 非云环境初始化与纳管指南</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 非云环境初始化 创建非云平台账号 纳管服务器 注册数据库实例 上传镜像文件 创建数据库实例 问题记录 前言 前文 从零搭建金仓运维利器：KEMCC 安装与初探 介绍了如何快速安装一套 KEMCC 管理平台，本文将演示如何初始化</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149572948/" title="Oracle 19.28 RU 升级最佳实践指南"><img class="cover" src="/csdn-blog/images/82e8b7f67988325cfee969a9cdfc7abf.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Oracle 19.28 RU 升级最佳实践指南</div></div><div class="info-2"><div class="info-item-1">前言 作为关键基础设施维护的关键环节，季度补丁更新（Release Update）是保障 Oracle 数据库安全与稳定的核心任务。本文将以生产环境标准流程，详细记录 Oracle 19.3.0 单机环境升级至 19.28 RU 的完整操作，重点阐述技术风险控制与最佳实践。 补丁获取与预处理 MOS</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/149572926/" title="昨天去看了电科金仓的发布会，有点东西！"><img class="cover" src="/csdn-blog/images/bd09e71393ba70dd6f50460b6f5a9b53.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-23</div><div class="info-item-2">昨天去看了电科金仓的发布会，有点东西！</div></div><div class="info-2"><div class="info-item-1">前言 昨天（7 月 15 日），我受邀参加了电科金仓的 2025 年度发布会，主题是“融合进化 智领未来”。作为一个跟数据库打了快十年交道的 DBA，我太清楚这个领域现在有多热闹了：国产化势头猛，AI 技术天天变，老一套运维方法快顶不住了。 这次去，我带着学习的态度，真心想看看国产数据库能拿出什么新</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149572992/" title="金仓 KEMCC 非云环境初始化与纳管指南"><img class="cover" src="/csdn-blog/images/e4fda0dab03c7946935f5e2dd565d688.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-23</div><div class="info-item-2">金仓 KEMCC 非云环境初始化与纳管指南</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA学习之路，专注于提升数据库运维效率。 目录 前言 非云环境初始化 创建非云平台账号 纳管服务器 注册数据库实例 上传镜像文件 创建数据库实例 问题记录 前言 前文 从零搭建金仓运维利器：KEMCC 安装与初探 介绍了如何快速安装一套 KEMCC 管理平台，本文将演示如何初始化</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120319698/" title="Linux 多台主机配置 ssh 互信脚本"><img class="cover" src="/csdn-blog/img/covers/linux.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-16</div><div class="info-item-2">Linux 多台主机配置 ssh 互信脚本</div></div><div class="info-2"><div class="info-item-1">互信是指 配置 免密登录另一台主机，常用于自动化 脚本 ！ 以下分享个互信脚本： 创建一个脚本 ，将以上内容写入脚本！ 支持多台主机进行互信，创建一个 文件，将需要配置互信的主机IP写入： 执行如下 命令 互信： 执行完成后，即配置互信成功！ 本次分享到此结束啦~ 如果觉得文章对你有帮助，点赞、收藏</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/120256499/" title="Linux 挖矿程序把病毒文件锁住了，删不了，怎么破？（chattr）"><img class="cover" src="/csdn-blog/img/covers/linux.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-12</div><div class="info-item-2">Linux 挖矿程序把病毒文件锁住了，删不了，怎么破？（chattr）</div></div><div class="info-2"><div class="info-item-1">😄 有幸，遇到过几次挖矿病毒，Linux 主机的关键命令都被删除替换，病毒文件被加了 只读权限，变成只读文件，root 无法修改删除！😦 本文就讲讲，怎么把这些加了锁的只读文件去 取消只读！ 就是这个命令，设置只读加 ，万恶的挖矿程序必然会删除这个命令，因此需要去同版本的其他正常主机拷贝，否则，无法</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/149227554/" title="自动化运维神器：SSH 一键互信脚本，免费速领！"><img class="cover" src="/csdn-blog/images/48b7eec9dead26f56b4373f8672cba9a.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">自动化运维神器：SSH 一键互信脚本，免费速领！</div></div><div class="info-2"><div class="info-item-1">大家好，这里是 DBA 学习之路，专注于提升数据库运维效率。 目录 前言 脚本介绍 参数详解 使用指南 - 基础命令格式 配置当前用户 配置指定用户 写在最后 前言 大家好，我又双叒叕来送福利了，这次是 SSH 一键互信脚本，贼拉好用～ 关注公众号：DBA学习之路，聊天框回复： 下载脚本。 在 Li</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/139593839/" title="Debian 10 一键安装 Oracle 11GR2 单机"><img class="cover" src="/csdn-blog/img/covers/oracle.svg" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-11</div><div class="info-item-2">Debian 10 一键安装 Oracle 11GR2 单机</div></div><div class="info-2"><div class="info-item-1">前言 Oracle 一键安装脚本，演示华为 Debian 10 一键安装 Oracle 11GR2 单机版过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、上传软件安装包（安装基础包，补丁包） 4、</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KEMCC-%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">KEMCC 介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E4%BF%A1%E6%81%AF"><span class="toc-number">4.</span> <span class="toc-text">环境信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%89%8D%E6%A3%80%E6%9F%A5"><span class="toc-number">5.</span> <span class="toc-text">安装前检查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E9%98%B2%E7%81%AB%E5%A2%99"><span class="toc-number">5.1.</span> <span class="toc-text">关闭防火墙</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%94%A8%E6%88%B7"><span class="toc-number">5.2.</span> <span class="toc-text">创建用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AE%89%E8%A3%85%E7%9B%AE%E5%BD%95"><span class="toc-number">5.3.</span> <span class="toc-text">创建安装目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE"><span class="toc-number">5.4.</span> <span class="toc-text">系统参数配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A0%81"><span class="toc-number">5.5.</span> <span class="toc-text">配置系统编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#crontab-%E6%9D%83%E9%99%90%E6%A3%80%E6%9F%A5"><span class="toc-number">5.6.</span> <span class="toc-text">crontab 权限检查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%B6%E9%92%9F%E6%A3%80%E6%9F%A5"><span class="toc-number">5.7.</span> <span class="toc-text">时钟检查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JDK-%E7%89%88%E6%9C%AC%E6%A3%80%E6%9F%A5"><span class="toc-number">5.8.</span> <span class="toc-text">JDK 版本检查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">5.9.</span> <span class="toc-text">配置环境变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KEMCC-%E5%AE%89%E8%A3%85"><span class="toc-number">6.</span> <span class="toc-text">KEMCC 安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%8C%85%E8%A7%A3%E5%8E%8B"><span class="toc-number">6.1.</span> <span class="toc-text">安装包解压</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E5%BD%A2%E5%8C%96%E5%AE%89%E8%A3%85"><span class="toc-number">6.2.</span> <span class="toc-text">图形化安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KEMCC-%E5%90%AF%E5%81%9C"><span class="toc-number">7.</span> <span class="toc-text">KEMCC 启停</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1"><span class="toc-number">7.1.</span> <span class="toc-text">启动服务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE-KEMCC"><span class="toc-number">8.</span> <span class="toc-text">访问 KEMCC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">9.</span> <span class="toc-text">写在最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>

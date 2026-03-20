@@ -1,0 +1,662 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>保姆级教程：Vagrant 从入门到超神玩法 | Lucifer三思而后行</title><meta name="author" content="Lucifer"><meta name="copyright" content="Lucifer"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="{% raw %} 目录 🌲 前言 🌲 🌻 Vagrant 简介 🌻 ❤️ 入门玩法：Vagrant 安装 ❤️ ⚡️ 初阶玩法：Vagrant 常用命令 ⚡️ 1️⃣ Vagrant 基础命令 2️⃣ Vagrant Box 管理 3️⃣ Vagrant 虚拟机系统命令 4️⃣ Vagrant 插">
+<meta property="og:type" content="article">
+<meta property="og:title" content="保姆级教程：Vagrant 从入门到超神玩法">
+<meta property="og:url" content="https://pc-study.github.io/csdn-blog/posts/119176009/">
+<meta property="og:site_name" content="Lucifer三思而后行">
+<meta property="og:description" content="{% raw %} 目录 🌲 前言 🌲 🌻 Vagrant 简介 🌻 ❤️ 入门玩法：Vagrant 安装 ❤️ ⚡️ 初阶玩法：Vagrant 常用命令 ⚡️ 1️⃣ Vagrant 基础命令 2️⃣ Vagrant Box 管理 3️⃣ Vagrant 虚拟机系统命令 4️⃣ Vagrant 插">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pc-study.github.io/csdn-blog/images/593371bf87e9caae483a3006ac29f683.webp">
+<meta property="article:published_time" content="2021-10-30T02:52:19.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:25:38.290Z">
+<meta property="article:author" content="Lucifer">
+<meta property="article:tag" content="vagrant">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="教程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pc-study.github.io/csdn-blog/images/593371bf87e9caae483a3006ac29f683.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"保姆级教程：Vagrant 从入门到超神玩法","url":"https://pc-study.github.io/csdn-blog/posts/119176009/","image":"https://pc-study.github.io/csdn-blog/images/593371bf87e9caae483a3006ac29f683.webp","datePublished":"2021-10-30T02:52:19.000Z","dateModified":"2026-03-20T12:25:38.290Z","description":"{% raw %} 目录 🌲 前言 🌲 🌻 Vagrant 简介 🌻 ❤️ 入门玩法：Vagrant 安装 ❤️ ⚡️ 初阶玩法：Vagrant 常用命令 ⚡️ 1️⃣ Vagrant 基础命令 2️⃣ Vagrant Box 管理 3️⃣ Vagrant 虚拟机系统命令 4️⃣ Vagrant 插","author":{"@type":"Person","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/"},"publisher":{"@type":"Organization","name":"Lucifer三思而后行","url":"https://pc-study.github.io/csdn-blog/","logo":{"@type":"ImageObject","url":"https://pc-study.github.io/csdn-blog/img/avatar.jpg"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pc-study.github.io/csdn-blog/posts/119176009/"}}</script><link rel="shortcut icon" href="/csdn-blog/img/favicon.svg"><link rel="canonical" href="https://pc-study.github.io/csdn-blog/posts/119176009/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/csdn-blog/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/csdn-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/csdn-blog/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Lucifer","link":"链接: ","source":"来源: Lucifer三思而后行","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#1a73e8","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '保姆级教程：Vagrant 从入门到超神玩法',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/csdn-blog/atom.xml" title="Lucifer三思而后行" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/csdn-blog/images/593371bf87e9caae483a3006ac29f683.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/csdn-blog/"><span class="site-name">Lucifer三思而后行</span></a><a class="nav-page-title" href="/csdn-blog/"><span class="site-name">保姆级教程：Vagrant 从入门到超神玩法</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/csdn-blog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/categories/"><i class="fa-fw fas fa-th"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/csdn-blog/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fa-fw fas fa-external-link-alt"></i><span> CSDN</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">保姆级教程：Vagrant 从入门到超神玩法<a class="post-edit-link" href="https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2021-10-30-119176009.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-10-30T02:52:19.000Z" title="发表于 2021-10-30 10:52:19">2021-10-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:25:38.290Z" title="更新于 2026-03-20 20:25:38">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">4.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>19分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-03-20 20:25:38&quot;}" hidden></div>
+#### 目录
+
+* [🌲 前言 🌲](#____1)
+* [🌻 Vagrant 简介 🌻](#_09Vagrant___50)
+* [❤️ 入门玩法：Vagrant 安装 ❤️](#_font_colorgreenVagrant_font__54)
+* [⚡️ 初阶玩法：Vagrant 常用命令 ⚡️](#_font_colororagenVagrant_font__68)
+* + [1️⃣ Vagrant 基础命令](#1_Vagrant__69)
+  + [2️⃣ Vagrant Box 管理](#2_Vagrant_Box__92)
+  + [3️⃣ Vagrant 虚拟机系统命令](#3_Vagrant__119)
+  + [4️⃣ Vagrant 插件管理](#4_Vagrant__194)
+* [🌀 进阶玩法：Vagrant 插件 🌀](#_font_colorblueVagrant_font__232)
+* [☁️ 高阶玩法：Vagrant 配套工具 ☁️](#_font_colororangeVagrant_font__267)
+* + [① ngrok](#font_colororange_ngrokfont_269)
+  + [② packer](#font_colororage_packerfont_271)
+* [💦 超神玩法：Vagrant 卸载 💦](#_09font_colorblvyVagrant_font__550)
+* + [1️⃣ Windows系统](#1_Windows_554)
+  + [2️⃣ Linux系统](#2_Linux_557)
+  + [3️⃣ macOS系统](#3_macOS_563)
+* [⏰ 写在最后](#__571)
+
+## 🌲 前言 🌲
+
+**首先下载安装 [Vagrant](https://www.vagrantup.com/downloads) 和 [VirtualBox](https://www.virtualbox.org/wiki/Downloads) ，不用知道是啥玩意，安装完软件之后，打开 `cmd` 或者 `终端` 执行以下命令即可安装操作系统，就这么简单！**
+
+**🙉 以下列出主流系统安装方式 🙉 ：**
+
+> 🌞 **安装Windows10 系统** 🌞
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant init galppoc/windows10<br>vagrant up<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br></code></pre></td></tr></table></figure>
+
+>  **安装 macOS 系统** 
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant init jhcook/macos-sierra<br>vagrant up<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br></code></pre></td></tr></table></figure>
+
+> 🧡 **安装 Linux/Unix 系统** 🧡
+
+**① centos：**
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant init generic/centos7<br>vagrant up<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br></code></pre></td></tr></table></figure>
+
+**② Ubuntu：**
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant init generic/ubuntu2010<br>vagrant up<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br></code></pre></td></tr></table></figure>
+
+**③ redhat：**
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant init generic/rhel7<br>vagrant up<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br></code></pre></td></tr></table></figure>
+
+**④ fedora：**
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant init generic/fedora32<br>vagrant up<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br></code></pre></td></tr></table></figure>
+
+**⑤ oracle linux：**
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant init generic/oracle7<br>vagrant up<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br></code></pre></td></tr></table></figure>
+
+**看不懂？没有关系，直接输入就行！！！**
+
+**❤️ 以上只列出常用主流操作系统，并不是仅仅这些，Vagrant 支持所有操作系统安装，只要能安装的，都可以！**
+
+**☀️ 想要入门？想要解锁 🔓 更多玩法？看下去，带你玩转 Vagrant ！！！☀️**  
+ ## 🌻 Vagrant 简介 🌻
+
+**Vagrant** - 一款用于管理虚拟机的命令行实用软件，用 Ruby 语言开发而成。换言说，可以省去你使用虚拟机创建
+操作系统 
+的所有操作，比如创建虚拟机，挂载镜像文件，一步步点击安装；使用 Vagrant ，这些都不需要做了，简简单单 2 行命令，快速创建属于你个人的系统。
+
+![在这里插入图片描述](/images/593371bf87e9caae483a3006ac29f683.webp)
+
+## ❤️ 入门玩法：Vagrant 安装 ❤️
+
+😄 Vagrant 的安装 **Very easy~** ，直接在官网下载安装包👇🏻：
+
+> 官网下载地址：https://www.vagrantup.com/downloads
+
+![在这里插入图片描述](/images/79d3bbfbb840f96a3b8c1256ef8b0a99.webp)  
+ **安装完后，方便使用，启用命令行自动补全：**
+
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">vagrant autocomplete <span class="hljs-keyword">install </span>--<span class="hljs-keyword">bash </span>--zsh<br><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/0fa3c33b8b38e0b07e8cadbb2b847a4b.webp)  
+ o(￣▽￣)ｄ，安装完后，重新启动终端，尝试输入部分命令 vagr ，然后直接按 Tab 键自动带出完整命令。
+
+## ⚡️ 初阶玩法：Vagrant 常用命令 ⚡️
+
+### 1️⃣ Vagrant 基础命令
+
+**查看 Vagrant 帮助**
+
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stata">vagrant --<span class="hljs-keyword">help</span><br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br></code></pre></td></tr></table></figure>
+
+☺️ 显而易见，这个命令就是帮助我们了解 Vagrant 有哪些命令，以及哪些功能，如何使用。
+
+**查看 Vagrant 版本**
+
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stata">vagrant --<span class="hljs-keyword">version</span><br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/5c9234c639663626aef716c57bd26fa4.webp)  
+ 查看当前 Vagrant 版本。
+
+**查看 Vagrant 当前所有已安装系统**
+
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stata">vagrant <span class="hljs-keyword">global</span>-status<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/d3fb9155af1c33a146ad831230569477.webp)  
+ 通过该命令可以查看当前系统已安装的虚拟机系统详细信息，非常方便。
+
+### 2️⃣ Vagrant Box 管理
+
+本节主要介绍 Vagrant Box 的基本管理命令：  
+ ![在这里插入图片描述](/images/e94ba6ef9de841498f79ed7f3b5f5ea5.webp)  
+ **查看所有已添加 box**
+
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">vagrant <span class="hljs-keyword">box </span>list<br><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+此命令可以列出所有已添加的 box 。
+
+**添加新的 box**
+
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros">vagrant box <span class="hljs-built_in">add</span> /Volumes/Lucifer/vagrant/centos79-oracle11g-vb/centos7.9 <span class="hljs-attribute">--name</span>=centos7<br><br>AI写代码bash<br><br>* 1<br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/0388d85303f7546d5456eb875fa42126.webp)  
+ 下载 box 到本地，指定本地 box 添加，名称为centos7。
+
+**移除已添加 box**
+
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs maxima">vagrant <span class="hljs-built_in">box</span> <span class="hljs-built_in">remove</span> centos7<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+本示例移除名为 centos7 的 box。
+
+### 3️⃣ Vagrant 虚拟机系统命令
+
+**初始化虚拟机系统**
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant init luciferliu/oracle11g<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/6ecbcdcccb5413caebdc6b8e3ef7c033.webp)  
+ 初始化虚拟机系统之后，会自动生成一个Vagrantfile文件，可自定义编辑，玩转 Vagrant 关键。
+
+**校验 Vagrantfile 文件**
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant validate<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/67ff41c228d2a4be07636235dd22c679.webp)  
+ 当你编辑好一个 Vagrantfile 之后，不确定编写是否正确，可以使用该命令进行验证是否正确。
+
+**启动虚拟机系统**
+
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros">vagrant up <span class="hljs-attribute">--provider</span>=virtualbox<br><br>AI写代码bash<br><br>* 1<br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/e233958d00cffdec7a19be35ab303947.webp)  
+ 用默认虚拟机 virtualbox 启动虚拟机系统，过程中显示，如果本地没有添加过 box，vagrant up 启动后会自动下载添加。
+
+**连接虚拟机系统**
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant ssh<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br></code></pre></td></tr></table></figure>
+
+通过该命令可以无需常规的 SSH 方式，快速连接系统，默认用户为 vagrant，密码为 vagrant。
+
+**查看虚拟机系统状态**
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant status <br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/276d2c786b7b9e8c3eae19340506d48b.webp)  
+ 显而易见，查看当前虚拟机系统的运行状态。
+
+**重载虚拟机系统**
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant reload<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br></code></pre></td></tr></table></figure>
+
+顾名思义，重新加载你的虚拟机系统，当你修改 Vagrantfile 之后需要生效，无需关闭虚拟机系统，执行该命令即可生效。
+
+**关闭虚拟机系统**
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant halt<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br></code></pre></td></tr></table></figure>
+
+执行关闭命令后，虚拟机系统将会立刻关闭。
+
+**打包虚拟机系统**
+
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs ada">vagrant <span class="hljs-keyword">package</span><br><br><span class="hljs-title">AI写代码bash</span><br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/d4cb4c9c25c1d489ca1dc387aed06bac.webp)  
+ 为什么要打包系统？很简单，你可以打包后备份它，可以分享它给你的朋友，可以用来工作同步一键部署开发环境。
+
+**删除虚拟机系统**
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant destory<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br></code></pre></td></tr></table></figure>
+
+删除命令将会删除你的虚拟机系统，包括所有文件，全都消失无踪，慎用 ⚠️。
+
+### 4️⃣ Vagrant 插件管理
+
+本节主要介绍 Vagrant 插件的管理命令：  
+ **查看已安装插件**
+
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stata">vagrant <span class="hljs-keyword">plugin</span> <span class="hljs-keyword">list</span><br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br></code></pre></td></tr></table></figure>
+
+显示你安装的所有 Vagrant 插件。
+
+**安装插件**
+
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">vagrant plugin <span class="hljs-keyword">install </span>vagrant-<span class="hljs-keyword">share</span><br><span class="hljs-keyword"></span><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/c76632344393f1a74f74f828da3b4d2a.webp)  
+ **卸载插件**
+
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">vagrant plugin uninstall vagrant-<span class="hljs-keyword">share</span><br><span class="hljs-keyword"></span><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+**修复插件**
+
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stata">vagrant <span class="hljs-keyword">plugin</span> repair<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br></code></pre></td></tr></table></figure>
+
+插件出现问题时，可以使用修复命令来进行修复。
+
+**更新插件**
+
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stata">vagrant <span class="hljs-keyword">plugin</span> <span class="hljs-keyword">update</span><br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br></code></pre></td></tr></table></figure>
+
+既然是插件，当然需要经常更新，使用更新命令可以更新你的插件。
+
+## 🌀 进阶玩法：Vagrant 插件 🌀
+
+既然上面讲到插件了，那就推荐一下常用插件。刚安装的 Vagrant 相当于一个没有武装的战士，想要拥有强大的战斗力，就需要用插件来全副武装。Vagrant 具有许多开箱即用的强大功能，可以让你的环境启动并运行。
+
+> **❤️ 给大家分享下 Plugin 网站 ：https://vagrant-lists.github.io/#plugins ❤️**
+
+👌🏻 **这里分享下我已安装的几个插件：**
+
+> * **vagrant-parallels** (2.2.3, global)  
+>    用于 Parallels Desktop 虚拟机的支持插件
+> * **vagrant-proxyconf** (2.0.10, global)  
+>    用于设置虚拟机代理
+> * **vagrant-share** (2.0.0, global)  
+>    通过插件可以分享你的虚拟机环境给朋友
+> * **vagrant-mutate** (1.2.0, global)  
+>    使用插件可以转换你的 box ，比如从 virtualbox 到 kvm
+
+**☀️ 安装方式：**
+
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs stata">vagrant <span class="hljs-keyword">plugin</span> install vagrant-parallels<br>vagrant <span class="hljs-keyword">plugin</span> install vagrant-proxyconf<br>vagrant <span class="hljs-keyword">plugin</span> install vagrant-reload<br>vagrant <span class="hljs-keyword">plugin</span> install vagrant-share<br>vagrant <span class="hljs-keyword">plugin</span> install vagrant-mutate<br>vagrant <span class="hljs-keyword">plugin</span> <span class="hljs-keyword">list</span><br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br></code></pre></td></tr></table></figure>
+
+❤️ **顺便给大家分享一个解决 Vgrant 插件安装慢的方法：** ❤️
+
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">gem sources <span class="hljs-params">--add</span> https:<span class="hljs-string">//gems.ruby-china.com/</span> <span class="hljs-params">--remove</span> https:<span class="hljs-string">//rubygems.org/</span><br>gem sources -l<br><br>AI写代码bash<br><br>* 1<br>* 2<br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/df24dd4efa23d11bc822ee743136c47f.webp)  
+ 没错，就是替换 RubyGems 的源，确保只有这一个源，如果失灵，就换回去，😌 慢就慢点，总比不能用强。
+
+## ☁️ 高阶玩法：Vagrant 配套工具 ☁️
+
+> ### ① ngrok
+>
+> ### ② packer
+
+**① ngrok：**
+
+**`ngrok` 是什么？别问(`へ´)ノ，问就告诉你：用来做内网映射的😄。**
+
+接下来教你怎么用 ngrok ，将你的虚拟机环境分享给全世界各地的 People 使用！！！
+
+**第一步**：安装ngrok，官网下载安装包，解压是个可执行文件，直接双击使用 o(￣▽￣)ｄ。
+
+> 官网下载地址：https://dashboard.ngrok.com/get-started/setup
+
+**第二步**：需要注册一个 ngrok 用户，获取授权码，来授权本地机器。
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">ngrok authtoken 你的授权码<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br></code></pre></td></tr></table></figure>
+
+**第三步**：测试 ngrok 是否可用  
+ <figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">ngrok http 80<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/70e5ba23fac3c5e49fdec56635534fd3.webp)  
+ 打开你的浏览器访问 http://127.0.0.1:4040，如果能打开，说明 👌🏻 啦，恭喜你 🎉 ！
+
+**第四步**：使用 **vagrant-share** 插件，分享你的虚拟机：
+
+这里有个小前提：需要环境变量中配置 `ngrok` ，否则 vagrant 无法获取到改命令：
+
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">export</span> <span class="hljs-attribute">VG_HOME</span>=<span class="hljs-string">&#x27;/opt/vagrant&#x27;</span><br><span class="hljs-built_in">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$VG_HOME/bin<br><br>AI写代码bash<br><br>* 1<br>* 2<br></code></pre></td></tr></table></figure>
+
+注意：我是将解压的 `ngrok` 可执行工具放入 `/opt/vagrant/bin` 目录下，参考如上配置即可。
+
+* 使用 ssh 方式分享你的主机：
+
+**服务端开启共享：**
+
+注意：过程中需要输入两次密码，用于提供给客户端来进行登录。
+
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">vagrant <span class="hljs-keyword">share </span>--ssh<br><br>AI写代码<span class="hljs-keyword">bash</span><br><span class="hljs-keyword"></span><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+如果服务端执行之后，显示上图这样，说明已经共享成功，客户端可以进行访问。
+
+**客户端连接：**
+
+模拟下其他朋友连接我的虚拟机环境：
+
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">vagrant <span class="hljs-keyword">connect</span> <span class="hljs-params">--ssh</span> orange_amigo<span class="hljs-function">:george_botanic</span>@forward<br><br>AI写代码bash<br><br>* 1<br></code></pre></td></tr></table></figure>
+
+这边输入密码后，已经连接进虚拟机环境了，我这是一套 Oracle RAC 环境的其中一个节点：  
+ ![在这里插入图片描述](/images/03680cf4c46cf608844657f4f1dd8bd4.webp)  
+ 这里的 `orange_amigo:george_botanic@forward` 是自动生成的，建议根据实际情况填写。
+
+**② packer：**
+
+**`packer` 是什么？别问(`へ´)ノ，问就告诉你：用来定制你的专属 Box 的😄。**
+
+接下来教你怎么用 packer ，打造为你量身定制的虚拟机环境！！！
+
+**第一步**：安装 packer ，官网下载安装包，解压是个可执行文件，直接双击使用 o(￣▽￣)ｄ。
+
+> 官网下载地址：https://www.packer.io/downloads
+
+![在这里插入图片描述](/images/a4661479ed48797c47fd029bdac321e2.webp)  
+ 这里有个小前提：需要环境变量中配置 `packer` ，否则 vagrant 无法获取到改命令：
+
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">export</span> <span class="hljs-attribute">VG_HOME</span>=<span class="hljs-string">&#x27;/opt/vagrant&#x27;</span><br><span class="hljs-built_in">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$VG_HOME/bin<br><br>AI写代码bash<br><br>* 1<br>* 2<br></code></pre></td></tr></table></figure>
+
+注意：我是将解压的 `packer` 可执行工具放入 `/opt/vagrant/bin` 目录下，参考如上配置即可。  
+ **第二步：** 下载一个centos或者windows镜像，也就是安装包。本次以centos为例吧：
+
+> 下载地址：https://mirrors.163.com/centos/7.9.2009/isos/x86\_64/CentOS-7-x86\_64-Minimal-2009.iso
+
+这里我已经成功下载完成，需要进行一下 checksum 校验一下：
+
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs awk">shasum -a <span class="hljs-number">256</span> <span class="hljs-regexp">/Users/</span>lpc<span class="hljs-regexp">/Downloads/</span>CentOS-<span class="hljs-number">7</span>-x86_64-Minimal-<span class="hljs-number">2009</span>.iso<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+**顺便记录一下校验码：`07b94e6b1a0b0260b94c83d6bb76b26bf7a310dc78d7a9c7432809fb9bc6194a`**
+
+**第三步：** 这里我们借用 `bento` 前辈写好的模板进行打包，首先通过 `git clone` 项目：
+
+> Github 地址：https://github.com/chef/bento
+
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://hub.fastgit.org/chef/bento.git<br><br>AI写代码bash<br><br>* <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/d5474dd7403c4212fc25e1e50b349b4f.webp)  
+ **第四步：** 打开刚 
+git
+ 的项目，自定义 packer json 文件：  
+ 根据 `bento` 大神的 centos-7.9-x86\_64.json ，我们自定义一个新的 json 文件：
+
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br></pre></td><td class="code"><pre><code class="hljs stata">&#123;<br>  <span class="hljs-string">&quot;builders&quot;</span>: [<br>    &#123;<br>      <span class="hljs-string">&quot;boot_command&quot;</span>: [<br>        <span class="hljs-string">&quot;&lt;up&gt;&lt;wait&gt;&lt;tab&gt; text ks=http://&#123;&#123; .HTTPIP &#125;&#125;:&#123;&#123; .HTTPPort &#125;&#125;/&#123;&#123;user `ks_path`&#125;&#125;&lt;enter&gt;&lt;wait&gt;&quot;</span><br>      ],<br>      <span class="hljs-string">&quot;boot_wait&quot;</span>: <span class="hljs-string">&quot;5s&quot;</span>,<br>      <span class="hljs-string">&quot;cpus&quot;</span>: <span class="hljs-string">&quot;&#123;&#123; user `cpus` &#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;disk_size&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;user `disk_size`&#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;guest_additions_path&quot;</span>: <span class="hljs-string">&quot;VBoxGuestAdditions_&#123;&#123;.Version&#125;&#125;.iso&quot;</span>,<br>      <span class="hljs-string">&quot;guest_additions_url&quot;</span>: <span class="hljs-string">&quot;&#123;&#123; user `guest_additions_url` &#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;guest_os_type&quot;</span>: <span class="hljs-string">&quot;RedHat_64&quot;</span>,<br>      <span class="hljs-string">&quot;hard_drive_interface&quot;</span>: <span class="hljs-string">&quot;sata&quot;</span>,<br>      <span class="hljs-string">&quot;headless&quot;</span>: <span class="hljs-string">&quot;&#123;&#123; user `headless` &#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;http_directory&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;user `http_directory`&#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;iso_checksum&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;user `iso_checksum`&#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;iso_url&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;user `mirror`&#125;&#125;/&#123;&#123;user `mirror_directory`&#125;&#125;/&#123;&#123;user `iso_name`&#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;memory&quot;</span>: <span class="hljs-string">&quot;&#123;&#123; user `memory` &#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;output_directory&quot;</span>: <span class="hljs-string">&quot;&#123;&#123; user `build_directory` &#125;&#125;/packer-&#123;&#123;user `template`&#125;&#125;-virtualbox&quot;</span>,<br>      <span class="hljs-string">&quot;shutdown_command&quot;</span>: <span class="hljs-string">&quot;echo &#x27;vagrant&#x27; | sudo -S /sbin/halt -h -p&quot;</span>,<br>      <span class="hljs-string">&quot;ssh_password&quot;</span>: <span class="hljs-string">&quot;vagrant&quot;</span>,<br>      <span class="hljs-string">&quot;ssh_port&quot;</span>: 22,<br>      <span class="hljs-string">&quot;ssh_timeout&quot;</span>: <span class="hljs-string">&quot;10000s&quot;</span>,<br>      <span class="hljs-string">&quot;ssh_username&quot;</span>: <span class="hljs-string">&quot;vagrant&quot;</span>,<br>      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;virtualbox-iso&quot;</span>,<br>      <span class="hljs-string">&quot;virtualbox_version_file&quot;</span>: <span class="hljs-string">&quot;.vbox_version&quot;</span>,<br>      <span class="hljs-string">&quot;vm_name&quot;</span>: <span class="hljs-string">&quot;&#123;&#123; user `template` &#125;&#125;&quot;</span><br>    &#125;,<br>    &#123;<br>      <span class="hljs-string">&quot;boot_command&quot;</span>: [<br>        <span class="hljs-string">&quot;&lt;up&gt;&lt;wait&gt;&lt;tab&gt; text ks=http://&#123;&#123; .HTTPIP &#125;&#125;:&#123;&#123; .HTTPPort &#125;&#125;/&#123;&#123;user `ks_path`&#125;&#125;&lt;enter&gt;&lt;wait&gt;&quot;</span><br>      ],<br>      <span class="hljs-string">&quot;boot_wait&quot;</span>: <span class="hljs-string">&quot;5s&quot;</span>,<br>      <span class="hljs-string">&quot;cpus&quot;</span>: <span class="hljs-string">&quot;&#123;&#123; user `cpus` &#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;disk_size&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;user `disk_size`&#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;guest_os_type&quot;</span>: <span class="hljs-string">&quot;centos&quot;</span>,<br>      <span class="hljs-string">&quot;http_directory&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;user `http_directory`&#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;iso_checksum&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;user `iso_checksum`&#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;iso_url&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;user `mirror`&#125;&#125;/&#123;&#123;user `mirror_directory`&#125;&#125;/&#123;&#123;user `iso_name`&#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;memory&quot;</span>: <span class="hljs-string">&quot;&#123;&#123; user `memory` &#125;&#125;&quot;</span>,<br>      <span class="hljs-string">&quot;output_directory&quot;</span>: <span class="hljs-string">&quot;&#123;&#123; user `build_directory` &#125;&#125;/packer-&#123;&#123;user `template`&#125;&#125;-parallels&quot;</span>,<br>      <span class="hljs-string">&quot;parallels_tools_flavor&quot;</span>: <span class="hljs-string">&quot;lin&quot;</span>,<br>      <span class="hljs-string">&quot;prlctl_version_file&quot;</span>: <span class="hljs-string">&quot;.prlctl_version&quot;</span>,<br>      <span class="hljs-string">&quot;shutdown_command&quot;</span>: <span class="hljs-string">&quot;echo &#x27;vagrant&#x27; | sudo -S /sbin/halt -h -p&quot;</span>,<br>      <span class="hljs-string">&quot;ssh_password&quot;</span>: <span class="hljs-string">&quot;vagrant&quot;</span>,<br>      <span class="hljs-string">&quot;ssh_port&quot;</span>: 22,<br>      <span class="hljs-string">&quot;ssh_timeout&quot;</span>: <span class="hljs-string">&quot;10000s&quot;</span>,<br>      <span class="hljs-string">&quot;ssh_username&quot;</span>: <span class="hljs-string">&quot;vagrant&quot;</span>,<br>      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;parallels-iso&quot;</span>,<br>      <span class="hljs-string">&quot;vm_name&quot;</span>: <span class="hljs-string">&quot;&#123;&#123; user `template` &#125;&#125;&quot;</span><br>    &#125;<br>  ],<br>  <span class="hljs-string">&quot;post-processors&quot;</span>: [<br>    &#123;<br>      <span class="hljs-string">&quot;output&quot;</span>: <span class="hljs-string">&quot;&#123;&#123; user `build_directory` &#125;&#125;/&#123;&#123;user `box_basename`&#125;&#125;.&#123;&#123;.Provider&#125;&#125;.box&quot;</span>,<br>      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;vagrant&quot;</span><br>    &#125;<br>  ],<br>  <span class="hljs-string">&quot;provisioners&quot;</span>: [<br>    &#123;<br>      <span class="hljs-string">&quot;environment_vars&quot;</span>: [<br>        <span class="hljs-string">&quot;HOME_DIR=/home/vagrant&quot;</span>,<br>        <span class="hljs-string">&quot;http_proxy=&#123;&#123;user `http_proxy`&#125;&#125;&quot;</span>,<br>        <span class="hljs-string">&quot;https_proxy=&#123;&#123;user `https_proxy`&#125;&#125;&quot;</span>,<br>        <span class="hljs-string">&quot;no_proxy=&#123;&#123;user `no_proxy`&#125;&#125;&quot;</span><br>      ],<br>      <span class="hljs-string">&quot;execute_command&quot;</span>: <span class="hljs-string">&quot;echo &#x27;vagrant&#x27; | &#123;&#123;.Vars&#125;&#125; sudo -S -E sh -eux &#x27;&#123;&#123;.Path&#125;&#125;&#x27;&quot;</span>,<br>      <span class="hljs-string">&quot;expect_disconnect&quot;</span>: true,<br>      <span class="hljs-string">&quot;scripts&quot;</span>: [<br>        <span class="hljs-string">&quot;&#123;&#123;template_dir&#125;&#125;/scripts/update.sh&quot;</span>,<br>        <span class="hljs-string">&quot;&#123;&#123;template_dir&#125;&#125;/../_common/motd.sh&quot;</span>,<br>        <span class="hljs-string">&quot;&#123;&#123;template_dir&#125;&#125;/../_common/sshd.sh&quot;</span>,<br>        <span class="hljs-string">&quot;&#123;&#123;template_dir&#125;&#125;/scripts/networking.sh&quot;</span>,<br>        <span class="hljs-string">&quot;&#123;&#123;template_dir&#125;&#125;/../_common/vagrant.sh&quot;</span>,<br>        <span class="hljs-string">&quot;&#123;&#123;template_dir&#125;&#125;/../_common/virtualbox.sh&quot;</span>,<br>        <span class="hljs-string">&quot;&#123;&#123;template_dir&#125;&#125;/../_common/vmware.sh&quot;</span>,<br>        <span class="hljs-string">&quot;&#123;&#123;template_dir&#125;&#125;/../_common/parallels.sh&quot;</span>,<br>        <span class="hljs-string">&quot;&#123;&#123;template_dir&#125;&#125;/scripts/cleanup.sh&quot;</span>,<br>        <span class="hljs-string">&quot;&#123;&#123;template_dir&#125;&#125;/../_common/minimize.sh&quot;</span><br>      ],<br>      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;shell&quot;</span><br>    &#125;<br>  ],<br>  <span class="hljs-string">&quot;variables&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;box_basename&quot;</span>: <span class="hljs-string">&quot;centos-7.9&quot;</span>,<br>    <span class="hljs-string">&quot;build_directory&quot;</span>: <span class="hljs-string">&quot;../../builds&quot;</span>,<br>    <span class="hljs-string">&quot;build_timestamp&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;isotime \&quot;</span>20060102150405\<span class="hljs-string">&quot;&#125;&#125;&quot;</span>,<br>    <span class="hljs-string">&quot;cpus&quot;</span>: <span class="hljs-string">&quot;2&quot;</span>,<br>    <span class="hljs-string">&quot;disk_size&quot;</span>: <span class="hljs-string">&quot;65536&quot;</span>,<br>    <span class="hljs-string">&quot;git_revision&quot;</span>: <span class="hljs-string">&quot;__unknown_git_revision__&quot;</span>,<br>    <span class="hljs-string">&quot;guest_additions_url&quot;</span>: <span class="hljs-string">&quot;&quot;</span>,<br>    <span class="hljs-string">&quot;headless&quot;</span>: <span class="hljs-string">&quot;&quot;</span>,<br>    <span class="hljs-string">&quot;http_directory&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;template_dir&#125;&#125;/http&quot;</span>,<br>    <span class="hljs-string">&quot;http_proxy&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;env `http_proxy`&#125;&#125;&quot;</span>,<br>    <span class="hljs-string">&quot;https_proxy&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;env `https_proxy`&#125;&#125;&quot;</span>,<br>    <span class="hljs-string">&quot;iso_checksum&quot;</span>: <span class="hljs-string">&quot;07b94e6b1a0b0260b94c83d6bb76b26bf7a310dc78d7a9c7432809fb9bc6194a&quot;</span>,<br>    <span class="hljs-string">&quot;iso_name&quot;</span>: <span class="hljs-string">&quot;CentOS-7-x86_64-Minimal-2009.iso&quot;</span>,<br>    <span class="hljs-string">&quot;ks_path&quot;</span>: <span class="hljs-string">&quot;7/ks.cfg&quot;</span>,<br>    <span class="hljs-string">&quot;memory&quot;</span>: <span class="hljs-string">&quot;1024&quot;</span>,<br>    <span class="hljs-string">&quot;mirror&quot;</span>: <span class="hljs-string">&quot;&quot;</span>,<br>    <span class="hljs-string">&quot;mirror_directory&quot;</span>: <span class="hljs-string">&quot;Users/lpc/Downloads&quot;</span>,<br>    <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;centos-7.9&quot;</span>,<br>    <span class="hljs-string">&quot;no_proxy&quot;</span>: <span class="hljs-string">&quot;&#123;&#123;env `no_proxy`&#125;&#125;&quot;</span>,<br>    <span class="hljs-string">&quot;template&quot;</span>: <span class="hljs-string">&quot;centos-7.9-x86_64&quot;</span>,<br>    <span class="hljs-string">&quot;version&quot;</span>: <span class="hljs-string">&quot;TIMESTAMP&quot;</span><br>  &#125;<br>&#125;<br><br>AI写代码bash<br><br><span class="hljs-comment">* 1</span><br><span class="hljs-comment">* 2</span><br><span class="hljs-comment">* 3</span><br><span class="hljs-comment">* 4</span><br><span class="hljs-comment">* 5</span><br><span class="hljs-comment">* 6</span><br><span class="hljs-comment">* 7</span><br><span class="hljs-comment">* 8</span><br><span class="hljs-comment">* 9</span><br><span class="hljs-comment">* 10</span><br><span class="hljs-comment">* 11</span><br><span class="hljs-comment">* 12</span><br><span class="hljs-comment">* 13</span><br><span class="hljs-comment">* 14</span><br><span class="hljs-comment">* 15</span><br><span class="hljs-comment">* 16</span><br><span class="hljs-comment">* 17</span><br><span class="hljs-comment">* 18</span><br><span class="hljs-comment">* 19</span><br><span class="hljs-comment">* 20</span><br><span class="hljs-comment">* 21</span><br><span class="hljs-comment">* 22</span><br><span class="hljs-comment">* 23</span><br><span class="hljs-comment">* 24</span><br><span class="hljs-comment">* 25</span><br><span class="hljs-comment">* 26</span><br><span class="hljs-comment">* 27</span><br><span class="hljs-comment">* 28</span><br><span class="hljs-comment">* 29</span><br><span class="hljs-comment">* 30</span><br><span class="hljs-comment">* 31</span><br><span class="hljs-comment">* 32</span><br><span class="hljs-comment">* 33</span><br><span class="hljs-comment">* 34</span><br><span class="hljs-comment">* 35</span><br><span class="hljs-comment">* 36</span><br><span class="hljs-comment">* 37</span><br><span class="hljs-comment">* 38</span><br><span class="hljs-comment">* 39</span><br><span class="hljs-comment">* 40</span><br><span class="hljs-comment">* 41</span><br><span class="hljs-comment">* 42</span><br><span class="hljs-comment">* 43</span><br><span class="hljs-comment">* 44</span><br><span class="hljs-comment">* 45</span><br><span class="hljs-comment">* 46</span><br><span class="hljs-comment">* 47</span><br><span class="hljs-comment">* 48</span><br><span class="hljs-comment">* 49</span><br><span class="hljs-comment">* 50</span><br><span class="hljs-comment">* 51</span><br><span class="hljs-comment">* 52</span><br><span class="hljs-comment">* 53</span><br><span class="hljs-comment">* 54</span><br><span class="hljs-comment">* 55</span><br><span class="hljs-comment">* 56</span><br><span class="hljs-comment">* 57</span><br><span class="hljs-comment">* 58</span><br><span class="hljs-comment">* 59</span><br><span class="hljs-comment">* 60</span><br><span class="hljs-comment">* 61</span><br><span class="hljs-comment">* 62</span><br><span class="hljs-comment">* 63</span><br><span class="hljs-comment">* 64</span><br><span class="hljs-comment">* 65</span><br><span class="hljs-comment">* 66</span><br><span class="hljs-comment">* 67</span><br><span class="hljs-comment">* 68</span><br><span class="hljs-comment">* 69</span><br><span class="hljs-comment">* 70</span><br><span class="hljs-comment">* 71</span><br><span class="hljs-comment">* 72</span><br><span class="hljs-comment">* 73</span><br><span class="hljs-comment">* 74</span><br><span class="hljs-comment">* 75</span><br><span class="hljs-comment">* 76</span><br><span class="hljs-comment">* 77</span><br><span class="hljs-comment">* 78</span><br><span class="hljs-comment">* 79</span><br><span class="hljs-comment">* 80</span><br><span class="hljs-comment">* 81</span><br><span class="hljs-comment">* 82</span><br><span class="hljs-comment">* 83</span><br><span class="hljs-comment">* 84</span><br><span class="hljs-comment">* 85</span><br><span class="hljs-comment">* 86</span><br><span class="hljs-comment">* 87</span><br><span class="hljs-comment">* 88</span><br><span class="hljs-comment">* 89</span><br><span class="hljs-comment">* 90</span><br><span class="hljs-comment">* 91</span><br><span class="hljs-comment">* 92</span><br><span class="hljs-comment">* 93</span><br><span class="hljs-comment">* 94</span><br><span class="hljs-comment">* 95</span><br><span class="hljs-comment">* 96</span><br><span class="hljs-comment">* 97</span><br><span class="hljs-comment">* 98</span><br><span class="hljs-comment">* 99</span><br><span class="hljs-comment">* 100</span><br><span class="hljs-comment">* 101</span><br><span class="hljs-comment">* 102</span><br><span class="hljs-comment">* 103</span><br><span class="hljs-comment">* 104</span><br><span class="hljs-comment">* 105</span><br><span class="hljs-comment">* 106</span><br><span class="hljs-comment">* 107</span><br></code></pre></td></tr></table></figure>
+
+修改内容如上，读者可根据实际环境填写。  
+ ![在这里插入图片描述](/images/dd53f771ef9a276c83a2c470f54a4af6.webp)  
+ **需要注意：读者主要修改的部分为：**  
+ **1、iso的存放位置：**  
+ **2、iso 的 checksum 结果和 iso 名称：**  
+ 修改以上两部分即可。
+
+**第四步：** 启动 packer 进行打包：
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">cd /Volumes/DBA/vagrant/packer/packer<span class="hljs-emphasis">_templates/centos</span><br><span class="hljs-emphasis">packer build -only=virtualbox-iso centos-7.9-x86_</span>64.json<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br><span class="hljs-bullet">* </span>2<br></code></pre></td></tr></table></figure>
+
+这里的 `-only=virtualbox-iso` 是指只创建 virtualbox 的 box 文件。  
+ 执行过程中，我们什么都不需要干，只需要安静的做个美男子，等着就完事儿了。😄
+
+**🎥 小剧场：**
+
+闲着也是闲着，研究了一下大神的
+脚本
+，发现有一个脚本挺有意思的，拿出来分享一下：  
+ ⭐️ 就是这个脚本，干什么的呢❓
+
+> 简单来说：当我们安装完一个虚拟机系统之后，想要进行打包时，系统内一些多余的空间或者垃圾会占空间，导致打包出来的 box 过大，使用此脚本会清理这些垃圾和多余空间，使得打包出来的 box 非常的小，基本跟初始镜像的大小一致。❤️ 可以说是灰常 Nice 的小玩意儿了！！！爱了爱了，收藏一波。
+
+言归正传，经过一段时间的等待后，我们的 `packer` 也跑完了：  
+ ![在这里插入图片描述](/images/bc850bd407185d0fe64145d3406c6118.webp)  
+ 😰 报错了，说是访问 GitHub 失败了，阿西吧，外国大神写的脚本，国内 GitHub 难受啊，想办法解决下：
+
+**在 `networking.sh` 脚本中加入如下内容：**
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># modify by luciferliu for github raw.githubusercontent.com:443; Connection refused</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;185.199.108.133 raw.githubusercontent.com&#x27;</span> &gt;&gt;/etc/hosts;<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;185.199.109.133 raw.githubusercontent.com&#x27;</span> &gt;&gt;/etc/hosts;<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;185.199.110.133 raw.githubusercontent.com&#x27;</span> &gt;&gt;/etc/hosts;<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;185.199.111.133 raw.githubusercontent.com&#x27;</span> &gt;&gt;/etc/hosts;<br><br>ping raw.githubusercontent.com<br><br>AI写代码bash<br><br>* 1<br>* 2<br>* 3<br>* 4<br>* 5<br>* 6<br>* 7<br></code></pre></td></tr></table></figure>
+
+**测试一下是否可以：**  
+ 👌🏻，没有毛病啊，老铁，哈哈，忘记 
+linux 
+ ping不会自动停止，无限 ping 了。😓 重来吧，如果能重来，我要选一下代码！😄 ，修改为：
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">ping raw.githubusercontent.com -c 10<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br></code></pre></td></tr></table></figure>
+
+我们只 `ping` 10次哈，意思一下就行！  
+ **再一次，事不过三啊，给爷冲！！！**  
+ **🎉 皇天不负有心人，成了 Nice！👌🏻**  
+ ![在这里插入图片描述](/images/28803273bdbe086766504dea80763d99.webp)  
+ 打包完之后的 box 才 300 多M，来测试一下能不能用吧：
+
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs routeros">vagrant box <span class="hljs-built_in">add</span> /Volumes/DBA/vagrant/packer/bento/builds/centos-7.9.virtualbox.box <span class="hljs-attribute">--name</span>=centos79<br>vagrant init centos79<br>vagrant up <span class="hljs-attribute">--provider</span>=virtualbox<br><br>AI写代码bash<br><br>* 1<br>* 2<br>* 3<br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/2eae846ea47bd434d7f559d318008151.webp)  
+ 连接使用：
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">vagrant ssh<br><br>AI写代码bash<br><br><span class="hljs-bullet">* </span>1<br></code></pre></td></tr></table></figure>
+
+![在这里插入图片描述](/images/0b635c494d499cf28dcdb442087a345b.webp)  
+ 使用没有毛病，很好很强大，到这 `packer` 也就讲完啦。😄
+
+> 关于高阶玩法，我就只讲了两个，一个是 `gnrok` 和 vagrant-share 插件组合使用，一个是 `packer` 打包 box。后续更多的玩法，放到后面慢慢讲，我也在慢慢的研究，慢慢玩，大家有兴趣可以 **关注博主** 一波。😄
+
+## 💦 超神玩法：Vagrant 卸载 💦
+
+**哈哈，都说一切事务的终点就是回到原点，那不就是卸载嘛！😄，为了给大家写 blog，我前前后后卸载安装了好多回了，也算是颇有心得。**
+
+删除 Vagrant 程序将从您的机器中删除 vagrant 二进制文件和所有依赖项。 卸载程序后，您仍然可以使用标准方法重新安装。 卸载 Vagrant 不会删除用户数据。 此部分下面的部分提供了有关如何从系统中删除该目录的更详细说明。
+
+### 1️⃣ Windows系统
+
+使用控制面板的添加/删除程序部分卸载，这就不需要我教了吧，ε=(´ο｀\*))) 实现不行，`geek uninstaller` 走起。
+
+### 2️⃣ Linux系统
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">rm</span> -rf /opt/vagrant<br><span class="hljs-built_in">rm</span> -f /usr/bin/vagrant<br><span class="hljs-built_in">rm</span> -rf ~/.vagrant.d<br><br>AI写代码bash<br><br>* 1<br>* 2<br>* 3<br></code></pre></td></tr></table></figure>
+
+### 3️⃣ macOS系统
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">rm</span> -rf /opt/vagrant /usr/local/bin/vagrant<br><span class="hljs-built_in">sudo</span> pkgutil --forget com.vagrant.vagrant<br><span class="hljs-built_in">rm</span> -rf ~/.vagrant.d<br><br>AI写代码bash<br><br>* 1<br>* 2<br>* 3<br></code></pre></td></tr></table></figure>
+
+在所有平台上，此目录位于您的主目录的根目录中，并命名为 `vagrant.d`。 只需删除 **~/.vagrant.d** 目录即可删除用户数据。 如果在 Windows 上，此目录位于 C:\Users\YourUsername.vagrant.d，其中 YourUsername 是本地用户的用户名。
+
+## ⏰ 写在最后
+
+Vagrant 我也刚接触不久，如果有玩的厉害的大佬，可以加我好友，一起交流下心得，顺便也指点指点。感觉 Vagrant 的可玩度还是挺高的，感兴趣的确实可以入手一哈。😄
+
+**☀️ 最后的最后，分享一下 Vagrant 安装 Oracle数据库系统：**
+
+> **[Vagrant安装Oracle系列](https://blog.csdn.net/m0_50546016/category_11236959.html)**
+
+👇🏻
+**博主联系方式** 可通过搜索下方
+**公众号** 获取 👇🏻
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/">Lucifer</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://pc-study.github.io/csdn-blog/posts/119176009/">https://pc-study.github.io/csdn-blog/posts/119176009/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://pc-study.github.io/csdn-blog" target="_blank">Lucifer三思而后行</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/csdn-blog/tags/vagrant/">vagrant</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a><a class="post-meta__tags" href="/csdn-blog/tags/%E6%95%99%E7%A8%8B/">教程</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/csdn-blog/posts/119484697/" title="产品体验官：Tapdata Cloud &amp;&amp; Oracle 数据库实时同步（详细版）"><img class="cover" src="/csdn-blog/images/dcf23a84d76bc8d2a90f438f5b10b349.webp" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">产品体验官：Tapdata Cloud && Oracle 数据库实时同步（详细版）</div></div><div class="info-2"><div class="info-item-1">Tapdata 数据同步 🌲 前言 ☀️ 环境准备 💻 Linux 环境部署 - 1、添加 Vagrant box 2、初始化启动 Linux 主机 3、Vagrant 连接主机 🌩 Tapdata Agent 本地部署 - 1、安装 Java 环境 2、下载 Tapdata Agent 并部署 3</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119087177/" title="CSDN 支持的＜markdown格式＞表情包大全分享"><img class="cover" src="/csdn-blog/img/covers/tech.svg" onerror="onerror=null;src='/csdn-blog/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">CSDN 支持的＜markdown格式＞表情包大全分享</div></div><div class="info-2"><div class="info-item-1">CSDN表情包大全 🌲 前言 🔆 Emoji表情 👮 人物 👮 ⚡️ 自然 ⚡️ 🔫 物体 🔫 🚘 交通 🚘 🆙 符号 🆙 💢 写在最后 🌲 前言 😄 发现最近 CSDN 的大佬们都在大量使用表情包，这里就分享一版 Markdown 格式的表情包大全。 ⭐️ 建议收藏，随时使用~ ⭐️ ❤️ 使用方</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/csdn-blog/posts/119842873/" title="《零基础安装 Oracle 数据库》单机系列 ① 一键快速安装 Oracle 11GR2 数据库"><img class="cover" src="/csdn-blog/images/644c43399983590f415749804cc0f3b4.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-21</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机系列 ① 一键快速安装 Oracle 11GR2 数据库</div></div><div class="info-2"><div class="info-item-1">目录 前言 安装 下载项目 安装软件 下载 Oracle 安装包 安装 编辑 vagrant.yml 文件 开始安装 使用方式 连接主机 关闭主机 开启主机 销毁主机 写在最后 前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + she</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119855024/" title="《零基础安装 Oracle 数据库》单机ASM系列 4️⃣ 一键快速安装 Oracle 19C 数据库"><img class="cover" src="/csdn-blog/images/fa884e3673745745f10f85d12f63db26.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-22</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机ASM系列 4️⃣ 一键快速安装 Oracle 19C 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持单机集群版本一键安装了！❗️ 但不支持 Linux 6 系统安装！</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119878330/" title="《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库"><img class="cover" src="/csdn-blog/images/4ae7e82aed5e9ef2b241abc9862fd72c.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-23</div><div class="info-item-2">《零基础安装 Oracle 数据库》RAC集群系列 ❸ 简单两步快速安装 Oracle 18C RAC 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持 RAC 集群版本一键安装了！❗️ 依然不支持 Linux 6 系统</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119845979/" title="《零基础安装 Oracle 数据库》单机系列 ⑤ 一键快速安装 Oracle 21C 数据库"><img class="cover" src="/csdn-blog/images/aaa7a3fa8bfa445092bb51c0645f6c6a.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-21</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机系列 ⑤ 一键快速安装 Oracle 21C 数据库</div></div><div class="info-2"><div class="info-item-1">目录 前言 安装 下载项目 安装软件 下载 Oracle 安装包 安装 编辑 vagrant.yml 文件 开始安装 使用方式 连接主机 关闭主机 开启主机 销毁主机 写在最后 前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + she</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119854994/" title="《零基础安装 Oracle 数据库》单机ASM系列 3️⃣ 一键快速安装 Oracle 18C 数据库"><img class="cover" src="/csdn-blog/images/7ee41c205dea5f4fcdae2c7f8c21b31f.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-22</div><div class="info-item-2">《零基础安装 Oracle 数据库》单机ASM系列 3️⃣ 一键快速安装 Oracle 18C 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持单机集群版本一键安装了！❗️ 但不支持 Linux 6 系统安装！</div></div></div></a><a class="pagination-related" href="/csdn-blog/posts/119878365/" title="《零基础安装 Oracle 数据库》RAC集群系列 ❹ 简单两步快速安装 Oracle 19C RAC 数据库"><img class="cover" src="/csdn-blog/images/4ae7e82aed5e9ef2b241abc9862fd72c.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-23</div><div class="info-item-2">《零基础安装 Oracle 数据库》RAC集群系列 ❹ 简单两步快速安装 Oracle 19C RAC 数据库</div></div><div class="info-2"><div class="info-item-1">前言 很多朋友吐槽我的脚本不会用，看不懂，哎，一言难尽！于是，我将 [vagrant + virtualbox + shell脚本] 组合起来，实现了零基础也可安装 Oracle 数据库的方式，我称之为 ，真正一行短命令！ 💡 支持 RAC 集群版本一键安装了！❗️ 依然不支持 Linux 6 系统</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/csdn-blog/img/avatar.jpg" onerror="this.onerror=null;this.src='/csdn-blog/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Lucifer</div><div class="author-info-description">Oracle DBA | 数据库技术博主</div><div class="site-data"><a href="/csdn-blog/archives/"><div class="headline">文章</div><div class="length-num">528</div></a><a href="/csdn-blog/tags/"><div class="headline">标签</div><div class="length-num">176</div></a><a href="/csdn-blog/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://luciferliu.blog.csdn.net/"><i class="fas fa-blog"></i><span>访问 CSDN</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/pc-study" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://luciferliu.blog.csdn.net/" target="_blank" title="CSDN"><i class="fas fa-blog" style="color: #fc5531;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？"><img src="/csdn-blog/img/covers/oracle.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="Oracle 直连 TiDB 可行吗？"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/157245807/" title="Oracle 直连 TiDB 可行吗？">Oracle 直连 TiDB 可行吗？</a><time datetime="2026-01-22T01:16:02.000Z" title="发表于 2026-01-22 09:16:02">2026-01-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"><img src="/csdn-blog/img/covers/bigdata.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156853585/" title="华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南">华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南</a><time datetime="2026-01-12T02:49:22.000Z" title="发表于 2026-01-12 10:49:22">2026-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！"><img src="/csdn-blog/images/48995fcaac30c5e59b0e0d1b7bc9f4ea.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="看来 Oracle 还是听劝的！"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/156195159/" title="看来 Oracle 还是听劝的！">看来 Oracle 还是听劝的！</a><time datetime="2025-12-23T06:00:01.000Z" title="发表于 2025-12-23 14:00:01">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"><img src="/csdn-blog/images/f8d31bc3e34f228ed8f713ae39af4c89.webp" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155349073/" title="【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具">【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具</a><time datetime="2025-11-28T03:44:50.000Z" title="发表于 2025-11-28 11:44:50">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决"><img src="/csdn-blog/img/covers/linux.svg" onerror="this.onerror=null;this.src='/csdn-blog/img/404.jpg'" alt="veeam agent 纳管 Ubuntu 20.04 报错解决"/ loading='lazy'></a><div class="content"><a class="title" href="/csdn-blog/posts/155039369/" title="veeam agent 纳管 Ubuntu 20.04 报错解决">veeam agent 纳管 Ubuntu 20.04 报错解决</a><time datetime="2025-11-19T14:20:46.000Z" title="发表于 2025-11-19 22:20:46">2025-11-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Lucifer</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">Lucifer三思而后行 | CSDN 博客备份站</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/csdn-blog/js/utils.js?v=5.5.4"></script><script src="/csdn-blog/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/csdn-blog/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/csdn-blog/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>
