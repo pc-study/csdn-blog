@@ -6,4 +6,4 @@ node_modules/
 public/
 .deploy*/
 _multiconfig.yml
-.playwright-cli/
+.playwright-cli/.github/workflows/deploy.yml
