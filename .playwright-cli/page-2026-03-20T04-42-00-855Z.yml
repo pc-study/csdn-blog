@@ -1,0 +1,999 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e7]:
+          - link "Lucifer 三思而后行" [ref=e8] [cursor=pointer]:
+            - /url: /csdn-blog/
+            - heading "Lucifer 三思而后行" [level=1] [ref=e9]
+          - paragraph [ref=e10]: CSDN 博客备份归档
+        - navigation [ref=e11]:
+          - list [ref=e12]:
+            - listitem [ref=e13]:
+              - link "首页" [ref=e14] [cursor=pointer]:
+                - /url: /csdn-blog/
+                - text: 首页
+            - listitem [ref=e16]:
+              - link "归档 528" [ref=e17] [cursor=pointer]:
+                - /url: /csdn-blog/archives/
+                - text: 归档
+                - generic [ref=e19]: "528"
+            - listitem [ref=e20]:
+              - link "分类 7" [ref=e21] [cursor=pointer]:
+                - /url: /csdn-blog/categories/
+                - text: 分类
+                - generic [ref=e23]: "7"
+            - listitem [ref=e24]:
+              - link "标签 168" [ref=e25] [cursor=pointer]:
+                - /url: /csdn-blog/tags/
+                - text: 标签
+                - generic [ref=e27]: "168"
+            - listitem [ref=e28]:
+              - link "关于" [ref=e29] [cursor=pointer]:
+                - /url: /csdn-blog/about/
+                - text: 关于
+            - listitem [ref=e31]:
+              - link "CSDN" [ref=e32] [cursor=pointer]:
+                - /url: https://luciferliu.blog.csdn.net/
+                - text: CSDN
+            - listitem [ref=e34]:
+              - button "搜索" [ref=e35] [cursor=pointer]: 搜索
+      - complementary [ref=e37]:
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - img "Lucifer" [ref=e42]
+            - paragraph [ref=e43]: Lucifer
+            - generic [ref=e44]: 528 篇原创技术文章 | Oracle・数据库・Linux・运维
+          - navigation [ref=e46]:
+            - link "528 日志" [ref=e48] [cursor=pointer]:
+              - /url: /csdn-blog/archives/
+              - generic [ref=e49]: "528"
+              - text: 日志
+            - link "7 分类" [ref=e51] [cursor=pointer]:
+              - /url: /csdn-blog/categories/
+              - generic [ref=e52]: "7"
+              - text: 分类
+            - link "168 标签" [ref=e54] [cursor=pointer]:
+              - /url: /csdn-blog/tags/
+              - generic [ref=e55]: "168"
+              - text: 标签
+          - generic [ref=e56]:
+            - link "CSDN" [ref=e58] [cursor=pointer]:
+              - /url: https://luciferliu.blog.csdn.net/
+              - text: CSDN
+            - link "GitHub" [ref=e61] [cursor=pointer]:
+              - /url: https://github.com/pc-study
+              - text: GitHub
+          - link "Creative Commons" [ref=e64] [cursor=pointer]:
+            - /url: https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh
+            - img "Creative Commons" [ref=e65]
+    - generic [ref=e66]:
+      - article [ref=e68]:
+        - generic [ref=e69]:
+          - heading "Oracle 直连 TiDB 可行吗？" [level=2] [ref=e70]:
+            - link "Oracle 直连 TiDB 可行吗？" [ref=e71] [cursor=pointer]:
+              - /url: /csdn-blog/posts/157245807/
+          - generic [ref=e73]:
+            - generic [ref=e74]:
+              - text: 发表于
+              - time [ref=e77]: 2026-01-22
+            - generic [ref=e78]:
+              - text: "|"
+              - text: 分类于
+              - link "Oracle 数据库" [ref=e82] [cursor=pointer]:
+                - /url: /csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/
+            - generic "本文字数" [ref=e83]: 本文字数： 1.1k
+            - generic "阅读时长" [ref=e86]:
+              - text: "|"
+              - text: 阅读时长 ≈ 4 分钟
+        - generic [ref=e89]:
+          - blockquote [ref=e90]:
+            - paragraph [ref=e91]:
+              - text: 大家好，这里是公众号
+              - strong [ref=e92]: DBA 学习之路
+              - text: ，分享一些学习数据库路上的知识和经验。
+          - heading "目录" [level=4] [ref=e93]
+          - list [ref=e94]:
+            - listitem [ref=e95]
+            - listitem [ref=e96]
+            - listitem [ref=e97]
+            - listitem [ref=e98]:
+              - list [ref=e99]:
+                - listitem [ref=e100]
+                - listitem [ref=e101]
+                - listitem [ref=e102]
+                - listitem [ref=e103]
+                - listitem [ref=e104]
+                - listitem [ref=e105]
+                - listitem [ref=e106]
+                - listitem [ref=e107]
+                - listitem [ref=e108]
+                - listitem [ref=e109]
+                - listitem [ref=e110]
+            - listitem [ref=e111]
+          - heading "前言" [level=2] [ref=e112]
+          - paragraph [ref=e113]:
+            - text: 今天业务抛了个问题过来：
+            - strong [ref=e114]: Oracle 能不能直接查 TiDB？
+          - paragraph [ref=e115]:
+            - text: 第一反应是 “这俩不是一套体系”，但转念一想，TiDB 在协议层面兼容 MySQL，而 Oracle 早就可以通过
+            - strong [ref=e116]: 透明网关 + ODBC + DBLink
+            - text: 访问 MySQL，那 TiDB 理论上也走得通。
+          - paragraph [ref=e117]:
+            - text: 实际动手验证了一下，结论很明确：
+            - strong [ref=e118]: 确实可以
+            - text: 。不需要做数据同步，不用引入中间服务，也不必改应用代码，
+            - strong [ref=e119]: 只要在 Oracle 里建一个 DBLink
+            - text: ，就能直接查询 TiDB 表。
+          - paragraph [ref=e120]: 本文记录的就是这次完整的落地过程。
+          - heading "环境信息" [level=2] [ref=e121]
+          - paragraph [ref=e122]: 环境本身并不复杂，两端都是 CentOS 7.9，数据库版本也都算主流：
+          - table [ref=e124]:
+            - rowgroup [ref=e125]:
+              - row "角色 系统 数据库类型 数据库版本" [ref=e126]:
+                - columnheader "角色" [ref=e127]
+                - columnheader "系统" [ref=e128]
+                - columnheader "数据库类型" [ref=e129]
+                - columnheader "数据库版本" [ref=e130]
+            - rowgroup [ref=e131]:
+              - row "源端 Centos7.9 Oracle 19c" [ref=e132]:
+                - cell "源端" [ref=e133]
+                - cell "Centos7.9" [ref=e134]
+                - cell "Oracle" [ref=e135]
+                - cell "19c" [ref=e136]
+              - row "目标端 Centos7.9 TiDB v7.5.0" [ref=e137]:
+                - cell "目标端" [ref=e138]
+                - cell "Centos7.9" [ref=e139]
+                - cell "TiDB" [ref=e140]
+                - cell "v7.5.0" [ref=e141]
+          - heading "Oracle 端配置" [level=2] [ref=e142]
+          - heading "透明网关检查" [level=3] [ref=e143]
+          - paragraph [ref=e144]: Oracle 19c 其实已经把 ODBC 透明网关准备好了，不需要再额外装什么组件。先简单确认一下：
+          - figure [ref=e145]:
+            - generic: ELIXIR
+            - table [ref=e147]:
+              - rowgroup [ref=e148]:
+                - row "1 2 3 4 5 6 7 [oracle@orcl:/home/oracle]$ cd $ORACLE_HOME/hs [oracle@orcl:/u01/app/oracle/product/19.3.0/db/hs]$ dg4odbc Oracle Corporation --- 2026-01-20 16:11:29.887228000 Heterogeneous Agent Release 19.0.0.0.0 - Production Built with Oracle Database Gateway for ODBC" [ref=e149]:
+                  - cell "1 2 3 4 5 6 7" [ref=e150]:
+                    - generic [ref=e151]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                  - cell "[oracle@orcl:/home/oracle]$ cd $ORACLE_HOME/hs [oracle@orcl:/u01/app/oracle/product/19.3.0/db/hs]$ dg4odbc Oracle Corporation --- 2026-01-20 16:11:29.887228000 Heterogeneous Agent Release 19.0.0.0.0 - Production Built with Oracle Database Gateway for ODBC" [ref=e152]:
+                    - generic [ref=e153]:
+                      - generic [ref=e154]: "[oracle@orcl:/home/oracle]$ cd $ORACLE_HOME/hs"
+                      - generic [ref=e155]: "[oracle@orcl:/u01/app/oracle/product/19.3.0/db/hs]$ dg4odbc"
+                      - generic [ref=e156]: Oracle Corporation --- 2026-01-20 16:11:29.887228000
+                      - generic [ref=e157]: Heterogeneous Agent Release 19.0.0.0.0 - Production Built with
+                      - generic [ref=e158]: Oracle Database Gateway for ODBC
+          - paragraph [ref=e161]: 看到 Oracle Database Gateway for ODBC，说明没有问题。
+          - heading "安装 unixODBC" [level=3] [ref=e162]
+          - paragraph [ref=e163]: 透明网关本身在 Oracle 里，但真正和外部数据库打交道，还是要靠系统层面的 ODBC。
+          - paragraph [ref=e164]: CentOS 7 上直接用本地 YUM 源安装即可：
+          - figure [ref=e165]:
+            - generic: ELIXIR
+            - table [ref=e167]:
+              - rowgroup [ref=e168]:
+                - row "1 [root@orcl:/root]# yum install -y unixODBC*" [ref=e169]:
+                  - cell "1" [ref=e170]:
+                    - generic [ref=e171]: "1"
+                  - cell "[root@orcl:/root]# yum install -y unixODBC*" [ref=e172]:
+                    - generic [ref=e174]: "[root@orcl:/root]# yum install -y unixODBC*"
+          - paragraph [ref=e177]: 装完之后，确认一下环境是否正常：
+          - figure [ref=e178]:
+            - generic: RUBY
+            - table [ref=e180]:
+              - rowgroup [ref=e181]:
+                - 'row "1 2 3 4 5 6 [root@orcl:/root]# odbcinst -j unixODBC 2.3.1 DRIVERS............: /etc/odbcinst.ini SYSTEM DATA SOURCES: /etc/odbc.ini FILE DATA SOURCES..: /etc/ODBCDataSources USER DATA SOURCES..: /root/.odbc.ini" [ref=e182]':
+                  - cell "1 2 3 4 5 6" [ref=e183]:
+                    - generic [ref=e184]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                  - 'cell "[root@orcl:/root]# odbcinst -j unixODBC 2.3.1 DRIVERS............: /etc/odbcinst.ini SYSTEM DATA SOURCES: /etc/odbc.ini FILE DATA SOURCES..: /etc/ODBCDataSources USER DATA SOURCES..: /root/.odbc.ini" [ref=e185]':
+                    - generic [ref=e186]:
+                      - generic [ref=e187]: "[root@orcl:/root]# odbcinst -j"
+                      - generic [ref=e188]: unixODBC 2.3.1
+                      - generic [ref=e189]: "DRIVERS............: /etc/odbcinst.ini"
+                      - generic [ref=e190]: "SYSTEM DATA SOURCES: /etc/odbc.ini"
+                      - generic [ref=e191]: "FILE DATA SOURCES..: /etc/ODBCDataSources"
+                      - generic [ref=e192]: "USER DATA SOURCES..: /root/.odbc.ini"
+          - paragraph [ref=e195]: 这一步很关键，如果 ODBC 本身不干净，后面 Oracle 报错会非常 “玄学”。
+          - heading "安装 MySQL ODBC 驱动" [level=3] [ref=e196]
+          - paragraph [ref=e197]: TiDB 在客户端看来就是 MySQL，这里直接使用 MySQL Connector / ODBC。
+          - paragraph [ref=e198]: 驱动从官方归档页下载即可：
+          - paragraph
+          - paragraph [ref=e199]: 安装过程很简单：
+          - figure [ref=e200]:
+            - generic: ELIXIR
+            - table [ref=e202]:
+              - rowgroup [ref=e203]:
+                - row "1 [root@orcl:/root]# rpm -ivh mysql-connector-odbc-8.0.27-1.el7.x86_64.rpm" [ref=e204]:
+                  - cell "1" [ref=e205]:
+                    - generic [ref=e206]: "1"
+                  - cell "[root@orcl:/root]# rpm -ivh mysql-connector-odbc-8.0.27-1.el7.x86_64.rpm" [ref=e207]:
+                    - generic [ref=e209]: "[root@orcl:/root]# rpm -ivh mysql-connector-odbc-8.0.27-1.el7.x86_64.rpm"
+          - heading "配置 ODBC 数据源" [level=3] [ref=e212]
+          - paragraph [ref=e213]:
+            - text: 这里我直接在
+            - code [ref=e214]: /etc/odbc.ini
+            - text: 里定义 DSN，简单直观：
+          - figure [ref=e215]:
+            - generic: MAKEFILE
+            - table [ref=e217]:
+              - rowgroup [ref=e218]:
+                - row "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 [root@orcl:/root]# cat> /etc/odbc.ini <<'EOF' [ODBC Data Sources] myodbc8w = MyODBC 8.0 UNICODE Driver DSN myodbc8a = MyODBC 8.0 ANSI Driver DSN [myodbc8w] Description = Connector/ODBC 8.0 UNICODE Driver DSN Driver = /usr/lib64/libmyodbc8w.so SERVER = 192.168.31.222 USER = root PASSWORD = testtest PORT = 4000 DATABASE = cid_dsds_wex OPTION = 0 TRACE = OFF EOF" [ref=e219]:
+                  - cell "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16" [ref=e220]:
+                    - generic [ref=e221]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                      - text: "8"
+                      - text: "9"
+                      - text: "10"
+                      - text: "11"
+                      - text: "12"
+                      - text: "13"
+                      - text: "14"
+                      - text: "15"
+                      - text: "16"
+                  - cell "[root@orcl:/root]# cat> /etc/odbc.ini <<'EOF' [ODBC Data Sources] myodbc8w = MyODBC 8.0 UNICODE Driver DSN myodbc8a = MyODBC 8.0 ANSI Driver DSN [myodbc8w] Description = Connector/ODBC 8.0 UNICODE Driver DSN Driver = /usr/lib64/libmyodbc8w.so SERVER = 192.168.31.222 USER = root PASSWORD = testtest PORT = 4000 DATABASE = cid_dsds_wex OPTION = 0 TRACE = OFF EOF" [ref=e222]:
+                    - generic [ref=e223]:
+                      - generic [ref=e224]: "[root@orcl:/root]# cat> /etc/odbc.ini <<'EOF'"
+                      - text: "[ODBC Data Sources]"
+                      - text: myodbc8w = MyODBC 8.0 UNICODE Driver DSN
+                      - text: myodbc8a = MyODBC 8.0 ANSI Driver DSN
+                      - text: "[myodbc8w]"
+                      - text: Description = Connector/ODBC 8.0 UNICODE Driver DSN
+                      - text: Driver = /usr/lib64/libmyodbc8w.so
+                      - text: SERVER = 192.168.31.222
+                      - text: USER = root
+                      - text: PASSWORD = testtest
+                      - text: PORT = 4000
+                      - text: DATABASE = cid_dsds_wex
+                      - text: OPTION = 0
+                      - text: TRACE = OFF
+                      - text: EOF
+          - paragraph [ref=e227]:
+            - text: DSN 名称
+            - code [ref=e228]: myodbc8w
+            - text: ，后面会反复用到，一定要前后一致。
+          - heading "验证 ODBC 连通性" [level=3] [ref=e229]
+          - paragraph [ref=e230]:
+            - text: 在引入 Oracle 之前，先用
+            - code [ref=e231]: isql
+            - text: 把 ODBC 本身测通。
+          - figure [ref=e232]:
+            - generic: GHERKIN
+            - table [ref=e234]:
+              - rowgroup [ref=e235]:
+                - row "1 2 3 4 5 6 7 8 9 10 [oracle@orcl:/home/oracle]$ isql myodbc8w -v +---------------------------------------+ | Connected! | | | | sql-statement | | help [tablename] | | quit | | | +---------------------------------------+ SQL> show tables;" [ref=e236]:
+                  - cell "1 2 3 4 5 6 7 8 9 10" [ref=e237]:
+                    - generic [ref=e238]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                      - text: "8"
+                      - text: "9"
+                      - text: "10"
+                  - cell "[oracle@orcl:/home/oracle]$ isql myodbc8w -v +---------------------------------------+ | Connected! | | | | sql-statement | | help [tablename] | | quit | | | +---------------------------------------+ SQL> show tables;" [ref=e239]:
+                    - generic [ref=e240]:
+                      - generic [ref=e241]: "[oracle@orcl:/home/oracle]$ isql myodbc8w -v"
+                      - text: +---------------------------------------+
+                      - generic [ref=e242]: "| Connected! |"
+                      - generic [ref=e243]: "| |"
+                      - generic [ref=e244]: "| sql-statement |"
+                      - generic [ref=e245]: "| help [tablename] |"
+                      - generic [ref=e246]: "| quit |"
+                      - generic [ref=e247]: "| |"
+                      - text: +---------------------------------------+
+                      - text: SQL> show tables;
+          - paragraph [ref=e250]:
+            - text: 能正常
+            - code [ref=e251]: Connected!
+            - text: ，说明
+            - strong [ref=e252]: Linux → TiDB
+            - text: 这段链路已经没有问题，后续的问题只会发生在 Oracle 透明网关层。
+          - heading "配置 Oracle TNS" [level=3] [ref=e253]
+          - paragraph [ref=e254]: 接下来开始配置 Oracle。
+          - paragraph [ref=e255]:
+            - text: 先在
+            - code [ref=e256]: tnsnames.ora
+            - text: 里定义一个服务名，注意这里的 HOST 是 Oracle 自己的 IP，不是 TiDB 的：
+          - figure [ref=e257]:
+            - generic: ROUTEROS
+            - table [ref=e259]:
+              - rowgroup [ref=e260]:
+                - row "1 2 3 4 5 6 7 8 9 10 11 12 [oracle@orcl:/home/oracle]$ cat >> $ORACLE_HOME/network/admin/tnsnames.ora <<'EOF' myodbc8w = (DESCRIPTION= (ADDRESS= (PROTOCOL=TCP) (HOST= 192.168.31.221) (PORT=1521) ) (CONNECT_DATA= (SID=myodbc8w) ) (HS=OK) ) EOF" [ref=e261]:
+                  - cell "1 2 3 4 5 6 7 8 9 10 11 12" [ref=e262]:
+                    - generic [ref=e263]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                      - text: "8"
+                      - text: "9"
+                      - text: "10"
+                      - text: "11"
+                      - text: "12"
+                  - cell "[oracle@orcl:/home/oracle]$ cat >> $ORACLE_HOME/network/admin/tnsnames.ora <<'EOF' myodbc8w = (DESCRIPTION= (ADDRESS= (PROTOCOL=TCP) (HOST= 192.168.31.221) (PORT=1521) ) (CONNECT_DATA= (SID=myodbc8w) ) (HS=OK) ) EOF" [ref=e264]:
+                    - generic [ref=e265]:
+                      - generic [ref=e266]: "[oracle@orcl:/home/oracle]$ cat >> $ORACLE_HOME/network/admin/tnsnames.ora <<'EOF'"
+                      - text: myodbc8w =
+                      - text: (DESCRIPTION=
+                      - text: (ADDRESS=
+                      - generic [ref=e267]: (PROTOCOL=TCP) (HOST= 192.168.31.221) (PORT=1521)
+                      - text: )
+                      - text: (CONNECT_DATA=
+                      - generic [ref=e268]: (SID=myodbc8w)
+                      - text: )
+                      - generic [ref=e269]: (HS=OK)
+                      - text: )
+                      - text: EOF
+          - heading "配置透明网关参数" [level=3] [ref=e272]
+          - paragraph [ref=e273]:
+            - text: 透明网关的核心配置文件在，文件名必须是
+            - code [ref=e274]: init<SID>.ora
+            - text: ，这里 SID 就是
+            - strong [ref=e275]: myodbc8w
+            - text: ：
+          - figure [ref=e276]:
+            - generic: ROUTEROS
+            - table [ref=e278]:
+              - rowgroup [ref=e279]:
+                - row "1 2 3 4 5 6 7 8 [oracle@orcl:/home/oracle]$ cat> $ORACLE_HOME/hs/admin/initmyodbc8w.ora <<'EOF' HS_FDS_CONNECT_INFO=myodbc8w HS_FDS_SHAREABLE_NAME=/usr/lib64/libodbc.so HS_FDS_SUPPORT_STATISTICS=FALSE HS_LANGUAGE = AMERICAN_AMERICA.AL32UTF8 HS_NLS_NCHAR = UCS2 HS_FDS_TRACE_LEVEL = debug EOF" [ref=e280]:
+                  - cell "1 2 3 4 5 6 7 8" [ref=e281]:
+                    - generic [ref=e282]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                      - text: "8"
+                  - cell "[oracle@orcl:/home/oracle]$ cat> $ORACLE_HOME/hs/admin/initmyodbc8w.ora <<'EOF' HS_FDS_CONNECT_INFO=myodbc8w HS_FDS_SHAREABLE_NAME=/usr/lib64/libodbc.so HS_FDS_SUPPORT_STATISTICS=FALSE HS_LANGUAGE = AMERICAN_AMERICA.AL32UTF8 HS_NLS_NCHAR = UCS2 HS_FDS_TRACE_LEVEL = debug EOF" [ref=e283]:
+                    - generic [ref=e284]:
+                      - generic [ref=e285]: "[oracle@orcl:/home/oracle]$ cat> $ORACLE_HOME/hs/admin/initmyodbc8w.ora <<'EOF'"
+                      - generic [ref=e286]: HS_FDS_CONNECT_INFO=myodbc8w
+                      - generic [ref=e287]: HS_FDS_SHAREABLE_NAME=/usr/lib64/libodbc.so
+                      - generic [ref=e288]: HS_FDS_SUPPORT_STATISTICS=FALSE
+                      - text: HS_LANGUAGE = AMERICAN_AMERICA.AL32UTF8
+                      - text: HS_NLS_NCHAR = UCS2
+                      - generic [ref=e289]: HS_FDS_TRACE_LEVEL = debug
+                      - text: EOF
+          - paragraph [ref=e292]: 如果后续有字符集、SQL 转换相关问题，这个文件通常是第一排查点。
+          - heading "配置监听" [level=3] [ref=e293]
+          - paragraph [ref=e294]:
+            - text: 透明网关是通过监听拉起的，需要在
+            - code [ref=e295]: listener.ora
+            - text: 中显式注册一个 SID：
+          - figure [ref=e296]:
+            - generic: ROUTEROS
+            - table [ref=e298]:
+              - rowgroup [ref=e299]:
+                - row "1 2 3 4 5 6 7 8 9 10 11 [oracle@orcl:/home/oracle]$ cat>> $ORACLE_HOME/network/admin/listener.ora <<'EOF' SID_LIST_LISTENER= (SID_LIST= (SID_DESC= (SID_NAME=myodbc8w) (ORACLE_HOME=/u01/app/oracle/product/19.3.0/db) (PROGRAM=dg4odbc) (ENVS=LD_LIBRARY_PATH=/usr/lib64) ) ) EOF" [ref=e300]:
+                  - cell "1 2 3 4 5 6 7 8 9 10 11" [ref=e301]:
+                    - generic [ref=e302]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                      - text: "8"
+                      - text: "9"
+                      - text: "10"
+                      - text: "11"
+                  - cell "[oracle@orcl:/home/oracle]$ cat>> $ORACLE_HOME/network/admin/listener.ora <<'EOF' SID_LIST_LISTENER= (SID_LIST= (SID_DESC= (SID_NAME=myodbc8w) (ORACLE_HOME=/u01/app/oracle/product/19.3.0/db) (PROGRAM=dg4odbc) (ENVS=LD_LIBRARY_PATH=/usr/lib64) ) ) EOF" [ref=e303]:
+                    - generic [ref=e304]:
+                      - generic [ref=e305]: "[oracle@orcl:/home/oracle]$ cat>> $ORACLE_HOME/network/admin/listener.ora <<'EOF'"
+                      - text: SID_LIST_LISTENER=
+                      - text: (SID_LIST=
+                      - text: (SID_DESC=
+                      - generic [ref=e306]: (SID_NAME=myodbc8w)
+                      - generic [ref=e307]: (ORACLE_HOME=/u01/app/oracle/product/19.3.0/db)
+                      - generic [ref=e308]: (PROGRAM=dg4odbc)
+                      - generic [ref=e309]: (ENVS=LD_LIBRARY_PATH=/usr/lib64)
+                      - text: )
+                      - text: )
+                      - text: EOF
+          - paragraph [ref=e312]: 修改完成后，重载监听：
+          - figure [ref=e313]:
+            - generic: ELIXIR
+            - table [ref=e315]:
+              - rowgroup [ref=e316]:
+                - row "1 [oracle@orcl:/home/oracle]$ lsnrctl reload" [ref=e317]:
+                  - cell "1" [ref=e318]:
+                    - generic [ref=e319]: "1"
+                  - cell "[oracle@orcl:/home/oracle]$ lsnrctl reload" [ref=e320]:
+                    - generic [ref=e322]: "[oracle@orcl:/home/oracle]$ lsnrctl reload"
+          - heading "验证 TNS 连通性" [level=3] [ref=e325]
+          - paragraph [ref=e326]: 检查 TNS：
+          - figure [ref=e327]:
+            - generic: ELIXIR
+            - table [ref=e329]:
+              - rowgroup [ref=e330]:
+                - row "1 [oracle@orcl:/home/oracle]$ tnsping myodbc8w" [ref=e331]:
+                  - cell "1" [ref=e332]:
+                    - generic [ref=e333]: "1"
+                  - cell "[oracle@orcl:/home/oracle]$ tnsping myodbc8w" [ref=e334]:
+                    - generic [ref=e336]: "[oracle@orcl:/home/oracle]$ tnsping myodbc8w"
+          - paragraph [ref=e339]:
+            - text: 只要不报错，说明监听侧已经能正确拉起
+            - code [ref=e340]: dg4odbc
+            - text: 。
+          - heading "创建 DBLink" [level=3] [ref=e341]
+          - paragraph [ref=e342]: 创建 DBLink：
+          - figure [ref=e343]:
+            - generic: PGSQL
+            - table [ref=e345]:
+              - rowgroup [ref=e346]:
+                - row "1 2 3 4 SYS@orcl SQL> create public database link testtidb connect to \"root\" identified by \"testtest\" using 'myodbc8w';" [ref=e347]:
+                  - cell "1 2 3 4" [ref=e348]:
+                    - generic [ref=e349]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                  - cell "SYS@orcl SQL> create public database link testtidb connect to \"root\" identified by \"testtest\" using 'myodbc8w';" [ref=e350]:
+                    - generic [ref=e351]:
+                      - generic [ref=e352]: SYS@orcl SQL> create public database link testtidb
+                      - generic [ref=e353]: connect to "root"
+                      - generic [ref=e354]: identified by "testtest"
+                      - generic [ref=e355]: using 'myodbc8w';
+          - heading "查询验证" [level=3] [ref=e358]
+          - paragraph [ref=e359]: 测试查询：
+          - figure [ref=e360]:
+            - generic: OXYGENE
+            - table [ref=e362]:
+              - rowgroup [ref=e363]:
+                - row "1 2 3 4 5 SYS@orcl SQL> select count(*) from test@testtidb ; COUNT(*) ---------- 44527956" [ref=e364]:
+                  - cell "1 2 3 4 5" [ref=e365]:
+                    - generic [ref=e366]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                  - cell "SYS@orcl SQL> select count(*) from test@testtidb ; COUNT(*) ---------- 44527956" [ref=e367]:
+                    - generic [ref=e368]:
+                      - generic [ref=e369]: SYS@orcl SQL> select count(*) from test@testtidb ;
+                      - generic [ref=e370]: COUNT(*)
+                      - text: "----------"
+                      - generic [ref=e371]: "44527956"
+          - paragraph [ref=e374]: 结果正常返回，说明链路已经完全打通。
+          - heading "总结" [level=2] [ref=e375]
+          - paragraph [ref=e376]: 从 Oracle 到 TiDB，看起来是两套体系，其实中间那条桥一直都在。ODBC + 透明网关 + DBLink，这套 “老技术”，在今天依然非常稳。
+          - paragraph [ref=e377]: 只要分清楚每一层的职责，先通 ODBC，再通 Oracle，整个过程反而比想象中要顺得多。
+      - article [ref=e379]:
+        - generic [ref=e380]:
+          - heading "华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南" [level=2] [ref=e381]:
+            - link "华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南" [ref=e382] [cursor=pointer]:
+              - /url: /csdn-blog/posts/156853585/
+          - generic [ref=e384]:
+            - generic [ref=e385]:
+              - text: 发表于
+              - time [ref=e388]: 2026-01-12
+            - generic [ref=e389]:
+              - text: "|"
+              - text: 分类于
+              - link "大数据 & AI" [ref=e393] [cursor=pointer]:
+                - /url: /csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/
+            - generic "本文字数" [ref=e394]: 本文字数： 1.3k
+            - generic "阅读时长" [ref=e397]:
+              - text: "|"
+              - text: 阅读时长 ≈ 5 分钟
+        - generic [ref=e400]:
+          - paragraph [ref=e401]: 华为联合云南建投物流推出的智慧物流全球样板点，搭配云链物流大模型的研发启动，近期成为行业热议焦点。从原料采购到销售服务的全流程智能化管理，让物流行业的数智化转型有了清晰的实践范本。
+          - paragraph [ref=e402]: 而这一成功案例的底层逻辑，正藏在《华为数据之道》中。对于正在数字化转型路上挣扎的企业而言，这本书绝非空泛的理论合集，而是能直接落地的实战指南，更是破解转型困境的核心密钥。
+          - paragraph [ref=e403]: 华为的成功，从不是偶然
+          - paragraph [ref=e404]: 为什么华为能在不同行业的数字化转型中屡创佳绩？核心在于其沉淀多年的系统化数据治理方法论。
+          - paragraph [ref=e405]: 《华为数据之道》由华为数据管理部亲笔撰写，凝聚了华为支撑全球 170 多个国家 / 地区多业态运营的实战经验。书中提出的 “面向‘联接共享’的数据底座” 理念，正是智慧物流样板点成功的核心支撑 —— 通过数据湖实现全链条数据的逻辑汇聚，再以标准化的主题联接方式将数据转化为可用信息，最终实现物流全流程的可视可控。 针对企业普遍面临的 “数据孤岛”“标准混乱” 等痛点，书中构建的 “企业级数据综合治理体系” 给出了系统性解决方案：明确数据管理的责任主体在业务，建立统一的数据标准、数据模型与分布架构，理顺数据与变革、运营、IT 的协同关系。云南建投物流之所以能快速打破业务环节的数据壁垒，正是这套体系的成功复用。
+          - paragraph [ref=e406]: 跨行业通用，所有转型企业都需要
+          - paragraph [ref=e407]: 作为典型的非数字原生企业，华为曾面临产业链条长、数据复杂、历史包袱重等传统企业的共性问题。而《华为数据之道》正是基于这些痛点，总结出普适性极强的转型框架，无论身处哪个行业，都能从中找到适配的解决方案。
+          - list [ref=e408]:
+            - listitem [ref=e409]:
+              - paragraph [ref=e410]: 数据从业者：书中关于信息架构四组件、数据底座建设细节、数据服务生命周期管理的内容，可直接应用于实际工作，大幅减少试错成本；
+            - listitem [ref=e411]:
+              - paragraph [ref=e412]: 企业管理者：能深入理解数据治理的底层逻辑，掌握搭建高效数据管理组织的方法，明确 “数据管理责任在业务” 的核心原则；
+            - listitem [ref=e413]:
+              - paragraph [ref=e414]: 转型推动者：从数据分类、质量管控到安全共享的全流程方法论，可有效避开 “重技术轻治理”“为数字化而数字化” 的常见误区。
+          - paragraph [ref=e415]: 国家电网大数据中心主任王继业曾评价：“这本书是在充分的数据治理实践基础上提炼而成的，具有可操作的方法论，是企业数据工作者对口的有益良药。”
+          - paragraph [ref=e416]: 北汽福田集团 IT 总监辛海明也强烈推荐，称其 “全面阐述了数字化转型时期企业数据治理的全对象、全流程、全要素”。
+          - paragraph [ref=e417]: 为什么这本手册值得闭眼入？
+          - paragraph [ref=e418]: 在公开出版前，《华为数据之道》已在华为内部发行 14000 余册，积累了极佳的口碑。其核心价值，在于 “真实、实用、可复用”：
+          - paragraph [ref=e419]: ✅ 实战沉淀：所有方法论均来自华为自身数字化转型的亲身实践，而非理论堆砌，每一个模型、规范都经过实际场景验证；
+          - paragraph [ref=e420]: ✅ 内容全面：涵盖数据治理全流程，从企业级治理体系搭建，到数据感知、质量提升、安全共享，再到未来 AI 治理与数据生态，层层递进；
+          - paragraph [ref=e421]: ✅ 大咖背书：华为董事、质量与流程 IT 总裁陶景文等高管写序推荐，北大教授、头部企业 IT 负责人等行业权威纷纷力荐；
+          - paragraph [ref=e422]: ✅ 细节拉满：详细拆解数据湖建设标准、元数据管理策略、数据服务分类规范等实操内容，拿到就能落地应用。
+          - paragraph [ref=e423]: 如今，数据已成为企业核心生产要素，数字化转型不再是 “选择题” 而是 “必修课”。但很多企业仍在盲目跟风做 AI、建系统，却忽略了最基础的数据治理。华为的实践已经证明：只有先通过科学的治理让数据成为高质量资产，才能充分释放其价值。
+          - paragraph [ref=e424]: 《华为数据之道》提供的不仅是技术与流程的标准，更是一种 “以数据为纲” 的转型思维。无论你身处物流、制造、金融还是政务领域，这本书都将为你打通数据壁垒、激活数据价值提供最坚实的支撑。 现在入手《华为数据之道》，借鉴华为的成熟经验，让企业数字化转型少走弯路，让数据真正成为驱动业务增长的强大引擎。
+          - blockquote [ref=e425]:
+            - paragraph [ref=e426]:
+              - strong [ref=e427]: 京东链接
+              - text: ：
+      - article [ref=e429]:
+        - generic [ref=e430]:
+          - heading "看来 Oracle 还是听劝的！" [level=2] [ref=e431]:
+            - link "看来 Oracle 还是听劝的！" [ref=e432] [cursor=pointer]:
+              - /url: /csdn-blog/posts/156195159/
+          - generic [ref=e434]:
+            - generic [ref=e435]:
+              - text: 发表于
+              - time [ref=e438]: 2025-12-23
+            - generic [ref=e439]:
+              - text: "|"
+              - text: 分类于
+              - link "数据库" [ref=e443] [cursor=pointer]:
+                - /url: /csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
+            - generic "本文字数" [ref=e444]: 本文字数： 529
+            - generic "阅读时长" [ref=e447]:
+              - text: "|"
+              - text: 阅读时长 ≈ 2 分钟
+        - generic [ref=e450]:
+          - blockquote [ref=e451]:
+            - paragraph [ref=e452]:
+              - text: 大家好，这里是公众号
+              - strong [ref=e453]: DBA 学习之路
+              - text: ，分享一些学习数据库路上的知识和经验。
+          - paragraph [ref=e454]: "@"
+          - heading "前言" [level=2] [ref=e455]
+          - paragraph [ref=e456]: 自从 Oracle MOS 更新版本之后，备受吐槽，各种问题纷至沓来，我也写了两篇文章聊了聊这个事：
+          - list [ref=e457]:
+            - listitem [ref=e458]
+            - listitem [ref=e459]
+          - paragraph [ref=e460]: 今天登陆 MOS，发现 12.18 号更新了一篇文章：
+          - paragraph
+          - paragraph [ref=e461]:
+            - strong [ref=e462]: 文章的大概意思就是
+            - text: ：关于用户之前吐槽 MOS 的大多数问题，我们都已经进行修复或者在修复中了。
+          - paragraph
+          - heading "已解决的问题" [level=3] [ref=e463]
+          - list [ref=e464]:
+            - listitem [ref=e465]:
+              - strong [ref=e466]: 文档搜索功能修复
+              - text: ：之前用户无法通过旧版文档编号（如 472449.1）搜索知识文章，且部分文档不显示，现已提升搜索能力并修复链接重定向。
+            - listitem [ref=e467]:
+              - strong [ref=e468]: 旧版收藏夹恢复
+              - text: ：用户可通过
+              - strong [ref=e469]:
+                - code [ref=e470]: Account → Preferences → Previous Favorites
+              - text: 查看，
+              - strong [ref=e471]: 仅迁移以 “.1” 结尾的文章收藏
+              - text: ，原文件夹内的收藏现以平铺列表展示，已删除文章将无法访问。
+            - listitem [ref=e472]:
+              - strong [ref=e473]: 文章打印功能修复
+              - text: ：之前从门户直接打印时格式不理想，现已修复。浏览器打印功能得到增强，文章标题可完整显示而不被截断。
+            - listitem [ref=e474]:
+              - strong [ref=e475]: 文章内大型表格显示修复
+              - text: ：之前包含多列表格的文章显示不正常，现已完成格式优化并实施了进一步改进。
+          - paragraph [ref=e476]: 文档搜索功能：
+          - paragraph
+          - paragraph [ref=e477]: 旧版收藏夹：
+          - paragraph
+          - paragraph [ref=e478]:
+            - text: 文章打印功能（
+            - strong [ref=e479]: 文章标题还是被截断的
+            - text: ），还是没修复：
+          - paragraph
+          - heading "改进中" [level=3] [ref=e480]
+          - list [ref=e481]:
+            - listitem [ref=e482]:
+              - strong [ref=e483]: 外部链接重定向问题
+              - text: ：从外部网站（如谷歌）或旧书签访问知识文章的链接可能无法正常跳转，相关链接处理功能仍在持续优化。
+            - listitem [ref=e484]:
+              - strong [ref=e485]: 大屏幕文章显示优化
+              - text: ：目前文章以固定宽度显示，未充分利用大屏空间，正在更新以适应不同屏幕尺寸。
+          - heading "总结" [level=2] [ref=e486]
+          - paragraph [ref=e487]: 目前看起来对我的帮助不大，但是这个态度还是值得点赞，希望优化的越来越好！
+          - separator [ref=e488]
+          - heading "前言" [level=1] [ref=e489]
+      - article [ref=e491]:
+        - generic [ref=e492]:
+          - heading "【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具" [level=2] [ref=e493]:
+            - link "【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具" [ref=e494] [cursor=pointer]:
+              - /url: /csdn-blog/posts/155349073/
+          - generic [ref=e496]:
+            - generic [ref=e497]:
+              - text: 发表于
+              - time [ref=e500]: 2025-11-28
+            - generic [ref=e501]:
+              - text: "|"
+              - text: 分类于
+              - link "数据库" [ref=e505] [cursor=pointer]:
+                - /url: /csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
+            - generic "本文字数" [ref=e506]: 本文字数： 1.3k
+            - generic "阅读时长" [ref=e509]:
+              - text: "|"
+              - text: 阅读时长 ≈ 5 分钟
+        - generic [ref=e512]:
+          - heading "前言" [level=2] [ref=e513]
+          - paragraph [ref=e514]: 作为一名长期奋战在一线的 DBA，我深知数据库运维工作的复杂性与挑战性。随着国产数据库的快速发展，我们在享受技术自主可控带来的安全感的同时，也面临着多款数据库并存的运维压力。不同的数据库产品意味着需要掌握不同的管理工具，这无疑增加了我们的工作负担。
+          - paragraph [ref=e515]: 最近，我在实际工作中接触到了金仓的 KSQL Developer 数据库管理工具，经过一段时间的使用，确实感受到了它的实用价值，今天就想和大家分享这款工具的使用体验。
+          - heading "安装 KSQL Developer" [level=2] [ref=e516]
+          - paragraph [ref=e517]: KSQL Developer 的安装过程十分友好，真正做到了” 一键安装”。只需要解压安装包，双击运行 setup.bat 文件，然后按照安装向导的提示一步步操作即可。
+          - paragraph [ref=e518]:
+            - text: 解压后，双击运行
+            - code [ref=e519]: setup.bat
+            - text: 开始安装：
+          - paragraph
+          - paragraph
+          - paragraph
+          - paragraph
+          - paragraph
+          - paragraph
+          - paragraph
+          - paragraph
+          - paragraph [ref=e520]: 整个安装过程清晰直观，没有复杂的配置选项，从启动安装程序到完成安装，只需要连续点击” 下一步” 按钮，几分钟内就能完成所有安装步骤。这种简洁的安装体验对于我们 DBA 来说非常实用，特别是在需要快速部署工具的紧急情况下。
+          - heading "异构数据库支持" [level=2] [ref=e521]
+          - paragraph [ref=e522]: 在实际的运维环境中，我们往往需要同时管理多种类型的数据库。KSQL Developer 在这方面表现突出，它提供了对多种主流数据库的全面支持。
+          - heading "Kingbase" [level=3] [ref=e523]
+          - paragraph [ref=e524]: 对金仓数据库的自然支持当然不在话下，连接配置简单直观：
+          - paragraph
+          - paragraph [ref=e525]: 只需要输入正确的主机 IP、端口号、用户名和密码，就能快速建立连接：
+          - paragraph
+          - paragraph [ref=e526]: 测试连接功能让我们在正式使用前能够验证配置的正确性，避免了因配置错误导致的连接问题：
+          - paragraph
+          - paragraph
+          - heading "Oracle" [level=3] [ref=e527]
+          - paragraph [ref=e528]: 对 Oracle 数据库的支持同样令人满意。在连接 Oracle 数据库时，KSQL Developer 提供了专门的配置选项，连接过程流畅，没有出现兼容性问题。
+          - paragraph
+          - paragraph
+          - paragraph
+          - paragraph [ref=e529]: 这对于需要同时管理金仓和 Oracle 数据库的 DBA 来说，确实提高了工作效率。
+          - heading "MySQL" [level=3] [ref=e530]
+          - paragraph [ref=e531]: 连接 MySQL 数据库时可能会遇到一个小问题 —— 由于 MySQL 默认关闭公钥检索功能，需要在驱动设置的连接属性中手动添加 allowPublicKeyRetrieval = true 参数。
+          - paragraph
+          - paragraph [ref=e532]:
+            - text: 这里遇到个问题，需要设置一下（
+            - strong [ref=e533]: 因为允许公钥检索是默认关闭的，需要将它开启
+            - text: ）：
+          - paragraph
+          - paragraph [ref=e534]:
+            - text: 在驱动设置 –> 连接属性设置，手动添加一个用户属性
+            - code [ref=e535]: allowPublicKeyRetrieval=true
+            - text: ：
+          - paragraph
+          - paragraph [ref=e536]: 再次测试连接即可：
+          - paragraph
+          - paragraph
+          - paragraph [ref=e537]: 这个问题的解决方案很直观，在工具界面中很容易找到相应的设置位置。一旦完成这个简单的配置，连接 MySQL 数据库就变得十分顺畅。
+          - paragraph [ref=e538]: 这种对多种数据库的良好支持，使得我们可以在一个统一的界面中管理不同类型的数据库，大大减少了在不同管理工具之间切换的时间成本。
+          - heading "对象图形化管理" [level=2] [ref=e539]
+          - paragraph [ref=e540]: 即使是对 SQL 语法不太熟悉的初级 DBA，也能通过 KSQL Developer 的图形化界面轻松完成各种数据库对象的管理工作。
+          - heading "新建库" [level=3] [ref=e541]
+          - paragraph [ref=e542]: 创建数据库的过程完全可视化，通过填写数据库的基本参数就能快速完成，无需记忆复杂的 SQL 语句。
+          - paragraph
+          - paragraph
+          - heading "新建模式" [level=3] [ref=e543]
+          - paragraph [ref=e544]: 模式管理同样简单，图形化界面让我们能够直观地设置模式的各项属性。
+          - paragraph
+          - paragraph
+          - paragraph [ref=e545]: 特别值得一提的是，工具还提供了 DDL 语句预览功能，这对于学习 SQL 语法或者验证操作的正确性都有很大帮助：
+          - paragraph
+          - paragraph
+          - heading "建表" [level=3] [ref=e546]
+          - paragraph [ref=e547]: 数据表管理功能十分完善，从创建表结构到编辑表数据，都能通过直观的界面操作完成。
+          - paragraph
+          - paragraph
+          - paragraph [ref=e548]: 在表格数据编辑方面，工具提供了类似 Excel 的编辑体验，支持直接在中修改数据：
+          - paragraph
+          - paragraph
+          - paragraph
+          - paragraph [ref=e549]: 并且提供了便捷的数据查询功能：
+          - paragraph
+          - paragraph [ref=e550]: 除了这些基本功能外，KSQL Developer 还支持视图、索引、存储过程等多种数据库对象的管理：
+          - paragraph
+          - paragraph [ref=e551]: 基本上覆盖了我们日常运维中的所有需求。
+          - heading "写在最后" [level=2] [ref=e552]
+          - paragraph [ref=e553]: 经过实际使用，我认为 KSQL Developer 确实是一款值得推荐的数据库管理工具。它不仅在连接金仓数据库时表现出色，在对其他异构数据库的支持方面也做得相当不错。直观的图形化界面降低了数据库管理的技术门槛，智能化的开发功能则提高了专业 DBA 的工作效率。
+          - paragraph [ref=e554]: 在当前国产化替代的大背景下，拥有这样一款既支持国产数据库又能管理传统数据库的工具，对我们 DBA 来说确实很有价值。它帮助我们更好地应对多类型数据库并存的运维环境，是一款实用且高效的数据库管理工具。
+      - article [ref=e556]:
+        - generic [ref=e557]:
+          - heading "veeam agent 纳管 Ubuntu 20.04 报错解决" [level=2] [ref=e558]:
+            - link "veeam agent 纳管 Ubuntu 20.04 报错解决" [ref=e559] [cursor=pointer]:
+              - /url: /csdn-blog/posts/155039369/
+          - generic [ref=e561]:
+            - generic [ref=e562]:
+              - text: 发表于
+              - time [ref=e565]: 2025-11-19
+            - generic [ref=e566]:
+              - text: "|"
+              - text: 分类于
+              - link "Linux 运维" [ref=e570] [cursor=pointer]:
+                - /url: /csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/
+            - generic "本文字数" [ref=e571]: 本文字数： 846
+            - generic "阅读时长" [ref=e574]:
+              - text: "|"
+              - text: 阅读时长 ≈ 3 分钟
+        - generic [ref=e577]:
+          - heading "前言" [level=2] [ref=e578]
+          - paragraph [ref=e579]: 昨天 Veeam 纳管一台 Ubuntu 20.04 时遇到了一些问题，先是提示主机需要联外网下载依赖，配置网络之后，agent 安装又失败了，报错：
+          - figure [ref=e580]:
+            - generic: PGSQL
+            - table [ref=e582]:
+              - rowgroup [ref=e583]:
+                - 'row "1 2025/11/18 17:06:50 Warning Failed to connect to 10.199.41.71 Details: Failed to execute agent management command print. No such file or directory Failed to connect: /var/tmp/veeam/socket/veeamservice.sock. Failed to connect to veeamservice daemon." [ref=e584]':
+                  - cell "1" [ref=e585]:
+                    - generic [ref=e586]: "1"
+                  - 'cell "2025/11/18 17:06:50 Warning Failed to connect to 10.199.41.71 Details: Failed to execute agent management command print. No such file or directory Failed to connect: /var/tmp/veeam/socket/veeamservice.sock. Failed to connect to veeamservice daemon." [ref=e587]':
+                    - generic [ref=e589]: "2025/11/18 17:06:50 Warning Failed to connect to 10.199.41.71 Details: Failed to execute agent management command print. No such file or directory Failed to connect: /var/tmp/veeam/socket/veeamservice.sock. Failed to connect to veeamservice daemon."
+          - paragraph [ref=e592]: 本文记录一下分析过程以及解决步骤。
+          - heading "问题分析" [level=2] [ref=e593]
+          - paragraph [ref=e594]: 首先查看主机系统版本：
+          - figure [ref=e595]:
+            - generic: ROUTEROS
+            - table [ref=e597]:
+              - rowgroup [ref=e598]:
+                - row "1 2 3 4 5 root@apods01:~# cat /etc/lsb-release DISTRIB_ID=Ubuntu DISTRIB_RELEASE=20.04 DISTRIB_CODENAME=focal DISTRIB_DESCRIPTION=\"Ubuntu 20.04.1 LTS\"" [ref=e599]:
+                  - cell "1 2 3 4 5" [ref=e600]:
+                    - generic [ref=e601]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                  - cell "root@apods01:~# cat /etc/lsb-release DISTRIB_ID=Ubuntu DISTRIB_RELEASE=20.04 DISTRIB_CODENAME=focal DISTRIB_DESCRIPTION=\"Ubuntu 20.04.1 LTS\"" [ref=e602]:
+                    - generic [ref=e603]:
+                      - text: root@apods01:~# cat /etc/lsb-release
+                      - generic [ref=e604]: DISTRIB_ID=Ubuntu
+                      - generic [ref=e605]: DISTRIB_RELEASE=20.04
+                      - generic [ref=e606]: DISTRIB_CODENAME=focal
+                      - generic [ref=e607]: DISTRIB_DESCRIPTION="Ubuntu 20.04.1 LTS"
+          - paragraph [ref=e610]: VBR 纳管报错，格式化内容之后如下：
+          - figure [ref=e611]:
+            - generic: PGSQL
+            - table [ref=e613]:
+              - rowgroup [ref=e614]:
+                - 'row "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 Failed to install veeam_6.3.1.1016_amd64.deb, veeam-libs_6.3.1.1016_amd64.deb veeamsnap_6.3.1.1016_all.deb packages Failed to fetch http://archive.ubuntu.com/ubuntu/pool/main/d/dpkg/libdpkg-perl_1.19.7ubuntu3.2_all.deb Cannot initiate the connection to archive.ubuntu.com:80 (2620:2d:4000:1::103). - connect (101: Network is unreachable) Cannot initiate the connection to archive.ubuntu.com:80 (2620:2d:4002:1::103). - connect (101: Network is unreachable) Cannot initiate the connection to archive.ubuntu.com:80 (2620:2d:4002:1::102). - connect (101: Network is unreachable) Could not connect to archive.ubuntu.com:80 (91.189.91.83), connection timed out Could not connect to archive.ubuntu.com:80 (185.125.190.81), connection timed out Could not connect to archive.ubuntu.com:80 (91.189.91.82), connection timed out" [ref=e615]':
+                  - cell "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18" [ref=e616]:
+                    - generic [ref=e617]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                      - text: "8"
+                      - text: "9"
+                      - text: "10"
+                      - text: "11"
+                      - text: "12"
+                      - text: "13"
+                      - text: "14"
+                      - text: "15"
+                      - text: "16"
+                      - text: "17"
+                      - text: "18"
+                  - 'cell "Failed to install veeam_6.3.1.1016_amd64.deb, veeam-libs_6.3.1.1016_amd64.deb veeamsnap_6.3.1.1016_all.deb packages Failed to fetch http://archive.ubuntu.com/ubuntu/pool/main/d/dpkg/libdpkg-perl_1.19.7ubuntu3.2_all.deb Cannot initiate the connection to archive.ubuntu.com:80 (2620:2d:4000:1::103). - connect (101: Network is unreachable) Cannot initiate the connection to archive.ubuntu.com:80 (2620:2d:4002:1::103). - connect (101: Network is unreachable) Cannot initiate the connection to archive.ubuntu.com:80 (2620:2d:4002:1::102). - connect (101: Network is unreachable) Could not connect to archive.ubuntu.com:80 (91.189.91.83), connection timed out Could not connect to archive.ubuntu.com:80 (185.125.190.81), connection timed out Could not connect to archive.ubuntu.com:80 (91.189.91.82), connection timed out" [ref=e618]':
+                    - generic [ref=e619]:
+                      - generic [ref=e620]: Failed to install
+                      - generic [ref=e621]: veeam_6.3.1.1016_amd64.deb,
+                      - generic [ref=e622]: veeam-libs_6.3.1.1016_amd64.deb
+                      - generic [ref=e623]: veeamsnap_6.3.1.1016_all.deb packages
+                      - generic [ref=e624]: Failed to fetch
+                      - generic [ref=e625]: http://archive.ubuntu.com/ubuntu/pool/main/d/dpkg/libdpkg-perl_1.19.7ubuntu3.2_all.deb
+                      - generic [ref=e626]: Cannot initiate the connection to archive.ubuntu.com:80 (2620:2d:4000:1::103).
+                      - generic [ref=e627]: "- connect (101: Network is unreachable)"
+                      - generic [ref=e628]: Cannot initiate the connection to archive.ubuntu.com:80 (2620:2d:4002:1::103).
+                      - generic [ref=e629]: "- connect (101: Network is unreachable)"
+                      - generic [ref=e630]: Cannot initiate the connection to archive.ubuntu.com:80 (2620:2d:4002:1::102).
+                      - generic [ref=e631]: "- connect (101: Network is unreachable)"
+                      - generic [ref=e632]: Could not connect to archive.ubuntu.com:80 (91.189.91.83),
+                      - generic [ref=e633]: connection timed out Could not connect to archive.ubuntu.com:80 (185.125.190.81),
+                      - generic [ref=e634]: connection timed out Could not connect to archive.ubuntu.com:80 (91.189.91.82),
+                      - generic [ref=e635]: connection timed out
+          - paragraph [ref=e641]: 联系网络管理员临时开通外网后，重新执行 Rescan，提示安装成功，但是执行备份的时候报错：
+          - figure [ref=e642]:
+            - generic: PGSQL
+            - table [ref=e644]:
+              - rowgroup [ref=e645]:
+                - 'row "1 2025/11/18 17:06:50 Warning Failed to connect to 10.199.41.71 Details: Failed to execute agent management command print. No such file or directory Failed to connect: /var/tmp/veeam/socket/veeamservice.sock. Failed to connect to veeamservice daemon." [ref=e646]':
+                  - cell "1" [ref=e647]:
+                    - generic [ref=e648]: "1"
+                  - 'cell "2025/11/18 17:06:50 Warning Failed to connect to 10.199.41.71 Details: Failed to execute agent management command print. No such file or directory Failed to connect: /var/tmp/veeam/socket/veeamservice.sock. Failed to connect to veeamservice daemon." [ref=e649]':
+                    - generic [ref=e651]: "2025/11/18 17:06:50 Warning Failed to connect to 10.199.41.71 Details: Failed to execute agent management command print. No such file or directory Failed to connect: /var/tmp/veeam/socket/veeamservice.sock. Failed to connect to veeamservice daemon."
+          - paragraph [ref=e654]: 查看 Rescan 日志：
+          - figure [ref=e655]:
+            - generic: ROUTEROS
+            - table [ref=e657]:
+              - rowgroup [ref=e658]:
+                - 'row "1 2 3 4 5 6 7 [18.11.2025 17:01:24.248] <18> Error (3) Agent management command has failed, exit code 255, error text: No such file or directory [18.11.2025 17:01:24.248] <18> Error (3) Failed to connect: /var/tmp/veeam/socket/veeamservice.sock. [18.11.2025 17:01:24.248] <18> Error (3) Failed to connect to veeamservice daemon. [18.11.2025 17:01:24.248] <18> Error (3) Failed to process discovery operation for Linux host: 10.199.41.71 [18.11.2025 17:01:24.248] <18> Error (3) Failed to execute agent management command print. No such file or directory [18.11.2025 17:01:24.248] <18> Error (3) Failed to connect: /var/tmp/veeam/socket/veeamservice.sock. [18.11.2025 17:01:24.248] <18> Error (3) Failed to connect to veeamservice daemon. (System.Exception)" [ref=e659]':
+                  - cell "1 2 3 4 5 6 7" [ref=e660]:
+                    - generic [ref=e661]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                  - 'cell "[18.11.2025 17:01:24.248] <18> Error (3) Agent management command has failed, exit code 255, error text: No such file or directory [18.11.2025 17:01:24.248] <18> Error (3) Failed to connect: /var/tmp/veeam/socket/veeamservice.sock. [18.11.2025 17:01:24.248] <18> Error (3) Failed to connect to veeamservice daemon. [18.11.2025 17:01:24.248] <18> Error (3) Failed to process discovery operation for Linux host: 10.199.41.71 [18.11.2025 17:01:24.248] <18> Error (3) Failed to execute agent management command print. No such file or directory [18.11.2025 17:01:24.248] <18> Error (3) Failed to connect: /var/tmp/veeam/socket/veeamservice.sock. [18.11.2025 17:01:24.248] <18> Error (3) Failed to connect to veeamservice daemon. (System.Exception)" [ref=e662]':
+                    - generic [ref=e663]:
+                      - generic [ref=e664]: "[18.11.2025 17:01:24.248] <18> Error (3) Agent management command has failed, exit code 255, error text: No such file or directory"
+                      - generic [ref=e665]: "[18.11.2025 17:01:24.248] <18> Error (3) Failed to connect: /var/tmp/veeam/socket/veeamservice.sock."
+                      - generic [ref=e666]: "[18.11.2025 17:01:24.248] <18> Error (3) Failed to connect to veeamservice daemon."
+                      - generic [ref=e667]: "[18.11.2025 17:01:24.248] <18> Error (3) Failed to process discovery operation for Linux host: 10.199.41.71"
+                      - generic [ref=e668]: "[18.11.2025 17:01:24.248] <18> Error (3) Failed to execute agent management command print. No such file or directory"
+                      - generic [ref=e669]: "[18.11.2025 17:01:24.248] <18> Error (3) Failed to connect: /var/tmp/veeam/socket/veeamservice.sock."
+                      - generic [ref=e670]: "[18.11.2025 17:01:24.248] <18> Error (3) Failed to connect to veeamservice daemon. (System.Exception)"
+          - paragraph [ref=e673]: 检查主机上是否存在这个文件：
+          - figure [ref=e674]:
+            - generic: STATA
+            - table [ref=e676]:
+              - rowgroup [ref=e677]:
+                - 'row "1 2 root@apods01:~# cd /var/tmp/veeam/socket/ -bash: cd: /var/tmp/veeam/socket/: No such file or directory" [ref=e678]':
+                  - cell "1 2" [ref=e679]:
+                    - generic [ref=e680]:
+                      - text: "1"
+                      - text: "2"
+                  - 'cell "root@apods01:~# cd /var/tmp/veeam/socket/ -bash: cd: /var/tmp/veeam/socket/: No such file or directory" [ref=e681]':
+                    - generic [ref=e682]:
+                      - generic [ref=e683]: root@apods01:~# cd /var/tmp/veeam/socket/
+                      - generic [ref=e684]: "-bash: cd: /var/tmp/veeam/socket/: No such file or directory"
+          - paragraph [ref=e687]: 当前主机不存在以上文件，但是正常纳管的主机是存在的：
+          - figure [ref=e688]:
+            - generic: PERL
+            - table [ref=e690]:
+              - rowgroup [ref=e691]:
+                - row "1 2 3 [root@SQCSLEAP01N ~]# cd /var/tmp/veeam/socket [root@SQCSLEAP01N socket]# ls events.sock veeamservice.sock" [ref=e692]:
+                  - cell "1 2 3" [ref=e693]:
+                    - generic [ref=e694]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                  - cell "[root@SQCSLEAP01N ~]# cd /var/tmp/veeam/socket [root@SQCSLEAP01N socket]# ls events.sock veeamservice.sock" [ref=e695]:
+                    - generic [ref=e696]:
+                      - generic [ref=e697]: "[root@SQCSLEAP01N ~]# cd /var/tmp/veeam/socket"
+                      - generic [ref=e698]: "[root@SQCSLEAP01N socket]# ls"
+                      - text: events.sock veeamservice.sock
+          - paragraph [ref=e701]: 看来就是因为这个了，怀疑是第一次安装的时候有问题，尝试卸载 agent 后重新安装：
+          - blockquote [ref=e702]:
+            - paragraph [ref=e703]
+          - paragraph [ref=e704]: 首先卸载安装的 veeam 相关依赖：
+          - figure [ref=e705]:
+            - generic: ROUTEROS
+            - table [ref=e707]:
+              - rowgroup [ref=e708]:
+                - row "1 2 3 apt-get remove veeam veeam-libs veeamsnap apt-get remove veeam veeam-libs blksnap apt-get remove veeam-nosnap veeam-libs" [ref=e709]:
+                  - cell "1 2 3" [ref=e710]:
+                    - generic [ref=e711]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                  - cell "apt-get remove veeam veeam-libs veeamsnap apt-get remove veeam veeam-libs blksnap apt-get remove veeam-nosnap veeam-libs" [ref=e712]:
+                    - generic [ref=e713]:
+                      - generic [ref=e714]: apt-get remove veeam veeam-libs veeamsnap
+                      - generic [ref=e715]: apt-get remove veeam veeam-libs blksnap
+                      - generic [ref=e716]: apt-get remove veeam-nosnap veeam-libs
+          - paragraph [ref=e719]: 删除 veeam 安装目录：
+          - figure [ref=e720]:
+            - generic: ELIXIR
+            - table [ref=e722]:
+              - rowgroup [ref=e723]:
+                - row "1 2 3 4 5 6 root@apods01:/opt# rm -rf veeam/ root@apods01:/opt# root@apods01:/opt# ll total 8 drwxr-xr-x 2 root root 4096 Nov 18 09:23 ./ drwxr-xr-x 21 root root 4096 May 31 2024 ../" [ref=e724]:
+                  - cell "1 2 3 4 5 6" [ref=e725]:
+                    - generic [ref=e726]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                  - cell "root@apods01:/opt# rm -rf veeam/ root@apods01:/opt# root@apods01:/opt# ll total 8 drwxr-xr-x 2 root root 4096 Nov 18 09:23 ./ drwxr-xr-x 21 root root 4096 May 31 2024 ../" [ref=e727]:
+                    - generic [ref=e728]:
+                      - generic [ref=e729]: root@apods01:/opt# rm -rf veeam/
+                      - generic [ref=e730]: root@apods01:/opt#
+                      - generic [ref=e731]: root@apods01:/opt# ll
+                      - generic [ref=e732]: total 8
+                      - generic [ref=e733]: drwxr-xr-x 2 root root 4096 Nov 18 09:23 ./
+                      - generic [ref=e734]: drwxr-xr-x 21 root root 4096 May 31 2024 ../
+          - paragraph [ref=e737]: 杀掉所有 veeam 相关进程：
+          - figure [ref=e738]:
+            - generic: APACHE
+            - table [ref=e740]:
+              - rowgroup [ref=e741]:
+                - row [ref=e742]:
+                  - cell "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15" [ref=e743]:
+                    - generic [ref=e744]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                      - text: "8"
+                      - text: "9"
+                      - text: "10"
+                      - text: "11"
+                      - text: "12"
+                      - text: "13"
+                      - text: "14"
+                      - text: "15"
+                  - cell "root@apods01:/opt# ps -ef|grep veeam root 463548 1 0 09:22 ? 00:00:00 /opt/veeam/transport/veeamtransport --run-service root 463567 463548 0 09:22 ? 00:00:00 /opt/veeam/transport/veeamtransport --run-environmentsvc 7:6 root 463580 463548 0 09:22 ? 00:00:00 /opt/veeam/transport/veeamimmureposvc --subprocess --log /var/log/VeeamBackup --maxLogSize 15728640 --stdio 10:7 root 463651 1 0 09:22 ? 00:00:00 /opt/veeam/deployment/veeamdeploymentsvc --run-service root 463653 463651 0 09:22 ? 00:00:00 /opt/veeam/deployment/veeamdeploymentsvc --service-process 9:8 root 463655 463653 0 09:22 ? 00:00:00 /opt/veeam/deployment/veeamdeploymentsvc --vcp-subprocess 18:17 root@apods01:/opt# kill -9 463651 root@apods01:/opt# kill -9 463548 root@apods01:/opt# kill -9 463567 root@apods01:/opt# kill -9 463580 root@apods01:/opt# ps -ef|grep veeam root 465271 392310 0 09:24 pts/0 00:00:00 grep --color=auto veeam" [ref=e745]:
+                    - generic [ref=e746]:
+                      - generic [ref=e747]: root@apods01:/opt# ps -ef|grep veeam
+                      - generic [ref=e748]: root 463548 1 0 09:22 ? 00:00:00 /opt/veeam/transport/veeamtransport --run-service
+                      - generic [ref=e749]: root 463567 463548 0 09:22 ? 00:00:00 /opt/veeam/transport/veeamtransport --run-environmentsvc 7:6
+                      - generic [ref=e750]: root 463580 463548 0 09:22 ? 00:00:00 /opt/veeam/transport/veeamimmureposvc --subprocess --log /var/log/VeeamBackup --maxLogSize 15728640 --stdio 10:7
+                      - generic [ref=e751]: root 463651 1 0 09:22 ? 00:00:00 /opt/veeam/deployment/veeamdeploymentsvc --run-service
+                      - generic [ref=e752]: root 463653 463651 0 09:22 ? 00:00:00 /opt/veeam/deployment/veeamdeploymentsvc --service-process 9:8
+                      - generic [ref=e753]: root 463655 463653 0 09:22 ? 00:00:00 /opt/veeam/deployment/veeamdeploymentsvc --vcp-subprocess 18:17
+                      - generic [ref=e754]: root@apods01:/opt# kill -9 463651
+                      - generic [ref=e755]: root@apods01:/opt# kill -9 463548
+                      - generic [ref=e756]: root@apods01:/opt# kill -9 463567
+                      - generic [ref=e757]: root@apods01:/opt# kill -9 463580
+                      - generic [ref=e758]: root@apods01:/opt# ps -ef|grep veeam
+                      - generic [ref=e759]: root 465271 392310 0 09:24 pts/0 00:00:00 grep --color=auto veeam
+          - paragraph [ref=e762]: 在 VBR 重新执行 rescan，成功安装 agent，可以正常备份。
+          - heading "写在最后" [level=2] [ref=e763]
+          - paragraph [ref=e764]: Veeam 纳管 Ubuntu 系统需要提前开通外网下载 deb 依赖包，否则会纳管失败。
+      - article [ref=e766]:
+        - generic [ref=e767]:
+          - heading "困扰 MySQL 用户多年的问题，它只用一个插件就解决了！" [level=2] [ref=e768]:
+            - link "困扰 MySQL 用户多年的问题，它只用一个插件就解决了！" [ref=e769] [cursor=pointer]:
+              - /url: /csdn-blog/posts/155039355/
+          - generic [ref=e771]:
+            - generic [ref=e772]:
+              - text: 发表于
+              - time [ref=e775]: 2025-11-19
+            - generic [ref=e776]:
+              - text: "|"
+              - text: 分类于
+              - link "数据库" [ref=e780] [cursor=pointer]:
+                - /url: /csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
+            - generic "本文字数" [ref=e781]: 本文字数： 1.7k
+            - generic "阅读时长" [ref=e784]:
+              - text: "|"
+              - text: 阅读时长 ≈ 6 分钟
+  - contentinfo [ref=e787]:
+    - generic [ref=e788]:
+      - generic [ref=e789]:
+        - text: © 2021 – 2026
+        - text: Lucifer三思而后行
+      - generic [ref=e792]:
+        - generic [ref=e793]: 站点总字数： 1.2m
+        - generic [ref=e796]:
+          - text: "|"
+          - text: 站点阅读时长 ≈ 73:47
+      - generic [ref=e799]:
+        - generic "总访客量" [ref=e803]: "3391"
+        - generic [ref=e804]:
+          - text: "|"
+          - generic "总访问量" [ref=e807]: "4017"
+      - generic [ref=e808]:
+        - text: 由
+        - link "Hexo" [ref=e809] [cursor=pointer]:
+          - /url: https://hexo.io/
+        - text: "&"
+        - link "NexT.Gemini" [ref=e810] [cursor=pointer]:
+          - /url: https://theme-next.js.org/
+        - text: 强力驱动
+  - button "返回顶部" [ref=e811] [cursor=pointer]:
+    - generic [ref=e813]: 0%
+  - button "" [ref=e814] [cursor=pointer]
+  - link "在 GitHub 上关注我":
+    - /url: https://github.com/pc-study
+    - img [ref=e815] [cursor=pointer]

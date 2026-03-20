@@ -1,0 +1,548 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - img "avatar" [ref=e4]
+    - generic [ref=e5]:
+      - link "文章 528" [ref=e6] [cursor=pointer]:
+        - /url: /csdn-blog/archives/
+        - generic [ref=e7]: 文章
+        - generic [ref=e8]: "528"
+      - link "标签 168" [ref=e9] [cursor=pointer]:
+        - /url: /csdn-blog/tags/
+        - generic [ref=e10]: 标签
+        - generic [ref=e11]: "168"
+      - link "分类 7" [ref=e12] [cursor=pointer]:
+        - /url: /csdn-blog/categories/
+        - generic [ref=e13]: 分类
+        - generic [ref=e14]: "7"
+    - generic [ref=e15]:
+      - link "首页" [ref=e17] [cursor=pointer]:
+        - /url: /csdn-blog/
+        - text: 首页
+      - link "时间轴" [ref=e20] [cursor=pointer]:
+        - /url: /csdn-blog/archives/
+        - text: 时间轴
+      - link "标签" [ref=e23] [cursor=pointer]:
+        - /url: /csdn-blog/tags/
+        - text: 标签
+      - link "分类" [ref=e26] [cursor=pointer]:
+        - /url: /csdn-blog/categories/
+        - text: 分类
+      - link "关于" [ref=e29] [cursor=pointer]:
+        - /url: /csdn-blog/about/
+        - text: 关于
+      - link "CSDN" [ref=e32] [cursor=pointer]:
+        - /url: https://luciferliu.blog.csdn.net/
+        - text: CSDN
+  - generic [ref=e34]:
+    - banner [ref=e35]:
+      - navigation [ref=e36]:
+        - link "Lucifer三思而后行" [ref=e38] [cursor=pointer]:
+          - /url: /csdn-blog/
+        - generic [ref=e39]:
+          - generic [ref=e41] [cursor=pointer]: 搜索
+          - generic [ref=e43]:
+            - link "首页" [ref=e45] [cursor=pointer]:
+              - /url: /csdn-blog/
+              - text: 首页
+            - link "时间轴" [ref=e48] [cursor=pointer]:
+              - /url: /csdn-blog/archives/
+              - text: 时间轴
+            - link "标签" [ref=e51] [cursor=pointer]:
+              - /url: /csdn-blog/tags/
+              - text: 标签
+            - link "分类" [ref=e54] [cursor=pointer]:
+              - /url: /csdn-blog/categories/
+              - text: 分类
+            - link "关于" [ref=e57] [cursor=pointer]:
+              - /url: /csdn-blog/about/
+              - text: 关于
+            - link "CSDN" [ref=e60] [cursor=pointer]:
+              - /url: https://luciferliu.blog.csdn.net/
+              - text: CSDN
+    - main [ref=e62]:
+      - generic [ref=e63]:
+        - generic [ref=e64]:
+          - generic [ref=e66]:
+            - link "Oracle 直连 TiDB 可行吗？" [ref=e67] [cursor=pointer]:
+              - /url: /csdn-blog/posts/157245807/
+            - generic [ref=e68]:
+              - generic [ref=e69]:
+                - text: 发表于
+                - time [ref=e71]: 2026-01-22
+              - generic [ref=e72]:
+                - text: "|"
+                - link "Oracle 数据库" [ref=e74] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/
+              - generic [ref=e75]:
+                - text: "|"
+                - link "oracle" [ref=e77] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/oracle/
+                - text: •
+                - link "数据库" [ref=e79] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/
+                - text: •
+                - link "tidb" [ref=e81] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/tidb/
+            - generic [ref=e82]: 大家好，这里是公众号 DBA学习之路，分享一些学习数据库路上的知识和经验。 目录 前言 环境信息 Oracle 端配置 透明网关检查 安装 unixODBC 安装 MySQL ODBC 驱动 配置 ODBC 数据源 验证 ODBC 连通性 配置 Oracle TNS 配置透明网关参数 配置监听 验证
+          - generic [ref=e84]:
+            - link "华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南" [ref=e85] [cursor=pointer]:
+              - /url: /csdn-blog/posts/156853585/
+            - generic [ref=e86]:
+              - generic [ref=e87]:
+                - text: 发表于
+                - time [ref=e89]: 2026-01-12
+              - generic [ref=e90]:
+                - text: "|"
+                - link "大数据 & AI" [ref=e92] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/
+              - generic [ref=e93]:
+                - text: "|"
+                - link "大数据" [ref=e95] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/
+            - generic [ref=e96]: 华为联合云南建投物流推出的智慧物流全球样板点，搭配云链物流大模型的研发启动，近期成为行业热议焦点。从原料采购到销售服务的全流程智能化管理，让物流行业的数智化转型有了清晰的实践范本。 而这一成功案例的底层逻辑，正藏在《华为数据之道》中。对于正在数字化转型路上挣扎的企业而言，这本书绝非空泛的理论合集，而
+          - generic [ref=e98]:
+            - link "看来 Oracle 还是听劝的！" [ref=e99] [cursor=pointer]:
+              - /url: /csdn-blog/posts/156195159/
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - text: 发表于
+                - time [ref=e103]: 2025-12-23
+              - generic [ref=e104]:
+                - text: "|"
+                - link "数据库" [ref=e106] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
+              - generic [ref=e107]:
+                - text: "|"
+                - link "oracle" [ref=e109] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/oracle/
+                - text: •
+                - link "数据库" [ref=e111] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/
+            - generic [ref=e112]: 大家好，这里是公众号 DBA学习之路，分享一些学习数据库路上的知识和经验。 @TOC 前言 自从 Oracle MOS 更新版本之后，备受吐槽，各种问题纷至沓来，我也写了两篇文章聊了聊这个事： Oracle MOS 重磅升级？嗯，什么东西！ 听说 Oracle MOS 又放大招！ 今天登陆 MOS，
+          - generic [ref=e114]:
+            - link "【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具" [ref=e115] [cursor=pointer]:
+              - /url: /csdn-blog/posts/155349073/
+            - generic [ref=e116]:
+              - generic [ref=e117]:
+                - text: 发表于
+                - time [ref=e119]: 2025-11-28
+              - generic [ref=e120]:
+                - text: "|"
+                - link "数据库" [ref=e122] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
+              - generic [ref=e123]:
+                - text: "|"
+                - link "数据库" [ref=e125] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/
+            - generic [ref=e126]: 前言 作为一名长期奋战在一线的 DBA，我深知数据库运维工作的复杂性与挑战性。随着国产数据库的快速发展，我们在享受技术自主可控带来的安全感的同时，也面临着多款数据库并存的运维压力。不同的数据库产品意味着需要掌握不同的管理工具，这无疑增加了我们的工作负担。 最近，我在实际工作中接触到了金仓的 KSQL
+          - generic [ref=e128]:
+            - link "veeam agent 纳管 Ubuntu 20.04 报错解决" [ref=e129] [cursor=pointer]:
+              - /url: /csdn-blog/posts/155039369/
+            - generic [ref=e130]:
+              - generic [ref=e131]:
+                - text: 发表于
+                - time [ref=e133]: 2025-11-19
+              - generic [ref=e134]:
+                - text: "|"
+                - link "Linux 运维" [ref=e136] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/
+              - generic [ref=e137]:
+                - text: "|"
+                - link "linux" [ref=e139] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/linux/
+                - text: •
+                - link "运维" [ref=e141] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E8%BF%90%E7%BB%B4/
+                - text: •
+                - link "ubuntu" [ref=e143] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/ubuntu/
+            - generic [ref=e144]: 前言 昨天 Veeam 纳管一台 Ubuntu 20.04 时遇到了一些问题，先是提示主机需要联外网下载依赖，配置网络之后，agent 安装又失败了，报错： 本文记录一下分析过程以及解决步骤。 问题分析 首先查看主机系统版本： VBR 纳管报错，格式化内容之后如下： 联系网络管理员临时开通外网后，重
+          - generic [ref=e146]:
+            - link "困扰 MySQL 用户多年的问题，它只用一个插件就解决了！" [ref=e147] [cursor=pointer]:
+              - /url: /csdn-blog/posts/155039355/
+            - generic [ref=e148]:
+              - generic [ref=e149]:
+                - text: 发表于
+                - time [ref=e151]: 2025-11-19
+              - generic [ref=e152]:
+                - text: "|"
+                - link "数据库" [ref=e154] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
+              - generic [ref=e155]:
+                - text: "|"
+                - link "数据库" [ref=e157] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/
+                - text: •
+                - link "mysql" [ref=e159] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/mysql/
+                - text: •
+                - link "金仓数据库" [ref=e161] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E9%87%91%E4%BB%93%E6%95%B0%E6%8D%AE%E5%BA%93/
+            - generic [ref=e162]: 目录 前言 MySQL 数据库 金仓数据库 加载插件 实战演示 写在最后 前言 上周有个朋友问我：“哥，我们刚从 MySQL 8.0 迁到金仓数据库的 MySQL 兼容模式，发现一个很神奇的 BUG”！ 当我在金仓数据库中新建了一个用户以及表，没有对这个用户授权该表的访问权限，但是可以在 表中查询到
+          - generic [ref=e164]:
+            - link "EMCC 13.5 安装中断，如何清理 OMS 库？" [ref=e165] [cursor=pointer]:
+              - /url: /csdn-blog/posts/154742448/
+            - generic [ref=e166]:
+              - generic [ref=e167]:
+                - text: 发表于
+                - time [ref=e169]: 2025-11-12
+              - generic [ref=e170]:
+                - text: "|"
+                - link "Oracle 数据库" [ref=e172] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/
+              - generic [ref=e173]:
+                - text: "|"
+                - link "oracle" [ref=e175] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/oracle/
+                - text: •
+                - link "数据库" [ref=e177] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/
+            - generic [ref=e178]: 前言 昨天安装一套 EMCC13.5，安装过程中 VNC 卡死导致安装失败，清理目录后重新执行安装，结果安装过程中报错了： 应该是 OMS 数据库在前一次安装过程中已经创建了用户以及一些对象，导致 OMS 数据库不干净了，一般建议重建 OMS 数据库，但是时间比较久，今天介绍一下另一种解决这个问题的
+          - generic [ref=e180]:
+            - link "TiDB 备份与恢复整理" [ref=e181] [cursor=pointer]:
+              - /url: /csdn-blog/posts/154742413/
+            - generic [ref=e182]:
+              - generic [ref=e183]:
+                - text: 发表于
+                - time [ref=e185]: 2025-11-12
+              - generic [ref=e186]:
+                - text: "|"
+                - link "数据库" [ref=e188] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
+              - generic [ref=e189]:
+                - text: "|"
+                - link "数据库" [ref=e191] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/
+                - text: •
+                - link "tidb" [ref=e193] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/tidb/
+            - generic [ref=e194]: 目录 前言 备份方案 如何备份数据？ 如何管理备份数据？ 如何选择备份存储？ 如何恢复数据？ TiDB 快照备份 备份流程 恢复流程 备份文件 - 文件类型 备份文件目录结构 日志备份 PITR 日志备份文件 部署和使用 BR 通过命令行工具（推荐） 通过 SQL 语句 在 Kubernetes 环
+          - generic [ref=e196]:
+            - link "使用 BR 备份 TiDB 到 AWS S3 存储" [ref=e197] [cursor=pointer]:
+              - /url: /csdn-blog/posts/154742402/
+            - generic [ref=e198]:
+              - generic [ref=e199]:
+                - text: 发表于
+                - time [ref=e201]: 2025-11-12
+              - generic [ref=e202]:
+                - text: "|"
+                - link "数据库" [ref=e204] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
+              - generic [ref=e205]:
+                - text: "|"
+                - link "数据库" [ref=e207] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/
+                - text: •
+                - link "tidb" [ref=e209] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/tidb/
+                - text: •
+                - link "aws" [ref=e211] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/aws/
+            - generic [ref=e212]: 目录 前言 BR 工具 如何备份数据？ - 快照备份 日志备份 如何选择备份存储？ BR 安装配置 BR 备份部署 日志备份脚本 快照备份脚本 问题总结 网络限制 S3 权限 日志备份重复运行 快照备份中断 写在最后 前言 手里有几套 TiDB 集群数据库没有备份，一直在裸奔，几个备份厂商（爱数，N
+          - generic [ref=e214]:
+            - link "使用 BR 备份 TiDB 到阿里云 OSS 存储" [ref=e215] [cursor=pointer]:
+              - /url: /csdn-blog/posts/154742377/
+            - generic [ref=e216]:
+              - generic [ref=e217]:
+                - text: 发表于
+                - time [ref=e219]: 2025-11-12
+              - generic [ref=e220]:
+                - text: "|"
+                - link "数据库" [ref=e222] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
+              - generic [ref=e223]:
+                - text: "|"
+                - link "阿里云" [ref=e225] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E9%98%BF%E9%87%8C%E4%BA%91/
+                - text: •
+                - link "tidb" [ref=e227] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/tidb/
+                - text: •
+                - link "云计算" [ref=e229] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/
+            - generic [ref=e230]: 目录 前言 阿里云 OSS 日志备份 快照备份 写在最后 前言 最近好久没更新 Oracle 相关内容了，都在搞备份的东西，为啥呢？ 因为最近 Oracle 相关的内容都是很基础的，也没有遇到什么问题，所以就自然没什么内容可写了，反倒是最近几天都在研究 TiDB 备份，顺便学习了下 TiDB 的体系
+          - generic [ref=e232]:
+            - link "使用 BR 备份 TiDB 到本地 minIO 存储" [ref=e233] [cursor=pointer]:
+              - /url: /csdn-blog/posts/154742344/
+            - generic [ref=e234]:
+              - generic [ref=e235]:
+                - text: 发表于
+                - time [ref=e237]: 2025-11-12
+              - generic [ref=e238]:
+                - text: "|"
+                - link "数据库" [ref=e240] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
+              - generic [ref=e241]:
+                - text: "|"
+                - link "tidb" [ref=e243] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/tidb/
+            - generic [ref=e244]: 前言 前面测试了 BR 备份 TiDB 到 AWS S3 和阿里云 OSS 存储，但是因为是走公网，所以备份速度感人，太慢了！最终还是放弃了，打算在本地搭建一套 minIO 存储来存储 TiDB 备份文件。 本文记录一下 minIO 存储搭建过程以及 BR 备份脚本。 搭建 minIO 存储 环境信
+          - generic [ref=e246]:
+            - link "Oracle ADG 配置闪回导致报表查询延时！" [ref=e247] [cursor=pointer]:
+              - /url: /csdn-blog/posts/154742176/
+            - generic [ref=e248]:
+              - generic [ref=e249]:
+                - text: 发表于
+                - time [ref=e251]: 2025-11-12
+              - generic [ref=e252]:
+                - text: "|"
+                - link "Oracle 数据库" [ref=e254] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/
+              - generic [ref=e255]:
+                - text: "|"
+                - link "oracle" [ref=e257] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/oracle/
+                - text: •
+                - link "数据库" [ref=e259] [cursor=pointer]:
+                  - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/
+            - generic [ref=e260]: 前言 今天应用反馈有一套报表库查询有延时，几十分钟没有同步数据了，但是我检查 DG 同步状态之后发现一切正常，手动触发切换日志可以正常同步数据，但是无法实时查询主库的在线重做日志。 不是 DG 配置问题，不是 standby logfile 问题，不是网络问题，能是什么问题呢？ 本文记录一下完整的分
+        - navigation [ref=e261]:
+          - generic [ref=e262]:
+            - generic [ref=e263]: "1"
+            - link "2" [ref=e264] [cursor=pointer]:
+              - /url: /csdn-blog/page/2/#content-inner
+            - generic [ref=e265]: …
+            - link "44" [ref=e266] [cursor=pointer]:
+              - /url: /csdn-blog/page/44/#content-inner
+            - link [ref=e267] [cursor=pointer]:
+              - /url: /csdn-blog/page/2/#content-inner
+      - generic [ref=e269]:
+        - generic [ref=e270]:
+          - img "avatar" [ref=e272]
+          - generic [ref=e273]: Lucifer
+          - generic [ref=e274]: Oracle DBA | 数据库技术博主
+          - generic [ref=e275]:
+            - link "文章 528" [ref=e276] [cursor=pointer]:
+              - /url: /csdn-blog/archives/
+              - generic [ref=e277]: 文章
+              - generic [ref=e278]: "528"
+            - link "标签 168" [ref=e279] [cursor=pointer]:
+              - /url: /csdn-blog/tags/
+              - generic [ref=e280]: 标签
+              - generic [ref=e281]: "168"
+            - link "分类 7" [ref=e282] [cursor=pointer]:
+              - /url: /csdn-blog/categories/
+              - generic [ref=e283]: 分类
+              - generic [ref=e284]: "7"
+          - link "访问 CSDN" [ref=e285] [cursor=pointer]:
+            - /url: https://luciferliu.blog.csdn.net/
+            - text: 访问 CSDN
+          - generic [ref=e287]:
+            - link "Github" [ref=e288] [cursor=pointer]:
+              - /url: https://github.com/pc-study
+            - link "CSDN" [ref=e290] [cursor=pointer]:
+              - /url: https://luciferliu.blog.csdn.net/
+        - generic [ref=e292]:
+          - generic [ref=e293]: 公告
+          - generic [ref=e295]: 欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。
+        - generic [ref=e296]:
+          - generic [ref=e297]:
+            - generic [ref=e298]: 最新文章
+            - generic [ref=e300]:
+              - generic [ref=e302]:
+                - link "Oracle 直连 TiDB 可行吗？" [ref=e303] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/157245807/
+                - time [ref=e304]: 2026-01-22
+              - generic [ref=e306]:
+                - link "华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南" [ref=e307] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/156853585/
+                - time [ref=e308]: 2026-01-12
+              - generic [ref=e310]:
+                - link "看来 Oracle 还是听劝的！" [ref=e311] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/156195159/
+                - time [ref=e312]: 2025-12-23
+              - generic [ref=e314]:
+                - link "【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具" [ref=e315] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/155349073/
+                - time [ref=e316]: 2025-11-28
+              - generic [ref=e318]:
+                - link "veeam agent 纳管 Ubuntu 20.04 报错解决" [ref=e319] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/155039369/
+                - time [ref=e320]: 2025-11-19
+          - generic [ref=e321]:
+            - generic [ref=e322]: 分类
+            - list [ref=e324]:
+              - listitem [ref=e325]:
+                - link "Linux 运维 52" [ref=e326] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/
+                  - generic [ref=e327]: Linux 运维
+                  - generic [ref=e328]: "52"
+              - listitem [ref=e329]:
+                - link "Oracle 数据库 277" [ref=e330] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/
+                  - generic [ref=e331]: Oracle 数据库
+                  - generic [ref=e332]: "277"
+              - listitem [ref=e333]:
+                - link "多媒体处理 9" [ref=e334] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86/
+                  - generic [ref=e335]: 多媒体处理
+                  - generic [ref=e336]: "9"
+              - listitem [ref=e337]:
+                - link "大数据 & AI 16" [ref=e338] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/
+                  - generic [ref=e339]: 大数据 & AI
+                  - generic [ref=e340]: "16"
+              - listitem [ref=e341]:
+                - link "工具与效率 6" [ref=e342] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E5%B7%A5%E5%85%B7%E4%B8%8E%E6%95%88%E7%8E%87/
+                  - generic [ref=e343]: 工具与效率
+                  - generic [ref=e344]: "6"
+              - listitem [ref=e345]:
+                - link "技术文章 34" [ref=e346] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/
+                  - generic [ref=e347]: 技术文章
+                  - generic [ref=e348]: "34"
+              - listitem [ref=e349]:
+                - link "数据库 134" [ref=e350] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
+                  - generic [ref=e351]: 数据库
+                  - generic [ref=e352]: "134"
+          - generic [ref=e353]:
+            - generic [ref=e354]: 标签
+            - generic [ref=e356]:
+              - link "无人值守" [ref=e357] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E6%97%A0%E4%BA%BA%E5%80%BC%E5%AE%88/
+              - link "shell一键安装" [ref=e358] [cursor=pointer]:
+                - /url: /csdn-blog/tags/shell%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85/
+              - link "oracle" [ref=e359] [cursor=pointer]:
+                - /url: /csdn-blog/tags/oracle/
+              - link "11GR2" [ref=e360] [cursor=pointer]:
+                - /url: /csdn-blog/tags/11GR2/
+              - link "orale" [ref=e361] [cursor=pointer]:
+                - /url: /csdn-blog/tags/orale/
+              - link "12CR2" [ref=e362] [cursor=pointer]:
+                - /url: /csdn-blog/tags/12CR2/
+              - link "数据库" [ref=e363] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/
+              - link "linux" [ref=e364] [cursor=pointer]:
+                - /url: /csdn-blog/tags/linux/
+              - link "运维" [ref=e365] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E8%BF%90%E7%BB%B4/
+              - link "shell" [ref=e366] [cursor=pointer]:
+                - /url: /csdn-blog/tags/shell/
+              - link "新星计划" [ref=e367] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E6%96%B0%E6%98%9F%E8%AE%A1%E5%88%92/
+              - link "分区表" [ref=e368] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E5%88%86%E5%8C%BA%E8%A1%A8/
+              - link "升级" [ref=e369] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E5%8D%87%E7%BA%A7/
+              - link "dataguard" [ref=e370] [cursor=pointer]:
+                - /url: /csdn-blog/tags/dataguard/
+              - link "gap" [ref=e371] [cursor=pointer]:
+                - /url: /csdn-blog/tags/gap/
+              - link "在线重定义" [ref=e372] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E5%9C%A8%E7%BA%BF%E9%87%8D%E5%AE%9A%E4%B9%89/
+              - link "vagrant" [ref=e373] [cursor=pointer]:
+                - /url: /csdn-blog/tags/vagrant/
+              - link "故障处理" [ref=e374] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E6%95%85%E9%9A%9C%E5%A4%84%E7%90%86/
+              - link "shareplex" [ref=e375] [cursor=pointer]:
+                - /url: /csdn-blog/tags/shareplex/
+              - link "CBL-Mariner" [ref=e376] [cursor=pointer]:
+                - /url: /csdn-blog/tags/CBL-Mariner/
+              - link "macos" [ref=e377] [cursor=pointer]:
+                - /url: /csdn-blog/tags/macos/
+              - link "docker" [ref=e378] [cursor=pointer]:
+                - /url: /csdn-blog/tags/docker/
+              - link "windows" [ref=e379] [cursor=pointer]:
+                - /url: /csdn-blog/tags/windows/
+              - link "达梦" [ref=e380] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E8%BE%BE%E6%A2%A6/
+              - link "分享" [ref=e381] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E5%88%86%E4%BA%AB/
+              - link "软件推荐" [ref=e382] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90/
+              - link "yum" [ref=e383] [cursor=pointer]:
+                - /url: /csdn-blog/tags/yum/
+              - link "pfile" [ref=e384] [cursor=pointer]:
+                - /url: /csdn-blog/tags/pfile/
+              - link "spfile" [ref=e385] [cursor=pointer]:
+                - /url: /csdn-blog/tags/spfile/
+              - link "centos" [ref=e386] [cursor=pointer]:
+                - /url: /csdn-blog/tags/centos/
+          - generic [ref=e387]:
+            - generic [ref=e388]:
+              - text: 归档
+              - link "查看更多" [ref=e390] [cursor=pointer]:
+                - /url: /csdn-blog/archives/
+            - list [ref=e392]:
+              - listitem [ref=e393]:
+                - link "2026年01月 2" [ref=e394] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2026/01/
+                  - generic [ref=e395]: 2026年01月
+                  - generic [ref=e396]: "2"
+              - listitem [ref=e397]:
+                - link "2025年12月 1" [ref=e398] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/12/
+                  - generic [ref=e399]: 2025年12月
+                  - generic [ref=e400]: "1"
+              - listitem [ref=e401]:
+                - link "2025年11月 11" [ref=e402] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/11/
+                  - generic [ref=e403]: 2025年11月
+                  - generic [ref=e404]: "11"
+              - listitem [ref=e405]:
+                - link "2025年09月 10" [ref=e406] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/09/
+                  - generic [ref=e407]: 2025年09月
+                  - generic [ref=e408]: "10"
+              - listitem [ref=e409]:
+                - link "2025年08月 1" [ref=e410] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/08/
+                  - generic [ref=e411]: 2025年08月
+                  - generic [ref=e412]: "1"
+              - listitem [ref=e413]:
+                - link "2025年07月 17" [ref=e414] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/07/
+                  - generic [ref=e415]: 2025年07月
+                  - generic [ref=e416]: "17"
+              - listitem [ref=e417]:
+                - link "2025年06月 13" [ref=e418] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/06/
+                  - generic [ref=e419]: 2025年06月
+                  - generic [ref=e420]: "13"
+              - listitem [ref=e421]:
+                - link "2025年05月 12" [ref=e422] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/05/
+                  - generic [ref=e423]: 2025年05月
+                  - generic [ref=e424]: "12"
+          - generic [ref=e425]:
+            - generic [ref=e426]: 网站信息
+            - generic [ref=e428]:
+              - generic [ref=e429]:
+                - generic [ref=e430]: "文章数目 :"
+                - generic [ref=e431]: "528"
+              - generic [ref=e432]:
+                - generic [ref=e433]: "运行时间 :"
+                - generic [ref=e434]: 1778 天
+              - generic [ref=e435]:
+                - generic [ref=e436]: "本站总字数 :"
+                - generic [ref=e437]: 1318.8k
+              - generic [ref=e438]:
+                - generic [ref=e439]: "本站访客数 :"
+                - generic [ref=e440]: "3432"
+              - generic [ref=e441]:
+                - generic [ref=e442]: "本站总浏览量 :"
+                - generic [ref=e443]: "4121"
+              - generic [ref=e444]:
+                - generic [ref=e445]: "最后更新时间 :"
+                - generic [ref=e446]: 35 分钟前
+    - contentinfo [ref=e447]:
+      - generic [ref=e448]:
+        - generic [ref=e449]:
+          - text: © 2021 - 2026 By Lucifer
+          - generic [ref=e450]:
+            - text: 框架
+            - link "Hexo" [ref=e451] [cursor=pointer]:
+              - /url: https://hexo.io
+            - text: "|主题"
+            - link "Butterfly" [ref=e452] [cursor=pointer]:
+              - /url: https://github.com/jerryc127/hexo-theme-butterfly
+        - generic [ref=e453]: Lucifer三思而后行 | CSDN 博客备份站
+  - generic [ref=e454]:
+    - generic:
+      - button "日间和夜间模式切换" [ref=e455] [cursor=pointer]
+      - button "单栏和双栏切换" [ref=e457] [cursor=pointer]
+    - generic [ref=e459]:
+      - button "设置" [ref=e460] [cursor=pointer]
+      - button "回到顶部" [ref=e462] [cursor=pointer]

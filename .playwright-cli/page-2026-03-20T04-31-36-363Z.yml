@@ -1,0 +1,41 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e7]:
+          - link "Lucifer 三思而后行" [ref=e8] [cursor=pointer]:
+            - /url: /csdn-blog/
+            - paragraph [ref=e9]: Lucifer 三思而后行
+          - paragraph [ref=e10]: CSDN 博客备份归档
+        - navigation [ref=e11]:
+          - list [ref=e12]
+      - complementary [ref=e13]
+  - contentinfo [ref=e15]:
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - text: © 2021 – 2026
+        - text: Lucifer三思而后行
+      - generic [ref=e20]:
+        - generic [ref=e21]: 站点总字数： 1.2m
+        - generic [ref=e24]:
+          - text: "|"
+          - text: 站点阅读时长 ≈ 73:47
+      - generic [ref=e27]:
+        - generic "总访客量" [ref=e31]: "54758819"
+        - generic [ref=e32]:
+          - text: "|"
+          - generic "总访问量" [ref=e35]: "78364304"
+      - generic [ref=e36]:
+        - text: 由
+        - link "Hexo" [ref=e37] [cursor=pointer]:
+          - /url: https://hexo.io/
+        - text: "&"
+        - link "NexT.Gemini" [ref=e38] [cursor=pointer]:
+          - /url: https://theme-next.js.org/
+        - text: 强力驱动
+  - button "返回顶部" [ref=e39] [cursor=pointer]:
+    - generic [ref=e41]: 0%
+  - button "" [ref=e42] [cursor=pointer]
+  - link "在 GitHub 上关注我":
+    - /url: https://github.com/pc-study
+    - img [ref=e43] [cursor=pointer]

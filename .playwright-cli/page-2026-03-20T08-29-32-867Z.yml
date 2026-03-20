@@ -1,0 +1,759 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - img "avatar" [ref=e4]
+    - generic [ref=e5]:
+      - link "文章 528" [ref=e6] [cursor=pointer]:
+        - /url: /csdn-blog/archives/
+        - generic [ref=e7]: 文章
+        - generic [ref=e8]: "528"
+      - link "标签 168" [ref=e9] [cursor=pointer]:
+        - /url: /csdn-blog/tags/
+        - generic [ref=e10]: 标签
+        - generic [ref=e11]: "168"
+      - link "分类 7" [ref=e12] [cursor=pointer]:
+        - /url: /csdn-blog/categories/
+        - generic [ref=e13]: 分类
+        - generic [ref=e14]: "7"
+    - generic [ref=e15]:
+      - link "首页" [ref=e17] [cursor=pointer]:
+        - /url: /csdn-blog/
+        - text: 首页
+      - link "时间轴" [ref=e20] [cursor=pointer]:
+        - /url: /csdn-blog/archives/
+        - text: 时间轴
+      - link "标签" [ref=e23] [cursor=pointer]:
+        - /url: /csdn-blog/tags/
+        - text: 标签
+      - link "分类" [ref=e26] [cursor=pointer]:
+        - /url: /csdn-blog/categories/
+        - text: 分类
+      - link "关于" [ref=e29] [cursor=pointer]:
+        - /url: /csdn-blog/about/
+        - text: 关于
+      - link "CSDN" [ref=e32] [cursor=pointer]:
+        - /url: https://luciferliu.blog.csdn.net/
+        - text: CSDN
+  - generic [ref=e464]:
+    - banner [ref=e465]:
+      - navigation [ref=e466]:
+        - link "Lucifer三思而后行" [ref=e468] [cursor=pointer]:
+          - /url: /csdn-blog/
+        - generic [ref=e469]:
+          - generic [ref=e471] [cursor=pointer]: 搜索
+          - generic [ref=e473]:
+            - link "首页" [ref=e475] [cursor=pointer]:
+              - /url: /csdn-blog/
+              - text: 首页
+            - link "时间轴" [ref=e478] [cursor=pointer]:
+              - /url: /csdn-blog/archives/
+              - text: 时间轴
+            - link "标签" [ref=e481] [cursor=pointer]:
+              - /url: /csdn-blog/tags/
+              - text: 标签
+            - link "分类" [ref=e484] [cursor=pointer]:
+              - /url: /csdn-blog/categories/
+              - text: 分类
+            - link "关于" [ref=e487] [cursor=pointer]:
+              - /url: /csdn-blog/about/
+              - text: 关于
+            - link "CSDN" [ref=e490] [cursor=pointer]:
+              - /url: https://luciferliu.blog.csdn.net/
+              - text: CSDN
+    - main [ref=e492]:
+      - generic [ref=e493]:
+        - generic [ref=e494]:
+          - heading "Oracle 直连 TiDB 可行吗？" [level=1] [ref=e495]:
+            - text: Oracle 直连 TiDB 可行吗？
+            - link "编辑" [ref=e496] [cursor=pointer]:
+              - /url: https://github.com/pc-study/csdn-blog/edit/main/source/_posts/_posts/2026-01-22-157245807.md
+          - generic [ref=e498]:
+            - generic [ref=e499]:
+              - generic [ref=e500]:
+                - text: 发表于
+                - time [ref=e502]: 2026-01-22
+                - text: "|"
+                - text: 更新于
+                - time [ref=e504]: 2026-03-20
+              - generic [ref=e505]:
+                - text: "|"
+                - link "Oracle 数据库" [ref=e507] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/
+            - generic [ref=e508]:
+              - generic [ref=e509]:
+                - text: 总字数:1.2k|
+                - text: 阅读时长:4分钟
+              - text: "|"
+              - generic [ref=e512]: 浏览量:10
+        - article [ref=e514]:
+          - text: 
+          - blockquote [ref=e515]:
+            - paragraph [ref=e516]:
+              - text: 大家好，这里是公众号
+              - strong [ref=e517]: DBA学习之路
+              - text: ，分享一些学习数据库路上的知识和经验。
+          - heading " 目录 目录" [level=4] [ref=e518]:
+            - text: 
+            - link "目录" [ref=e519] [cursor=pointer]:
+              - /url: "#目录"
+            - text: 目录
+          - list [ref=e520]:
+            - listitem [ref=e521]:
+              - link "前言" [ref=e522] [cursor=pointer]:
+                - /url: "#_7"
+            - listitem [ref=e523]:
+              - link "环境信息" [ref=e524] [cursor=pointer]:
+                - /url: "#_17"
+            - listitem [ref=e525]:
+              - link "Oracle 端配置" [ref=e526] [cursor=pointer]:
+                - /url: "#Oracle__25"
+            - listitem [ref=e527]:
+              - list [ref=e528]:
+                - listitem [ref=e529]:
+                  - link "透明网关检查" [ref=e530] [cursor=pointer]:
+                    - /url: "#_26"
+                - listitem [ref=e531]:
+                  - link "安装 unixODBC" [ref=e532] [cursor=pointer]:
+                    - /url: "#_unixODBC_39"
+                - listitem [ref=e533]:
+                  - link "安装 MySQL ODBC 驱动" [ref=e534] [cursor=pointer]:
+                    - /url: "#_MySQL_ODBC__57"
+                - listitem [ref=e535]:
+                  - link "配置 ODBC 数据源" [ref=e536] [cursor=pointer]:
+                    - /url: "#_ODBC__69"
+                - listitem [ref=e537]:
+                  - link "验证 ODBC 连通性" [ref=e538] [cursor=pointer]:
+                    - /url: "#_ODBC__91"
+                - listitem [ref=e539]:
+                  - link "配置 Oracle TNS" [ref=e540] [cursor=pointer]:
+                    - /url: "#_Oracle_TNS_107"
+                - listitem [ref=e541]:
+                  - link "配置透明网关参数" [ref=e542] [cursor=pointer]:
+                    - /url: "#_126"
+                - listitem [ref=e543]:
+                  - link "配置监听" [ref=e544] [cursor=pointer]:
+                    - /url: "#_140"
+                - listitem [ref=e545]:
+                  - link "验证 TNS 连通性" [ref=e546] [cursor=pointer]:
+                    - /url: "#_TNS__160"
+                - listitem [ref=e547]:
+                  - link "创建 DBLink" [ref=e548] [cursor=pointer]:
+                    - /url: "#_DBLink_167"
+                - listitem [ref=e549]:
+                  - link "查询验证" [ref=e550] [cursor=pointer]:
+                    - /url: "#_176"
+            - listitem [ref=e551]:
+              - link "总结" [ref=e552] [cursor=pointer]:
+                - /url: "#_187"
+          - heading " 前言 前言" [level=2] [ref=e553]:
+            - text: 
+            - link "前言" [ref=e554] [cursor=pointer]:
+              - /url: "#前言"
+            - text: 前言
+          - paragraph [ref=e555]:
+            - text: 今天业务抛了个问题过来：
+            - strong [ref=e556]: Oracle 能不能直接查 TiDB？
+          - paragraph [ref=e557]:
+            - text: 第一反应是“这俩不是一套体系”，但转念一想，TiDB 在协议层面兼容 MySQL，而 Oracle 早就可以通过
+            - strong [ref=e558]: 透明网关 + ODBC + DBLink
+            - text: 访问 MySQL，那 TiDB 理论上也走得通。
+          - paragraph [ref=e559]:
+            - text: 实际动手验证了一下，结论很明确：
+            - strong [ref=e560]: 确实可以
+            - text: 。不需要做数据同步，不用引入中间服务，也不必改应用代码，
+            - strong [ref=e561]: 只要在 Oracle 里建一个 DBLink
+            - text: ，就能直接查询 TiDB 表。
+          - paragraph [ref=e562]: 本文记录的就是这次完整的落地过程。
+          - heading " 环境信息 环境信息" [level=2] [ref=e563]:
+            - text: 
+            - link "环境信息" [ref=e564] [cursor=pointer]:
+              - /url: "#环境信息"
+            - text: 环境信息
+          - paragraph [ref=e565]: 环境本身并不复杂，两端都是 CentOS 7.9，数据库版本也都算主流：
+          - table [ref=e567]:
+            - rowgroup [ref=e568]:
+              - row "角色 系统 数据库类型 数据库版本" [ref=e569]:
+                - columnheader "角色" [ref=e570]
+                - columnheader "系统" [ref=e571]
+                - columnheader "数据库类型" [ref=e572]
+                - columnheader "数据库版本" [ref=e573]
+            - rowgroup [ref=e574]:
+              - row "源端 Centos7.9 Oracle 19c" [ref=e575]:
+                - cell "源端" [ref=e576]
+                - cell "Centos7.9" [ref=e577]
+                - cell "Oracle" [ref=e578]
+                - cell "19c" [ref=e579]
+              - row "目标端 Centos7.9 TiDB v7.5.0" [ref=e580]:
+                - cell "目标端" [ref=e581]
+                - cell "Centos7.9" [ref=e582]
+                - cell "TiDB" [ref=e583]
+                - cell "v7.5.0" [ref=e584]
+          - heading " Oracle 端配置 Oracle 端配置" [level=2] [ref=e585]:
+            - text: 
+            - link "Oracle 端配置" [ref=e586] [cursor=pointer]:
+              - /url: "#Oracle-端配置"
+            - text: Oracle 端配置
+          - heading " 透明网关检查 透明网关检查" [level=3] [ref=e587]:
+            - text: 
+            - link "透明网关检查" [ref=e588] [cursor=pointer]:
+              - /url: "#透明网关检查"
+            - text: 透明网关检查
+          - paragraph [ref=e589]: Oracle 19c 其实已经把 ODBC 透明网关准备好了，不需要再额外装什么组件。先简单确认一下：
+          - figure [ref=e590]:
+            - generic [ref=e597]: elixir
+            - table [ref=e600]:
+              - rowgroup [ref=e601]:
+                - row "1 2 3 4 5 6 7 [oracle@orcl:/home/oracle]$ cd $ORACLE_HOME/hs [oracle@orcl:/u01/app/oracle/product/19.3.0/db/hs]$ dg4odbc Oracle Corporation --- 2026-01-20 16:11:29.887228000 Heterogeneous Agent Release 19.0.0.0.0 - Production Built with Oracle Database Gateway for ODBC" [ref=e602]:
+                  - cell "1 2 3 4 5 6 7" [ref=e603]:
+                    - generic [ref=e604]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                  - cell "[oracle@orcl:/home/oracle]$ cd $ORACLE_HOME/hs [oracle@orcl:/u01/app/oracle/product/19.3.0/db/hs]$ dg4odbc Oracle Corporation --- 2026-01-20 16:11:29.887228000 Heterogeneous Agent Release 19.0.0.0.0 - Production Built with Oracle Database Gateway for ODBC" [ref=e605]:
+                    - code [ref=e607]:
+                      - text: "[oracle@orcl:/home/oracle]$ cd $ORACLE_HOME/hs"
+                      - text: "[oracle@orcl:/u01/app/oracle/product/19.3.0/db/hs]$ dg4odbc"
+                      - text: Oracle Corporation --- 2026-01-20 16:11:29.887228000
+                      - text: Heterogeneous Agent Release 19.0.0.0.0 - Production Built with
+                      - text: Oracle Database Gateway for ODBC
+          - paragraph [ref=e608]: 看到 Oracle Database Gateway for ODBC，说明没有问题。
+          - heading " 安装 unixODBC 安装 unixODBC" [level=3] [ref=e609]:
+            - text: 
+            - link "安装 unixODBC" [ref=e610] [cursor=pointer]:
+              - /url: "#安装-unixODBC"
+            - text: 安装 unixODBC
+          - paragraph [ref=e611]: 透明网关本身在 Oracle 里，但真正和外部数据库打交道，还是要靠系统层面的 ODBC。
+          - paragraph [ref=e612]: CentOS 7 上直接用本地 YUM 源安装即可：
+          - figure [ref=e613]:
+            - generic [ref=e620]: elixir
+            - table [ref=e623]:
+              - rowgroup [ref=e624]:
+                - row "1 [root@orcl:/root]# yum install -y unixODBC*" [ref=e625]:
+                  - cell "1" [ref=e626]:
+                    - generic [ref=e627]: "1"
+                  - cell "[root@orcl:/root]# yum install -y unixODBC*" [ref=e628]:
+                    - code [ref=e630]: "[root@orcl:/root]# yum install -y unixODBC*"
+          - paragraph [ref=e631]: 装完之后，确认一下环境是否正常：
+          - figure [ref=e632]:
+            - generic [ref=e639]: ruby
+            - table [ref=e642]:
+              - rowgroup [ref=e643]:
+                - 'row "1 2 3 4 5 6 [root@orcl:/root]# odbcinst -j unixODBC 2.3.1 DRIVERS............: /etc/odbcinst.ini SYSTEM DATA SOURCES: /etc/odbc.ini FILE DATA SOURCES..: /etc/ODBCDataSources USER DATA SOURCES..: /root/.odbc.ini" [ref=e644]':
+                  - cell "1 2 3 4 5 6" [ref=e645]:
+                    - generic [ref=e646]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                  - 'cell "[root@orcl:/root]# odbcinst -j unixODBC 2.3.1 DRIVERS............: /etc/odbcinst.ini SYSTEM DATA SOURCES: /etc/odbc.ini FILE DATA SOURCES..: /etc/ODBCDataSources USER DATA SOURCES..: /root/.odbc.ini" [ref=e647]':
+                    - code [ref=e649]:
+                      - text: "[root@orcl:/root]# odbcinst -j"
+                      - text: unixODBC 2.3.1
+                      - text: "DRIVERS............: /etc/odbcinst.ini"
+                      - text: "SYSTEM DATA SOURCES: /etc/odbc.ini"
+                      - text: "FILE DATA SOURCES..: /etc/ODBCDataSources"
+                      - text: "USER DATA SOURCES..: /root/.odbc.ini"
+          - paragraph [ref=e650]: 这一步很关键，如果 ODBC 本身不干净，后面 Oracle 报错会非常“玄学”。
+          - heading " 安装 MySQL ODBC 驱动 安装 MySQL ODBC 驱动" [level=3] [ref=e651]:
+            - text: 
+            - link "安装 MySQL ODBC 驱动" [ref=e652] [cursor=pointer]:
+              - /url: "#安装-MySQL-ODBC-驱动"
+            - text: 安装 MySQL ODBC 驱动
+          - paragraph [ref=e653]: TiDB 在客户端看来就是 MySQL，这里直接使用 MySQL Connector/ODBC。
+          - paragraph [ref=e654]:
+            - text: 驱动从官方归档页下载即可：
+            - link "https://downloads.mysql.com/archives/c-odbc/" [ref=e655] [cursor=pointer]:
+              - /url: https://downloads.mysql.com/archives/c-odbc/
+          - paragraph [ref=e656]:
+            - link [ref=e657] [cursor=pointer]:
+              - /url: /csdn-blog/images/619f5daa22e83e88de9459139a7b0071.png
+              - img [ref=e658]
+          - paragraph [ref=e659]: 安装过程很简单：
+          - figure [ref=e660]:
+            - generic [ref=e667]: elixir
+            - table [ref=e670]:
+              - rowgroup [ref=e671]:
+                - row "1 [root@orcl:/root]# rpm -ivh mysql-connector-odbc-8.0.27-1.el7.x86_64.rpm" [ref=e672]:
+                  - cell "1" [ref=e673]:
+                    - generic [ref=e674]: "1"
+                  - cell "[root@orcl:/root]# rpm -ivh mysql-connector-odbc-8.0.27-1.el7.x86_64.rpm" [ref=e675]:
+                    - code [ref=e677]: "[root@orcl:/root]# rpm -ivh mysql-connector-odbc-8.0.27-1.el7.x86_64.rpm"
+          - heading " 配置 ODBC 数据源 配置 ODBC 数据源" [level=3] [ref=e678]:
+            - text: 
+            - link "配置 ODBC 数据源" [ref=e679] [cursor=pointer]:
+              - /url: "#配置-ODBC-数据源"
+            - text: 配置 ODBC 数据源
+          - paragraph [ref=e680]:
+            - text: 这里我直接在
+            - code [ref=e681]: /etc/odbc.ini
+            - text: 里定义 DSN，简单直观：
+          - figure [ref=e682]:
+            - generic [ref=e689]: makefile
+            - table [ref=e692]:
+              - rowgroup [ref=e693]:
+                - row "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 [root@orcl:/root]# cat> /etc/odbc.ini <<'EOF' [ODBC Data Sources] myodbc8w = MyODBC 8.0 UNICODE Driver DSN myodbc8a = MyODBC 8.0 ANSI Driver DSN [myodbc8w] Description = Connector/ODBC 8.0 UNICODE Driver DSN Driver = /usr/lib64/libmyodbc8w.so SERVER = 192.168.31.222 USER = root PASSWORD = testtest PORT = 4000 DATABASE = cid_dsds_wex OPTION = 0 TRACE = OFF EOF" [ref=e694]:
+                  - cell "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16" [ref=e695]:
+                    - generic [ref=e696]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                      - text: "8"
+                      - text: "9"
+                      - text: "10"
+                      - text: "11"
+                      - text: "12"
+                      - text: "13"
+                      - text: "14"
+                      - text: "15"
+                      - text: "16"
+                  - cell "[root@orcl:/root]# cat> /etc/odbc.ini <<'EOF' [ODBC Data Sources] myodbc8w = MyODBC 8.0 UNICODE Driver DSN myodbc8a = MyODBC 8.0 ANSI Driver DSN [myodbc8w] Description = Connector/ODBC 8.0 UNICODE Driver DSN Driver = /usr/lib64/libmyodbc8w.so SERVER = 192.168.31.222 USER = root PASSWORD = testtest PORT = 4000 DATABASE = cid_dsds_wex OPTION = 0 TRACE = OFF EOF" [ref=e697]:
+                    - code [ref=e699]:
+                      - text: "[root@orcl:/root]# cat> /etc/odbc.ini <<'EOF'"
+                      - text: "[ODBC Data Sources]"
+                      - text: myodbc8w = MyODBC 8.0 UNICODE Driver DSN
+                      - text: myodbc8a = MyODBC 8.0 ANSI Driver DSN
+                      - text: "[myodbc8w]"
+                      - text: Description = Connector/ODBC 8.0 UNICODE Driver DSN
+                      - text: Driver = /usr/lib64/libmyodbc8w.so
+                      - text: SERVER = 192.168.31.222
+                      - text: USER = root
+                      - text: PASSWORD = testtest
+                      - text: PORT = 4000
+                      - text: DATABASE = cid_dsds_wex
+                      - text: OPTION = 0
+                      - text: TRACE = OFF
+                      - text: EOF
+          - paragraph [ref=e700]:
+            - text: DSN 名称
+            - code [ref=e701]: myodbc8w
+            - text: ，后面会反复用到，一定要前后一致。
+          - heading " 验证 ODBC 连通性 验证 ODBC 连通性" [level=3] [ref=e702]:
+            - text: 
+            - link "验证 ODBC 连通性" [ref=e703] [cursor=pointer]:
+              - /url: "#验证-ODBC-连通性"
+            - text: 验证 ODBC 连通性
+          - paragraph [ref=e704]:
+            - text: 在引入 Oracle 之前，先用
+            - code [ref=e705]: isql
+            - text: 把 ODBC 本身测通。
+          - figure [ref=e706]:
+            - generic [ref=e713]: gherkin
+            - table [ref=e716]:
+              - rowgroup [ref=e717]:
+                - row "1 2 3 4 5 6 7 8 9 10 [oracle@orcl:/home/oracle]$ isql myodbc8w -v +---------------------------------------+ | Connected! | | | | sql-statement | | help [tablename] | | quit | | | +---------------------------------------+ SQL> show tables;" [ref=e718]:
+                  - cell "1 2 3 4 5 6 7 8 9 10" [ref=e719]:
+                    - generic [ref=e720]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                      - text: "8"
+                      - text: "9"
+                      - text: "10"
+                  - cell "[oracle@orcl:/home/oracle]$ isql myodbc8w -v +---------------------------------------+ | Connected! | | | | sql-statement | | help [tablename] | | quit | | | +---------------------------------------+ SQL> show tables;" [ref=e721]:
+                    - code [ref=e723]:
+                      - text: "[oracle@orcl:/home/oracle]$ isql myodbc8w -v"
+                      - text: +---------------------------------------+
+                      - text: "| Connected! |"
+                      - text: "| |"
+                      - text: "| sql-statement |"
+                      - text: "| help [tablename] |"
+                      - text: "| quit |"
+                      - text: "| |"
+                      - text: +---------------------------------------+
+                      - text: SQL> show tables;
+          - paragraph [ref=e724]:
+            - text: 能正常
+            - code [ref=e725]: Connected!
+            - text: ，说明
+            - strong [ref=e726]: Linux → TiDB
+            - text: 这段链路已经没有问题，后续的问题只会发生在 Oracle 透明网关层。
+          - heading " 配置 Oracle TNS 配置 Oracle TNS" [level=3] [ref=e727]:
+            - text: 
+            - link "配置 Oracle TNS" [ref=e728] [cursor=pointer]:
+              - /url: "#配置-Oracle-TNS"
+            - text: 配置 Oracle TNS
+          - paragraph [ref=e729]: 接下来开始配置 Oracle。
+          - paragraph [ref=e730]:
+            - text: 先在
+            - code [ref=e731]: tnsnames.ora
+            - text: 里定义一个服务名，注意这里的 HOST 是 Oracle 自己的 IP，不是 TiDB 的：
+          - figure [ref=e732]:
+            - generic [ref=e739]: routeros
+            - table [ref=e742]:
+              - rowgroup [ref=e743]:
+                - row "1 2 3 4 5 6 7 8 9 10 11 12 [oracle@orcl:/home/oracle]$ cat >> $ORACLE_HOME/network/admin/tnsnames.ora <<'EOF' myodbc8w = (DESCRIPTION= (ADDRESS= (PROTOCOL=TCP) (HOST= 192.168.31.221) (PORT=1521) ) (CONNECT_DATA= (SID=myodbc8w) ) (HS=OK) ) EOF" [ref=e744]:
+                  - cell "1 2 3 4 5 6 7 8 9 10 11 12" [ref=e745]:
+                    - generic [ref=e746]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                      - text: "8"
+                      - text: "9"
+                      - text: "10"
+                      - text: "11"
+                      - text: "12"
+                  - cell "[oracle@orcl:/home/oracle]$ cat >> $ORACLE_HOME/network/admin/tnsnames.ora <<'EOF' myodbc8w = (DESCRIPTION= (ADDRESS= (PROTOCOL=TCP) (HOST= 192.168.31.221) (PORT=1521) ) (CONNECT_DATA= (SID=myodbc8w) ) (HS=OK) ) EOF" [ref=e747]:
+                    - code [ref=e749]:
+                      - text: "[oracle@orcl:/home/oracle]$ cat >> $ORACLE_HOME/network/admin/tnsnames.ora <<'EOF'"
+                      - text: myodbc8w =
+                      - text: (DESCRIPTION=
+                      - text: (ADDRESS=
+                      - text: (PROTOCOL=TCP) (HOST= 192.168.31.221) (PORT=1521)
+                      - text: )
+                      - text: (CONNECT_DATA=
+                      - text: (SID=myodbc8w)
+                      - text: )
+                      - text: (HS=OK)
+                      - text: )
+                      - text: EOF
+          - heading " 配置透明网关参数 配置透明网关参数" [level=3] [ref=e750]:
+            - text: 
+            - link "配置透明网关参数" [ref=e751] [cursor=pointer]:
+              - /url: "#配置透明网关参数"
+            - text: 配置透明网关参数
+          - paragraph [ref=e752]:
+            - text: 透明网关的核心配置文件在，文件名必须是
+            - code [ref=e753]: init<SID>.ora
+            - text: ，这里 SID 就是
+            - strong [ref=e754]: myodbc8w
+            - text: ：
+          - figure [ref=e755]:
+            - generic [ref=e762]: routeros
+            - table [ref=e765]:
+              - rowgroup [ref=e766]:
+                - row "1 2 3 4 5 6 7 8 [oracle@orcl:/home/oracle]$ cat> $ORACLE_HOME/hs/admin/initmyodbc8w.ora <<'EOF' HS_FDS_CONNECT_INFO=myodbc8w HS_FDS_SHAREABLE_NAME=/usr/lib64/libodbc.so HS_FDS_SUPPORT_STATISTICS=FALSE HS_LANGUAGE = AMERICAN_AMERICA.AL32UTF8 HS_NLS_NCHAR = UCS2 HS_FDS_TRACE_LEVEL = debug EOF" [ref=e767]:
+                  - cell "1 2 3 4 5 6 7 8" [ref=e768]:
+                    - generic [ref=e769]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                      - text: "8"
+                  - cell "[oracle@orcl:/home/oracle]$ cat> $ORACLE_HOME/hs/admin/initmyodbc8w.ora <<'EOF' HS_FDS_CONNECT_INFO=myodbc8w HS_FDS_SHAREABLE_NAME=/usr/lib64/libodbc.so HS_FDS_SUPPORT_STATISTICS=FALSE HS_LANGUAGE = AMERICAN_AMERICA.AL32UTF8 HS_NLS_NCHAR = UCS2 HS_FDS_TRACE_LEVEL = debug EOF" [ref=e770]:
+                    - code [ref=e772]:
+                      - text: "[oracle@orcl:/home/oracle]$ cat> $ORACLE_HOME/hs/admin/initmyodbc8w.ora <<'EOF'"
+                      - text: HS_FDS_CONNECT_INFO=myodbc8w
+                      - text: HS_FDS_SHAREABLE_NAME=/usr/lib64/libodbc.so
+                      - text: HS_FDS_SUPPORT_STATISTICS=FALSE
+                      - text: HS_LANGUAGE = AMERICAN_AMERICA.AL32UTF8
+                      - text: HS_NLS_NCHAR = UCS2
+                      - text: HS_FDS_TRACE_LEVEL = debug
+                      - text: EOF
+          - paragraph [ref=e773]: 如果后续有字符集、SQL 转换相关问题，这个文件通常是第一排查点。
+          - heading " 配置监听 配置监听" [level=3] [ref=e774]:
+            - text: 
+            - link "配置监听" [ref=e775] [cursor=pointer]:
+              - /url: "#配置监听"
+            - text: 配置监听
+          - paragraph [ref=e776]:
+            - text: 透明网关是通过监听拉起的，需要在
+            - code [ref=e777]: listener.ora
+            - text: 中显式注册一个 SID：
+          - figure [ref=e778]:
+            - generic [ref=e785]: routeros
+            - table [ref=e788]:
+              - rowgroup [ref=e789]:
+                - row "1 2 3 4 5 6 7 8 9 10 11 [oracle@orcl:/home/oracle]$ cat>> $ORACLE_HOME/network/admin/listener.ora <<'EOF' SID_LIST_LISTENER= (SID_LIST= (SID_DESC= (SID_NAME=myodbc8w) (ORACLE_HOME=/u01/app/oracle/product/19.3.0/db) (PROGRAM=dg4odbc) (ENVS=LD_LIBRARY_PATH=/usr/lib64) ) ) EOF" [ref=e790]:
+                  - cell "1 2 3 4 5 6 7 8 9 10 11" [ref=e791]:
+                    - generic [ref=e792]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                      - text: "6"
+                      - text: "7"
+                      - text: "8"
+                      - text: "9"
+                      - text: "10"
+                      - text: "11"
+                  - cell "[oracle@orcl:/home/oracle]$ cat>> $ORACLE_HOME/network/admin/listener.ora <<'EOF' SID_LIST_LISTENER= (SID_LIST= (SID_DESC= (SID_NAME=myodbc8w) (ORACLE_HOME=/u01/app/oracle/product/19.3.0/db) (PROGRAM=dg4odbc) (ENVS=LD_LIBRARY_PATH=/usr/lib64) ) ) EOF" [ref=e793]:
+                    - code [ref=e795]:
+                      - text: "[oracle@orcl:/home/oracle]$ cat>> $ORACLE_HOME/network/admin/listener.ora <<'EOF'"
+                      - text: SID_LIST_LISTENER=
+                      - text: (SID_LIST=
+                      - text: (SID_DESC=
+                      - text: (SID_NAME=myodbc8w)
+                      - text: (ORACLE_HOME=/u01/app/oracle/product/19.3.0/db)
+                      - text: (PROGRAM=dg4odbc)
+                      - text: (ENVS=LD_LIBRARY_PATH=/usr/lib64)
+                      - text: )
+                      - text: )
+                      - text: EOF
+          - paragraph [ref=e796]: 修改完成后，重载监听：
+          - figure [ref=e797]:
+            - generic [ref=e804]: elixir
+            - table [ref=e807]:
+              - rowgroup [ref=e808]:
+                - row "1 [oracle@orcl:/home/oracle]$ lsnrctl reload" [ref=e809]:
+                  - cell "1" [ref=e810]:
+                    - generic [ref=e811]: "1"
+                  - cell "[oracle@orcl:/home/oracle]$ lsnrctl reload" [ref=e812]:
+                    - code [ref=e814]: "[oracle@orcl:/home/oracle]$ lsnrctl reload"
+          - heading " 验证 TNS 连通性 验证 TNS 连通性" [level=3] [ref=e815]:
+            - text: 
+            - link "验证 TNS 连通性" [ref=e816] [cursor=pointer]:
+              - /url: "#验证-TNS-连通性"
+            - text: 验证 TNS 连通性
+          - paragraph [ref=e817]: 检查 TNS：
+          - figure [ref=e818]:
+            - generic [ref=e825]: elixir
+            - table [ref=e828]:
+              - rowgroup [ref=e829]:
+                - row "1 [oracle@orcl:/home/oracle]$ tnsping myodbc8w" [ref=e830]:
+                  - cell "1" [ref=e831]:
+                    - generic [ref=e832]: "1"
+                  - cell "[oracle@orcl:/home/oracle]$ tnsping myodbc8w" [ref=e833]:
+                    - code [ref=e835]: "[oracle@orcl:/home/oracle]$ tnsping myodbc8w"
+          - paragraph [ref=e836]:
+            - text: 只要不报错，说明监听侧已经能正确拉起
+            - code [ref=e837]: dg4odbc
+            - text: 。
+          - heading " 创建 DBLink 创建 DBLink" [level=3] [ref=e838]:
+            - text: 
+            - link "创建 DBLink" [ref=e839] [cursor=pointer]:
+              - /url: "#创建-DBLink"
+            - text: 创建 DBLink
+          - paragraph [ref=e840]: 创建 DBLink：
+          - figure [ref=e841]:
+            - generic [ref=e848]: pgsql
+            - table [ref=e851]:
+              - rowgroup [ref=e852]:
+                - row "1 2 3 4 SYS@orcl SQL> create public database link testtidb connect to \"root\" identified by \"testtest\" using 'myodbc8w';" [ref=e853]:
+                  - cell "1 2 3 4" [ref=e854]:
+                    - generic [ref=e855]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                  - cell "SYS@orcl SQL> create public database link testtidb connect to \"root\" identified by \"testtest\" using 'myodbc8w';" [ref=e856]:
+                    - code [ref=e858]:
+                      - text: SYS@orcl SQL> create public database link testtidb
+                      - text: connect to "root"
+                      - text: identified by "testtest"
+                      - text: using 'myodbc8w';
+          - heading " 查询验证 查询验证" [level=3] [ref=e859]:
+            - text: 
+            - link "查询验证" [ref=e860] [cursor=pointer]:
+              - /url: "#查询验证"
+            - text: 查询验证
+          - paragraph [ref=e861]: 测试查询：
+          - figure [ref=e862]:
+            - generic [ref=e869]: oxygene
+            - table [ref=e872]:
+              - rowgroup [ref=e873]:
+                - row "1 2 3 4 5 SYS@orcl SQL> select count(*) from test@testtidb ; COUNT(*) ---------- 44527956" [ref=e874]:
+                  - cell "1 2 3 4 5" [ref=e875]:
+                    - generic [ref=e876]:
+                      - text: "1"
+                      - text: "2"
+                      - text: "3"
+                      - text: "4"
+                      - text: "5"
+                  - cell "SYS@orcl SQL> select count(*) from test@testtidb ; COUNT(*) ---------- 44527956" [ref=e877]:
+                    - code [ref=e879]:
+                      - text: SYS@orcl SQL> select count(*) from test@testtidb ;
+                      - text: COUNT(*)
+                      - text: "----------"
+                      - text: "44527956"
+          - paragraph [ref=e880]: 结果正常返回，说明链路已经完全打通。
+          - heading " 总结 总结" [level=2] [ref=e881]:
+            - text: 
+            - link "总结" [ref=e882] [cursor=pointer]:
+              - /url: "#总结"
+            - text: 总结
+          - paragraph [ref=e883]: 从 Oracle 到 TiDB，看起来是两套体系，其实中间那条桥一直都在。ODBC + 透明网关 + DBLink，这套“老技术”，在今天依然非常稳。
+          - paragraph [ref=e884]: 只要分清楚每一层的职责，先通 ODBC，再通 Oracle，整个过程反而比想象中要顺得多。
+        - generic [ref=e885]:
+          - text: 
+          - generic [ref=e886]:
+            - generic [ref=e887]: "文章作者:"
+            - link "Lucifer" [ref=e890] [cursor=pointer]:
+              - /url: https://luciferliu.blog.csdn.net/
+          - generic [ref=e891]:
+            - generic [ref=e892]: "文章链接:"
+            - link "https://pc-study.github.io/csdn-blog/posts/157245807/" [ref=e895] [cursor=pointer]:
+              - /url: https://pc-study.github.io/csdn-blog/posts/157245807/
+          - generic [ref=e896]:
+            - generic [ref=e897]: "版权声明:"
+            - generic [ref=e899]:
+              - text: 本博客所有文章除特别声明外，均采用
+              - link "CC BY-NC-SA 4.0" [ref=e900] [cursor=pointer]:
+                - /url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+              - text: 许可协议。转载请注明来源
+              - link "Lucifer三思而后行" [ref=e901] [cursor=pointer]:
+                - /url: https://pc-study.github.io/csdn-blog
+              - text: ！
+        - generic [ref=e903]:
+          - link "oracle" [ref=e904] [cursor=pointer]:
+            - /url: /csdn-blog/tags/oracle/
+          - link "数据库" [ref=e905] [cursor=pointer]:
+            - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/
+          - link "tidb" [ref=e906] [cursor=pointer]:
+            - /url: /csdn-blog/tags/tidb/
+        - navigation [ref=e907]:
+          - link "下一篇 华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南 华为联合云南建投物流推出的智慧物流全球样板点，搭配云链物流大模型的研发启动，近期成为行业热议焦点。从原料采购到销售服务的全流程智能化管理，让物流行业的数智化转型有了清晰的实践范本。 而这一成功案例的底层逻辑，正藏在《华为数据之道》中。对于正在数字化转型路上挣扎的企业而言，这本书绝非空泛的理论合集，而" [ref=e908] [cursor=pointer]:
+            - /url: /csdn-blog/posts/156853585/
+            - generic:
+              - generic [ref=e910]:
+                - generic [ref=e911]: 下一篇
+                - generic [ref=e912]: 华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南
+              - generic [ref=e914]: 华为联合云南建投物流推出的智慧物流全球样板点，搭配云链物流大模型的研发启动，近期成为行业热议焦点。从原料采购到销售服务的全流程智能化管理，让物流行业的数智化转型有了清晰的实践范本。 而这一成功案例的底层逻辑，正藏在《华为数据之道》中。对于正在数字化转型路上挣扎的企业而言，这本书绝非空泛的理论合集，而
+        - generic [ref=e915]:
+          - generic [ref=e916]: 相关推荐
+          - generic [ref=e918]:
+            - link "2024-06-18 中科方德 NFSChina 4.0一键安装 Oracle 11GR2 单机 前言 Oracle 一键安装脚本，演示中科方德 NFSChina 4.0一键安装 Oracle 11GR2 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软" [ref=e919] [cursor=pointer]:
+              - /url: /csdn-blog/posts/139778169/
+              - generic:
+                - generic [ref=e921]:
+                  - generic [ref=e922]: 2024-06-18
+                  - generic [ref=e924]: 中科方德 NFSChina 4.0一键安装 Oracle 11GR2 单机
+                - generic [ref=e926]: 前言 Oracle 一键安装脚本，演示中科方德 NFSChina 4.0一键安装 Oracle 11GR2 单机过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软
+            - link "2022-02-09 [译] Oracle Database 21c 中的空间管理增强功能 原文地址： 原文作者：Tim Hall 本文介绍 Oracle 数据库 21c 中的空间管理增强功能。 目录 SecureFiles 收缩 临时表空间自动收缩 撤消表空间自动收缩 SecureFiles 收缩 在以前的版本中，我们只能通过移动 lob 来释放 lob 的空间，这对于大型 lob 段可" [ref=e927] [cursor=pointer]:
+              - /url: /csdn-blog/posts/122839501/
+              - generic:
+                - generic [ref=e929]:
+                  - generic [ref=e930]: 2022-02-09
+                  - generic [ref=e932]: "[译] Oracle Database 21c 中的空间管理增强功能"
+                - generic [ref=e934]: 原文地址： 原文作者：Tim Hall 本文介绍 Oracle 数据库 21c 中的空间管理增强功能。 目录 SecureFiles 收缩 临时表空间自动收缩 撤消表空间自动收缩 SecureFiles 收缩 在以前的版本中，我们只能通过移动 lob 来释放 lob 的空间，这对于大型 lob 段可
+            - link "2024-05-24 阿里龙蜥 Anolis 8.8 一键安装 Oracle 21C 单机 前言 Oracle 一键安装脚本，演示 龙蜥 Anolis 8.8 一键安装 Oracle 21C 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安装包（安" [ref=e935] [cursor=pointer]:
+              - /url: /csdn-blog/posts/139179212/
+              - generic:
+                - generic [ref=e937]:
+                  - generic [ref=e938]: 2024-05-24
+                  - generic [ref=e940]: 阿里龙蜥 Anolis 8.8 一键安装 Oracle 21C 单机
+                - generic [ref=e942]: 前言 Oracle 一键安装脚本，演示 龙蜥 Anolis 8.8 一键安装 Oracle 21C 单机（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 前置准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像源 4、上传软件安装包（安
+            - link "2021-12-13 [译] Oracle Database 19c 中的 LISTAGG DISTINCT 函数是在 Oracle 11gR2 中引入的，以使字符串聚合更简单。在 Oracle 12cR2 中，它被扩展为包括溢出错误处理。 Oracle 19c 更新了 LISTAGG 功能，通过 关键字从结果中删除重复项。 配置 本文中的示例使用下表： 问题 该LISTAGG函数的默认操作如下所示： 让我" [ref=e943] [cursor=pointer]:
+              - /url: /csdn-blog/posts/121915597/
+              - generic:
+                - generic [ref=e945]:
+                  - generic [ref=e946]: 2021-12-13
+                  - generic [ref=e948]: "[译] Oracle Database 19c 中的 LISTAGG DISTINCT"
+                - generic [ref=e950]: 函数是在 Oracle 11gR2 中引入的，以使字符串聚合更简单。在 Oracle 12cR2 中，它被扩展为包括溢出错误处理。 Oracle 19c 更新了 LISTAGG 功能，通过 关键字从结果中删除重复项。 配置 本文中的示例使用下表： 问题 该LISTAGG函数的默认操作如下所示： 让我
+            - link "2024-05-24 阿里龙蜥 Anolis 7.9 一键安装 Oracle 11GR2 RAC 前言 Oracle 一键安装脚本，演示 龙蜥 Anolis 7.9 一键安装 Oracle 11GR2 RAC（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像" [ref=e951] [cursor=pointer]:
+              - /url: /csdn-blog/posts/139179364/
+              - generic:
+                - generic [ref=e953]:
+                  - generic [ref=e954]: 2024-05-24
+                  - generic [ref=e956]: 阿里龙蜥 Anolis 7.9 一键安装 Oracle 11GR2 RAC
+                - generic [ref=e958]: 前言 Oracle 一键安装脚本，演示 龙蜥 Anolis 7.9 一键安装 Oracle 11GR2 RAC（231017）过程（全程无需人工干预）。 ⭐️ 脚本下载地址：Shell脚本安装Oracle数据库 安装准备 1、安装好操作系统，建议安装图形化 2、配置好网络 3、挂载本地 ISO 镜像
+            - link "2021-12-18 Oracle 从入门到精通系列讲解 - 总目录 总目录 欢迎大家来到 的《Oracle 从入门到精通系列》，开始前博主先列出 学习的大纲，同时这也可以作为大家学习 的参考。下面 蓝字 都是传送门，点击进入即可： 学前必读 Oracle 从入门到精通系列 - 总目录 Oracle 从入门到精通系列 - 前言 Oracle 从入门到精通系列 - 资料" [ref=e959] [cursor=pointer]:
+              - /url: /csdn-blog/posts/121982028/
+              - generic:
+                - generic [ref=e961]:
+                  - generic [ref=e962]: 2021-12-18
+                  - generic [ref=e964]: Oracle 从入门到精通系列讲解 - 总目录
+                - generic [ref=e966]: 总目录 欢迎大家来到 的《Oracle 从入门到精通系列》，开始前博主先列出 学习的大纲，同时这也可以作为大家学习 的参考。下面 蓝字 都是传送门，点击进入即可： 学前必读 Oracle 从入门到精通系列 - 总目录 Oracle 从入门到精通系列 - 前言 Oracle 从入门到精通系列 - 资料
+      - generic [ref=e967]:
+        - generic [ref=e968]:
+          - img "avatar" [ref=e970]
+          - generic [ref=e971]: Lucifer
+          - generic [ref=e972]: Oracle DBA | 数据库技术博主
+          - generic [ref=e973]:
+            - link "文章 528" [ref=e974] [cursor=pointer]:
+              - /url: /csdn-blog/archives/
+              - generic [ref=e975]: 文章
+              - generic [ref=e976]: "528"
+            - link "标签 168" [ref=e977] [cursor=pointer]:
+              - /url: /csdn-blog/tags/
+              - generic [ref=e978]: 标签
+              - generic [ref=e979]: "168"
+            - link "分类 7" [ref=e980] [cursor=pointer]:
+              - /url: /csdn-blog/categories/
+              - generic [ref=e981]: 分类
+              - generic [ref=e982]: "7"
+          - link "访问 CSDN" [ref=e983] [cursor=pointer]:
+            - /url: https://luciferliu.blog.csdn.net/
+            - text: 访问 CSDN
+          - generic [ref=e985]:
+            - link "Github" [ref=e986] [cursor=pointer]:
+              - /url: https://github.com/pc-study
+            - link "CSDN" [ref=e988] [cursor=pointer]:
+              - /url: https://luciferliu.blog.csdn.net/
+        - generic [ref=e990]:
+          - generic [ref=e991]: 公告
+          - generic [ref=e993]: 欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。
+        - generic [ref=e994]:
+          - generic [ref=e995]:
+            - generic [ref=e996]: 目录
+            - list [ref=e999]:
+              - listitem [ref=e1000]:
+                - link "1. 目录" [ref=e1001] [cursor=pointer]:
+                  - /url: "#%E7%9B%AE%E5%BD%95"
+              - listitem [ref=e1002]:
+                - link "2. 前言" [ref=e1003] [cursor=pointer]:
+                  - /url: "#%E5%89%8D%E8%A8%80"
+              - listitem [ref=e1004]:
+                - link "3. 环境信息" [ref=e1005] [cursor=pointer]:
+                  - /url: "#%E7%8E%AF%E5%A2%83%E4%BF%A1%E6%81%AF"
+              - listitem [ref=e1006]:
+                - link "4. Oracle 端配置" [ref=e1007] [cursor=pointer]:
+                  - /url: "#Oracle-%E7%AB%AF%E9%85%8D%E7%BD%AE"
+              - listitem [ref=e1008]:
+                - link "5. 总结" [ref=e1009] [cursor=pointer]:
+                  - /url: "#%E6%80%BB%E7%BB%93"
+          - generic [ref=e1010]:
+            - generic [ref=e1011]: 最新文章
+            - generic [ref=e1013]:
+              - generic [ref=e1015]:
+                - link "Oracle 直连 TiDB 可行吗？" [ref=e1016] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/157245807/
+                - time [ref=e1017]: 2026-01-22
+              - generic [ref=e1019]:
+                - link "华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南" [ref=e1020] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/156853585/
+                - time [ref=e1021]: 2026-01-12
+              - generic [ref=e1023]:
+                - link "看来 Oracle 还是听劝的！" [ref=e1024] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/156195159/
+                - time [ref=e1025]: 2025-12-23
+              - generic [ref=e1027]:
+                - link "【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具" [ref=e1028] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/155349073/
+                - time [ref=e1029]: 2025-11-28
+              - generic [ref=e1031]:
+                - link "veeam agent 纳管 Ubuntu 20.04 报错解决" [ref=e1032] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/155039369/
+                - time [ref=e1033]: 2025-11-19
+    - contentinfo [ref=e1034]:
+      - generic [ref=e1035]:
+        - generic [ref=e1036]:
+          - text: © 2021 - 2026 By Lucifer
+          - generic [ref=e1037]:
+            - text: 框架
+            - link "Hexo" [ref=e1038] [cursor=pointer]:
+              - /url: https://hexo.io
+            - text: "|主题"
+            - link "Butterfly" [ref=e1039] [cursor=pointer]:
+              - /url: https://github.com/jerryc127/hexo-theme-butterfly
+        - generic [ref=e1040]: Lucifer三思而后行 | CSDN 博客备份站
+  - generic [ref=e454]:
+    - generic:
+      - button "阅读模式" [ref=e1041] [cursor=pointer]
+      - button "日间和夜间模式切换" [ref=e1043] [cursor=pointer]
+      - button "单栏和双栏切换" [ref=e1045] [cursor=pointer]
+    - generic [ref=e1047]:
+      - button "设置" [ref=e1048] [cursor=pointer]
+      - button "回到顶部" [ref=e1050] [cursor=pointer]
+  - generic:
+    - generic: 

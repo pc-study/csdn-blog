@@ -1,0 +1,660 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - img "avatar" [ref=e4]
+    - generic [ref=e5]:
+      - link "文章 528" [ref=e6] [cursor=pointer]:
+        - /url: /csdn-blog/archives/
+        - generic [ref=e7]: 文章
+        - generic [ref=e8]: "528"
+      - link "标签 168" [ref=e9] [cursor=pointer]:
+        - /url: /csdn-blog/tags/
+        - generic [ref=e10]: 标签
+        - generic [ref=e11]: "168"
+      - link "分类 7" [ref=e12] [cursor=pointer]:
+        - /url: /csdn-blog/categories/
+        - generic [ref=e13]: 分类
+        - generic [ref=e14]: "7"
+    - generic [ref=e15]:
+      - link "首页" [ref=e17] [cursor=pointer]:
+        - /url: /csdn-blog/
+        - text: 首页
+      - link "时间轴" [ref=e20] [cursor=pointer]:
+        - /url: /csdn-blog/archives/
+        - text: 时间轴
+      - link "标签" [ref=e23] [cursor=pointer]:
+        - /url: /csdn-blog/tags/
+        - text: 标签
+      - link "分类" [ref=e26] [cursor=pointer]:
+        - /url: /csdn-blog/categories/
+        - text: 分类
+      - link "关于" [ref=e29] [cursor=pointer]:
+        - /url: /csdn-blog/about/
+        - text: 关于
+      - link "CSDN" [ref=e32] [cursor=pointer]:
+        - /url: https://luciferliu.blog.csdn.net/
+        - text: CSDN
+  - generic [ref=e34]:
+    - banner [ref=e35]:
+      - navigation [ref=e36]:
+        - link "Lucifer三思而后行" [ref=e38] [cursor=pointer]:
+          - /url: /csdn-blog/
+        - generic [ref=e39]:
+          - generic [ref=e41] [cursor=pointer]: 搜索
+          - generic [ref=e43]:
+            - link "首页" [ref=e45] [cursor=pointer]:
+              - /url: /csdn-blog/
+              - text: 首页
+            - link "时间轴" [ref=e48] [cursor=pointer]:
+              - /url: /csdn-blog/archives/
+              - text: 时间轴
+            - link "标签" [ref=e51] [cursor=pointer]:
+              - /url: /csdn-blog/tags/
+              - text: 标签
+            - link "分类" [ref=e54] [cursor=pointer]:
+              - /url: /csdn-blog/categories/
+              - text: 分类
+            - link "关于" [ref=e57] [cursor=pointer]:
+              - /url: /csdn-blog/about/
+              - text: 关于
+            - link "CSDN" [ref=e60] [cursor=pointer]:
+              - /url: https://luciferliu.blog.csdn.net/
+              - text: CSDN
+      - heading "标签" [level=1] [ref=e63]
+    - main [ref=e64]:
+      - generic [ref=e66]:
+        - link "无人值守" [ref=e67] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%97%A0%E4%BA%BA%E5%80%BC%E5%AE%88/
+        - link "shell一键安装" [ref=e68] [cursor=pointer]:
+          - /url: /csdn-blog/tags/shell%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85/
+        - link "oracle" [ref=e69] [cursor=pointer]:
+          - /url: /csdn-blog/tags/oracle/
+        - link "11GR2" [ref=e70] [cursor=pointer]:
+          - /url: /csdn-blog/tags/11GR2/
+        - link "orale" [ref=e71] [cursor=pointer]:
+          - /url: /csdn-blog/tags/orale/
+        - link "12CR2" [ref=e72] [cursor=pointer]:
+          - /url: /csdn-blog/tags/12CR2/
+        - link "数据库" [ref=e73] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/
+        - link "linux" [ref=e74] [cursor=pointer]:
+          - /url: /csdn-blog/tags/linux/
+        - link "运维" [ref=e75] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E8%BF%90%E7%BB%B4/
+        - link "shell" [ref=e76] [cursor=pointer]:
+          - /url: /csdn-blog/tags/shell/
+        - link "新星计划" [ref=e77] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%96%B0%E6%98%9F%E8%AE%A1%E5%88%92/
+        - link "分区表" [ref=e78] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%88%86%E5%8C%BA%E8%A1%A8/
+        - link "升级" [ref=e79] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%8D%87%E7%BA%A7/
+        - link "dataguard" [ref=e80] [cursor=pointer]:
+          - /url: /csdn-blog/tags/dataguard/
+        - link "gap" [ref=e81] [cursor=pointer]:
+          - /url: /csdn-blog/tags/gap/
+        - link "在线重定义" [ref=e82] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%9C%A8%E7%BA%BF%E9%87%8D%E5%AE%9A%E4%B9%89/
+        - link "vagrant" [ref=e83] [cursor=pointer]:
+          - /url: /csdn-blog/tags/vagrant/
+        - link "故障处理" [ref=e84] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%95%85%E9%9A%9C%E5%A4%84%E7%90%86/
+        - link "shareplex" [ref=e85] [cursor=pointer]:
+          - /url: /csdn-blog/tags/shareplex/
+        - link "CBL-Mariner" [ref=e86] [cursor=pointer]:
+          - /url: /csdn-blog/tags/CBL-Mariner/
+        - link "macos" [ref=e87] [cursor=pointer]:
+          - /url: /csdn-blog/tags/macos/
+        - link "docker" [ref=e88] [cursor=pointer]:
+          - /url: /csdn-blog/tags/docker/
+        - link "windows" [ref=e89] [cursor=pointer]:
+          - /url: /csdn-blog/tags/windows/
+        - link "达梦" [ref=e90] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E8%BE%BE%E6%A2%A6/
+        - link "分享" [ref=e91] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%88%86%E4%BA%AB/
+        - link "软件推荐" [ref=e92] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90/
+        - link "yum" [ref=e93] [cursor=pointer]:
+          - /url: /csdn-blog/tags/yum/
+        - link "pfile" [ref=e94] [cursor=pointer]:
+          - /url: /csdn-blog/tags/pfile/
+        - link "spfile" [ref=e95] [cursor=pointer]:
+          - /url: /csdn-blog/tags/spfile/
+        - link "centos" [ref=e96] [cursor=pointer]:
+          - /url: /csdn-blog/tags/centos/
+        - link "vnc" [ref=e97] [cursor=pointer]:
+          - /url: /csdn-blog/tags/vnc/
+        - link "sql" [ref=e98] [cursor=pointer]:
+          - /url: /csdn-blog/tags/sql/
+        - link "数据库字符集" [ref=e99] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AD%97%E7%AC%A6%E9%9B%86/
+        - link "big data" [ref=e100] [cursor=pointer]:
+          - /url: /csdn-blog/tags/big-data/
+        - link "java" [ref=e101] [cursor=pointer]:
+          - /url: /csdn-blog/tags/java/
+        - link "数据泵" [ref=e102] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E6%B3%B5/
+        - link "swap" [ref=e103] [cursor=pointer]:
+          - /url: /csdn-blog/tags/swap/
+        - link "bbed" [ref=e104] [cursor=pointer]:
+          - /url: /csdn-blog/tags/bbed/
+        - link "ssh" [ref=e105] [cursor=pointer]:
+          - /url: /csdn-blog/tags/ssh/
+        - link "mysql" [ref=e106] [cursor=pointer]:
+          - /url: /csdn-blog/tags/mysql/
+        - link "windows11" [ref=e107] [cursor=pointer]:
+          - /url: /csdn-blog/tags/windows11/
+        - link "postgresql" [ref=e108] [cursor=pointer]:
+          - /url: /csdn-blog/tags/postgresql/
+        - link "typora" [ref=e109] [cursor=pointer]:
+          - /url: /csdn-blog/tags/typora/
+        - link "图床" [ref=e110] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%9B%BE%E5%BA%8A/
+        - link "picgo" [ref=e111] [cursor=pointer]:
+          - /url: /csdn-blog/tags/picgo/
+        - link "gitee" [ref=e112] [cursor=pointer]:
+          - /url: /csdn-blog/tags/gitee/
+        - link "bash" [ref=e113] [cursor=pointer]:
+          - /url: /csdn-blog/tags/bash/
+        - link "表情包" [ref=e114] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E8%A1%A8%E6%83%85%E5%8C%85/
+        - link "Markdown" [ref=e115] [cursor=pointer]:
+          - /url: /csdn-blog/tags/Markdown/
+        - link "表情" [ref=e116] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E8%A1%A8%E6%83%85/
+        - link "操作系统" [ref=e117] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/
+        - link "教程" [ref=e118] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%95%99%E7%A8%8B/
+        - link "Tapdata" [ref=e119] [cursor=pointer]:
+          - /url: /csdn-blog/tags/Tapdata/
+        - link "logminer" [ref=e120] [cursor=pointer]:
+          - /url: /csdn-blog/tags/logminer/
+        - link "impdp" [ref=e121] [cursor=pointer]:
+          - /url: /csdn-blog/tags/impdp/
+        - link "oracle 21c" [ref=e122] [cursor=pointer]:
+          - /url: /csdn-blog/tags/oracle-21c/
+        - link "gbase cluster" [ref=e123] [cursor=pointer]:
+          - /url: /csdn-blog/tags/gbase-cluster/
+        - link "rac" [ref=e124] [cursor=pointer]:
+          - /url: /csdn-blog/tags/rac/
+        - link "iscsi" [ref=e125] [cursor=pointer]:
+          - /url: /csdn-blog/tags/iscsi/
+        - link "19c" [ref=e126] [cursor=pointer]:
+          - /url: /csdn-blog/tags/19c/
+        - link "vmware" [ref=e127] [cursor=pointer]:
+          - /url: /csdn-blog/tags/vmware/
+        - link "linux安装" [ref=e128] [cursor=pointer]:
+          - /url: /csdn-blog/tags/linux%E5%AE%89%E8%A3%85/
+        - link "database" [ref=e129] [cursor=pointer]:
+          - /url: /csdn-blog/tags/database/
+        - link "rman备份恢复" [ref=e130] [cursor=pointer]:
+          - /url: /csdn-blog/tags/rman%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D/
+        - link "ADG" [ref=e131] [cursor=pointer]:
+          - /url: /csdn-blog/tags/ADG/
+        - link "dba" [ref=e132] [cursor=pointer]:
+          - /url: /csdn-blog/tags/dba/
+        - link "python" [ref=e133] [cursor=pointer]:
+          - /url: /csdn-blog/tags/python/
+        - link "爬虫" [ref=e134] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E7%88%AC%E8%99%AB/
+        - link "pycharm" [ref=e135] [cursor=pointer]:
+          - /url: /csdn-blog/tags/pycharm/
+        - link "Bug20250147" [ref=e136] [cursor=pointer]:
+          - /url: /csdn-blog/tags/Bug20250147/
+        - link "ORA-600" [ref=e137] [cursor=pointer]:
+          - /url: /csdn-blog/tags/ORA-600/
+        - link "Linux" [ref=e138] [cursor=pointer]:
+          - /url: /csdn-blog/tags/Linux/
+        - link "ora-2730" [ref=e139] [cursor=pointer]:
+          - /url: /csdn-blog/tags/ora-2730/
+        - link "sqlplus" [ref=e140] [cursor=pointer]:
+          - /url: /csdn-blog/tags/sqlplus/
+        - link "数据挖掘" [ref=e141] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/
+        - link "log4j" [ref=e142] [cursor=pointer]:
+          - /url: /csdn-blog/tags/log4j/
+        - link "apache" [ref=e143] [cursor=pointer]:
+          - /url: /csdn-blog/tags/apache/
+        - link "XTTS" [ref=e144] [cursor=pointer]:
+          - /url: /csdn-blog/tags/XTTS/
+        - link "年终总结" [ref=e145] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/
+        - link "数据仓库" [ref=e146] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/
+        - link "hive" [ref=e147] [cursor=pointer]:
+          - /url: /csdn-blog/tags/hive/
+        - link "tcp/ip" [ref=e148] [cursor=pointer]:
+          - /url: /csdn-blog/tags/tcp-ip/
+        - link "服务器" [ref=e149] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/
+        - link "pygame" [ref=e150] [cursor=pointer]:
+          - /url: /csdn-blog/tags/pygame/
+        - link "开发语言" [ref=e151] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/
+        - link "http" [ref=e152] [cursor=pointer]:
+          - /url: /csdn-blog/tags/http/
+        - link "网络协议" [ref=e153] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/
+        - link "虎年大吉" [ref=e154] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E8%99%8E%E5%B9%B4%E5%A4%A7%E5%90%89/
+        - link "2022新春" [ref=e155] [cursor=pointer]:
+          - /url: /csdn-blog/tags/2022%E6%96%B0%E6%98%A5/
+        - link "安全" [ref=e156] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%AE%89%E5%85%A8/
+        - link "网络" [ref=e157] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E7%BD%91%E7%BB%9C/
+        - link "阿里云" [ref=e158] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E9%98%BF%E9%87%8C%E4%BA%91/
+        - link "git" [ref=e159] [cursor=pointer]:
+          - /url: /csdn-blog/tags/git/
+        - link "后端" [ref=e160] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%90%8E%E7%AB%AF/
+        - link "腾讯云" [ref=e161] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E8%85%BE%E8%AE%AF%E4%BA%91/
+        - link "华为云" [ref=e162] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%8D%8E%E4%B8%BA%E4%BA%91/
+        - link "人工智能" [ref=e163] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/
+        - link "物联网" [ref=e164] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E7%89%A9%E8%81%94%E7%BD%91/
+        - link "大数据" [ref=e165] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/
+        - link "SQL" [ref=e166] [cursor=pointer]:
+          - /url: /csdn-blog/tags/SQL/
+        - link "SPL" [ref=e167] [cursor=pointer]:
+          - /url: /csdn-blog/tags/SPL/
+        - link "实时音视频" [ref=e168] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%AE%9E%E6%97%B6%E9%9F%B3%E8%A7%86%E9%A2%91/
+        - link "todesk" [ref=e169] [cursor=pointer]:
+          - /url: /csdn-blog/tags/todesk/
+        - link "学习" [ref=e170] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%AD%A6%E4%B9%A0/
+        - link "5G" [ref=e171] [cursor=pointer]:
+          - /url: /csdn-blog/tags/5G/
+        - link "word" [ref=e172] [cursor=pointer]:
+          - /url: /csdn-blog/tags/word/
+        - link "华为" [ref=e173] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%8D%8E%E4%B8%BA/
+        - link "kylin" [ref=e174] [cursor=pointer]:
+          - /url: /csdn-blog/tags/kylin/
+        - link "时序数据库" [ref=e175] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93/
+        - link "iotdb" [ref=e176] [cursor=pointer]:
+          - /url: /csdn-blog/tags/iotdb/
+        - link "debian" [ref=e177] [cursor=pointer]:
+          - /url: /csdn-blog/tags/debian/
+        - link "c语言" [ref=e178] [cursor=pointer]:
+          - /url: /csdn-blog/tags/c%E8%AF%AD%E8%A8%80/
+        - link "ubuntu" [ref=e179] [cursor=pointer]:
+          - /url: /csdn-blog/tags/ubuntu/
+        - link "arm开发" [ref=e180] [cursor=pointer]:
+          - /url: /csdn-blog/tags/arm%E5%BC%80%E5%8F%91/
+        - link "程序人生" [ref=e181] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E7%A8%8B%E5%BA%8F%E4%BA%BA%E7%94%9F/
+        - link "android" [ref=e182] [cursor=pointer]:
+          - /url: /csdn-blog/tags/android/
+        - link "YashanDB" [ref=e183] [cursor=pointer]:
+          - /url: /csdn-blog/tags/YashanDB/
+        - link "ffmpeg" [ref=e184] [cursor=pointer]:
+          - /url: /csdn-blog/tags/ffmpeg/
+        - link "gbase" [ref=e185] [cursor=pointer]:
+          - /url: /csdn-blog/tags/gbase/
+        - link "kingbase" [ref=e186] [cursor=pointer]:
+          - /url: /csdn-blog/tags/kingbase/
+        - link "yashandb" [ref=e187] [cursor=pointer]:
+          - /url: /csdn-blog/tags/yashandb/
+        - link "chatgpt" [ref=e188] [cursor=pointer]:
+          - /url: /csdn-blog/tags/chatgpt/
+        - link "GBase 8s" [ref=e189] [cursor=pointer]:
+          - /url: /csdn-blog/tags/GBase-8s/
+        - link "达梦数据库" [ref=e190] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E8%BE%BE%E6%A2%A6%E6%95%B0%E6%8D%AE%E5%BA%93/
+        - link "gbase 8a" [ref=e191] [cursor=pointer]:
+          - /url: /csdn-blog/tags/gbase-8a/
+        - link "SQLark" [ref=e192] [cursor=pointer]:
+          - /url: /csdn-blog/tags/SQLark/
+        - link "yashandb体验官" [ref=e193] [cursor=pointer]:
+          - /url: /csdn-blog/tags/yashandb%E4%BD%93%E9%AA%8C%E5%AE%98/
+        - link "GBase 8a" [ref=e194] [cursor=pointer]:
+          - /url: /csdn-blog/tags/GBase-8a/
+        - link "GDCA" [ref=e195] [cursor=pointer]:
+          - /url: /csdn-blog/tags/GDCA/
+        - link "红帽" [ref=e196] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E7%BA%A2%E5%B8%BD/
+        - link "rhel10" [ref=e197] [cursor=pointer]:
+          - /url: /csdn-blog/tags/rhel10/
+        - link "vue.js" [ref=e198] [cursor=pointer]:
+          - /url: /csdn-blog/tags/vue-js/
+        - link "开源" [ref=e199] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%BC%80%E6%BA%90/
+        - link "opentenbase" [ref=e200] [cursor=pointer]:
+          - /url: /csdn-blog/tags/opentenbase/
+        - link "金仓数据库" [ref=e201] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E9%87%91%E4%BB%93%E6%95%B0%E6%8D%AE%E5%BA%93/
+        - link "kingbasees" [ref=e202] [cursor=pointer]:
+          - /url: /csdn-blog/tags/kingbasees/
+        - link "崖山" [ref=e203] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%B4%96%E5%B1%B1/
+        - link "架构" [ref=e204] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%9E%B6%E6%9E%84/
+        - link "GBase" [ref=e205] [cursor=pointer]:
+          - /url: /csdn-blog/tags/GBase/
+        - link "SSC" [ref=e206] [cursor=pointer]:
+          - /url: /csdn-blog/tags/SSC/
+        - link "DMDSC" [ref=e207] [cursor=pointer]:
+          - /url: /csdn-blog/tags/DMDSC/
+        - link "adb" [ref=e208] [cursor=pointer]:
+          - /url: /csdn-blog/tags/adb/
+        - link "javascript" [ref=e209] [cursor=pointer]:
+          - /url: /csdn-blog/tags/javascript/
+        - link "ecmascript" [ref=e210] [cursor=pointer]:
+          - /url: /csdn-blog/tags/ecmascript/
+        - link "性能优化" [ref=e211] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/
+        - link "电科金仓" [ref=e212] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E7%94%B5%E7%A7%91%E9%87%91%E4%BB%93/
+        - link "SQLserver" [ref=e213] [cursor=pointer]:
+          - /url: /csdn-blog/tags/SQLserver/
+        - link "kwdb" [ref=e214] [cursor=pointer]:
+          - /url: /csdn-blog/tags/kwdb/
+        - link "bug" [ref=e215] [cursor=pointer]:
+          - /url: /csdn-blog/tags/bug/
+        - link "微服务" [ref=e216] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/
+        - link "分布式" [ref=e217] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%88%86%E5%B8%83%E5%BC%8F/
+        - link "tidb" [ref=e218] [cursor=pointer]:
+          - /url: /csdn-blog/tags/tidb/
+        - link "飞书" [ref=e219] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E9%A3%9E%E4%B9%A6/
+        - link "大模型" [ref=e220] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/
+        - link "生成式AI" [ref=e221] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E7%94%9F%E6%88%90%E5%BC%8FAI/
+        - link "vastbase" [ref=e222] [cursor=pointer]:
+          - /url: /csdn-blog/tags/vastbase/
+        - link "自动化" [ref=e223] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/
+        - link "Kingbase" [ref=e224] [cursor=pointer]:
+          - /url: /csdn-blog/tags/Kingbase/
+        - link "TiDB" [ref=e225] [cursor=pointer]:
+          - /url: /csdn-blog/tags/TiDB/
+        - link "kubernetes" [ref=e226] [cursor=pointer]:
+          - /url: /csdn-blog/tags/kubernetes/
+        - link "容器" [ref=e227] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E5%AE%B9%E5%99%A8/
+        - link "云原生" [ref=e228] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/
+        - link "金仓" [ref=e229] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E9%87%91%E4%BB%93/
+        - link "kingbasse" [ref=e230] [cursor=pointer]:
+          - /url: /csdn-blog/tags/kingbasse/
+        - link "数据库平替用金仓" [ref=e231] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B9%B3%E6%9B%BF%E7%94%A8%E9%87%91%E4%BB%93/
+        - link "金仓产品体验官" [ref=e232] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E9%87%91%E4%BB%93%E4%BA%A7%E5%93%81%E4%BD%93%E9%AA%8C%E5%AE%98/
+        - link "云计算" [ref=e233] [cursor=pointer]:
+          - /url: /csdn-blog/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/
+        - link "aws" [ref=e234] [cursor=pointer]:
+          - /url: /csdn-blog/tags/aws/
+      - generic [ref=e235]:
+        - generic [ref=e236]:
+          - img "avatar" [ref=e238]
+          - generic [ref=e239]: Lucifer
+          - generic [ref=e240]: Oracle DBA | 数据库技术博主
+          - generic [ref=e241]:
+            - link "文章 528" [ref=e242] [cursor=pointer]:
+              - /url: /csdn-blog/archives/
+              - generic [ref=e243]: 文章
+              - generic [ref=e244]: "528"
+            - link "标签 168" [ref=e245] [cursor=pointer]:
+              - /url: /csdn-blog/tags/
+              - generic [ref=e246]: 标签
+              - generic [ref=e247]: "168"
+            - link "分类 7" [ref=e248] [cursor=pointer]:
+              - /url: /csdn-blog/categories/
+              - generic [ref=e249]: 分类
+              - generic [ref=e250]: "7"
+          - link "访问 CSDN" [ref=e251] [cursor=pointer]:
+            - /url: https://luciferliu.blog.csdn.net/
+            - text: 访问 CSDN
+          - generic [ref=e253]:
+            - link "Github" [ref=e254] [cursor=pointer]:
+              - /url: https://github.com/pc-study
+            - link "CSDN" [ref=e256] [cursor=pointer]:
+              - /url: https://luciferliu.blog.csdn.net/
+        - generic [ref=e258]:
+          - generic [ref=e259]: 公告
+          - generic [ref=e261]: 欢迎来到 Lucifer 的博客归档站！本站收录了 528 篇原创技术文章。
+        - generic [ref=e262]:
+          - generic [ref=e263]:
+            - generic [ref=e264]: 最新文章
+            - generic [ref=e266]:
+              - generic [ref=e267]:
+                - link "Oracle 直连 TiDB 可行吗？" [ref=e268] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/157245807/
+                  - img "Oracle 直连 TiDB 可行吗？" [ref=e269]
+                - generic [ref=e270]:
+                  - link "Oracle 直连 TiDB 可行吗？" [ref=e271] [cursor=pointer]:
+                    - /url: /csdn-blog/posts/157245807/
+                  - time [ref=e272]: 2026-01-22
+              - generic [ref=e273]:
+                - link "华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南" [ref=e274] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/156853585/
+                  - img "华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南" [ref=e275]
+                - generic [ref=e276]:
+                  - link "华为智慧物流落地的底层逻辑：这本数据手册是企业转型的核心指南" [ref=e277] [cursor=pointer]:
+                    - /url: /csdn-blog/posts/156853585/
+                  - time [ref=e278]: 2026-01-12
+              - generic [ref=e279]:
+                - link "看来 Oracle 还是听劝的！" [ref=e280] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/156195159/
+                  - img "看来 Oracle 还是听劝的！" [ref=e281]
+                - generic [ref=e282]:
+                  - link "看来 Oracle 还是听劝的！" [ref=e283] [cursor=pointer]:
+                    - /url: /csdn-blog/posts/156195159/
+                  - time [ref=e284]: 2025-12-23
+              - generic [ref=e285]:
+                - link "【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具" [ref=e286] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/155349073/
+                  - img "【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具" [ref=e287]
+                - generic [ref=e288]:
+                  - link "【金仓数据库产品体验官】KSQL Developer：一款值得推荐的数据库管理工具" [ref=e289] [cursor=pointer]:
+                    - /url: /csdn-blog/posts/155349073/
+                  - time [ref=e290]: 2025-11-28
+              - generic [ref=e291]:
+                - link "veeam agent 纳管 Ubuntu 20.04 报错解决" [ref=e292] [cursor=pointer]:
+                  - /url: /csdn-blog/posts/155039369/
+                  - img "veeam agent 纳管 Ubuntu 20.04 报错解决" [ref=e293]
+                - generic [ref=e294]:
+                  - link "veeam agent 纳管 Ubuntu 20.04 报错解决" [ref=e295] [cursor=pointer]:
+                    - /url: /csdn-blog/posts/155039369/
+                  - time [ref=e296]: 2025-11-19
+          - generic [ref=e297]:
+            - generic [ref=e298]: 分类
+            - list [ref=e300]:
+              - listitem [ref=e301]:
+                - link "Linux 运维 52" [ref=e302] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/Linux-%E8%BF%90%E7%BB%B4/
+                  - generic [ref=e303]: Linux 运维
+                  - generic [ref=e304]: "52"
+              - listitem [ref=e305]:
+                - link "Oracle 数据库 277" [ref=e306] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/Oracle-%E6%95%B0%E6%8D%AE%E5%BA%93/
+                  - generic [ref=e307]: Oracle 数据库
+                  - generic [ref=e308]: "277"
+              - listitem [ref=e309]:
+                - link "多媒体处理 9" [ref=e310] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%A4%84%E7%90%86/
+                  - generic [ref=e311]: 多媒体处理
+                  - generic [ref=e312]: "9"
+              - listitem [ref=e313]:
+                - link "大数据 & AI 16" [ref=e314] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE-AI/
+                  - generic [ref=e315]: 大数据 & AI
+                  - generic [ref=e316]: "16"
+              - listitem [ref=e317]:
+                - link "工具与效率 6" [ref=e318] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E5%B7%A5%E5%85%B7%E4%B8%8E%E6%95%88%E7%8E%87/
+                  - generic [ref=e319]: 工具与效率
+                  - generic [ref=e320]: "6"
+              - listitem [ref=e321]:
+                - link "技术文章 34" [ref=e322] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/
+                  - generic [ref=e323]: 技术文章
+                  - generic [ref=e324]: "34"
+              - listitem [ref=e325]:
+                - link "数据库 134" [ref=e326] [cursor=pointer]:
+                  - /url: /csdn-blog/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
+                  - generic [ref=e327]: 数据库
+                  - generic [ref=e328]: "134"
+          - generic [ref=e329]:
+            - generic [ref=e330]: 标签
+            - generic [ref=e332]:
+              - link "无人值守" [ref=e333] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E6%97%A0%E4%BA%BA%E5%80%BC%E5%AE%88/
+              - link "shell一键安装" [ref=e334] [cursor=pointer]:
+                - /url: /csdn-blog/tags/shell%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85/
+              - link "oracle" [ref=e335] [cursor=pointer]:
+                - /url: /csdn-blog/tags/oracle/
+              - link "11GR2" [ref=e336] [cursor=pointer]:
+                - /url: /csdn-blog/tags/11GR2/
+              - link "orale" [ref=e337] [cursor=pointer]:
+                - /url: /csdn-blog/tags/orale/
+              - link "12CR2" [ref=e338] [cursor=pointer]:
+                - /url: /csdn-blog/tags/12CR2/
+              - link "数据库" [ref=e339] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/
+              - link "linux" [ref=e340] [cursor=pointer]:
+                - /url: /csdn-blog/tags/linux/
+              - link "运维" [ref=e341] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E8%BF%90%E7%BB%B4/
+              - link "shell" [ref=e342] [cursor=pointer]:
+                - /url: /csdn-blog/tags/shell/
+              - link "新星计划" [ref=e343] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E6%96%B0%E6%98%9F%E8%AE%A1%E5%88%92/
+              - link "分区表" [ref=e344] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E5%88%86%E5%8C%BA%E8%A1%A8/
+              - link "升级" [ref=e345] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E5%8D%87%E7%BA%A7/
+              - link "dataguard" [ref=e346] [cursor=pointer]:
+                - /url: /csdn-blog/tags/dataguard/
+              - link "gap" [ref=e347] [cursor=pointer]:
+                - /url: /csdn-blog/tags/gap/
+              - link "在线重定义" [ref=e348] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E5%9C%A8%E7%BA%BF%E9%87%8D%E5%AE%9A%E4%B9%89/
+              - link "vagrant" [ref=e349] [cursor=pointer]:
+                - /url: /csdn-blog/tags/vagrant/
+              - link "故障处理" [ref=e350] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E6%95%85%E9%9A%9C%E5%A4%84%E7%90%86/
+              - link "shareplex" [ref=e351] [cursor=pointer]:
+                - /url: /csdn-blog/tags/shareplex/
+              - link "CBL-Mariner" [ref=e352] [cursor=pointer]:
+                - /url: /csdn-blog/tags/CBL-Mariner/
+              - link "macos" [ref=e353] [cursor=pointer]:
+                - /url: /csdn-blog/tags/macos/
+              - link "docker" [ref=e354] [cursor=pointer]:
+                - /url: /csdn-blog/tags/docker/
+              - link "windows" [ref=e355] [cursor=pointer]:
+                - /url: /csdn-blog/tags/windows/
+              - link "达梦" [ref=e356] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E8%BE%BE%E6%A2%A6/
+              - link "分享" [ref=e357] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E5%88%86%E4%BA%AB/
+              - link "软件推荐" [ref=e358] [cursor=pointer]:
+                - /url: /csdn-blog/tags/%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90/
+              - link "yum" [ref=e359] [cursor=pointer]:
+                - /url: /csdn-blog/tags/yum/
+              - link "pfile" [ref=e360] [cursor=pointer]:
+                - /url: /csdn-blog/tags/pfile/
+              - link "spfile" [ref=e361] [cursor=pointer]:
+                - /url: /csdn-blog/tags/spfile/
+              - link "centos" [ref=e362] [cursor=pointer]:
+                - /url: /csdn-blog/tags/centos/
+          - generic [ref=e363]:
+            - generic [ref=e364]:
+              - text: 归档
+              - link "查看更多" [ref=e366] [cursor=pointer]:
+                - /url: /csdn-blog/archives/
+            - list [ref=e368]:
+              - listitem [ref=e369]:
+                - link "2026年01月 2" [ref=e370] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2026/01/
+                  - generic [ref=e371]: 2026年01月
+                  - generic [ref=e372]: "2"
+              - listitem [ref=e373]:
+                - link "2025年12月 1" [ref=e374] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/12/
+                  - generic [ref=e375]: 2025年12月
+                  - generic [ref=e376]: "1"
+              - listitem [ref=e377]:
+                - link "2025年11月 11" [ref=e378] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/11/
+                  - generic [ref=e379]: 2025年11月
+                  - generic [ref=e380]: "11"
+              - listitem [ref=e381]:
+                - link "2025年09月 10" [ref=e382] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/09/
+                  - generic [ref=e383]: 2025年09月
+                  - generic [ref=e384]: "10"
+              - listitem [ref=e385]:
+                - link "2025年08月 1" [ref=e386] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/08/
+                  - generic [ref=e387]: 2025年08月
+                  - generic [ref=e388]: "1"
+              - listitem [ref=e389]:
+                - link "2025年07月 17" [ref=e390] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/07/
+                  - generic [ref=e391]: 2025年07月
+                  - generic [ref=e392]: "17"
+              - listitem [ref=e393]:
+                - link "2025年06月 13" [ref=e394] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/06/
+                  - generic [ref=e395]: 2025年06月
+                  - generic [ref=e396]: "13"
+              - listitem [ref=e397]:
+                - link "2025年05月 12" [ref=e398] [cursor=pointer]:
+                  - /url: /csdn-blog/archives/2025/05/
+                  - generic [ref=e399]: 2025年05月
+                  - generic [ref=e400]: "12"
+          - generic [ref=e401]:
+            - generic [ref=e402]: 网站信息
+            - generic [ref=e404]:
+              - generic [ref=e405]:
+                - generic [ref=e406]: "文章数目 :"
+                - generic [ref=e407]: "528"
+              - generic [ref=e408]:
+                - generic [ref=e409]: "运行时间 :"
+                - generic [ref=e410]: 1778 天
+              - generic [ref=e411]:
+                - generic [ref=e412]: "本站总字数 :"
+                - generic [ref=e413]: 1318.9k
+              - generic [ref=e414]:
+                - generic [ref=e415]: "本站访客数 :"
+                - generic [ref=e416]: "54759041"
+              - generic [ref=e417]:
+                - generic [ref=e418]: "本站总浏览量 :"
+                - generic [ref=e419]: "78364528"
+              - generic [ref=e420]:
+                - generic [ref=e421]: "最后更新时间 :"
+                - generic [ref=e422]: 1 分钟前
+    - contentinfo [ref=e423]:
+      - generic [ref=e424]:
+        - generic [ref=e425]:
+          - text: © 2021 - 2026 By Lucifer
+          - generic [ref=e426]:
+            - text: 框架
+            - link "Hexo" [ref=e427] [cursor=pointer]:
+              - /url: https://hexo.io
+            - text: "|主题"
+            - link "Butterfly" [ref=e428] [cursor=pointer]:
+              - /url: https://github.com/jerryc127/hexo-theme-butterfly
+        - generic [ref=e429]: Lucifer三思而后行 | CSDN 博客备份站
+  - generic [ref=e430]:
+    - generic:
+      - button "日间和夜间模式切换" [ref=e431] [cursor=pointer]
+      - button "单栏和双栏切换" [ref=e433] [cursor=pointer]
+    - generic [ref=e435]:
+      - button "设置" [ref=e436] [cursor=pointer]
+      - button "回到顶部" [ref=e438] [cursor=pointer]
