@@ -7,3 +7,5 @@ public/
 .deploy*/
 _multiconfig.yml
 .playwright-cli/.github/workflows/deploy.yml
+.github/workflows/deploy.yml
+.playwright-cli/
